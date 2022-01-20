@@ -1,0 +1,126 @@
+<DOCTYPE html>
+    <head>
+        <style>
+
+            /*orb placement ===============================*/
+
+            body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: black;
+            }
+
+            /*orb css ====================================================*/
+            /*orb ========================================================*/
+            .orb1 {
+                display: flex;
+                background-color: black;
+                height: 330px;
+                width: 330px;
+                transition: height 0.8s, width 0.8s, box-shadow 0.8s;
+                font-family: Arial, Helvetica, sans-serif;
+                border-radius: 100%;
+                box-shadow:
+                inset 0 0 1px #fff,
+                inset 1px 0 1px #ff00ff,
+                inset -1px 0 1px #00ffff,
+                inset 1px 0 1px #ff00ff,
+                inset -1px 0 1px #00ffff,
+                0 0 1px #fff,
+                -1px 0 1px #ff00ff,
+                1px 0 1px #00ffff;
+            }
+            .orb1:hover {
+                transition-delay: 20ms;
+                transition-duration: 500ms;
+                height: 380px;
+                width: 380px;
+                border-radius: 100%;
+                box-shadow:
+                inset 0 0 50px #fff,
+                inset 20px 0 80px #ff00ff,
+                inset -20px 0 80px #00ffff,
+                inset 20px 0 300px #ff00ff,
+                inset -20px 0 300px #00ffff,
+                0 0 50px #fff,
+                -10px 0 80px #ff00ff,
+                10px 0 80px #00ffff;
+                background-color: black;
+            }
+            .orb1:active {
+                transition-delay: 20ms;
+                height: 250px;
+                width: 250px;
+                border-radius: 100%;
+                box-shadow:
+                inset 0 0 50px #fff,
+                inset 20px 0 80px #00FFD0,
+                inset -20px 0 80px #FFD000,
+                inset 20px 0 300px #00FFD0,
+                inset -20px 0 300px #FFD000,
+                0 0 50px #fff,
+                -10px 0 80px #00FFD0,
+                10px 0 80px #FFD000;
+                background-color: black;
+            }
+            /*orb ====================================*/
+            .orb2 {
+                display: flex;
+                background-color: black;
+                height: 330px;
+                width: 330px;
+                transition: height 0.8s, width 0.8s, box-shadow 1.2s;
+                font-family: Arial, Helvetica, sans-serif;
+                border-radius: 100%;
+                box-shadow:
+                inset 0 0 1px #fff,
+                inset 1px 0 1px #FF00D9,
+                inset -1px 0 1px #D9FF00,
+                inset 1px 0 1px #FF00D9,
+                inset -1px 0 1px #D9FF00,
+                0 0 1px #fff,
+                -1px 0 1px #FF00D9,
+                1px 0 1px #D9FF00;
+            }
+            .orb2:hover {
+                transition-delay: 20ms;
+                transition-duration: 500ms;
+                height: 380px;
+                width: 380px;
+                border-radius: 100%;
+                box-shadow:
+                inset 0 0 50px #fff,
+                inset 20px 0 80px #FF00D9,
+                inset -20px 0 80px #D9FF00,
+                inset 20px 0 300px #FF00D9,
+                inset -20px 0 300px #D9FF00,
+                0 0 50px #fff,
+                -10px 0 80px #FF00D9,
+                10px 0 80px #D9FF00;
+                background-color: black;
+            }
+            .orb2:active {
+                transition-delay: 20ms;
+                height: 250px;
+                width: 250px;
+                border-radius: 100%;
+                box-shadow:
+                inset 0 0 50px #fff,
+                inset 20px 0 80px #FF8800,
+                inset -20px 0 80px #1263ED,
+                inset 20px 0 300px #FF8800,
+                inset -20px 0 300px #1263ED,
+                0 0 50px #fff,
+                -10px 0 80px #FF8800,
+                10px 0 80px #1263ED;
+                background-color: black;
+                
+            }
+        </style>
+
+
+        <body>
+            <div class="orb2"></div>
+        </body>
+    </head>
