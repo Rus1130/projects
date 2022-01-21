@@ -117,10 +117,63 @@
                 background-color: black;
                 
             }
+            /*orb ====================================*/
+            .orb3 {
+                display: flex;
+                background-color: black;
+                height: 330px;
+                width: 330px;
+                transition: height 0.8s, width 0.8s, box-shadow 1.2s;
+                font-family: Arial, Helvetica, sans-serif;
+                border-radius: 100%;
+                box-shadow:
+                inset 0 0 1px #fff,
+                inset 1px 0 1px #F3190C,
+                inset -1px 0 1px #7300FF,
+                inset 1px 0 1px #F3190C,
+                inset -1px 0 1px #7300FF,
+                0 0 1px #fff,
+                -1px 0 1px #F3190C,
+                1px 0 1px #7300FF;
+            }
+            .orb3:hover {
+                transition-delay: 20ms;
+                transition-duration: 500ms;
+                height: 380px;
+                width: 380px;
+                border-radius: 100%;
+                box-shadow:
+                inset 0 0 50px #fff,
+                inset 20px 0 80px #F3190C,
+                inset -20px 0 80px #7300FF,
+                inset 20px 0 300px #F3190C,
+                inset -20px 0 300px #7300FF,
+                0 0 50px #fff,
+                -10px 0 80px #F3190C,
+                10px 0 80px #7300FF;
+                background-color: black;
+            }
+            .orb3:active {
+                transition-delay: 20ms;
+                height: 250px;
+                width: 250px;
+                border-radius: 100%;
+                box-shadow:
+                inset 10px 0 50px #fff,
+                inset 20px 0 80px #0095FF,
+                inset -20px 0 80px #00FF6A,
+                inset 20px 0 300px #0095FF,
+                inset -20px 0 300px #00FF6A,
+                0 0 50px #fff,
+                -10px 0 80px #0095FF,
+                10px 0 80px #00FF6A;
+                background-color: black;
+                
+            }
         </style>
 
 
         <body>
-            <div class="orb1"></div>
+            <div class="orb3"></div>
         </body>
     </head>
