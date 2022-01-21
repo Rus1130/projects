@@ -224,6 +224,110 @@
                 background-color: black;
                 
             }
+            /*orb ========================================================*/
+            .flare {
+                display: flex;
+                background-color: black;
+                height: 330px;
+                width: 330px;
+                transition: height 0.8s, width 0.8s, box-shadow 0.8s;
+                font-family: Arial, Helvetica, sans-serif;
+                border-radius: 100%;
+                box-shadow:
+                inset 0 0 1px #fff,
+                inset 1px 0 1px #E1231E,
+                inset -1px 0 1px #DCE11E,
+                inset 1px 0 1px #E1231E,
+                inset -1px 0 1px #DCE11E,
+                0 0 1px #fff,
+                -1px 0 1px #E1231E,
+                1px 0 1px #DCE11E;
+            }
+            .flare:hover {
+                transition-delay: 20ms;
+                transition-duration: 500ms;
+                height: 380px;
+                width: 380px;
+                border-radius: 100%;
+                box-shadow:
+                inset 0 0 50px #fff,
+                inset 20px 0 80px #E1231E,
+                inset -20px 0 80px #DCE11E,
+                inset 20px 0 300px #E1231E,
+                inset -20px 0 300px #DCE11E,
+                0 0 50px #fff,
+                -10px 0 80px #E1231E,
+                10px 0 80px #DCE11E;
+                background-color: black;
+            }
+            .flare:active {
+                transition-delay: 20ms;
+                height: 250px;
+                width: 250px;
+                border-radius: 100%;
+                box-shadow:
+                inset 0 0 50px #fff,
+                inset 20px 0 80px #FF6C00,
+                inset -20px 0 80px #FF0014,
+                inset 20px 0 300px #FF6C00,
+                inset -20px 0 300px #FF0014,
+                0 0 50px #fff,
+                -10px 0 80px #FF6C00,
+                10px 0 80px #FF0014;
+                background-color: black;
+            }
+            /*orb ========================================================*/
+            .lime {
+                display: flex;
+                background-color: black;
+                height: 330px;
+                width: 330px;
+                transition: height 0.8s, width 0.8s, box-shadow 0.8s;
+                font-family: Arial, Helvetica, sans-serif;
+                border-radius: 100%;
+                box-shadow:
+                inset 0 0 1px #fff,
+                inset 1px 0 1px #E1231E,
+                inset -1px 0 1px #DCE11E,
+                inset 1px 0 1px #E1231E,
+                inset -1px 0 1px #DCE11E,
+                0 0 1px #fff,
+                -1px 0 1px #E1231E,
+                1px 0 1px #DCE11E;
+            }
+            .lime:hover {
+                transition-delay: 20ms;
+                transition-duration: 500ms;
+                height: 380px;
+                width: 380px;
+                border-radius: 100%;
+                box-shadow:
+                inset 0 0 50px #fff,
+                inset 20px 0 80px #54FF00,
+                inset -20px 0 80px #00FFB7,
+                inset 20px 0 300px #54FF00,
+                inset -20px 0 300px #00FFB7,
+                0 0 50px #fff,
+                -10px 0 80px #54FF00,
+                10px 0 80px #00FFB7;
+                background-color: black;
+            }
+            .lime:active {
+                transition-delay: 20ms;
+                height: 250px;
+                width: 250px;
+                border-radius: 100%;
+                box-shadow:
+                inset 0 0 50px #fff,
+                inset 20px 0 80px #63FF00,
+                inset -20px 0 80px #FF9C00,
+                inset 20px 0 300px #63FF00,
+                inset -20px 0 300px #FF9C00,
+                0 0 50px #fff,
+                -10px 0 80px #62ff00,
+                10px 0 80px #FF9C00;
+                background-color: black;
+            }
             /* displays ================== */
             .originaldisplay {
                 font-family: Arial, Helvetica, sans-serif;
@@ -271,7 +375,7 @@
                 background-color: white;
             }
             .galaxydisplay:hover {
-                background-color:#F3190C;
+                background-color:#ce0089;
             }
             .bluemetaldisplay {
                 font-family: Arial, Helvetica, sans-serif;
@@ -288,6 +392,38 @@
             }
             .bluemetaldisplay:hover {
                 background-color: #0c3974;
+            }
+            .flaredisplay {
+                font-family: Arial, Helvetica, sans-serif;
+                position: absolute;
+                top: 280px;
+                right: 100px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 120px;
+                height: 40px;
+                transition-duration: 0.3s;
+                background-color: white;
+            }
+            .flaredisplay:hover {
+                background-color: #FF0014;
+            }
+            .limedisplay {
+                font-family: Arial, Helvetica, sans-serif;
+                position: absolute;
+                top: 330px;
+                right: 100px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 120px;
+                height: 40px;
+                transition-duration: 0.3s;
+                background-color: white;
+            }
+            .limedisplay:hover {
+                background-color: #62ff00;
             }
 
             /* ============================================= */
@@ -347,10 +483,12 @@
 
     <div id="buttons" class="noshow">
         <div id="projectsbtn" class="projectsbtn" onclick="window.location.href='index'"></div>
-        <div class="originaldisplay" onclick="changeToThemeOriginal()">Theme Original</div>
-        <div class="sourdisplay" onclick="changeToThemeSour()">Theme Sour</div>
-        <div class="galaxydisplay" onclick="changeToThemeGalaxy()">Theme Galaxy</div>
+        <div class="originaldisplay" onclick="changeToThemeOriginal()">Original</div>
+        <div class="sourdisplay" onclick="changeToThemeSour()">Sour</div>
+        <div class="galaxydisplay" onclick="changeToThemeGalaxy()">Galaxy</div>
         <div class="bluemetaldisplay" onclick="changeToThemeBluemetal()">Bluemetal</div>
+        <div class="flaredisplay" onclick="changeToThemeFlare()">Flare</div>
+        <div class="limedisplay" onclick="changeToThemeLime()">Lime</div>
     </div>
 
 </head>
@@ -371,6 +509,14 @@ function changeToThemeBluemetal(){
     document.getElementById("orb").setAttribute("class","bluemetal")
 }
 
+function changeToThemeFlare(){
+    document.getElementById("orb").setAttribute("class","flare")
+}
+
+function changeToThemeLime(){
+    document.getElementById("orb").setAttribute("class","lime")
+}
+
 document.getElementById("settingsbtn").addEventListener("click", function(){
     if(document.getElementById("buttons").hasAttribute("class")){
         document.getElementById("buttons").removeAttribute("class","noshow");
@@ -380,7 +526,5 @@ document.getElementById("settingsbtn").addEventListener("click", function(){
         document.getElementById("settingsbtn").removeAttribute("style","background-color: steelblue;");
     }
 })
-
-
 
 </script>
