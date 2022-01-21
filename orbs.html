@@ -170,6 +170,10 @@
                 background-color: black;
                 
             }
+            .button1 {
+                top: 10px;
+                
+            }
         </style>
 
 <head>
@@ -177,12 +181,12 @@
         <div id="orb" class="original"></div>
     </body>
     
-    <div style="position: absolute; top: 10%; left: 90%; right: 0;">
-        <button onclick="changeToThemeOriginal()">Theme Original</button>
-        <br>
-        <button onclick="changeToThemeSour()">Theme Sour</button>
-        <br>
-        <button onclick="changeToThemeGalaxy()">Theme Galaxy</button>
+    <div class="button">
+        <button onclick="changeToThemeOriginal()" class="button1">Theme Original</button>
+
+        <button onclick="changeToThemeSour()" class="button">Theme Sour</button>
+
+        <button onclick="changeToThemeGalaxy()" class="button">Theme Galaxy</button>
     </div>
 </head>
 
