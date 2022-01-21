@@ -170,9 +170,76 @@
                 background-color: black;
                 
             }
-            .button1 {
+            .originaldisplay {
+                font-family: Arial, Helvetica, sans-serif;
+                position: absolute;
+                top: 80px;
+                right: 100px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 120px;
+                height: 40px;
+                transition-duration: 0.8s;
+                background-color: white;
+            }
+            .originaldisplay:hover {
+                background-color:#ff00ff;
+            }
+            .sourdisplay {
+                font-family: Arial, Helvetica, sans-serif;
+                position: absolute;
+                top: 130px;
+                right: 100px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 120px;
+                height: 40px;
+                transition-duration: 0.8s;
+                background-color: white;
+            }
+            .sourdisplay:hover {
+                background-color:#D9FF00;
+            }
+            .galaxydisplay {
+                font-family: Arial, Helvetica, sans-serif;
+                position: absolute;
+                top: 180px;
+                right: 100px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 120px;
+                height: 40px;
+                transition-duration: 0.8s;
+                background-color: white;
+            }
+            .galaxydisplay:hover {
+                background-color:#F3190C;
+            }
+            .showsettingsbtn {
+                position: absolute;
+                right: 10px;
                 top: 10px;
-                
+                height: 50px;
+                width: 70px;
+                background-color: rgb(41, 41, 41);
+                transition-duration: 0.8s;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-family: Arial, Helvetica, sans-serif;
+            }
+            .showsettingsbtn::after {
+                content:"Settings";
+            }
+
+            .showsettingsbtn:hover {
+                background-color: whitesmoke;
+            }
+            .noshow {
+                display: none;
             }
         </style>
 
@@ -180,14 +247,15 @@
     <body>
         <div id="orb" class="original"></div>
     </body>
-    
-    <div class="button">
-        <button onclick="changeToThemeOriginal()" class="button1">Theme Original</button>
 
-        <button onclick="changeToThemeSour()" class="button">Theme Sour</button>
+    <div class="showsettingsbtn" onclick="showHideSettings()"></div>
 
-        <button onclick="changeToThemeGalaxy()" class="button">Theme Galaxy</button>
+    <div id="buttons" class="noshow">
+        <div class="originaldisplay" onclick="changeToThemeOriginal()">Theme Original</div>
+        <div class="sourdisplay" onclick="changeToThemeSour()">Theme Sour</div>
+        <div class="galaxydisplay" onclick="changeToThemeGalaxy()">Theme Galaxy</div>
     </div>
+
 </head>
 
 <script>
@@ -201,5 +269,14 @@ function changeToThemeSour(){
 function changeToThemeGalaxy(){
     document.getElementById("orb").setAttribute("class","galaxy")
 }
+
+function showHideSettings(){
+    if(document.getElementById("buttons").hasAttribute("class","noshow")){
+        document.getElementById("buttons").removeAttribute("class","noshow")
+    } else {
+        document.getElementById("buttons").setAttribute("class","noshow")
+    }
+}
+
 
 </script>
