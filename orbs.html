@@ -170,6 +170,61 @@
                 background-color: black;
                 
             }
+
+            /*orb ====================================*/
+            .bluemetal {
+                display: flex;
+                background-color: black;
+                height: 330px;
+                width: 330px;
+                transition: height 0.8s, width 0.8s, box-shadow 1.2s;
+                font-family: Arial, Helvetica, sans-serif;
+                border-radius: 100%;
+                box-shadow:
+                inset 0 0 1px #fff,
+                inset 1px 0 1px #25CDDA,
+                inset -1px 0 1px #0c3974,
+                inset 1px 0 1px #25CDDA,
+                inset -1px 0 1px #0c3974,
+                0 0 1px #fff,
+                -1px 0 1px #25CDDA,
+                1px 0 1px #0c3974;
+            }
+            .bluemetal:hover {
+                transition-delay: 20ms;
+                transition-duration: 500ms;
+                height: 380px;
+                width: 380px;
+                border-radius: 100%;
+                box-shadow:
+                inset 0 0 50px #fff,
+                inset 20px 0 80px #25CDDA,
+                inset -20px 0 80px #0c3974,
+                inset 20px 0 300px #25CDDA,
+                inset -20px 0 300px #0c3974,
+                0 0 50px #fff,
+                -10px 0 80px #25CDDA,
+                10px 0 80px #0c3974;
+                background-color: black;
+            }
+            .bluemetal:active {
+                transition-delay: 20ms;
+                height: 250px;
+                width: 250px;
+                border-radius: 100%;
+                box-shadow:
+                inset 10px 0 50px #fff,
+                inset 20px 0 80px #FF00BB,
+                inset -20px 0 80px #4400FF,
+                inset 20px 0 300px #FF00BB,
+                inset -20px 0 300px #4400FF,
+                0 0 50px #fff,
+                -10px 0 80px #FF00BB,
+                10px 0 80px #4400FF;
+                background-color: black;
+                
+            }
+            /* displays ================== */
             .originaldisplay {
                 font-family: Arial, Helvetica, sans-serif;
                 position: absolute;
@@ -218,6 +273,24 @@
             .galaxydisplay:hover {
                 background-color:#F3190C;
             }
+            .bluemetaldisplay {
+                font-family: Arial, Helvetica, sans-serif;
+                position: absolute;
+                top: 230px;
+                right: 100px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 120px;
+                height: 40px;
+                transition-duration: 0.3s;
+                background-color: white;
+            }
+            .bluemetaldisplay:hover {
+                background-color: rgb(114, 165, 206);
+            }
+
+            /* ============================================= */
             .showsettingsbtn {
                 position: absolute;
                 right: 10px;
@@ -277,6 +350,7 @@
         <div class="originaldisplay" onclick="changeToThemeOriginal()">Theme Original</div>
         <div class="sourdisplay" onclick="changeToThemeSour()">Theme Sour</div>
         <div class="galaxydisplay" onclick="changeToThemeGalaxy()">Theme Galaxy</div>
+        <div class="bluemetaldisplay" onclick="changeToThemeBluemetal()">Bluemetal</div>
     </div>
 
 </head>
@@ -291,6 +365,10 @@ function changeToThemeSour(){
 }
 function changeToThemeGalaxy(){
     document.getElementById("orb").setAttribute("class","galaxy")
+}
+
+function changeToThemeBluemetal(){
+    document.getElementById("orb").setAttribute("class","bluemetal")
 }
 
 document.getElementById("settingsbtn").addEventListener("click", function(){
