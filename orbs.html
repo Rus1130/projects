@@ -13,7 +13,7 @@
 
             /*orb css ====================================================*/
             /*orb ========================================================*/
-            .orb1 {
+            .original {
                 display: flex;
                 background-color: black;
                 height: 330px;
@@ -31,7 +31,7 @@
                 -1px 0 1px #ff00ff,
                 1px 0 1px #00ffff;
             }
-            .orb1:hover {
+            .original:hover {
                 transition-delay: 20ms;
                 transition-duration: 500ms;
                 height: 380px;
@@ -48,7 +48,7 @@
                 10px 0 80px #00ffff;
                 background-color: black;
             }
-            .orb1:active {
+            .original:active {
                 transition-delay: 20ms;
                 height: 250px;
                 width: 250px;
@@ -65,7 +65,7 @@
                 background-color: black;
             }
             /*orb ====================================*/
-            .orb2 {
+            .sour {
                 display: flex;
                 background-color: black;
                 height: 330px;
@@ -83,7 +83,7 @@
                 -1px 0 1px #FF00D9,
                 1px 0 1px #D9FF00;
             }
-            .orb2:hover {
+            .sour:hover {
                 transition-delay: 20ms;
                 transition-duration: 500ms;
                 height: 380px;
@@ -100,7 +100,7 @@
                 10px 0 80px #D9FF00;
                 background-color: black;
             }
-            .orb2:active {
+            .sour:active {
                 transition-delay: 20ms;
                 height: 250px;
                 width: 250px;
@@ -118,7 +118,7 @@
                 
             }
             /*orb ====================================*/
-            .orb3 {
+            .galaxy {
                 display: flex;
                 background-color: black;
                 height: 330px;
@@ -136,7 +136,7 @@
                 -1px 0 1px #F3190C,
                 1px 0 1px #7300FF;
             }
-            .orb3:hover {
+            .galaxy:hover {
                 transition-delay: 20ms;
                 transition-duration: 500ms;
                 height: 380px;
@@ -153,7 +153,7 @@
                 10px 0 80px #7300FF;
                 background-color: black;
             }
-            .orb3:active {
+            .galaxy:active {
                 transition-delay: 20ms;
                 height: 250px;
                 width: 250px;
@@ -172,8 +172,30 @@
             }
         </style>
 
+<head>
+    <body>
+        <div id="orb" class="original"></div>
+    </body>
+    
+    <div style="position: absolute; top: 10%; left: 90%; right: 0;">
+        <button onclick="changeToThemeOriginal()">Theme Original</button>
+        <br>
+        <button onclick="changeToThemeSour()">Theme Sour</button>
+        <br>
+        <button onclick="changeToThemeGalaxy()">Theme Galaxy</button>
+    </div>
+</head>
 
-        <body>
-            <div class="orb3"></div>
-        </body>
-    </head>
+<script>
+
+function changeToThemeOriginal(){
+    document.getElementById("orb").setAttribute("class","original")
+}
+function changeToThemeSour(){
+    document.getElementById("orb").setAttribute("class","sour")
+}
+function changeToThemeGalaxy(){
+    document.getElementById("orb").setAttribute("class","galaxy")
+}
+
+</script>
