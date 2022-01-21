@@ -180,7 +180,7 @@
                 align-items: center;
                 width: 120px;
                 height: 40px;
-                transition-duration: 0.8s;
+                transition-duration: 0.3s;
                 background-color: white;
             }
             .originaldisplay:hover {
@@ -196,7 +196,7 @@
                 align-items: center;
                 width: 120px;
                 height: 40px;
-                transition-duration: 0.8s;
+                transition-duration: 0.3s;
                 background-color: white;
             }
             .sourdisplay:hover {
@@ -212,7 +212,7 @@
                 align-items: center;
                 width: 120px;
                 height: 40px;
-                transition-duration: 0.8s;
+                transition-duration: 0.3s;
                 background-color: white;
             }
             .galaxydisplay:hover {
@@ -224,18 +224,40 @@
                 top: 10px;
                 height: 50px;
                 width: 70px;
-                background-color: rgb(41, 41, 41);
-                transition-duration: 0.8s;
+                background-color: black;
+                transition-duration: 0.2s;
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 font-family: Arial, Helvetica, sans-serif;
+                border: 1px solid whitesmoke;
             }
+            
             .showsettingsbtn::after {
                 content:"Settings";
             }
 
             .showsettingsbtn:hover {
+                background-color: steelblue;
+            }
+            .projectsbtn {
+                position: absolute;
+                right: 100px;
+                top: 10px;
+                height: 50px;
+                width: 70px;
+                background-color: black;
+                transition-duration: 0.2s;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-family: Arial, Helvetica, sans-serif;
+                border: 1px solid whitesmoke;
+            }
+            .projectsbtn::after {
+                content:"Back";
+            }
+            .projectsbtn:hover {
                 background-color: whitesmoke;
             }
             .noshow {
@@ -248,9 +270,10 @@
         <div id="orb" class="original"></div>
     </body>
 
-    <div class="showsettingsbtn" onclick="showHideSettings()"></div>
+    <div id="settingsbtn" class="showsettingsbtn" onclick="showHideSettings()"></div>
 
     <div id="buttons" class="noshow">
+        <div id="projectsbtn" class="projectsbtn" onclick="window.location.href='index'"></div>
         <div class="originaldisplay" onclick="changeToThemeOriginal()">Theme Original</div>
         <div class="sourdisplay" onclick="changeToThemeSour()">Theme Sour</div>
         <div class="galaxydisplay" onclick="changeToThemeGalaxy()">Theme Galaxy</div>
@@ -270,13 +293,16 @@ function changeToThemeGalaxy(){
     document.getElementById("orb").setAttribute("class","galaxy")
 }
 
-function showHideSettings(){
-    if(document.getElementById("buttons").hasAttribute("class","noshow")){
-        document.getElementById("buttons").removeAttribute("class","noshow")
+document.getElementById("settingsbtn").addEventListener("click", function(){
+    if(document.getElementById("buttons").hasAttribute("class")){
+        document.getElementById("buttons").removeAttribute("class","noshow");
+        document.getElementById("settingsbtn").setAttribute("style","background-color: steelblue;");
     } else {
-        document.getElementById("buttons").setAttribute("class","noshow")
+        document.getElementById("buttons").setAttribute("class","noshow");
+        document.getElementById("settingsbtn").removeAttribute("style","background-color: steelblue;");
     }
-}
+})
+
 
 
 </script>
