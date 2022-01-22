@@ -427,7 +427,7 @@
             }
 
             /* ============================================= */
-            .showsettingsbtn {
+            .settingsbtn {
                 position: absolute;
                 right: 10px;
                 top: 10px;
@@ -442,11 +442,11 @@
                 border: 1px solid whitesmoke;
             }
             
-            .showsettingsbtn::after {
+            .settingsbtn::after {
                 content:"Settings";
             }
 
-            .showsettingsbtn:hover {
+            .settingsbtn:hover {
                 background-color: steelblue;
             }
             .projectsbtn {
@@ -464,7 +464,7 @@
                 border: 1px solid whitesmoke;
             }
             .projectsbtn::after {
-                content:"Back";
+                content:"Projects";
             }
             .projectsbtn:hover {
                 background-color: whitesmoke;
@@ -472,6 +472,43 @@
             .noshow {
                 display: none;
             }
+            /* ================================= */
+            .themesettings {
+                position: absolute;
+                right: 10px;
+                top: 70px;
+                height: 50px;
+                width: 70px;
+                background-color: black;
+                transition-duration: 0.2s;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-family: Arial, Helvetica, sans-serif;
+                border: 1px solid whitesmoke;
+            }
+            .themesettings::after {
+                content:"Themes"
+            }
+
+            .themesettings:hover {
+                background-color: whitesmoke;
+            }
+            .othersettings {
+                position: absolute;
+                right: 10px;
+                top: 130px;
+                height: 50px;
+                width: 70px;
+                background-color: black;
+                transition-duration: 0.2s;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-family: Arial, Helvetica, sans-serif;
+                border: 1px solid whitesmoke;
+            }
+
         </style>
 
 <head>
@@ -479,10 +516,21 @@
         <div id="orb" class="original"></div>
     </body>
 
-    <div id="settingsbtn" class="showsettingsbtn" onclick="showHideSettings()"></div>
+<div id="settings" class="settingsbtn"></div>
 
-    <div id="buttons" class="noshow">
-        <div id="projectsbtn" class="projectsbtn" onclick="window.location.href='index'"></div>
+    <div id="themesettings" class="noshow">
+        <div id="themesbtn" class="themesettings"></div>
+    </div>
+
+    <div id="othersettings" class="noshow">
+        <div id="othersettingsbtn" class="othersettings"></div>
+    </div>
+
+    <div id="projectsbtn" class="noshow">
+        <div id="projectsbtn" class="projectsbtn"></div>
+    </div>
+
+    <div id="themes" class="noshow">
         <div class="originaldisplay" onclick="changeToThemeOriginal()">Original</div>
         <div class="sourdisplay" onclick="changeToThemeSour()">Sour</div>
         <div class="galaxydisplay" onclick="changeToThemeGalaxy()">Galaxy</div>
@@ -494,7 +542,6 @@
 </head>
 
 <script>
-
 function changeToThemeOriginal(){
     document.getElementById("orb").setAttribute("class","original")
 }
@@ -517,14 +564,35 @@ function changeToThemeLime(){
     document.getElementById("orb").setAttribute("class","lime")
 }
 
-document.getElementById("settingsbtn").addEventListener("click", function(){
-    if(document.getElementById("buttons").hasAttribute("class")){
-        document.getElementById("buttons").removeAttribute("class","noshow");
-        document.getElementById("settingsbtn").setAttribute("style","background-color: steelblue;");
+document.getElementById("settings").addEventListener("click", function(){
+    if(document.getElementById("themesettings").hasAttribute("class","noshow")){
+        document.getElementById("themesettings").removeAttribute("class","noshow")
+        document.getElementById("othersettings").removeAttribute("class","noshow")
+        document.getElementById("settings").setAttribute("style","background-color: steelblue;")
     } else {
-        document.getElementById("buttons").setAttribute("class","noshow");
-        document.getElementById("settingsbtn").removeAttribute("style","background-color: steelblue;");
+        document.getElementById("themesettings").setAttribute("class","noshow")
+        document.getElementById("othersettings").setAttribute("class","noshow")
+        document.getElementById("projectsbtn").setAttribute("class","noshow")
+        document.getElementById("themes").setAttribute("class","noshow")
+        document.getElementById("settings").removeAttribute("style","background-color: steelblue;")
+        document.getElementById("themesbtn").removeAttribute("style","background-color: white;")
+        document.getElementById("themesbtn").removeAttribute("style","background-color: white;")
     }
 })
-
+document.getElementById("themesbtn").addEventListener("click", function(){
+    if(document.getElementById("themes").hasAttribute("class","noshow")){
+        document.getElementById("themes").removeAttribute("class","noshow")
+        document.getElementById("themesbtn").setAttribute("style","background-color: white;")
+    } else {
+        document.getElementById("themes").setAttribute("class","noshow")
+        document.getElementById("themesbtn").removeAttribute("style","background-color: white;")
+    }
+})
+document.getElementById("othersettingsbtn").addEventListener("click", function(){
+    if(document.getElementById("projectsbtn").hasAttribute("class","noshow")){
+        document.getElementById("projectsbtn").removeAttribute("class","noshow")
+    } else {
+        document.getElementById("projectsbtn").setAttribute("class","noshow")
+    }
+})
 </script>
