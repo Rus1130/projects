@@ -486,6 +486,12 @@
                 font-family: Arial, Helvetica, sans-serif;
                 border: 1px solid whitesmoke;
             }
+            .dragbtn::after{
+                content:"Drag";
+            }
+            .dragbtn:hover {
+                background-color: white;
+            }
             /* ================================= */
             .themesettings {
                 position: absolute;
@@ -529,12 +535,18 @@
             .othersettings:hover {
                 background-color: whitesmoke;
             }
+            .dragstyle {
+                position: absolute;
+                z-index: 9;
+            }
 
         </style>
 
 <head>
     <body>
-        <div id="orb" class="original"></div>
+        <div id="dummydiv">
+            <div id="orb" class="original"></div>
+        </div>
     </body>
 
 <div id="settings" class="settingsbtn"></div>
@@ -624,4 +636,60 @@ document.getElementById("othersettingsbtn").addEventListener("click", function()
         document.getElementById("othersettingsbtn").removeAttribute("style","background-color: white;")
     }
 })
+
+document.getElementById("dragbtn").addEventListener("click", function(){
+    if(document.getElementById("dummydiv").hasAttribute("style","position: absolute;z-index: 9;")){
+        document.getElementById("dummydiv").setAttribute("style","display: flex; align-items: center; justify-content: center;")
+        document.getElementById("dummydiv").removeAttribute("style","position: absolute;z-index: 9;")
+        document.getElementById("dragbtn").setAttribute("style","background-color: white;")
+    } else {
+        document.getElementById("dummydiv").removeAttribute("style","display: flex; align-items: center; justify-content: center;")
+        document.getElementById("dummydiv").setAttribute("style","position: absolute;z-index: 9;")
+        document.getElementById("dragbtn").removeAttribute("style","background-color: white;")
+    }
+})
+
+//Make the DIV element draggagle:
+dragElement(document.getElementById("dummydiv"));
+
+function dragElement(elmnt) {
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  if (document.getElementById(elmnt.id + "header")) {
+    /* if present, the header is where you move the DIV from:*/
+    document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+  } else {
+    /* otherwise, move the DIV from anywhere inside the DIV:*/
+    elmnt.onmousedown = dragMouseDown;
+  }
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    /* stop moving when mouse button is released:*/
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
 </script>
