@@ -1,0 +1,105 @@
+<style>
+    img {
+        width: 100%;
+        height: 100%;
+    }
+    body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .focus {
+        display: initial;
+    }
+    .unfocus {
+        display: none;
+    }
+    .settingsbtn {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        height: 50px;
+        width: 80px;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 20%;
+        border: 1px black solid;
+        transition-duration: 150ms;
+    }
+    .settingsbtn:hover {
+        opacity: 100%;
+    }
+    .settingbase {
+        position: absolute;
+        right: 10px;
+        top: 70px;
+        height: 50px;
+        width: 80px;
+        background-color: white;
+        border: 1px black solid;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition-duration: 150ms;
+    }
+    .settingtemp {
+        position: absolute;
+        right: 10px;
+        top: 130px;
+        height: 50px;
+        width: 80px;
+        background-color: white;
+        border: 1px black solid;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition-duration: 150ms;
+    }
+</style>
+
+<body>
+    <div id="viewbox">
+        <div id="settings">
+            <div id="settingsbtn" class="settingsbtn">Settings</div>
+            <div id="menu" class="unfocus">
+                <div id="basebtn" class="settingbase">Basemap</div>
+                <div id="tempbtn" class="settingtemp">Temp</div>
+            </div>
+        </div>
+        <div id="layers">
+            <img id="base" class="focus" src="maps\subtN\layers\base.png">
+            <img id="temp" class="unfocus" src="maps\subtN\layers\temp.png">
+        </div>
+    </div>
+    
+</body>
+
+<script>
+    document.getElementById("settingsbtn").addEventListener("click",function(){
+        if(document.getElementById("menu").hasAttribute("class","unfocus")){
+            document.getElementById("menu").removeAttribute("class","unfocus")
+            document.getElementById("settingsbtn").removeAttribute("style","opacity: 100%;")
+        } else {
+            document.getElementById("menu").setAttribute("class","unfocus")
+        }
+    })
+
+    document.getElementById("basebtn").addEventListener("click",function(){
+        if(document.getElementById("base").hasAttribute("class","unfocus")){
+            document.getElementById("base").setAttribute("class","focus")
+            document.getElementById("temp").setAttribute("class","unfocus")
+        } else {
+            return;
+        }
+    })
+
+    document.getElementById("tempbtn").addEventListener("click",function(){
+        if(document.getElementById("temp").hasAttribute("class","unfocus")){
+            document.getElementById("temp").setAttribute("class","focus")
+            document.getElementById("base").setAttribute("class","unfocus")
+        } else {
+            return;
+        }
+    })
+</script>
