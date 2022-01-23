@@ -470,7 +470,7 @@
                 content:"Projects";
             }
             .projectsbtn:hover {
-                background-color: whitesmoke;
+                background-color: #6666ff;
             }
             .noshow {
                 display: none;
@@ -536,23 +536,25 @@
             }
 
             .othersettings:hover {
-                background-color: whitesmoke;
+                background-color: #ff0066;
             }
             .dragstyle {
                 position: absolute;
                 z-index: 9;
             }
 
+
         </style>
 
 <head>
+    
     <body>
         <div id="dummydiv">
             <div id="orb" class="original"></div>
         </div>
     </body>
 
-<div id="settings" class="settingsbtn"></div>
+    <div id="settings" class="settingsbtn"></div>
 
     <div id="themesettings" class="noshow">
         <div id="themesbtn" class="themesettings"></div>
@@ -563,7 +565,7 @@
     </div>
 
     <div id="projectsbtn" class="noshow">
-        <div id="projectsbtn" class="projectsbtn"></div>
+        <div id="projectsbtn" class="projectsbtn" onclick="window.location.href='index'"></div>
     </div>
     <div id="dragbtn" class="noshow">
         <div id="dragbtn" class="dragbtn"></div>
@@ -616,7 +618,7 @@ document.getElementById("settings").addEventListener("click", function(){
         document.getElementById("themes").setAttribute("class","noshow")
         document.getElementById("settings").removeAttribute("style","background-color: steelblue;")
         document.getElementById("themesbtn").removeAttribute("style","background-color: springgreen;")
-        document.getElementById("othersettingsbtn").removeAttribute("style","background-color: white;")
+        document.getElementById("othersettingsbtn").removeAttribute("style","background-color: #ff0066;")
     }
 })
 document.getElementById("themesbtn").addEventListener("click", function(){
@@ -632,11 +634,11 @@ document.getElementById("othersettingsbtn").addEventListener("click", function()
     if(document.getElementById("projectsbtn").hasAttribute("class","noshow")){
         document.getElementById("projectsbtn").removeAttribute("class","noshow")
         document.getElementById("dragbtn").removeAttribute("class","noshow")
-        document.getElementById("othersettingsbtn").setAttribute("style","background-color: white;")
+        document.getElementById("othersettingsbtn").setAttribute("style","background-color: #ff0066;")
     } else {
         document.getElementById("projectsbtn").setAttribute("class","noshow")
         document.getElementById("dragbtn").setAttribute("class","noshow")
-        document.getElementById("othersettingsbtn").removeAttribute("style","background-color: white;")
+        document.getElementById("othersettingsbtn").removeAttribute("style","background-color: #ff0066;")
     }
 })
 
@@ -644,11 +646,9 @@ document.getElementById("dragbtn").addEventListener("click", function(){
     if(document.getElementById("dummydiv").hasAttribute("style","position: absolute;z-index: 9;")){
         document.getElementById("dummydiv").setAttribute("style","display: flex; align-items: center; justify-content: center;")
         document.getElementById("dummydiv").removeAttribute("style","position: absolute;z-index: 9;")
-        document.getElementById("dragbtn").setAttribute("style","background-color: white;")
     } else {
         document.getElementById("dummydiv").removeAttribute("style","display: flex; align-items: center; justify-content: center;")
-        document.getElementById("dummydiv").setAttribute("style","position: absolute;z-index: 9;")
-        document.getElementById("dragbtn").removeAttribute("style","background-color: white;")
+        document.getElementById("dummydiv").setAttribute("style","position: absolute;z-index: 9")
     }
 })
 
