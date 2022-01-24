@@ -1,0 +1,215 @@
+<style>
+    img {
+        width: 100%;
+        height: 100%;
+    }
+    body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        user-select: none;
+    }
+    .focus {
+        display: initial;
+    }
+    .unfocus {
+        display: none;
+    }
+    .settingsbtn {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        height: 50px;
+        width: 95px;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px black solid;
+        transition-duration: 150ms;
+        opacity: 20%;
+    }
+    .settingsbtn:hover {
+        opacity: 100%;
+    }
+    .settingbase {
+        position: absolute;
+        right: 10px;
+        top: 70px;
+        height: 50px;
+        width: 95px;
+        background-color: white;
+        border: 1px black solid;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition-duration: 150ms;
+        opacity: 20%;
+    }
+    .settingbase:hover {
+        opacity: 100%;
+    }
+    .settingtemp {
+        position: absolute;
+        right: 10px;
+        top: 130px;
+        height: 50px;
+        width: 95px;
+        background-color: white;
+        border: 1px black solid;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition-duration: 150ms;
+        opacity: 20%;
+    }
+    .settingtemp:hover {
+        opacity: 100%;
+    }
+    .settingbiome {
+        position: absolute;
+        right: 10px;
+        top: 190px;
+        height: 50px;
+        width: 95px;
+        background-color: white;
+        border: 1px black solid;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition-duration: 150ms;
+        opacity: 20%;
+    }
+    .settingbiome:hover {
+        opacity: 100%;
+    }
+    .settingheight {
+        position: absolute;
+        right: 10px;
+        top: 250px;
+        height: 50px;
+        width: 95px;
+        background-color: white;
+        border: 1px black solid;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition-duration: 150ms;
+        opacity: 20%;
+    }
+    .settingheight:hover {
+        opacity: 100%;
+    }
+    .settingprecip {
+        position: absolute;
+        right: 10px;
+        top: 310px;
+        height: 50px;
+        width: 95px;
+        background-color: white;
+        border: 1px black solid;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition-duration: 150ms;
+        opacity: 20%;
+    }
+    .settingprecip:hover {
+        opacity: 100%;
+    }
+</style>
+
+<meta content="Coloria 2.0 (BETA subtN VIEW)" property="og:title">
+<meta content="https://rus1130.github.io/projects/coloria2/view/subtN-index" property="og:url">
+<body>
+    <div id="viewbox">
+        <div id="settings">
+            <div id="settingsbtn" class="settingsbtn">Settings</div>
+            <div id="menu" class="unfocus">
+                <div id="basebtn" class="settingbase">Basemap</div>
+                <div id="tempbtn" class="settingtemp">Temperature</div>
+                <div id="biomebtn" class="settingbiome">Biomes</div>
+                <div id="heightbtn" class="settingheight">Heightmap</div>
+                <div id="precipbtn" class="settingprecip">Precipitation</div>
+            </div>
+        </div>
+        <div id="layers">
+            <img id="base" class="focus" src="..\maps\subtS\base.png">
+            <img id="temp" class="unfocus" src="..\maps\subtS\temp.png">
+            <img id="biome" class="unfocus" src="..\maps\subtS\biome.png">
+            <img id="height" class="unfocus" src="..\maps\subtS\height.png">
+            <img id="precip" class="unfocus" src="..\maps\subtS\precip.png">
+        </div>
+    </div>
+    
+</body>
+
+<script>
+    document.getElementById("settingsbtn").addEventListener("click",function(){
+        if(document.getElementById("menu").hasAttribute("class","unfocus")){
+            document.getElementById("menu").removeAttribute("class","unfocus")
+            document.getElementById("settingsbtn").removeAttribute("style","opacity: 100%;")
+        } else {
+            document.getElementById("menu").setAttribute("class","unfocus")
+        }
+    })
+
+    document.getElementById("basebtn").addEventListener("click",function(){
+        if(document.getElementById("base").hasAttribute("class","unfocus")){
+            document.getElementById("base").setAttribute("class","focus")
+            document.getElementById("temp").setAttribute("class","unfocus")
+            document.getElementById("biome").setAttribute("class","unfocus")
+            document.getElementById("height").setAttribute("class","unfocus")
+            document.getElementById("precip").setAttribute("class","unfocus")
+        } else {
+            return;
+        }
+    })
+
+    document.getElementById("tempbtn").addEventListener("click",function(){
+        if(document.getElementById("temp").hasAttribute("class","unfocus")){
+            document.getElementById("base").setAttribute("class","unfocus")
+            document.getElementById("temp").setAttribute("class","focus")
+            document.getElementById("biome").setAttribute("class","unfocus")
+            document.getElementById("height").setAttribute("class","unfocus")
+            document.getElementById("precip").setAttribute("class","unfocus")
+        } else {
+            return;
+        }
+    })
+
+    document.getElementById("biomebtn").addEventListener("click",function(){
+        if(document.getElementById("temp").hasAttribute("class","unfocus")){
+            document.getElementById("base").setAttribute("class","unfocus")
+            document.getElementById("temp").setAttribute("class","unfocus")
+            document.getElementById("biome").setAttribute("class","focus")
+            document.getElementById("height").setAttribute("class","unfocus")
+            document.getElementById("precip").setAttribute("class","unfocus")
+        } else {
+            return;
+        }
+    })
+
+    document.getElementById("heightbtn").addEventListener("click",function(){
+        if(document.getElementById("temp").hasAttribute("class","unfocus")){
+            document.getElementById("base").setAttribute("class","unfocus")
+            document.getElementById("temp").setAttribute("class","unfocus")
+            document.getElementById("biome").setAttribute("class","unfocus")
+            document.getElementById("height").setAttribute("class","focus")
+            document.getElementById("precip").setAttribute("class","unfocus")
+        } else {
+            return;
+        }
+    })
+
+    document.getElementById("precipbtn").addEventListener("click",function(){
+        if(document.getElementById("temp").hasAttribute("class","unfocus")){
+            document.getElementById("base").setAttribute("class","unfocus")
+            document.getElementById("temp").setAttribute("class","unfocus")
+            document.getElementById("biome").setAttribute("class","unfocus")
+            document.getElementById("height").setAttribute("class","unfocus")
+            document.getElementById("precip").setAttribute("class","focus")
+        } else {
+            return;
+        }
+    })
+</script>
