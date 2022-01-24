@@ -47,23 +47,6 @@
     .settingbase:hover {
         opacity: 100%;
     }
-    .settingtemp {
-        position: absolute;
-        right: 10px;
-        top: 130px;
-        height: 50px;
-        width: 80px;
-        background-color: white;
-        border: 1px black solid;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition-duration: 150ms;
-        opacity: 20%;
-    }
-    .settingtemp:hover {
-        opacity: 100%;
-    }
 </style>
 
 <body>
@@ -72,12 +55,10 @@
             <div id="settingsbtn" class="settingsbtn">Settings</div>
             <div id="menu" class="unfocus">
                 <div id="basebtn" class="settingbase">Basemap</div>
-                <div id="tempbtn" class="settingtemp">Temp</div>
             </div>
         </div>
         <div id="layers">
-            <img id="base" class="focus" src="..\maps\subtN\base.png">
-            <img id="temp" class="unfocus" src="..\maps\subtN\temp.png">
+            <img id="base" class="focus" src="..\maps\subtS-reco\base.png">
         </div>
     </div>
     
@@ -96,16 +77,6 @@
     document.getElementById("basebtn").addEventListener("click",function(){
         if(document.getElementById("base").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","focus")
-            document.getElementById("temp").setAttribute("class","unfocus")
-        } else {
-            return;
-        }
-    })
-
-    document.getElementById("tempbtn").addEventListener("click",function(){
-        if(document.getElementById("temp").hasAttribute("class","unfocus")){
-            document.getElementById("temp").setAttribute("class","focus")
-            document.getElementById("base").setAttribute("class","unfocus")
         } else {
             return;
         }
