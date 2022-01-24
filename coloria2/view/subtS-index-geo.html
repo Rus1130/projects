@@ -28,6 +28,23 @@
         transition-duration: 150ms;
         opacity: 20%;
     }
+    .backbtn {
+        position: absolute;
+        right: 120px;
+        top: 10px;
+        height: 50px;
+        width: 95px;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px black solid;
+        transition-duration: 150ms;
+        opacity: 20%;
+    }
+    .backbtn:hover {
+        opacity: 100%;
+    }
     .settingsbtn:hover {
         opacity: 100%;
     }
@@ -123,6 +140,7 @@
         <div id="settings">
             <div id="settingsbtn" class="settingsbtn">Settings</div>
             <div id="menu" class="unfocus">
+                <div id="backbtn" class="backbtn" onclick="window.location='menu'">Back</div>
                 <div id="basebtn" class="settingbase">Basemap</div>
                 <div id="tempbtn" class="settingtemp">Temperature</div>
                 <div id="biomebtn" class="settingbiome">Biomes</div>
