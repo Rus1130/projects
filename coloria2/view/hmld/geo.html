@@ -183,6 +183,8 @@
 </body>
 
 <script>
+    screen.orientation.lock('landscape');
+    
     document.getElementById("settingsbtn").addEventListener("click",function(){
         if(document.getElementById("menu").hasAttribute("class","unfocus")){
             document.getElementById("menu").removeAttribute("class","unfocus")
