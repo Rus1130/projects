@@ -116,7 +116,7 @@
     .settingutils:hover {
         opacity: 100%;
     }
-    .settingearthmin {
+    .settingcmnmtl {
         position: absolute;
         right: 10px;
         top: 310px;
@@ -130,7 +130,24 @@
         transition-duration: 150ms;
         opacity: 20%;
     }
-    .settingearthmin:hover {
+    .settingcmnmtl:hover {
+        opacity: 100%;
+    }
+    .settingraremtl {
+        position: absolute;
+        right: 10px;
+        top: 370px;
+        height: 50px;
+        width: 120px;
+        background-color: white;
+        border: 1px black solid;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition-duration: 150ms;
+        opacity: 20%;
+    }
+    .settingraremtl:hover {
         opacity: 100%;
     }
     .footnote {
@@ -153,7 +170,8 @@
                 <div id="foodbtn" class="settingfood">Common Foods</div>
                 <div id="spicesbtn" class="settingspices">Spices</div>
                 <div id="utilsbtn" class="settingutils">Utilities</div>
-                <div id="earthminbtn" class="settingearthmin">Earth Minerals</div>
+                <div id="cmnmtlbtn" class="settingcmnmtl">Common Metals</div>
+                <div id="raremtlbtn" class="settingraremtl">Rare Metals</div>
             </div>
         </div>
         <div id="layers">
@@ -161,9 +179,10 @@
             <img id="food" class="unfocus" src="..\..\maps\hmld-reso\food.png">
             <img id="spices" class="unfocus" src="..\..\maps\hmld-reso\spices.png">
             <img id="utils" class="unfocus" src="..\..\maps\hmld-reso\utils.png">
-            <img id="earthmin" class="unfocus" src="..\..\maps\hmld-reso\earthmin.png">
+            <img id="cmnmtl" class="unfocus" src="..\..\maps\hmld-reso\cmnmtl.png">
+            <img id="raremtl" class="unfocus" src="..\..\maps\hmld-reso\raremtl.png">
         </div>
-        <div id="footnote" class="footnote">Gargantuan thanks to Matz for providing the resource maps!</div>
+        <div id="footnote" class="footnote">Huge thanks to Matz for providing the resource maps!</div>
     </div>
 </body>
 
@@ -183,7 +202,8 @@
             document.getElementById("food").setAttribute("class","unfocus")
             document.getElementById("spices").setAttribute("class","unfocus")
             document.getElementById("utils").setAttribute("class","unfocus")
-            document.getElementById("earthmin").setAttribute("class","unfocus")
+            document.getElementById("cmnmtl").setAttribute("class","unfocus")
+            document.getElementById("raremtl").setAttribute("class","unfocus")
         } else {
             return;
         }
@@ -195,7 +215,8 @@
             document.getElementById("food").setAttribute("class","focus")
             document.getElementById("spices").setAttribute("class","unfocus")
             document.getElementById("utils").setAttribute("class","unfocus")
-            document.getElementById("earthmin").setAttribute("class","unfocus")
+            document.getElementById("cmnmtl").setAttribute("class","unfocus")
+            document.getElementById("raremtl").setAttribute("class","unfocus")
         } else {
             return;
         }
@@ -207,7 +228,8 @@
             document.getElementById("food").setAttribute("class","unfocus")
             document.getElementById("spices").setAttribute("class","focus")
             document.getElementById("utils").setAttribute("class","unfocus")
-            document.getElementById("earthmin").setAttribute("class","unfocus")
+            document.getElementById("cmnmtl").setAttribute("class","unfocus")
+            document.getElementById("raremtl").setAttribute("class","unfocus")
         } else {
             return;
         }
@@ -219,19 +241,34 @@
             document.getElementById("food").setAttribute("class","unfocus")
             document.getElementById("spices").setAttribute("class","unfocus")
             document.getElementById("utils").setAttribute("class","focus")
-            document.getElementById("earthmin").setAttribute("class","unfocus")
+            document.getElementById("cmnmtl").setAttribute("class","unfocus")
+            document.getElementById("raremtl").setAttribute("class","unfocus")
         } else {
             return;
         }
     })
 
-    document.getElementById("earthminbtn").addEventListener("click",function(){
+    document.getElementById("cmnmtlbtn").addEventListener("click",function(){
         if(document.getElementById("food").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","unfocus")
             document.getElementById("food").setAttribute("class","unfocus")
             document.getElementById("spices").setAttribute("class","unfocus")
             document.getElementById("utils").setAttribute("class","unfocus")
-            document.getElementById("earthmin").setAttribute("class","focus")
+            document.getElementById("cmnmtl").setAttribute("class","focus")
+            document.getElementById("raremtl").setAttribute("class","unfocus")
+        } else {
+            return;
+        }
+    })
+
+    document.getElementById("raremtlbtn").addEventListener("click",function(){
+        if(document.getElementById("food").hasAttribute("class","unfocus")){
+            document.getElementById("base").setAttribute("class","unfocus")
+            document.getElementById("food").setAttribute("class","unfocus")
+            document.getElementById("spices").setAttribute("class","unfocus")
+            document.getElementById("utils").setAttribute("class","unfocus")
+            document.getElementById("cmnmtl").setAttribute("class","unfocus")
+            document.getElementById("raremtl").setAttribute("class","focus")
         } else {
             return;
         }
