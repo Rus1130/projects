@@ -5,6 +5,79 @@ h1 {
     font-family: Arial, Helvetica, sans-serif;
     user-select: none;
 }
+.grid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50vw;
+    height: 90px;
+    display: grid;
+    grid-template-columns: 290px 290px 290px;
+    position: absolute;
+    top:49%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    column-gap: 10px;
+}
+.toptext {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 38%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    text-align: center;
+}
+.geobtn {
+    font-family: Arial, Helvetica, sans-serif;
+    user-select: none;
+    height: 70px;
+    width: 290px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition-duration: 0.15s;
+    border: 1px solid black;
+    cursor: pointer;
+}
+.geobtn:hover {
+    background-color: #F9C26D;
+    font-size: 16pt;
+}
+.resobtn {
+    font-family: Arial, Helvetica, sans-serif;
+    user-select: none;
+    height: 70px;
+    width: 290px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition-duration: 0.15s;
+    border: 1px solid black;
+    cursor: pointer;
+}
+.resobtn:hover {
+    background-color: #FC7E7E;
+    font-size: 16pt;
+}
+.backbtn {
+    font-family: Arial, Helvetica, sans-serif;
+    user-select: none;
+    height: 70px;
+    width: 290px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition-duration: 0.15s;
+    border: 1px solid black;
+    cursor: pointer;
+}
+.backbtn:hover {
+    background-color: #F68EF6;
+    font-size: 16pt;
+}
 </style>
 <head>
     <title>Coloria 2.0 Homeland Menu</title>
@@ -16,8 +89,10 @@ h1 {
     <meta property="og:image:height" content="362">
 </head>
 <body>
-    <h1>Homeland Menu (temporary)</h1>
-    <button onclick="window.location.href='https://rus1130.github.io/projects/coloria2/view/hmld/geo'">Homeland Geography Map</button>
-    <button onclick="window.location='https://rus1130.github.io/projects/coloria2/view/hmld/reso'">Homeland Resource Map</button>
-    <button onclick="window.location='https://rus1130.github.io/projects/coloria2/menu'">Back to menu</button>
+    <h1 class="toptext">Homeland Menu</h1>
+    <div class="grid">
+        <div class="geobtn" onclick="window.location.href='https://rus1130.github.io/projects/coloria2/view/hmld/geo'">Homeland Geography Map</div>
+        <div class="resobtn" onclick="window.location='https://rus1130.github.io/projects/coloria2/view/hmld/reso'">Homeland Resource Map</div>
+        <div class="backbtn" onclick="window.location='https://rus1130.github.io/projects/coloria2/menu'">Back to menu</div>
+    </div>
 </body>
