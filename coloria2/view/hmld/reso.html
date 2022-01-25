@@ -4,8 +4,9 @@
         height: 100%;
     }
     body {
-        margin: 0;
         font-family: Arial, Helvetica, sans-serif;
+        user-select: none;
+        margin: 0;
     }
     .focus {
         display: initial;
@@ -81,12 +82,30 @@
     .settingfood:hover {
         opacity: 100%;
     }
+    .settingutils {
+        position: absolute;
+        right: 10px;
+        top: 190px;
+        height: 50px;
+        width: 120px;
+        background-color: white;
+        border: 1px black solid;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition-duration: 150ms;
+        opacity: 20%;
+    }
+    .settingutils:hover {
+        opacity: 100%;
+    }
     .footnote {
         position: absolute;
-        bottom: 10px;
         width: 100vw;
         height: 10px;
+        bottom: 10px;
         text-align: center;
+
     }
 </style>
 
@@ -98,11 +117,13 @@
                 <div id="backbtn" class="backbtn" onclick="window.location='https://rus1130.github.io/projects/coloria2/view/hmld-menu'">Back</div>
                 <div id="basebtn" class="settingbase">Basemap</div>
                 <div id="foodbtn" class="settingfood">Common Foods</div>
+                <div id="utilsbtn" class="settingutils">Utilities</div>
             </div>
         </div>
         <div id="layers">
             <img id="base" class="focus" src="..\..\maps\hmld-reso\base.png">
             <img id="food" class="unfocus" src="..\..\maps\hmld-reso\food.png">
+            <img id="utils" class="unfocus" src="..\..\maps\hmld-reso\utils.png">
         </div>
         <div id="footnote" class="footnote">Gargantuan thanks to Matz for providing the resource maps!</div>
     </div>
@@ -122,6 +143,7 @@
         if(document.getElementById("base").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","focus")
             document.getElementById("food").setAttribute("class","unfocus")
+            document.getElementById("utils").setAttribute("class","unfocus")
         } else {
             return;
         }
@@ -131,6 +153,17 @@
         if(document.getElementById("food").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","unfocus")
             document.getElementById("food").setAttribute("class","focus")
+            document.getElementById("utils").setAttribute("class","unfocus")
+        } else {
+            return;
+        }
+    })
+
+    document.getElementById("utilsbtn").addEventListener("click",function(){
+        if(document.getElementById("food").hasAttribute("class","unfocus")){
+            document.getElementById("base").setAttribute("class","unfocus")
+            document.getElementById("food").setAttribute("class","unfocus")
+            document.getElementById("utils").setAttribute("class","focus")
         } else {
             return;
         }
