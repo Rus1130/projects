@@ -82,7 +82,7 @@
     .settingfood:hover {
         opacity: 100%;
     }
-    .settingspices {
+    .settingmeds {
         position: absolute;
         right: 10px;
         top: 190px;
@@ -96,7 +96,7 @@
         transition-duration: 150ms;
         opacity: 20%;
     }
-    .settingspices:hover {
+    .settingmeds:hover {
         opacity: 100%;
     }
     .settingutils {
@@ -170,7 +170,7 @@
                 <div id="backbtn" class="backbtn" onclick="window.location='https://rus1130.github.io/projects/coloria2/view/hmld-menu'">Back</div>
                 <div id="basebtn" class="settingbase">Basemap</div>
                 <div id="foodbtn" class="settingfood">Common Foods</div>
-                <div id="spicesbtn" class="settingspices">Spices</div>
+                <div id="medsbtn" class="settingmeds">Medicinals</div>
                 <div id="utilsbtn" class="settingutils">Utilities</div>
                 <div id="cmnmtlbtn" class="settingcmnmtl">Common Metals</div>
                 <div id="raremtlbtn" class="settingraremtl">Rare Metals</div>
@@ -179,7 +179,7 @@
         <div id="layers">
             <img id="base" class="focus" src="..\..\maps\hmld-reso\base.png">
             <img id="food" class="unfocus" src="..\..\maps\hmld-reso\food.png">
-            <img id="spices" class="unfocus" src="..\..\maps\hmld-reso\spices.png">
+            <img id="meds" class="unfocus" src="..\..\maps\hmld-reso\meds.png">
             <img id="utils" class="unfocus" src="..\..\maps\hmld-reso\utils.png">
             <img id="cmnmtl" class="unfocus" src="..\..\maps\hmld-reso\cmnmtl.png">
             <img id="raremtl" class="unfocus" src="..\..\maps\hmld-reso\raremtl.png">
@@ -202,7 +202,7 @@
         if(document.getElementById("base").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","focus")
             document.getElementById("food").setAttribute("class","unfocus")
-            document.getElementById("spices").setAttribute("class","unfocus")
+            document.getElementById("meds").setAttribute("class","unfocus")
             document.getElementById("utils").setAttribute("class","unfocus")
             document.getElementById("cmnmtl").setAttribute("class","unfocus")
             document.getElementById("raremtl").setAttribute("class","unfocus")
@@ -215,7 +215,7 @@
         if(document.getElementById("food").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","unfocus")
             document.getElementById("food").setAttribute("class","focus")
-            document.getElementById("spices").setAttribute("class","unfocus")
+            document.getElementById("meds").setAttribute("class","unfocus")
             document.getElementById("utils").setAttribute("class","unfocus")
             document.getElementById("cmnmtl").setAttribute("class","unfocus")
             document.getElementById("raremtl").setAttribute("class","unfocus")
@@ -224,11 +224,11 @@
         }
     })
 
-    document.getElementById("spicesbtn").addEventListener("click",function(){
+    document.getElementById("medsbtn").addEventListener("click",function(){
         if(document.getElementById("food").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","unfocus")
             document.getElementById("food").setAttribute("class","unfocus")
-            document.getElementById("spices").setAttribute("class","focus")
+            document.getElementById("meds").setAttribute("class","focus")
             document.getElementById("utils").setAttribute("class","unfocus")
             document.getElementById("cmnmtl").setAttribute("class","unfocus")
             document.getElementById("raremtl").setAttribute("class","unfocus")
@@ -241,7 +241,7 @@
         if(document.getElementById("food").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","unfocus")
             document.getElementById("food").setAttribute("class","unfocus")
-            document.getElementById("spices").setAttribute("class","unfocus")
+            document.getElementById("meds").setAttribute("class","unfocus")
             document.getElementById("utils").setAttribute("class","focus")
             document.getElementById("cmnmtl").setAttribute("class","unfocus")
             document.getElementById("raremtl").setAttribute("class","unfocus")
@@ -254,7 +254,7 @@
         if(document.getElementById("food").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","unfocus")
             document.getElementById("food").setAttribute("class","unfocus")
-            document.getElementById("spices").setAttribute("class","unfocus")
+            document.getElementById("meds").setAttribute("class","unfocus")
             document.getElementById("utils").setAttribute("class","unfocus")
             document.getElementById("cmnmtl").setAttribute("class","focus")
             document.getElementById("raremtl").setAttribute("class","unfocus")
@@ -267,7 +267,7 @@
         if(document.getElementById("food").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","unfocus")
             document.getElementById("food").setAttribute("class","unfocus")
-            document.getElementById("spices").setAttribute("class","unfocus")
+            document.getElementById("meds").setAttribute("class","unfocus")
             document.getElementById("utils").setAttribute("class","unfocus")
             document.getElementById("cmnmtl").setAttribute("class","unfocus")
             document.getElementById("raremtl").setAttribute("class","focus")
