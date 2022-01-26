@@ -148,16 +148,17 @@
         opacity: 100%;
         cursor: pointer;
     }
-    @media screen and (orientation: portrait) and (min-width: 900px) and (min-height: 820px){
+    @media screen and (orientation: portrait){
         html {
-            transform: rotate(-90deg);
-            transform-origin: left top;
+            object-fit: contain;
+            transform: rotate(90deg);
+            transform-origin: right top;
             width: 100vh;
             height: 100vw;
             overflow-x: hidden;
             position: absolute;
             top: 100%;
-            left: 0;
+            right: 0;
         }
     }
 </style>
@@ -186,7 +187,7 @@
             </div>
         </div>
         <div id="layers">
-            <img id="base" class="focus" src="..\..\maps\hmld-geo\base.png">
+            <img id="base" class="focus" style="object-fit: contain;" src="..\..\maps\hmld-geo\base.png">
             <img id="temp" class="unfocus" src="..\..\maps\hmld-geo\temp.png">
             <img id="biome" class="unfocus" src="..\..\maps\hmld-geo\biome.png">
             <img id="height" class="unfocus" src="..\..\maps\hmld-geo\height.png">
