@@ -252,4 +252,23 @@
             return;
         }
     })
+
+    let w = window.screen.height;
+
+    window.setInterval(function(){
+        if(window.innerWidth < 1000 && window.innerHeight < 700){
+            document.getElementById("base").setAttribute("style", "object-fit: contain;")
+            document.getElementById("temp").setAttribute("style", "object-fit: contain;")
+            document.getElementById("biome").setAttribute("style", "object-fit: contain;")
+            document.getElementById("height").setAttribute("style", "object-fit: contain;")
+            document.getElementById("precip").setAttribute("style", "object-fit: contain;")
+        } else {
+            document.getElementById("base").removeAttribute("style", "object-fit: contain;")
+            document.getElementById("temp").removeAttribute("style", "object-fit: contain;")
+            document.getElementById("biome").removeAttribute("style", "object-fit: contain;")
+            document.getElementById("height").removeAttribute("style", "object-fit: contain;")
+            document.getElementById("precip").removeAttribute("style", "object-fit: contain;")
+        }
+    },10)
+
 </script>
