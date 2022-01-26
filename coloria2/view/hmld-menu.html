@@ -79,6 +79,18 @@ h1 {
     background-color: #F68EF6;
     font-size: 16pt;
 }
+@media screen and (orientation: portrait) and (min-width: 900px) and (min-height: 820px){
+        html {
+            transform: rotate(-90deg);
+            transform-origin: left top;
+            width: 100vh;
+            height: 100vw;
+            overflow-x: hidden;
+            position: absolute;
+            top: 100%;
+            left: 0;
+        }
+    }
 </style>
 <head>
     <title>Coloria 2.0 Homeland Menu</title>

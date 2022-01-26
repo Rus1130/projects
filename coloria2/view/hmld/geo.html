@@ -148,7 +148,20 @@
         opacity: 100%;
         cursor: pointer;
     }
+    @media screen and (orientation: portrait) and (min-width: 900px) and (min-height: 820px){
+        html {
+            transform: rotate(-90deg);
+            transform-origin: left top;
+            width: 100vh;
+            height: 100vw;
+            overflow-x: hidden;
+            position: absolute;
+            top: 100%;
+            left: 0;
+        }
+    }
 </style>
+<!DOCTYPE html>
 <head>
     <title>Coloria 2.0 Homeland Geo Map</title>
     <link rel="shortcut icon" type="image/jpg" href="https://rus1130.github.io/projects/coloria2/view/images/metaimg.png"/>
@@ -184,6 +197,7 @@
 </body>
 
 <script>
+
     document.getElementById("settingsbtn").addEventListener("click",function(){
         if(document.getElementById("menu").hasAttribute("class","unfocus")){
             document.getElementById("menu").removeAttribute("class","unfocus")
@@ -252,23 +266,4 @@
             return;
         }
     })
-
-    let w = window.screen.height;
-
-    window.setInterval(function(){
-        if(window.innerWidth < 1000 && window.innerHeight < 700){
-            document.getElementById("base").setAttribute("style", "object-fit: contain;")
-            document.getElementById("temp").setAttribute("style", "object-fit: contain;")
-            document.getElementById("biome").setAttribute("style", "object-fit: contain;")
-            document.getElementById("height").setAttribute("style", "object-fit: contain;")
-            document.getElementById("precip").setAttribute("style", "object-fit: contain;")
-        } else {
-            document.getElementById("base").removeAttribute("style", "object-fit: contain;")
-            document.getElementById("temp").removeAttribute("style", "object-fit: contain;")
-            document.getElementById("biome").removeAttribute("style", "object-fit: contain;")
-            document.getElementById("height").removeAttribute("style", "object-fit: contain;")
-            document.getElementById("precip").removeAttribute("style", "object-fit: contain;")
-        }
-    },10)
-
 </script>
