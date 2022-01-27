@@ -134,12 +134,41 @@ body {
     <meta property="og:image:height" content="362">
 </head>
 <body>
-    <h1 class="toptext">Welcome to the official Coloria 2.0 website!</h1>
-    <p class="midtext">Continent List:</p>
+    <select data-i18n-switcher id="switcher" onChange="update()" style="width: 125px; height: 25px; font-family: Arial, Helvetica, sans-serif;">
+        <option value="en">English</option>
+        <option value="es">Español (MX)</option>
+        <option value="pt-br">Português (BR)</option>
+        <option value="de">Deutsch</option>
+        <option value="fr">Français</option>
+        <option value="ve-s">Tiếng Việt (NAM)</option>
+    </select>
+        <p id="switchVal"></p>
+    <h1 class="toptext" data-i18n-key="welcome">Welcome to the official Coloria 2.0 website!</h1>
+    <p class="midtext" data-i18n-key="c-list">Continent List:</p>
     <div class="grid">
-        <div class="hmldbtn" onclick="window.location='https://rus1130.github.io/projects/coloria2/view/hmld-menu'">Homeland</div>
-        <div class="unbtn1">Undiscovered</div>
-        <div class="unbtn2">Undiscovered</div>
+        <div data-i18n-key="homeland" class="hmldbtn" onclick="window.location='https://rus1130.github.io/projects/coloria2/view/hmld-menu'">Homeland</div>
+        <div data-i18n-key="uncont" class="unbtn1">Undiscovered</div>
+        <div data-i18n-key="uncont" class="unbtn2">Undiscovered</div>
     </div>
-    <div class="footnote">Maps are best viewed in landscape.</div>
+    <div class="footnote" data-i18n-key="footnote">Maps are best viewed in landscape</div>
 </body>
+<script>
+
+function update(){
+
+    lang = JSON.parse(window.localStorage.getItem('lang'));
+
+    var lang = JSON.parse(window.localStorage.getItem('switchVal'));
+
+    var select = document.getElementById('switcher');
+    var option = select.options[select.selectedIndex];
+
+    document.getElementById('switchVal').value = option.value;
+    console.log(option.value)
+
+    localStorage.setItem('lang', JSON.stringify(option.value));
+}
+
+update();
+
+</script>
