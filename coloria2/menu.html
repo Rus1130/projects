@@ -135,7 +135,7 @@ body {
     <script src="localization.js"></script>
 </head>
 <body>
-    <select data-i18n-switcher id="switcher" onChange="update()" style="width: 125px; height: 25px; font-family: Arial, Helvetica, sans-serif;">
+    <select data-i18n-switcher id="switcher" style="width: 125px; height: 25px; font-family: Arial, Helvetica, sans-serif;">
         <option value="en">English</option>
         <option value="es">Español (MX)</option>
         <option value="de">Deutsch</option>
@@ -147,7 +147,6 @@ body {
         <option value="sz">Sорзијаьде</option>
         <option value="ke">Kielu</option>
     </select>
-        <p id="switchVal"></p>
     <h1 class="toptext" data-i18n-key="welcome">Welcome to the official Coloria 2.0 website!</h1>
     <p class="midtext" data-i18n-key="c-list">Continent List:</p>
     <div class="grid">
@@ -160,21 +159,11 @@ body {
 
 <script>
 
-function update(){
-
-    lang = JSON.parse(window.localStorage.getItem('lang'));
-
-    var lang = JSON.parse(window.localStorage.getItem('switchVal'));
-
-    var select = document.getElementById('switcher');
-    var option = select.options[select.selectedIndex];
-
-    document.getElementById('switchVal').value = option.value;
-    console.log(option.value)
-
-    localStorage.setItem('lang', JSON.stringify(option.value));
-}
-
-update();
+    document.getElementById("switcher").addEventListener("change",function(){
+        var e = document.getElementById("switcher");
+        var lang = e.value;
+        localStorage.setItem('currentLang', JSON.stringify(lang));
+        console.log(lang)
+    })
 
 </script>

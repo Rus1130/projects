@@ -3,5 +3,8 @@
     "c-list":"Kontinentliste:",
     "homeland":"Homeland",
     "uncont":"Unentdeckt",
-    "footnote":"Karten werden am besten im Querformat angezeigt"
+    "footnote":"Karten werden am besten im Querformat angezeigt",
+    "geo-btn":"g",
+    "reso-btn":"g",
+    "back-btn":"g"
 }

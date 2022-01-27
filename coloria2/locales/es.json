@@ -3,5 +3,8 @@
     "c-list":"Lista de Continentes:",
     "homeland":"Homeland",
     "uncont":"Todavía por Descubrir",
-    "footnote":"Los mapas se ven mejor en modo panorámico"
+    "footnote":"Los mapas se ven mejor en modo panorámico",
+    "geo-btn":"g",
+    "reso-btn":"g",
+    "back-btn":"g"
 }

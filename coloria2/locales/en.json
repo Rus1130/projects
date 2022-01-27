@@ -3,5 +3,8 @@
     "c-list":"Continent List:",
     "homeland":"Homeland",
     "uncont":"Undiscovered",
-    "footnote":"Maps are best viewed in landscape"
+    "footnote":"Maps are best viewed in landscape",
+    "geo-btn":"Homeland Geography Map",
+    "reso-btn":"Homeland Resource Map",
+    "back-btn":"Back"
 }

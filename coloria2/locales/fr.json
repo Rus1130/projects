@@ -3,5 +3,8 @@
     "c-list":"Liste des Continents:",
     "homeland":"Homeland",
     "uncont":"Non découvert",
-    "footnote":"Des cartes sont mieux vues en format paysage"
+    "footnote":"Des cartes sont mieux vues en format paysage",
+    "geo-btn":"g",
+    "reso-btn":"g",
+    "back-btn":"g"
 }

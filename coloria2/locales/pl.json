@@ -3,5 +3,8 @@
     "c-list":"Lista kontynentów:",
     "homeland":"Homeland",
     "uncont":"Nieodkryte",
-    "footnote":"Mapy najlepiej oglądać w trybie poziomym"
+    "footnote":"Mapy najlepiej oglądać w trybie poziomym",
+    "geo-btn":"g",
+    "reso-btn":"g",
+    "back-btn":"g"
 }

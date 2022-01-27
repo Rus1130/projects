@@ -1,6 +1,5 @@
-
 // The locale our app first shows
-const defaultLocale = "en";
+let defaultLocale = JSON.parse(window.localStorage.getItem('currentLang'));
 
 // The active locale
 let locale;
