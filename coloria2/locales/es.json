@@ -7,5 +7,12 @@
     "hmld-toptext":"Menú de Homeland",
     "geo-btn":"Mapa Geográfico de Homeland",
     "reso-btn":"Mapa de Recursos de Homeland",
-    "back-btn":"Volver al Menú"
+    "back-btn":"Volver al Menú",
+    "settings":"Ajustes",
+    "back":"Volver",
+    "base":"Base",
+    "biome":"Biomas",
+    "temp":"Temperatura",
+    "height":"Mapa de Elevación",
+    "precip":"Precipitación"
 }

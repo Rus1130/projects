@@ -7,5 +7,12 @@
     "hmld-toptext":"Menü Homeland",
     "geo-btn":"Geografische Karte des Homeland",
     "reso-btn":"Homeland-Ressourcenkarte",
-    "back-btn":"Zurück zum Menü"
+    "back-btn":"Zurück zum Menü",
+    "settings":"Einstellungen",
+    "back":"Zurück",
+    "base":"Grundkarte",
+    "biome":"Biome",
+    "temp":"Temperatur",
+    "height":"Höhenkarte",
+    "precip":"Niederschlag"
 }

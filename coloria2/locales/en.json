@@ -7,5 +7,12 @@
     "hmld-toptext":"Homeland Menu",
     "geo-btn":"Homeland Geography Map",
     "reso-btn":"Homeland Resource Map",
-    "back-btn":"Back to Menu"
+    "back-btn":"Back to Menu",
+    "settings":"Settings",
+    "back":"Back",
+    "base":"Basemap",
+    "biome":"Biomes",
+    "temp":"Temperature",
+    "height":"Heightmap",
+    "precip":"Precipitation"
 }

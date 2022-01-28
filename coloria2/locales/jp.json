@@ -7,5 +7,12 @@
     "hmld-toptext":"ホームランドのメニュー",
     "geo-btn":"ホームランドの地理地図",
     "reso-btn":"ホームランドの資源地図",
-    "back-btn":"メニューに戻る"
+    "back-btn":"メニューに戻る",
+    "settings":"設定",
+    "back":"戻",
+    "base":"ベース",
+    "biome":"生物研",
+    "temp":"温度",
+    "height":"地形図",
+    "precip":"降水量"
 }
