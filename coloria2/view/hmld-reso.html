@@ -128,7 +128,7 @@
         opacity: 100%;
         cursor: pointer;
     }
-    .settingcmnmtl {
+    .settingcmnmrl {
         position: absolute;
         right: 10px;
         top: 310px;
@@ -143,11 +143,11 @@
         opacity: 20%;
         cursor: pointer;
     }
-    .settingcmnmtl:hover {
+    .settingcmnmrl:hover {
         opacity: 100%;
         cursor: pointer;
     }
-    .settingraremtl {
+    .settingraremrl {
         position: absolute;
         right: 10px;
         top: 370px;
@@ -162,7 +162,7 @@
         opacity: 20%;
         cursor: pointer;
     }
-    .settingraremtl:hover {
+    .settingraremrl:hover {
         opacity: 100%;
         cursor: pointer;
     }
@@ -208,8 +208,8 @@
                 <div id="foodbtn" class="settingfood">Common Foods</div>
                 <div id="medsbtn" class="settingmeds">Medicinals</div>
                 <div id="utilsbtn" class="settingutils">Utilities</div>
-                <div id="cmnmtlbtn" class="settingcmnmtl">Common Metals</div>
-                <div id="raremtlbtn" class="settingraremtl">Rare Metals</div>
+                <div id="cmnmrlbtn" class="settingcmnmrl">Common Minerals</div>
+                <div id="raremrlbtn" class="settingraremrl">Rare Minerals</div>
             </div>
         </div>
         <div id="layers">
@@ -217,8 +217,8 @@
             <img id="food" class="unfocus" src="..\maps\hmld-reso\food.png">
             <img id="meds" class="unfocus" src="..\maps\hmld-reso\meds.png">
             <img id="utils" class="unfocus" src="..\maps\hmld-reso\utils.png">
-            <img id="cmnmtl" class="unfocus" src="..\maps\hmld-reso\cmnmtl.png">
-            <img id="raremtl" class="unfocus" src="..\maps\hmld-reso\raremtl.png">
+            <img id="cmnmrl" class="unfocus" src="..\maps\hmld-reso\cmnmrl.png">
+            <img id="raremrl" class="unfocus" src="..\maps\hmld-reso\raremrl.png">
         </div>
         <div id="footnote" class="footnote">Huge thanks to Matz for providing the resource maps!</div>
     </div>
@@ -240,8 +240,8 @@
             document.getElementById("food").setAttribute("class","unfocus")
             document.getElementById("meds").setAttribute("class","unfocus")
             document.getElementById("utils").setAttribute("class","unfocus")
-            document.getElementById("cmnmtl").setAttribute("class","unfocus")
-            document.getElementById("raremtl").setAttribute("class","unfocus")
+            document.getElementById("cmnmrl").setAttribute("class","unfocus")
+            document.getElementById("raremrl").setAttribute("class","unfocus")
         } else {
             return;
         }
@@ -253,8 +253,8 @@
             document.getElementById("food").setAttribute("class","focus")
             document.getElementById("meds").setAttribute("class","unfocus")
             document.getElementById("utils").setAttribute("class","unfocus")
-            document.getElementById("cmnmtl").setAttribute("class","unfocus")
-            document.getElementById("raremtl").setAttribute("class","unfocus")
+            document.getElementById("cmnmrl").setAttribute("class","unfocus")
+            document.getElementById("raremrl").setAttribute("class","unfocus")
         } else {
             return;
         }
@@ -266,8 +266,8 @@
             document.getElementById("food").setAttribute("class","unfocus")
             document.getElementById("meds").setAttribute("class","focus")
             document.getElementById("utils").setAttribute("class","unfocus")
-            document.getElementById("cmnmtl").setAttribute("class","unfocus")
-            document.getElementById("raremtl").setAttribute("class","unfocus")
+            document.getElementById("cmnmrl").setAttribute("class","unfocus")
+            document.getElementById("raremrl").setAttribute("class","unfocus")
         } else {
             return;
         }
@@ -279,34 +279,34 @@
             document.getElementById("food").setAttribute("class","unfocus")
             document.getElementById("meds").setAttribute("class","unfocus")
             document.getElementById("utils").setAttribute("class","focus")
-            document.getElementById("cmnmtl").setAttribute("class","unfocus")
-            document.getElementById("raremtl").setAttribute("class","unfocus")
+            document.getElementById("cmnmrl").setAttribute("class","unfocus")
+            document.getElementById("raremrl").setAttribute("class","unfocus")
         } else {
             return;
         }
     })
 
-    document.getElementById("cmnmtlbtn").addEventListener("click",function(){
+    document.getElementById("cmnmrlbtn").addEventListener("click",function(){
         if(document.getElementById("food").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","unfocus")
             document.getElementById("food").setAttribute("class","unfocus")
             document.getElementById("meds").setAttribute("class","unfocus")
             document.getElementById("utils").setAttribute("class","unfocus")
-            document.getElementById("cmnmtl").setAttribute("class","focus")
-            document.getElementById("raremtl").setAttribute("class","unfocus")
+            document.getElementById("cmnmrl").setAttribute("class","focus")
+            document.getElementById("raremrl").setAttribute("class","unfocus")
         } else {
             return;
         }
     })
 
-    document.getElementById("raremtlbtn").addEventListener("click",function(){
+    document.getElementById("raremrlbtn").addEventListener("click",function(){
         if(document.getElementById("food").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","unfocus")
             document.getElementById("food").setAttribute("class","unfocus")
             document.getElementById("meds").setAttribute("class","unfocus")
             document.getElementById("utils").setAttribute("class","unfocus")
-            document.getElementById("cmnmtl").setAttribute("class","unfocus")
-            document.getElementById("raremtl").setAttribute("class","focus")
+            document.getElementById("cmnmrl").setAttribute("class","unfocus")
+            document.getElementById("raremrl").setAttribute("class","focus")
         } else {
             return;
         }
