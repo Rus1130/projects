@@ -4,7 +4,8 @@
     "homeland":"ホームランド",
     "uncont":"未知",
     "footnote":"地図はランドスケープモードでより良く見える",
-    "geo-btn":"g",
-    "reso-btn":"g",
-    "back-btn":"g"
+    "hmld-toptext":"ホームランドのメニュー",
+    "geo-btn":"ホームランドの地理地図",
+    "reso-btn":"ホームランドの資源地図",
+    "back-btn":"メニューに戻る"
 }

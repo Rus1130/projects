@@ -105,10 +105,32 @@ h1 {
     <script src="../localization.js"></script>
 </head>
 <body>
-    <h1 class="toptext">Homeland Menu</h1>
+    <select data-i18n-switcher id="switcher" style="width: 125px; height: 25px; font-family: Arial, Helvetica, sans-serif;">
+        <option value="de">Deutsch</option>
+        <option value="en">English</option>
+        <option value="es">Español (MX)</option>
+        <option value="fr">Français</option>
+        <option value="jp">日本語</option>
+        <option value="ke">Kielu</option>
+        <option value="vi">Tiếng Việt (NAM)</option>
+        <option value="pl">Polski</option>
+        <option value="ru">Русский</option>
+        <option value="sn">Сенаби</option>
+        <option value="sz">Sорзијаьде</option>
+    </select>
+    <h1 class="toptext" data-i18n-key="hmld-toptext">Homeland Menu</h1>
     <div class="grid">
         <div class="geobtn" data-i18n-key="geo-btn" onclick="window.location.href='https://rus1130.github.io/projects/coloria2/view/hmld/geo'">Homeland Geography Map</div>
         <div class="resobtn" data-i18n-key="reso-btn" onclick="window.location='https://rus1130.github.io/projects/coloria2/view/hmld/reso'">Homeland Resource Map</div>
         <div class="backbtn" data-i18n-key="back-btn" onclick="window.location='https://rus1130.github.io/projects/coloria2/menu'">Back to menu</div>
     </div>
 </body>
+
+<script>
+    document.getElementById("switcher").addEventListener("change",function(){
+        var e = document.getElementById("switcher");
+        var lang = e.value;
+        localStorage.setItem('currentLang', JSON.stringify(lang));
+        console.log(lang)
+    })
+</script>

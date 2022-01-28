@@ -4,7 +4,8 @@
     "homeland":"Homeland",
     "uncont":"Unentdeckt",
     "footnote":"Karten werden am besten im Querformat angezeigt",
-    "geo-btn":"g",
-    "reso-btn":"g",
-    "back-btn":"g"
+    "hmld-toptext":"",
+    "geo-btn":"",
+    "reso-btn":"",
+    "back-btn":""
 }

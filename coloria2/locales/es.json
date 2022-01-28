@@ -4,7 +4,8 @@
     "homeland":"Homeland",
     "uncont":"Todavía por Descubrir",
     "footnote":"Los mapas se ven mejor en modo panorámico",
-    "geo-btn":"g",
-    "reso-btn":"g",
-    "back-btn":"g"
+    "hmld-toptext":"Menú de Homeland",
+    "geo-btn":"Mapa Geográfico de Homeland",
+    "reso-btn":"Mapa de Recursos de Homeland",
+    "back-btn":"Volver al Menú"
 }

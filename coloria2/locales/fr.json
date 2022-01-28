@@ -4,7 +4,8 @@
     "homeland":"Homeland",
     "uncont":"Non découvert",
     "footnote":"Des cartes sont mieux vues en format paysage",
-    "geo-btn":"g",
-    "reso-btn":"g",
-    "back-btn":"g"
+    "hmld-toptext":"Le menu du Homeland ",
+    "geo-btn":"La carte géographique du Homeland",
+    "reso-btn":"La carte des ressources du Homeland",
+    "back-btn":"Retournez au menu"
 }
