@@ -4,8 +4,8 @@
     "homeland":"Homeland",
     "uncont":"Unentdeckt",
     "footnote":"Karten werden am besten im Querformat angezeigt",
-    "hmld-toptext":"",
-    "geo-btn":"",
-    "reso-btn":"",
-    "back-btn":""
+    "hmld-toptext":"Menü Homeland",
+    "geo-btn":"Geografische Karte des Homeland",
+    "reso-btn":"Homeland-Ressourcenkarte",
+    "back-btn":"Zurück zum Menü"
 }
