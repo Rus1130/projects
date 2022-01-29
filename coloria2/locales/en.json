@@ -14,5 +14,10 @@
     "biome":"Biomes",
     "temp":"Temperature",
     "height":"Heightmap",
-    "precip":"Precipitation"
+    "precip":"Precipitation",
+    "food":"Common Foods",
+    "meds":"Medicinals",
+    "utils":"Utilities",
+    "cmn":"Common Minerals",
+    "rare":"Rare Minerals"
 }
