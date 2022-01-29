@@ -197,6 +197,7 @@
     <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="400">
     <meta property="og:image:height" content="362">
+    <script src="localization.js"></script>
 </head>
 <body>
     <div id="viewbox">
@@ -310,5 +311,12 @@
         } else {
             return;
         }
+    })
+
+    document.getElementById("switcher").addEventListener("change",function(){
+        var e = document.getElementById("switcher");
+        var lang = e.value;
+        localStorage.setItem('currentLang', JSON.stringify(lang));
+        console.log(lang)
     })
 </script>
