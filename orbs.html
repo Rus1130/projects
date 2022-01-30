@@ -607,14 +607,14 @@ document.getElementById("settings").addEventListener("click", function(){
     if(document.getElementById("themesettings").hasAttribute("class","noshow")){
         document.getElementById("themesettings").removeAttribute("class","noshow")
         document.getElementById("othersettings").removeAttribute("class","noshow")
-        document.getElementById("settings").setAttribute("style","background-color: steelblue;")
+        document.getElementById("settings").setAttribute("style","background-color: steelblue; color: black;")
     } else {
         document.getElementById("themesettings").setAttribute("class","noshow")
         document.getElementById("othersettings").setAttribute("class","noshow")
         document.getElementById("projectsbtn").setAttribute("class","noshow")
         document.getElementById("dragbtn").setAttribute("class","noshow")
         document.getElementById("themes").setAttribute("class","noshow")
-        document.getElementById("settings").removeAttribute("style","background-color: steelblue;")
+        document.getElementById("settings").removeAttribute("style","background-color: steelblue; color: black;")
         document.getElementById("themesbtn").removeAttribute("style","background-color: springgreen;")
         document.getElementById("othersettingsbtn").removeAttribute("style","background-color: #ff0066;")
     }
@@ -643,9 +643,9 @@ document.getElementById("othersettingsbtn").addEventListener("click", function()
 document.getElementById("dragbtn").addEventListener("click", function(){
     if(document.getElementById("dummydiv").hasAttribute("style","position: absolute;z-index: 9;")){
         document.getElementById("dummydiv").setAttribute("style","display: flex; align-items: center; justify-content: center;")
-        document.getElementById("dummydiv").removeAttribute("style","position: absolute;z-index: 9;")
+        document.getElementById("dummydiv").removeAttribute("style","position: absolute;z-index: 9; cursor: all-scroll")
     } else {
-        document.getElementById("dummydiv").removeAttribute("style","display: flex; align-items: center; justify-content: center;")
+        document.getElementById("dummydiv").removeAttribute("style","display: flex; align-items: center; justify-content: center; cursor: all-scroll;")
         document.getElementById("dummydiv").setAttribute("style","position: absolute;z-index: 9")
     }
 })
