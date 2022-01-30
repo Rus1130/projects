@@ -1,0 +1,152 @@
+<style>
+    @media screen and (orientation: portrait){
+        html {
+            object-fit: contain;
+            transform: rotate(90deg);
+            transform-origin: right top;
+            width: 100vh;
+            height: 100vw;
+            overflow-x: hidden;
+            position: absolute;
+            top: 100%;
+            right: 0;
+        }
+    }
+    .focus {
+        display: initial;
+    }
+    .unfocus {
+        display: none;
+    }
+    .settingsbtn {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        height: 50px;
+        width: 95px;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px black solid;
+        transition-duration: 150ms;
+        opacity: 20%;
+        cursor: pointer;
+    }
+    .settingsbtn:hover {
+        opacity: 100%;
+        cursor: pointer;
+    }
+    .backbtn {
+        position: absolute;
+        right: 115px;
+        top: 10px;
+        height: 50px;
+        width: 95px;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px black solid;
+        transition-duration: 150ms;
+        opacity: 20%;
+        cursor: pointer;
+    }
+    .backbtn:hover {
+        opacity: 100%;
+        cursor: pointer;
+    }
+    img {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+    }
+    .body {
+        font-family: Arial, Helvetica, sans-serif;
+        user-select: none;
+        margin: 0;
+    }
+    .backbtn {
+        position: absolute;
+        right: 115px;
+        top: 10px;
+        height: 50px;
+        width: 95px;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px black solid;
+        transition-duration: 150ms;
+        opacity: 20%;
+        cursor: pointer;
+    }
+    .backbtn:hover {
+        opacity: 100%;
+        cursor: pointer;
+    }
+    .settingname {
+        position: absolute;
+        right: 10px;
+        top: 70px;
+        height: 50px;
+        width: 95px;
+        background-color: white;
+        border: 1px black solid;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition-duration: 150ms;
+        opacity: 20%;
+        cursor: pointer;
+    }
+    .settingname:hover {
+        opacity: 100%;
+        cursor: pointer;
+    }
+    .settingnone {
+        position: absolute;
+        right: 10px;
+        top: 130px;
+        height: 50px;
+        width: 95px;
+        background-color: white;
+        border: 1px black solid;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition-duration: 150ms;
+        opacity: 20%;
+        cursor: pointer;
+    }
+    .settingnone:hover {
+        opacity: 100%;
+        cursor: pointer;
+    }
+</style>
+<head>
+    <title>Coloria 2.0 Homeland Menu</title>
+    <link rel="shortcut icon" type="image/jpg" href="https://rus1130.github.io/projects/coloria2/view/images/metaimg.png"/>
+    <meta property="og:title" content="Coloria 2.0 Homeland Menu">
+    <meta property="og:description" content="Menu for the continent of Homeland">
+    <meta property="og:image" content="https://rus1130.github.io/projects/coloria2/view/images/metaimg.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="400">
+    <meta property="og:image:height" content="362">
+    <script src="localization.js"></script>
+</head>
+<div id="viewbox">
+    <div style="position: absolute; font-size: 16pt;">PROTOTYPE</div>
+    <div id="settings">
+        <div id="settingsbtn" class="settingsbtn" data-i18n-key="settings">Settings</div>
+        <div id="menu" class="unfocus" style="text-align: center;">
+            <div id="backbtn" data-i18n-key="back" class="backbtn" onclick="window.location='hmld-menu'">Back</div>
+            <div id="basebtn" data-i18n-key="base" class="settingbase">Country Labels</div>
+            <div id="tempbtn" data-i18n-key="temp" class="settingtemp">No Labels</div>
+        </div>
+    </div>
+    <div id="layers">
+        <img id="name" class="focus" src="../maps/hmld-polit/name.png">
+        <img id="none" class="unfocus" src="../maps/hmld-polit/none.png">
+    </div>
+</div>
