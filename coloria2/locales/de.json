@@ -14,5 +14,14 @@
     "biome":"Biome",
     "temp":"Temperatur",
     "height":"Höhenkarte",
-    "precip":"Niederschlag"
+    "precip":"Niederschlag",
+    "food":"",
+    "meds":"",
+    "utils":"",
+    "cmn":"",
+    "rare":"",
+    "hmap":"",
+    "name":"",
+    "none":"",
+    "matz":""
 }

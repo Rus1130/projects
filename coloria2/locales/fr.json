@@ -14,5 +14,14 @@
     "biome":"Les biomes",
     "temp":"La température",
     "height":"La carte de la hauteur",
-    "precip":"Les precipitations "
+    "precip":"Les precipitations",
+    "food":"",
+    "meds":"",
+    "utils":"",
+    "cmn":"",
+    "rare":"",
+    "hmap":"",
+    "name":"",
+    "none":"",
+    "matz":""
 }

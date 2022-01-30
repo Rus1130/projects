@@ -14,5 +14,14 @@
     "biome":"Biomy",
     "temp":"Temperatura",
     "height":"Mapa wysokości",
-    "precip":"Opad"
+    "precip":"Opad",
+    "food":"",
+    "meds":"",
+    "utils":"",
+    "cmn":"",
+    "rare":"",
+    "hmap":"",
+    "name":"",
+    "none":"",
+    "matz":""
 }

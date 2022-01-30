@@ -14,5 +14,14 @@
     "biome":"Biomas",
     "temp":"Temperatura",
     "height":"Mapa de Elevación",
-    "precip":"Precipitación"
+    "precip":"Precipitación",
+    "food":"",
+    "meds":"",
+    "utils":"",
+    "cmn":"",
+    "rare":"",
+    "hmap":"",
+    "name":"",
+    "none":"",
+    "matz":""
 }

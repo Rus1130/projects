@@ -14,5 +14,14 @@
     "biome":"生物研",
     "temp":"温度",
     "height":"地形図",
-    "precip":"降水量"
+    "precip":"降水量",
+    "food":"",
+    "meds":"",
+    "utils":"",
+    "cmn":"",
+    "rare":"",
+    "hmap":"",
+    "name":"",
+    "none":"",
+    "matz":""
 }

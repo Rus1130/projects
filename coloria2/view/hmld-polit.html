@@ -144,21 +144,37 @@
     <meta property="og:image:height" content="362">
     <script src="localization.js"></script>
 </head>
-<div style="position: absolute; font-size: 24pt; user-select: none;" class="blink"><b>PROTOTYPE</b></div>
-<div id="viewbox">
-    <div id="settings" style="user-select: none;">
-        <div id="settingsbtn" class="settingsbtn" data-i18n-key="settings">Settings</div>
-        <div id="menu" class="unfocus" style="text-align: center; user-select: none;">
-            <div id="backbtn" data-i18n-key="back" class="backbtn" onclick="window.location='hmld-menu'">Back</div>
-            <div id="namebtn" data-i18n-key="name" class="settingname">Country Labels</div>
-            <div id="nonebtn" data-i18n-key="none" class="settingnone">No Labels</div>
+<body>
+    <select data-i18n-switcher id="switcher" style="position: absolute; width: 125px; height: 25px; font-family: Arial, Helvetica, sans-serif;">
+        <option value="br">Português Brasil</option>
+        <option value="en">English</option>
+        <option value="es">Español (MX)</option>
+        <option value="fr">Français</option>
+        <option value="jp">日本語</option>
+        <option value="ke">Kielu</option>
+        <option value="nl">Nederlands</option>
+        <option value="pl">Polski</option>
+        <option value="ru">Русский</option>
+        <option value="sn">Сёнаб</option>
+        <option value="st">Situ</option>
+        <option value="vi">Tiếng Việt (NAM)</option>
+        <!-- <option value="sz">Sорзијаьде</option>-->
+    </select>
+    <div id="viewbox">
+        <div id="settings" style="user-select: none;">
+            <div id="settingsbtn" class="settingsbtn" data-i18n-key="settings">Settings</div>
+            <div id="menu" class="unfocus" style="text-align: center; user-select: none;">
+                <div id="backbtn" data-i18n-key="back" class="backbtn" onclick="window.location='hmld-menu'">Back</div>
+                <div id="namebtn" data-i18n-key="name" class="settingname">Country Labels</div>
+                <div id="nonebtn" data-i18n-key="none" class="settingnone">No Labels</div>
+            </div>
+        </div>
+        <div id="layers" style="user-select: none;">
+            <img id="name" class="focus"  src="../maps/hmld-polit/name.png">
+            <img id="none" class="unfocus" src="../maps/hmld-polit/none.png">
         </div>
     </div>
-    <div id="layers" style="user-select: none;">
-        <img id="name" class="focus"  src="../maps/hmld-polit/name.png">
-        <img id="none" class="unfocus" src="../maps/hmld-polit/none.png">
-    </div>
-</div>
+</body>
 
 <script>
     document.getElementById("settingsbtn").addEventListener("click",function(){
@@ -168,5 +184,23 @@
         } else {
             document.getElementById("menu").setAttribute("class","unfocus")
         }
+    })
+
+    document.getElementById("namebtn").addEventListener("click",function(){
+        document.getElementById("name").setAttribute("class","focus")
+        document.getElementById("none").setAttribute("class","unfocus")
+    })
+
+    document.getElementById("nonebtn").addEventListener("click",function(){
+        document.getElementById("name").setAttribute("class","unfocus")
+        document.getElementById("none").setAttribute("class","focus")
+    })
+
+
+    document.getElementById("switcher").addEventListener("change",function(){
+        var e = document.getElementById("switcher");
+        var lang = e.value;
+        localStorage.setItem('currentLang', JSON.stringify(lang));
+        console.log(lang)
     })
 </script>

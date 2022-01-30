@@ -200,6 +200,21 @@
     <script src="localization.js"></script>
 </head>
 <body>
+    <select data-i18n-switcher id="switcher" style="width: 125px; height: 25px; font-family: Arial, Helvetica, sans-serif;">
+        <option value="br">Português Brasil</option>
+        <option value="en">English</option>
+        <option value="es">Español (MX)</option>
+        <option value="fr">Français</option>
+        <option value="jp">日本語</option>
+        <option value="ke">Kielu</option>
+        <option value="nl">Nederlands</option>
+        <option value="pl">Polski</option>
+        <option value="ru">Русский</option>
+        <option value="sn">Сёнаб</option>
+        <option value="st">Situ</option>
+        <option value="vi">Tiếng Việt (NAM)</option>
+        <!-- <option value="sz">Sорзијаьде</option>-->
+    </select>
     <div id="viewbox">
         <div id="settings">
             <div id="settingsbtn" data-i18n-key="settings" class="settingsbtn">Settings</div>
@@ -221,7 +236,7 @@
             <img id="cmnmrl" class="unfocus" src="..\maps\hmld-reso\cmnmrl.png">
             <img id="raremrl" class="unfocus" src="..\maps\hmld-reso\raremrl.png">
         </div>
-        <div id="footnote" class="footnote">Huge thanks to Matz for providing the resource maps!</div>
+        <div id="footnote" class="footnote" data-i18n-key="matz">Huge thanks to Matz for providing the resource maps!</div>
     </div>
 </body>
 
