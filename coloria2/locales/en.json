@@ -20,5 +20,7 @@
     "utils":"Utilities",
     "cmn":"Common Minerals",
     "rare":"Rare Minerals",
-    "hmap":"Homeland Map"
+    "hmap":"Homeland Map",
+    "name":"Country Labels",
+    "none":"No Labels"
 }

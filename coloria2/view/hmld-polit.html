@@ -159,3 +159,14 @@
         <img id="none" class="unfocus" src="../maps/hmld-polit/none.png">
     </div>
 </div>
+
+<script>
+    document.getElementById("settingsbtn").addEventListener("click",function(){
+        if(document.getElementById("menu").hasAttribute("class","unfocus")){
+            document.getElementById("menu").removeAttribute("class","unfocus")
+            document.getElementById("settingsbtn").removeAttribute("style","opacity: 100%;")
+        } else {
+            document.getElementById("menu").setAttribute("class","unfocus")
+        }
+    })
+</script>
