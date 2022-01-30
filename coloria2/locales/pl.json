@@ -15,13 +15,14 @@
     "temp":"Temperatura",
     "height":"Mapa wysokości",
     "precip":"Opad",
-    "food":"",
-    "meds":"",
-    "utils":"",
-    "cmn":"",
-    "rare":"",
-    "hmap":"",
-    "name":"",
-    "none":"",
-    "matz":""
+    "food":"Wspólne Pokarmy",
+    "meds":"Leki",
+    "utils":"Narzędzia",
+    "cmn":"Metale Zwykłe",
+    "rare":"Metale Rzadkie",
+    "hmap":"Mapa Homeland",
+    "name":"Etykiety Krajów",
+    "none":"Brak Etykiet",
+    "creator":"Etykiety Twórców Krajów",
+    "matz":"Ogromne podziękowania dla Matza za udostępnienie map zasobów!"
 }

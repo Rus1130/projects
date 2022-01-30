@@ -15,13 +15,14 @@
     "temp":"Läm",
     "height":"Kätää Üippi",
     "precip":"Saat",
-    "food":"",
-    "meds":"",
-    "utils":"",
-    "cmn":"",
-    "rare":"",
-    "hmap":"",
-    "name":"",
-    "none":"",
-    "matz":""
+    "food":"Yhlie Alinasu",
+    "meds":"Lääkśyösö",
+    "utils":"Ötöisö",
+    "cmn":"Yhlie Üaansu",
+    "rare":"Hyri Üaansu",
+    "hmap":"Käta Höömlänt",
+    "name":"Maa leemasu",
+    "none":"Leemasunuon",
+    "creator":"Maa Luotjan Leemasu",
+    "matz":"Kinnäötsisö Matsut vaustuvo voim kätäsö!"
 }

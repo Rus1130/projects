@@ -20,8 +20,9 @@
     "utils":"Utilities",
     "cmn":"Common Minerals",
     "rare":"Rare Minerals",
-    "hmap":"Homeland Map",
+    "hmap":"Homeland Political Map",
     "name":"Country Labels",
     "none":"No Labels",
+    "creator":"Country Creator Labels",
     "matz":"Huge thanks to Matz for providing the resource maps!"
 }

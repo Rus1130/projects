@@ -15,13 +15,14 @@
     "temp":"Temperatur",
     "height":"Höhenkarte",
     "precip":"Niederschlag",
-    "food":"",
-    "meds":"",
-    "utils":"",
-    "cmn":"",
-    "rare":"",
-    "hmap":"",
-    "name":"",
-    "none":"",
-    "matz":""
+    "food":"Übliche Lebensmittel",
+    "meds":"Heilmittel",
+    "utils":"Betriebsmittel",
+    "cmn":"Übliche Metalle",
+    "rare":"Seltene Metalle",
+    "hmap":"Karte des Homeland",
+    "name":"Länderetiketten",
+    "none":"Keine Etiketten",
+    "creator":"Landschöpfer Etiketten ",
+    "matz":"Vielen Dank an Matz für die Bereitstellung der Ressourcenkarten!"
 }

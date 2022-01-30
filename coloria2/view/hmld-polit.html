@@ -33,7 +33,7 @@
         right: 10px;
         top: 10px;
         height: 50px;
-        width: 95px;
+        width: 130px;
         background-color: white;
         display: flex;
         justify-content: center;
@@ -49,29 +49,10 @@
     }
     .backbtn {
         position: absolute;
-        right: 115px;
+        right: 150px;
         top: 10px;
         height: 50px;
-        width: 95px;
-        background-color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border: 1px black solid;
-        transition-duration: 150ms;
-        opacity: 20%;
-        cursor: pointer;
-    }
-    .backbtn:hover {
-        opacity: 100%;
-        cursor: pointer;
-    }
-    .backbtn {
-        position: absolute;
-        right: 115px;
-        top: 10px;
-        height: 50px;
-        width: 95px;
+        width: 130px;
         background-color: white;
         display: flex;
         justify-content: center;
@@ -88,9 +69,9 @@
     .settingname {
         position: absolute;
         right: 10px;
-        top: 70px;
+        top: 130px;
         height: 50px;
-        width: 95px;
+        width: 130px;
         background-color: white;
         border: 1px black solid;
         display: flex;
@@ -107,9 +88,9 @@
     .settingnone {
         position: absolute;
         right: 10px;
-        top: 130px;
+        top: 70px;
         height: 50px;
-        width: 95px;
+        width: 130px;
         background-color: white;
         border: 1px black solid;
         display: flex;
@@ -123,14 +104,24 @@
         opacity: 100%;
         cursor: pointer;
     }
-    .blink {
-        animation: blinker 0.4s linear infinite;
+    .settingcreator {
+        position: absolute;
+        right: 10px;
+        top: 190px;
+        height: 50px;
+        width: 130px;
+        background-color: white;
+        border: 1px black solid;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition-duration: 150ms;
+        opacity: 20%;
+        cursor: pointer;
     }
-
-    @keyframes blinker {
-        0% {
-            color: red;
-        }
+    .settingcreator:hover {
+        opacity: 100%;
+        cursor: pointer;
     }   
 </style>
 <head>
@@ -165,13 +156,15 @@
             <div id="settingsbtn" class="settingsbtn" data-i18n-key="settings">Settings</div>
             <div id="menu" class="unfocus" style="text-align: center; user-select: none;">
                 <div id="backbtn" data-i18n-key="back" class="backbtn" onclick="window.location='hmld-menu'">Back</div>
-                <div id="namebtn" data-i18n-key="name" class="settingname">Country Labels</div>
                 <div id="nonebtn" data-i18n-key="none" class="settingnone">No Labels</div>
+                <div id="namebtn" data-i18n-key="name" class="settingname">Country Labels</div>
+                <div id="creatorbtn" data-i18n-key="creator" class="settingcreator">Country Creator Labels</div>
             </div>
         </div>
         <div id="layers" style="user-select: none;">
-            <img id="name" class="focus"  src="../maps/hmld-polit/name.png">
-            <img id="none" class="unfocus" src="../maps/hmld-polit/none.png">
+            <img id="none" class="focus" src="../maps/hmld-polit/none.png">
+            <img id="name" class="unfocus"  src="../maps/hmld-polit/name.png">
+            <img id="creator" class="unfocus" src="../maps/hmld-polit/creator.png">
         </div>
     </div>
 </body>
@@ -186,14 +179,22 @@
         }
     })
 
-    document.getElementById("namebtn").addEventListener("click",function(){
-        document.getElementById("name").setAttribute("class","focus")
-        document.getElementById("none").setAttribute("class","unfocus")
-    })
-
     document.getElementById("nonebtn").addEventListener("click",function(){
         document.getElementById("name").setAttribute("class","unfocus")
         document.getElementById("none").setAttribute("class","focus")
+        document.getElementById("creator").setAttribute("class","unfocus")
+    })
+
+    document.getElementById("namebtn").addEventListener("click",function(){
+        document.getElementById("name").setAttribute("class","focus")
+        document.getElementById("none").setAttribute("class","unfocus")
+        document.getElementById("creator").setAttribute("class","unfocus")
+    })
+
+    document.getElementById("creatorbtn").addEventListener("click",function(){
+        document.getElementById("name").setAttribute("class","unfocus")
+        document.getElementById("none").setAttribute("class","unfocus")
+        document.getElementById("creator").setAttribute("class","focus")
     })
 
 
