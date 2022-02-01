@@ -1,4 +1,4 @@
-<style>
+<html><head><style>
     img {
         margin: 0;
         width: 100%;
@@ -127,9 +127,9 @@
         object-fit:contain;
     }
 </style>
-<head>
+
     <title>Coloria 2.0 Homeland Menu</title>
-    <link rel="shortcut icon" type="image/jpg" href="https://rus1130.github.io/projects/coloria2/view/images/metaimg.png"/>
+    <link rel="shortcut icon" type="image/jpg" href="https://rus1130.github.io/projects/coloria2/view/images/metaimg.png">
     <meta property="og:title" content="Coloria 2.0 Homeland Menu">
     <meta property="og:description" content="Menu for the continent of Homeland">
     <meta property="og:image" content="https://rus1130.github.io/projects/coloria2/view/images/metaimg.png">
@@ -139,7 +139,7 @@
     <script src="localization.js"></script>
 </head>
 <body>
-    <select data-i18n-switcher id="switcher" style="position: absolute; width: 125px; height: 25px; font-family: Arial, Helvetica, sans-serif;">
+    <select data-i18n-switcher="" id="switcher" style="position: absolute; width: 125px; height: 25px; font-family: Arial, Helvetica, sans-serif;">
         <option value="br">Português Brasil</option>
         <option value="en">English</option>
         <option value="es">Español (MX)</option>
@@ -166,11 +166,11 @@
         </div>
         <div id="layers" style="user-select: none;">
             <img id="none" class="focus" src="../maps/hmld-polit/none.png">
-            <img id="name" class="unfocus"  src="../maps/hmld-polit/name.png">
+            <img id="name" class="unfocus" src="../maps/hmld-polit/name.png">
             <img id="creator" class="unfocus" src="../maps/hmld-polit/creator.png">
         </div>
     </div>
-</body>
+
 
 <script>
     document.getElementById("settingsbtn").addEventListener("click",function(){
@@ -207,4 +207,4 @@
         localStorage.setItem('currentLang', JSON.stringify(lang));
         console.log(lang)
     })
-</script>
+</script></body></html>
