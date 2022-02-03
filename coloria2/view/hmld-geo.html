@@ -161,14 +161,30 @@
             right: 0;
         }
     }
-    .key {
+    .keygrid {
+        display: grid;
         position: absolute;
-        width: 141px;
-        height: 231px;
+        height: fit-content(500px);
+        width: max-content;
         top: 70px;
         right: 125px;
-        background-color: white;
+        background-color: rgba(255,255,255,1);
+        padding: 10px;
+        row-gap: 5px;
+        column-count: 2;
+        grid-template-columns: fit-content(500px) fit-content(500px);
+        column-gap: 5px;
+        border: 1px solid rgba(0,0,0,1);
+        cursor: grab;
+        transition: background-color 180ms, border-color 180ms;
+        transition-delay: 10ms;
     }
+    .keygrid:active {
+        cursor: grabbing;
+        background-color: rgba(255,255,255,0);
+        border-color: rgba(0,0,0,0.3)
+    }
+
 </style>
 <!DOCTYPE html>
 <head>
@@ -218,7 +234,35 @@
             <img id="precip" class="unfocus" src="../maps/hmld-geo/precip.png">
         </div>
     </div>
-    <div id="key" class="unfocus" class="key">Key placeholder</div>
+    <div id="keygrid" class="keygrid, unfocus">
+        <!--New row-->
+        <div id="cold-dsrt" style="width: 30px; height: 30px; background-color: rgb(189,192,129);"></div>
+        <div style="margin-top: 5px;">Cold Desert</div>
+        <!--New row-->
+        <div id="hot-dsrt" style="width: 30px; height: 30px; background-color: rgb(255, 241, 152);"></div>
+        <div style="margin-top: 5px;">Hot Desert</div>
+        <!--New row-->
+        <div id="grass" style="width: 30px; height: 30px; background-color: rgb(209, 223, 136);"></div>
+        <div style="margin-top: 5px;">Grassland</div>
+        <!--New row-->
+        <div id="savan" style="width: 30px; height: 30px; background-color: rgb(219, 217, 124);"></div>
+        <div style="margin-top: 5px;">Savannah</div>
+        <!--New row-->
+        <div id="trop-for" style="width: 30px; height: 30px; background-color: rgb(190, 227, 88);"></div>
+        <div style="margin-top: 5px;">Tropical Seasonal Forest</div>
+        <!--New row-->
+        <div id="trop-rain" style="width: 30px; height: 30px; background-color: rgb(131, 212, 50);"></div>
+        <div style="margin-top: 5px;">Tropical Rainforest</div>
+        <!--New row-->
+        <div id="temp-for" style="width: 30px; height: 30px; background-color: rgb(42, 196, 81);"></div>
+        <div style="margin-top: 5px;">Temperate Deciduous Forest</div>
+        <!--New row-->
+        <div id="temp-rain" style="width: 30px; height: 30px; background-color: rgb(66, 163, 64);"></div>
+        <div style="margin-top: 5px;">Temperate Rainforest</div>
+        <!--New row-->
+        <div id="wet" style="width: 30px; height: 30px; background-color: rgb(13, 151, 46);"></div>
+        <div style="margin-top: 5px;">Wetland</div>
+    </div>
 </body>
 
 <script>
@@ -229,6 +273,7 @@
             document.getElementById("settingsbtn").removeAttribute("style","opacity: 100%;")
         } else {
             document.getElementById("menu").setAttribute("class","unfocus")
+            document.getElementById("keygrid").setAttribute("class","unfocus")
         }
     })
 
@@ -239,7 +284,7 @@
             document.getElementById("biome").setAttribute("class","unfocus")
             document.getElementById("height").setAttribute("class","unfocus")
             document.getElementById("precip").setAttribute("class","unfocus")
-            document.getElementById("key").setAttribute("class","unfocus")
+            document.getElementById("keygrid").setAttribute("class","unfocus")
         } else {
             return;
         }
@@ -252,7 +297,7 @@
             document.getElementById("biome").setAttribute("class","unfocus")
             document.getElementById("height").setAttribute("class","unfocus")
             document.getElementById("precip").setAttribute("class","unfocus")
-            document.getElementById("key").setAttribute("class","unfocus")
+            document.getElementById("keygrid").setAttribute("class","unfocus")
         } else {
             return;
         }
@@ -265,7 +310,7 @@
             document.getElementById("biome").setAttribute("class","focus")
             document.getElementById("height").setAttribute("class","unfocus")
             document.getElementById("precip").setAttribute("class","unfocus")
-            document.getElementById("key").setAttribute("class","focus, key")
+            document.getElementById("keygrid").setAttribute("class","focus, keygrid")
         } else {
             return;
         }
@@ -278,7 +323,7 @@
             document.getElementById("biome").setAttribute("class","unfocus")
             document.getElementById("height").setAttribute("class","focus")
             document.getElementById("precip").setAttribute("class","unfocus")
-            document.getElementById("key").setAttribute("class","unfocus")
+            document.getElementById("keygrid").setAttribute("class","unfocus")
         } else {
             return;
         }
@@ -291,7 +336,7 @@
             document.getElementById("biome").setAttribute("class","unfocus")
             document.getElementById("height").setAttribute("class","unfocus")
             document.getElementById("precip").setAttribute("class","focus")
-            document.getElementById("key").setAttribute("class","unfocus")
+            document.getElementById("keygrid").setAttribute("class","unfocus")
         } else {
             return;
         }
@@ -303,4 +348,52 @@
         localStorage.setItem('currentLang', JSON.stringify(lang));
         console.log(lang)
     })
+
+
+
+
+    //draggable biome key ==========================================================================================================
+    //Make the DIV element draggagle:
+    dragElement(document.getElementById("keygrid"));
+
+    function dragElement(elmnt) {
+    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    if (document.getElementById(elmnt.id + "header")) {
+        /* if present, the header is where you move the DIV from:*/
+        document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+    } else {
+        /* otherwise, move the DIV from anywhere inside the DIV:*/
+        elmnt.onmousedown = dragMouseDown;
+    }
+
+    function dragMouseDown(e) {
+        e = e || window.event;
+        e.preventDefault();
+        // get the mouse cursor position at startup:
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        // call a function whenever the cursor moves:
+        document.onmousemove = elementDrag;
+    }
+
+    function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault();
+        // calculate the new cursor position:
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        // set the element's new position:
+        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    }
+
+    function closeDragElement() {
+        /* stop moving when mouse button is released:*/
+        document.onmouseup = null;
+        document.onmousemove = null;
+    }
+    }
 </script>
