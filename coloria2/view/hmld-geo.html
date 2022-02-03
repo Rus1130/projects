@@ -39,7 +39,7 @@
         right: 125px;
         top: 10px;
         height: 50px;
-        width: 105px;
+        width: 140px;
         background-color: white;
         display: flex;
         justify-content: center;
@@ -161,6 +161,14 @@
             right: 0;
         }
     }
+    .key {
+        position: absolute;
+        width: 141px;
+        height: 231px;
+        top: 70px;
+        right: 125px;
+        background-color: white;
+    }
 </style>
 <!DOCTYPE html>
 <head>
@@ -210,7 +218,7 @@
             <img id="precip" class="unfocus" src="../maps/hmld-geo/precip.png">
         </div>
     </div>
-    
+    <div id="key" class="unfocus" class="key">Key placeholder</div>
 </body>
 
 <script>
@@ -231,6 +239,7 @@
             document.getElementById("biome").setAttribute("class","unfocus")
             document.getElementById("height").setAttribute("class","unfocus")
             document.getElementById("precip").setAttribute("class","unfocus")
+            document.getElementById("key").setAttribute("class","unfocus")
         } else {
             return;
         }
@@ -243,6 +252,7 @@
             document.getElementById("biome").setAttribute("class","unfocus")
             document.getElementById("height").setAttribute("class","unfocus")
             document.getElementById("precip").setAttribute("class","unfocus")
+            document.getElementById("key").setAttribute("class","unfocus")
         } else {
             return;
         }
@@ -255,6 +265,7 @@
             document.getElementById("biome").setAttribute("class","focus")
             document.getElementById("height").setAttribute("class","unfocus")
             document.getElementById("precip").setAttribute("class","unfocus")
+            document.getElementById("key").setAttribute("class","focus, key")
         } else {
             return;
         }
@@ -267,6 +278,7 @@
             document.getElementById("biome").setAttribute("class","unfocus")
             document.getElementById("height").setAttribute("class","focus")
             document.getElementById("precip").setAttribute("class","unfocus")
+            document.getElementById("key").setAttribute("class","unfocus")
         } else {
             return;
         }
@@ -279,6 +291,7 @@
             document.getElementById("biome").setAttribute("class","unfocus")
             document.getElementById("height").setAttribute("class","unfocus")
             document.getElementById("precip").setAttribute("class","focus")
+            document.getElementById("key").setAttribute("class","unfocus")
         } else {
             return;
         }
