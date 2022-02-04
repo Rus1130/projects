@@ -11,15 +11,9 @@
     }
     .focus {
         display: initial;
-        position: absolute;
-        top: 0px;
-        left: 0px;
     }
     .unfocus {
         display: none;
-        position: absolute;
-        top: 0px;
-        left: 0px;
     }
     .settingsbtn {
         position: absolute;
@@ -280,7 +274,6 @@
             document.getElementById("settingsbtn").removeAttribute("style","opacity: 100%;")
         } else {
             document.getElementById("menu").setAttribute("class","unfocus")
-            document.getElementById("keygrid").setAttribute("class","unfocus")
         }
     }
 
