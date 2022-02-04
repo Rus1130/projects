@@ -11,9 +11,15 @@
     }
     .focus {
         display: initial;
+        position: absolute;
+        top: 0px;
+        left: 0px;
     }
     .unfocus {
         display: none;
+        position: absolute;
+        top: 0px;
+        left: 0px;
     }
     .settingsbtn {
         position: absolute;
@@ -278,9 +284,6 @@
         }
     }
 
-
-
-
     function base(){
         if(document.getElementById("base").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","focus")
@@ -294,7 +297,6 @@
         }
     }
 
-
     function temp(){
         if(document.getElementById("temp").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","unfocus")
@@ -307,7 +309,6 @@
             return;
         }
     }
-
 
     function biome(){
         if(document.getElementById("biome").hasAttribute("class","unfocus")){
