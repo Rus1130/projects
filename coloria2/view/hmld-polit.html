@@ -133,6 +133,7 @@
     <meta property="og:image:width" content="400">
     <meta property="og:image:height" content="362">
     <script src="localization.js"></script>
+    <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
 </head>
 <body>
     <select data-i18n-switcher="" id="switcher" style="position: absolute; width: 125px; height: 25px; font-family: Arial, Helvetica, sans-serif;">
@@ -152,12 +153,12 @@
     </select>
     <div id="viewbox">
         <div id="settings" style="user-select: none;">
-            <div id="settingsbtn" class="settingsbtn" data-i18n-key="settings">Settings</div>
+            <div id="settingsbtn" class="settingsbtn" data-i18n-key="settings" onclick="menu()">Settings</div>
             <div id="menu" class="unfocus" style="text-align: center; user-select: none;">
                 <div id="backbtn" data-i18n-key="back" class="backbtn" onclick="window.location='hmld-menu'">Back</div>
-                <div id="nonebtn" data-i18n-key="none" class="settingnone">No Labels</div>
-                <div id="namebtn" data-i18n-key="name" class="settingname">Country Labels</div>
-                <div id="creatorbtn" data-i18n-key="creator" class="settingcreator">Country Creator Labels</div>
+                <div id="nonebtn" data-i18n-key="none" class="settingnone" onclick="none()">No Labels</div>
+                <div id="namebtn" data-i18n-key="name" class="settingname" onclick="label()">Country Labels</div>
+                <div id="creatorbtn" data-i18n-key="creator" class="settingcreator" onclick="creator()">Country Creator Labels</div>
             </div>
         </div>
         <div id="layers" style="user-select: none;">
@@ -177,33 +178,57 @@
 
 
 <script>
-    document.getElementById("settingsbtn").addEventListener("click",function(){
+    function menu(){
         if(document.getElementById("menu").hasAttribute("class","unfocus")){
             document.getElementById("menu").removeAttribute("class","unfocus")
             document.getElementById("settingsbtn").removeAttribute("style","opacity: 100%;")
         } else {
             document.getElementById("menu").setAttribute("class","unfocus")
         }
-    })
+    }
 
-    document.getElementById("nonebtn").addEventListener("click",function(){
-        document.getElementById("name").setAttribute("class","unfocus")
-        document.getElementById("none").setAttribute("class","focus")
-        document.getElementById("creator").setAttribute("class","unfocus")
-    })
-
-    document.getElementById("namebtn").addEventListener("click",function(){
+    function label(){
         document.getElementById("name").setAttribute("class","focus")
         document.getElementById("none").setAttribute("class","unfocus")
         document.getElementById("creator").setAttribute("class","unfocus")
-    })
+    }
 
-    document.getElementById("creatorbtn").addEventListener("click",function(){
+    function none(){
+        document.getElementById("name").setAttribute("class","unfocus")
+        document.getElementById("none").setAttribute("class","focus")
+        document.getElementById("creator").setAttribute("class","unfocus")
+    }
+
+    function creator(){
         document.getElementById("name").setAttribute("class","unfocus")
         document.getElementById("none").setAttribute("class","unfocus")
         document.getElementById("creator").setAttribute("class","focus")
+    }
+
+
+    hotkeys('ctrl + backspace', function(){
+        if(window.confirm("Do you really want to exit?")){
+            window.location.replace("https://rus1130.github.io/projects/coloria2/view/hmld-menu");
+        } else {
+            return;
+        }   
     })
 
+    hotkeys('s', function(){
+        menu()
+    })
+
+    hotkeys('n', function(){
+        none()
+    })
+
+    hotkeys('l', function(){
+        label()
+    })
+
+    hotkeys('c', function(){
+        creator()
+    })
 
     document.getElementById("switcher").addEventListener("change",function(){
         var e = document.getElementById("switcher");
@@ -211,4 +236,4 @@
         localStorage.setItem('currentLang', JSON.stringify(lang));
         console.log(lang)
     })
-</script></body></html>
+</script>

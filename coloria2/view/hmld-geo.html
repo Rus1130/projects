@@ -196,6 +196,8 @@
     <meta property="og:image:width" content="400">
     <meta property="og:image:height" content="362">
     <script src="localization.js"></script>
+    <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
+    
 </head>
 <body>
     <select data-i18n-switcher id="switcher" style="position: absolute; width: 125px; height: 25px; font-family: Arial, Helvetica, sans-serif;">
@@ -215,14 +217,14 @@
     </select>
     <div id="viewbox">
         <div id="settings">
-            <div id="settingsbtn" class="settingsbtn" data-i18n-key="settings">Settings</div>
+            <div id="settingsbtn" class="settingsbtn" data-i18n-key="settings" onclick="menu()">Settings</div>
             <div id="menu" class="unfocus" style="text-align: center;">
                 <div id="backbtn" data-i18n-key="back" class="backbtn" onclick="window.location='hmld-menu'">Back</div>
-                <div id="basebtn" data-i18n-key="base" class="settingbase">Basemap</div>
-                <div id="tempbtn" data-i18n-key="temp" class="settingtemp">Temperature</div>
-                <div id="biomebtn" data-i18n-key="biome" class="settingbiome">Biomes</div>
-                <div id="heightbtn" data-i18n-key="height" class="settingheight">Heightmap</div>
-                <div id="precipbtn" data-i18n-key="precip" class="settingprecip">Precipitation</div>
+                <div id="basebtn" data-i18n-key="base" class="settingbase" onclick="base()">Basemap</div>
+                <div id="tempbtn" data-i18n-key="temp" class="settingtemp" onclick="temp()">Temperature</div>
+                <div id="biomebtn" data-i18n-key="biome" class="settingbiome" onclick="biome()">Biomes</div>
+                <div id="heightbtn" data-i18n-key="height" class="settingheight" onclick="height()">Heightmap</div>
+                <div id="precipbtn" data-i18n-key="precip" class="settingprecip" onclick="precip()">Precipitation</div>
             </div>
         </div>
         <div id="layers">
@@ -265,8 +267,7 @@
 </body>
 
 <script>
-
-    document.getElementById("settingsbtn").addEventListener("click",function(){
+    function menu(){
         if(document.getElementById("menu").hasAttribute("class","unfocus")){
             document.getElementById("menu").removeAttribute("class","unfocus")
             document.getElementById("settingsbtn").removeAttribute("style","opacity: 100%;")
@@ -274,9 +275,12 @@
             document.getElementById("menu").setAttribute("class","unfocus")
             document.getElementById("keygrid").setAttribute("class","unfocus")
         }
-    })
+    }
 
-    document.getElementById("basebtn").addEventListener("click",function(){
+
+
+
+    function base(){
         if(document.getElementById("base").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","focus")
             document.getElementById("temp").setAttribute("class","unfocus")
@@ -287,9 +291,10 @@
         } else {
             return;
         }
-    })
+    }
 
-    document.getElementById("tempbtn").addEventListener("click",function(){
+
+    function temp(){
         if(document.getElementById("temp").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","unfocus")
             document.getElementById("temp").setAttribute("class","focus")
@@ -300,10 +305,11 @@
         } else {
             return;
         }
-    })
+    }
 
-    document.getElementById("biomebtn").addEventListener("click",function(){
-        if(document.getElementById("temp").hasAttribute("class","unfocus")){
+
+    function biome(){
+        if(document.getElementById("biome").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","unfocus")
             document.getElementById("temp").setAttribute("class","unfocus")
             document.getElementById("biome").setAttribute("class","focus")
@@ -313,10 +319,10 @@
         } else {
             return;
         }
-    })
+    }
 
-    document.getElementById("heightbtn").addEventListener("click",function(){
-        if(document.getElementById("temp").hasAttribute("class","unfocus")){
+    function height(){
+        if(document.getElementById("height").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","unfocus")
             document.getElementById("temp").setAttribute("class","unfocus")
             document.getElementById("biome").setAttribute("class","unfocus")
@@ -326,10 +332,10 @@
         } else {
             return;
         }
-    })
+    }
 
-    document.getElementById("precipbtn").addEventListener("click",function(){
-        if(document.getElementById("temp").hasAttribute("class","unfocus")){
+    function precip(){
+        if(document.getElementById("precip").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","unfocus")
             document.getElementById("temp").setAttribute("class","unfocus")
             document.getElementById("biome").setAttribute("class","unfocus")
@@ -339,7 +345,8 @@
         } else {
             return;
         }
-    })
+    }
+
 
     document.getElementById("switcher").addEventListener("change",function(){
         var e = document.getElementById("switcher");
@@ -348,8 +355,41 @@
         console.log(lang)
     })
 
+    hotkeys('s', function(){
+        menu();
+    })
+
+    hotkeys('b', function(){
+        base();
+    })
+
+    hotkeys('t', function(){
+        temp();
+    })
+
+    hotkeys('i', function(){
+        biome();
+    })
+
+    hotkeys('h', function(){
+        height();
+    })
+
+    hotkeys('p', function(){
+        precip();
+    })
+
+    hotkeys('ctrl + backspace', function(){
+        if(window.confirm("Do you really want to exit?")){
+            window.location.replace("https://rus1130.github.io/projects/coloria2/view/hmld-menu");
+        } else {
+            return;
+        }   
+    })
+
     //draggable biome key ==========================================================================================================
     //Make the DIV element draggagle:
+
     dragElement(document.getElementById("keygrid"));
 
     function dragElement(elmnt) {

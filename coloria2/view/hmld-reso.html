@@ -199,6 +199,7 @@
     <meta property="og:image:width" content="400">
     <meta property="og:image:height" content="362">
     <script src="localization.js"></script>
+    <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
 </head>
 <body style="margin: 0;">
     <select data-i18n-switcher id="switcher" style="position: absolute; width: 125px; height: 25px; font-family: Arial, Helvetica, sans-serif;">
@@ -218,15 +219,15 @@
     </select>
     <div id="viewbox">
         <div id="settings">
-            <div id="settingsbtn" data-i18n-key="settings" class="settingsbtn">Settings</div>
+            <div id="settingsbtn" data-i18n-key="settings" class="settingsbtn" onclick="menu()">Settings</div>
             <div id="menu" class="unfocus" style="text-align: center;">
                 <div id="backbtn" data-i18n-key="back" class="backbtn" onclick="window.location='https://rus1130.github.io/projects/coloria2/view/hmld-menu'">Back</div>
-                <div id="basebtn" data-i18n-key="base" class="settingbase">Basemap</div>
-                <div id="foodbtn" data-i18n-key="food" class="settingfood">Common Foods</div>
-                <div id="medsbtn" data-i18n-key="meds" class="settingmeds">Medicinals</div>
-                <div id="utilsbtn" data-i18n-key="utils" class="settingutils">Utilities</div>
-                <div id="cmnmrlbtn" data-i18n-key="cmn" class="settingcmnmrl">Common Minerals</div>
-                <div id="raremrlbtn" data-i18n-key="rare" class="settingraremrl">Rare Minerals</div>
+                <div id="basebtn" data-i18n-key="base" class="settingbase" onclick="base()">Basemap</div>
+                <div id="foodbtn" data-i18n-key="food" class="settingfood" onclick="food()">Common Foods</div>
+                <div id="medsbtn" data-i18n-key="meds" class="settingmeds" onclick="meds()">Medicinals</div>
+                <div id="utilsbtn" data-i18n-key="utils" class="settingutils" onclick="utils()">Utilities</div>
+                <div id="cmnmrlbtn" data-i18n-key="cmn" class="settingcmnmrl" onclick="cmn()">Common Minerals</div>
+                <div id="raremrlbtn" data-i18n-key="rare" class="settingraremrl" onclick="rare()">Rare Minerals</div>
             </div>
         </div>
         <div id="layers">
@@ -242,16 +243,16 @@
 </body>
 
 <script>
-    document.getElementById("settingsbtn").addEventListener("click",function(){
+    function menu(){
         if(document.getElementById("menu").hasAttribute("class","unfocus")){
             document.getElementById("menu").removeAttribute("class","unfocus")
             document.getElementById("settingsbtn").removeAttribute("style","opacity: 100%;")
         } else {
             document.getElementById("menu").setAttribute("class","unfocus")
         }
-    })
+    }
 
-    document.getElementById("basebtn").addEventListener("click",function(){
+    function base(){
         if(document.getElementById("base").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","focus")
             document.getElementById("food").setAttribute("class","unfocus")
@@ -262,9 +263,9 @@
         } else {
             return;
         }
-    })
+    }
 
-    document.getElementById("foodbtn").addEventListener("click",function(){
+    function food(){
         if(document.getElementById("food").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","unfocus")
             document.getElementById("food").setAttribute("class","focus")
@@ -275,10 +276,10 @@
         } else {
             return;
         }
-    })
+    }
 
-    document.getElementById("medsbtn").addEventListener("click",function(){
-        if(document.getElementById("food").hasAttribute("class","unfocus")){
+    function meds(){
+        if(document.getElementById("meds").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","unfocus")
             document.getElementById("food").setAttribute("class","unfocus")
             document.getElementById("meds").setAttribute("class","focus")
@@ -288,10 +289,10 @@
         } else {
             return;
         }
-    })
+    }
 
-    document.getElementById("utilsbtn").addEventListener("click",function(){
-        if(document.getElementById("food").hasAttribute("class","unfocus")){
+    function utils(){
+        if(document.getElementById("utils").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","unfocus")
             document.getElementById("food").setAttribute("class","unfocus")
             document.getElementById("meds").setAttribute("class","unfocus")
@@ -301,10 +302,11 @@
         } else {
             return;
         }
-    })
+    }
 
-    document.getElementById("cmnmrlbtn").addEventListener("click",function(){
-        if(document.getElementById("food").hasAttribute("class","unfocus")){
+
+    function cmn(){
+        if(document.getElementById("cmnmrl").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","unfocus")
             document.getElementById("food").setAttribute("class","unfocus")
             document.getElementById("meds").setAttribute("class","unfocus")
@@ -314,10 +316,10 @@
         } else {
             return;
         }
-    })
+    }
 
-    document.getElementById("raremrlbtn").addEventListener("click",function(){
-        if(document.getElementById("food").hasAttribute("class","unfocus")){
+    function rare(){
+        if(document.getElementById("raremrl").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","unfocus")
             document.getElementById("food").setAttribute("class","unfocus")
             document.getElementById("meds").setAttribute("class","unfocus")
@@ -327,7 +329,44 @@
         } else {
             return;
         }
+    }
+
+    hotkeys('s', function(){
+        menu();
     })
+
+    hotkeys('b', function(){
+        base();
+    })
+
+    hotkeys('f', function(){
+        food();
+    })
+
+    hotkeys('m', function(){
+        meds();
+    })
+
+    hotkeys('u', function(){
+        utils();
+    })
+
+    hotkeys('c', function(){
+        cmn();
+    })
+
+    hotkeys('r', function(){
+        rare();
+    })
+
+    hotkeys('ctrl + backspace', function(){
+        if(window.confirm("Do you really want to exit?")){
+            window.location.replace("https://rus1130.github.io/projects/coloria2/view/hmld-menu");
+        } else {
+            return;
+        }   
+    })
+
 
     document.getElementById("switcher").addEventListener("change",function(){
         var e = document.getElementById("switcher");
