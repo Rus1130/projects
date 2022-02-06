@@ -224,14 +224,14 @@
     </select>
     <div id="viewbox">
         <div id="settings">
-            <div id="settingsbtn" class="settingsbtn" data-i18n-key="settings" onclick="menu()">Settings</div>
+            <div id="settingsbtn" class="settingsbtn" data-i18n-key="settings" onclick="menu()" title="s">Settings</div>
             <div id="menu" class="unfocus" style="text-align: center;">
-                <div id="backbtn" data-i18n-key="back" class="backbtn" onclick="window.location='hmld-menu'">Back</div>
-                <div id="basebtn" data-i18n-key="base" class="settingbase" onclick="base()">Basemap</div>
-                <div id="tempbtn" data-i18n-key="temp" class="settingtemp" onclick="temp()">Temperature</div>
-                <div id="biomebtn" data-i18n-key="biome" class="settingbiome" onclick="biome()">Biomes</div>
-                <div id="heightbtn" data-i18n-key="height" class="settingheight" onclick="height()">Heightmap</div>
-                <div id="precipbtn" data-i18n-key="precip" class="settingprecip" onclick="precip()">Precipitation</div>
+                <div id="backbtn" data-i18n-key="back" class="backbtn" onclick="window.location='hmld-menu'" title="ctrl + backspace">Back</div>
+                <div id="basebtn" data-i18n-key="base" class="settingbase" onclick="base()" title="b">Basemap</div>
+                <div id="tempbtn" data-i18n-key="temp" class="settingtemp" onclick="temp()" title="t">Temperature</div>
+                <div id="biomebtn" data-i18n-key="biome" class="settingbiome" onclick="biome()" title="i">Biomes</div>
+                <div id="heightbtn" data-i18n-key="height" class="settingheight" onclick="height()" title="h">Heightmap</div>
+                <div id="precipbtn" data-i18n-key="precip" class="settingprecip" onclick="precip()" title="p">Precipitation</div>
             </div>
         </div>
         <div id="layers">
@@ -274,18 +274,15 @@
 </body>
 
 <script>
+    
     function menu(){
         if(document.getElementById("menu").hasAttribute("class","unfocus")){
             document.getElementById("menu").removeAttribute("class","unfocus")
             document.getElementById("settingsbtn").removeAttribute("style","opacity: 100%;")
         } else {
             document.getElementById("menu").setAttribute("class","unfocus")
-            document.getElementById("keygrid").setAttribute("class","unfocus")
         }
     }
-
-
-
 
     function base(){
         if(document.getElementById("base").hasAttribute("class","unfocus")){
@@ -300,7 +297,6 @@
         }
     }
 
-
     function temp(){
         if(document.getElementById("temp").hasAttribute("class","unfocus")){
             document.getElementById("base").setAttribute("class","unfocus")
@@ -313,7 +309,6 @@
             return;
         }
     }
-
 
     function biome(){
         if(document.getElementById("biome").hasAttribute("class","unfocus")){

@@ -160,26 +160,26 @@
     </select>
     <div id="viewbox">
         <div id="settings" style="user-select: none;">
-            <div id="settingsbtn" class="settingsbtn" data-i18n-key="settings" onclick="menu()">Settings</div>
+            <div id="settingsbtn" class="settingsbtn" data-i18n-key="settings" onclick="menu()" title="s">Settings</div>
             <div id="menu" class="unfocus" style="text-align: center; user-select: none;">
-                <div id="backbtn" data-i18n-key="back" class="backbtn" onclick="window.location='hmld-menu'">Back</div>
-                <div id="nonebtn" data-i18n-key="none" class="settingnone" onclick="none()">No Labels</div>
-                <div id="namebtn" data-i18n-key="name" class="settingname" onclick="label()">Country Labels</div>
-                <div id="creatorbtn" data-i18n-key="creator" class="settingcreator" onclick="creator()">Country Creator Labels</div>
+                <div id="backbtn" data-i18n-key="back" class="backbtn" onclick="window.location='hmld-menu'" title="ctrl + backspace">Back</div>
+                <div id="nonebtn" data-i18n-key="none" class="settingnone" onclick="none()" title="n">No Labels</div>
+                <div id="namebtn" data-i18n-key="name" class="settingname" onclick="label()" title="l">Country Labels</div>
+                <div id="creatorbtn" data-i18n-key="creator" class="settingcreator" onclick="creator()" title="c">Country Creator Labels</div>
             </div>
         </div>
         <div id="layers" style="user-select: none;">
             <img id="none" class="focus" src="../maps/hmld-polit/none.png" style="margin: 0; object-fit: fill;">
             <img id="name" class="unfocus" src="../maps/hmld-polit/name.png">
             <img id="creator" class="unfocus" src="../maps/hmld-polit/creator.png">
-            <img src="../maps/hmld-polit/cok-sta.svg" style="opacity: 0%; cursor: pointer; position: absolute; top: 1017px; left: 1311px; margin: 0" onclick="window.location='https://slimwiki.com/coloria/cok-sta'">
-            <img src="../maps/hmld-polit/jeotang.svg" style="opacity: 0%; cursor: pointer; position: absolute; top: 896px; left: 906px; margin: 0" onclick="window.location='https://slimwiki.com/coloria/j%C3%A9ot%C4%81ng'">
-            <img src="../maps/hmld-polit/adav.svg" style="opacity: 0%; cursor: pointer; position: absolute; top: 750px; left: 2551px; margin: 0" onclick="window.location='https://slimwiki.com/coloria/adav-federation'">
-            <img src="../maps/hmld-polit/kaava.svg" style="opacity: 0%; cursor: pointer; position: absolute; top: 1575px; left: 1921px; margin: 0" onclick="window.location='https://slimwiki.com/coloria/kaava'">
-            <img src="../maps/hmld-polit/ebana.svg" style="opacity: 0%; cursor: pointer; position: absolute; top: 1435px; left: 1121px; margin: 0" onclick="window.location='https://slimwiki.com/coloria/%C3%A9bana-islands'">
-            <img src="../maps/hmld-polit/essh.svg" style="opacity: 0%; cursor: pointer; position: absolute; top: 1567px; left: 3562px; margin: 0" onclick="window.location='https://slimwiki.com/coloria/k%C9%A6t%CC%81n%C4%B1s%C8%B7%E2%B1%A8e%C4%B1t%CC%81al%CC%81an%CC%8B-%C9%99%C4%B1s%CC%8Cs%CC%81%E2%B1%A8ut%CC%81s%C4%B1t%CC%81san%CC%8B'">
-            <img src="../maps/hmld-polit/naoji.svg" style="opacity: 0%; cursor: pointer; position: absolute; top: 1003px; left: 2102px; margin: 0" onclick="window.location='https://slimwiki.com/coloria/naoji'">
-            <img src="../maps/hmld-polit/jwacha.svg" style="opacity: 0%; cursor: pointer; position: absolute; top: 828px; left: 2703px; margin: 0" onclick="window.location='https://slimwiki.com/coloria/jwacha'">
+            <img src="../maps/hmld-polit/cok-sta.svg" title="Cok Sta" style="opacity: 0%; cursor: pointer; position: absolute; top: 1017px; left: 1311px; margin: 0" onclick="window.location='https://slimwiki.com/coloria/cok-sta'">
+            <img src="../maps/hmld-polit/jeotang.svg" title="Jéotāng" style="opacity: 0%; cursor: pointer; position: absolute; top: 896px; left: 906px; margin: 0" onclick="window.location='https://slimwiki.com/coloria/j%C3%A9ot%C4%81ng'">
+            <img src="../maps/hmld-polit/adav.svg" title="Adav Federation" style="opacity: 0%; cursor: pointer; position: absolute; top: 750px; left: 2551px; margin: 0" onclick="window.location='https://slimwiki.com/coloria/adav-federation'">
+            <img src="../maps/hmld-polit/kaava.svg" title="Kaava" style="opacity: 0%; cursor: pointer; position: absolute; top: 1575px; left: 1921px; margin: 0" onclick="window.location='https://slimwiki.com/coloria/kaava'">
+            <img src="../maps/hmld-polit/ebana.svg" title="Ébana Islands" style="opacity: 0%; cursor: pointer; position: absolute; top: 1435px; left: 1121px; margin: 0" onclick="window.location='https://slimwiki.com/coloria/%C3%A9bana-islands'">
+            <img src="../maps/hmld-polit/essh.svg" title="Kɦt́nısȷⱨeıt́aĺan̋ Əıšśⱨut́sıt́san̋" style="opacity: 0%; cursor: pointer; position: absolute; top: 1567px; left: 3562px; margin: 0" onclick="window.location='https://slimwiki.com/coloria/k%C9%A6t%CC%81n%C4%B1s%C8%B7%E2%B1%A8e%C4%B1t%CC%81al%CC%81an%CC%8B-%C9%99%C4%B1s%CC%8Cs%CC%81%E2%B1%A8ut%CC%81s%C4%B1t%CC%81san%CC%8B'">
+            <img src="../maps/hmld-polit/naoji.svg" title="Naoji" style="opacity: 0%; cursor: pointer; position: absolute; top: 1003px; left: 2102px; margin: 0" onclick="window.location='https://slimwiki.com/coloria/naoji'">
+            <img src="../maps/hmld-polit/jwacha.svg" title="Jwacha" style="opacity: 0%; cursor: pointer; position: absolute; top: 828px; left: 2703px; margin: 0" onclick="window.location='https://slimwiki.com/coloria/jwacha'">
         </div>
     </div>
 
