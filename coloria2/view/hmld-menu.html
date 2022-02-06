@@ -109,6 +109,13 @@ h1 {
             right: 0;
         }
     }
+    .switcher {
+        position: absolute;
+        width: 125px;
+        height: 25px;
+        font-family: Arial, Helvetica, sans-serif;
+        cursor: pointer;
+    }
 </style>
 <head>
     <title>Coloria 2.0 Homeland Menu</title>
@@ -122,7 +129,7 @@ h1 {
     <script src="localization.js"></script>
 </head>
 <body>
-    <select data-i18n-switcher id="switcher" style="position: absolute; width: 125px; height: 25px; font-family: Arial, Helvetica, sans-serif;">
+    <select data-i18n-switcher id="switcher" class="switcher">
         <option value="br">Português Brasil</option>
         <option value="en">English</option>
         <option value="es">Español (MX)</option>
