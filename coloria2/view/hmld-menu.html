@@ -96,7 +96,7 @@ h1 {
     background-color: #F68EF6;
     font-size: 16pt;
 }
-@media screen and (orientation: portrait) and (min-width: 320px) and (max-width: 812px){
+    @media screen and (orientation: portrait) and (max-width: 400px){
         #viewbox {
             object-fit: contain;
             transform: rotate(90deg);
@@ -111,11 +111,17 @@ h1 {
         #switcher {
             object-fit: contain;
             transform: rotate(90deg);
-            transform-origin: right top;
+            transform-origin: top left;
             overflow-x: hidden;
             position: absolute;
-            top: 100%;
-            right: 0;
+            left: 100%;
+            top: 0;
+        }
+        #toptext {
+            transform: rotate(90deg);
+        }
+        #btns {
+            transform: rotate(90deg);
         }
     }
     
@@ -154,8 +160,8 @@ h1 {
         <option value="sz">Sорзиjаьмелы</option>
         <option value="vi">Tiếng Việt</option>
     </select>
-    <h1 class="toptext" data-i18n-key="hmld-toptext">Homeland Menu</h1>
-    <div class="grid">
+    <h1 class="toptext" id="toptext" data-i18n-key="hmld-toptext">Homeland Menu</h1>
+    <div class="grid" id="btns">
         <div class="geobtn" data-i18n-key="geo-btn" onclick="window.location.href='hmld-geo'">Homeland Geography Map</div>
         <div class="resobtn" data-i18n-key="reso-btn" onclick="window.location='hmld-reso'">Homeland Resource Map</div>
         <div class="hmapbtn" data-i18n-key="hmap" onclick="window.location='hmld-polit'">Homeland Political Map</div>

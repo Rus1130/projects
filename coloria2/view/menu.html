@@ -110,28 +110,42 @@ body {
     transform: translate(-50%, -50%);
     font-size: 14pt;
 }
-@media screen and (orientation: portrait) and (min-width: 320px) and (max-width: 812px){
-        #viewbox {
-            object-fit: contain;
-            transform: rotate(90deg);
-            transform-origin: right top;
-            width: 100vh;
-            height: 100vw;
-            overflow-x: hidden;
-            position: absolute;
-            top: 100%;
-            right: 0;
-        }
-        #switcher {
-            object-fit: contain;
-            transform: rotate(90deg);
-            transform-origin: right top;
-            overflow-x: hidden;
-            position: absolute;
-            top: 100%;
-            right: 0;
-        }
+@media screen and (orientation: portrait) and (max-width: 430px){
+    #viewbox {
+        object-fit: contain;
+        transform: rotate(90deg);
+        transform-origin: right top;
+        width: 100vh;
+        height: 100vw;
+        overflow-x: hidden;
+        position: absolute;
+        top: 100%;
+        right: 0;
     }
+    #switcher {
+        object-fit: contain;
+        transform: rotate(90deg);
+        transform-origin: top left;
+        overflow-x: hidden;
+        position: absolute;
+        left: 100%;
+        top: 0;
+    }
+    #toptext {
+        transform: rotate(90deg);
+    }
+    #midtext {
+        transform: rotate(90deg);
+    }
+    #footnote {
+        position: absolute;
+        transform: rotate(90deg);
+        bottom: 0;
+    }
+    #btns {
+        transform: rotate(90deg);
+    }
+}
 .switcher {
     position: absolute;
     width: 125px;
@@ -167,14 +181,14 @@ body {
         <option value="sz">Sорзиjаьмелы</option>
         <option value="vi">Tiếng Việt</option>
     </select>
-    <h1 class="toptext" data-i18n-key="welcome">Welcome to the official Coloria 2.0 website!</h1>
-    <p class="midtext" data-i18n-key="c-list">Continent List:</p>
-    <div class="grid">
+    <h1 class="toptext" id="toptext" data-i18n-key="welcome">Welcome to the official Coloria 2.0 website!</h1>
+    <p class="midtext" id="midtext" data-i18n-key="c-list">Continent List:</p>
+    <div class="grid" id="btns">
         <div data-i18n-key="homeland" class="hmldbtn" onclick="window.location='https://rus1130.github.io/projects/coloria2/view/hmld-menu'">Homeland</div>
         <div data-i18n-key="uncont" class="unbtn1">Undiscovered</div>
         <div data-i18n-key="uncont" class="unbtn2">Undiscovered</div>
     </div>
-    <div class="footnote" data-i18n-key="footnote">Maps are best viewed in landscape</div>
+    <div class="footnote" id="footnote" data-i18n-key="footnote">Maps are best viewed in landscape</div>
 </body>
 
 <script>
