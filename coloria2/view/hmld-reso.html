@@ -175,13 +175,22 @@
         text-align: center;
 
     }
-    @media screen and (orientation: portrait){
-        html {
+    @media screen and (orientation: portrait) and (min-width: 320px) and (max-width: 812px){
+        #viewbox {
             object-fit: contain;
             transform: rotate(90deg);
             transform-origin: right top;
             width: 100vh;
             height: 100vw;
+            overflow-x: hidden;
+            position: absolute;
+            top: 100%;
+            right: 0;
+        }
+        #switcher {
+            object-fit: contain;
+            transform: rotate(90deg);
+            transform-origin: right top;
             overflow-x: hidden;
             position: absolute;
             top: 100%;

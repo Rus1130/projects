@@ -148,13 +148,32 @@
         opacity: 100%;
         cursor: pointer;
     }
-    @media screen and (orientation: portrait){
-        html {
+    @media screen and (orientation: portrait) and (min-width: 320px) and (max-width: 812px){
+        #viewbox {
             object-fit: contain;
             transform: rotate(90deg);
             transform-origin: right top;
             width: 100vh;
             height: 100vw;
+            overflow-x: hidden;
+            position: absolute;
+            top: 100%;
+            right: 0;
+        }
+        #switcher {
+            object-fit: contain;
+            transform: rotate(90deg);
+            transform-origin: right top;
+            overflow-x: hidden;
+            position: absolute;
+            top: 100%;
+            right: 0;
+        }
+        #keygrid {
+            object-fit: contain;
+            transform: rotate(90deg);
+            transform-origin: right -125px;
+            transform-origin: top -50px;
             overflow-x: hidden;
             position: absolute;
             top: 100%;
@@ -242,36 +261,37 @@
             <img id="precip" class="unfocus" src="../maps/hmld-geo/precip.png">
         </div>
     </div>
-    <div id="keygrid" class="keygrid, unfocus">
-        <!--New row-->
-        <div id="cold-dsrt" style="width: 30px; height: 30px; background-color: rgb(189,192,129);"></div>
-        <div style="margin-top: 5px;">Cold Desert</div>
-        <!--New row-->
-        <div id="hot-dsrt" style="width: 30px; height: 30px; background-color: rgb(255, 241, 152);"></div>
-        <div style="margin-top: 5px;">Hot Desert</div>
-        <!--New row-->
-        <div id="grass" style="width: 30px; height: 30px; background-color: rgb(209, 223, 136);"></div>
-        <div style="margin-top: 5px;">Grassland</div>
-        <!--New row-->
-        <div id="savan" style="width: 30px; height: 30px; background-color: rgb(219, 217, 124);"></div>
-        <div style="margin-top: 5px;">Savannah</div>
-        <!--New row-->
-        <div id="trop-for" style="width: 30px; height: 30px; background-color: rgb(190, 227, 88);"></div>
-        <div style="margin-top: 5px;">Tropical Seasonal Forest</div>
-        <!--New row-->
-        <div id="trop-rain" style="width: 30px; height: 30px; background-color: rgb(131, 212, 50);"></div>
-        <div style="margin-top: 5px;">Tropical Rainforest</div>
-        <!--New row-->
-        <div id="temp-for" style="width: 30px; height: 30px; background-color: rgb(42, 196, 81);"></div>
-        <div style="margin-top: 5px;">Temperate Deciduous Forest</div>
-        <!--New row-->
-        <div id="temp-rain" style="width: 30px; height: 30px; background-color: rgb(66, 163, 64);"></div>
-        <div style="margin-top: 5px;">Temperate Rainforest</div>
-        <!--New row-->
-        <div id="wet" style="width: 30px; height: 30px; background-color: rgb(13, 151, 46);"></div>
-        <div style="margin-top: 5px;">Wetland</div>
-    </div>
 </body>
+
+<div id="keygrid" class="keygrid, unfocus">
+    <!--New row-->
+    <div id="cold-dsrt" style="width: 30px; height: 30px; background-color: rgb(189,192,129);"></div>
+    <div style="margin-top: 5px;">Cold Desert</div>
+    <!--New row-->
+    <div id="hot-dsrt" style="width: 30px; height: 30px; background-color: rgb(255, 241, 152);"></div>
+    <div style="margin-top: 5px;">Hot Desert</div>
+    <!--New row-->
+    <div id="grass" style="width: 30px; height: 30px; background-color: rgb(209, 223, 136);"></div>
+    <div style="margin-top: 5px;">Grassland</div>
+    <!--New row-->
+    <div id="savan" style="width: 30px; height: 30px; background-color: rgb(219, 217, 124);"></div>
+    <div style="margin-top: 5px;">Savannah</div>
+    <!--New row-->
+    <div id="trop-for" style="width: 30px; height: 30px; background-color: rgb(190, 227, 88);"></div>
+    <div style="margin-top: 5px;">Tropical Seasonal Forest</div>
+    <!--New row-->
+    <div id="trop-rain" style="width: 30px; height: 30px; background-color: rgb(131, 212, 50);"></div>
+    <div style="margin-top: 5px;">Tropical Rainforest</div>
+    <!--New row-->
+    <div id="temp-for" style="width: 30px; height: 30px; background-color: rgb(42, 196, 81);"></div>
+    <div style="margin-top: 5px;">Temperate Deciduous Forest</div>
+    <!--New row-->
+    <div id="temp-rain" style="width: 30px; height: 30px; background-color: rgb(66, 163, 64);"></div>
+    <div style="margin-top: 5px;">Temperate Rainforest</div>
+    <!--New row-->
+    <div id="wet" style="width: 30px; height: 30px; background-color: rgb(13, 151, 46);"></div>
+    <div style="margin-top: 5px;">Wetland</div>
+</div>
 
 <script>
     

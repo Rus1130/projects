@@ -96,8 +96,8 @@ h1 {
     background-color: #F68EF6;
     font-size: 16pt;
 }
-@media screen and (orientation: portrait){
-        html {
+@media screen and (orientation: portrait) and (min-width: 320px) and (max-width: 812px){
+        #viewbox {
             object-fit: contain;
             transform: rotate(90deg);
             transform-origin: right top;
@@ -108,7 +108,17 @@ h1 {
             top: 100%;
             right: 0;
         }
+        #switcher {
+            object-fit: contain;
+            transform: rotate(90deg);
+            transform-origin: right top;
+            overflow-x: hidden;
+            position: absolute;
+            top: 100%;
+            right: 0;
+        }
     }
+    
     .switcher {
         position: absolute;
         width: 125px;
