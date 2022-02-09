@@ -138,6 +138,9 @@
         font-family: Arial, Helvetica, sans-serif;
         cursor: pointer;
     }
+    html {
+        scroll-behavior: smooth;
+    }
 </style>
 
     <title>Coloria 2.0 Homeland Menu</title>
@@ -282,6 +285,20 @@
     hotkeys('c', function(){
         creator()
     })
+
+    hotkeys('left', function(){
+        window.scrollBy(-200,0)
+    })
+    hotkeys('right', function(){
+        window.scrollBy(200,0)
+    })
+    hotkeys('up', function(){
+        window.scrollBy(0,-200)
+    })
+    hotkeys('down', function(){
+        window.scrollBy(0,200)
+    })
+
 
     document.getElementById("switcher").addEventListener("change",function(){
         var e = document.getElementById("switcher");
