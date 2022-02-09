@@ -96,34 +96,46 @@ h1 {
     background-color: #F68EF6;
     font-size: 16pt;
 }
-    @media screen and (orientation: portrait) and (max-width: 400px){
-        #viewbox {
-            object-fit: contain;
-            transform: rotate(90deg);
-            transform-origin: right top;
-            width: 100vh;
-            height: 100vw;
-            overflow-x: hidden;
-            position: absolute;
-            top: 100%;
-            right: 0;
-        }
-        #switcher {
-            object-fit: contain;
-            transform: rotate(90deg);
-            transform-origin: top left;
-            overflow-x: hidden;
-            position: absolute;
-            left: 100%;
-            top: 0;
-        }
-        #toptext {
-            transform: rotate(90deg);
-        }
-        #btns {
-            transform: rotate(90deg);
-        }
+.footnote {
+    display: grid;
+    column-count: 1;
+    column-width: 100%;
+    height: 30px;
+    position: absolute;
+    bottom: 1%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14pt;
+    font-family: Arial, Helvetica, sans-serif;
+}
+@media screen and (orientation: portrait) and (max-width: 400px){
+    #viewbox {
+        object-fit: contain;
+        transform: rotate(90deg);
+        transform-origin: right top;
+        width: 100vh;
+        height: 100vw;
+        overflow-x: hidden;
+        position: absolute;
+        top: 100%;
+        right: 0;
     }
+    #switcher {
+        object-fit: contain;
+        transform: rotate(90deg);
+        transform-origin: top left;
+        overflow-x: hidden;
+        position: absolute;
+        left: 100%;
+        top: 0;
+    }
+    #toptext {
+        transform: rotate(90deg);
+    }
+    #btns {
+        transform: rotate(90deg);
+    }
+}
     
 .switcher {
     position: absolute;
@@ -167,6 +179,7 @@ h1 {
         <div class="hmapbtn" data-i18n-key="hmap" onclick="window.location='hmld-polit'"></div>
         <div class="backbtn" data-i18n-key="back-btn" onclick="window.location='menu'"></div>
     </div>
+    <div class="footnote" id="footnote" data-i18n-key="footnote"></div>
 </body>
 
 <script>
