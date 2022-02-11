@@ -1,3 +1,17 @@
+<style>
+    .center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #grid {
+        display: grid;
+        grid-template-columns: auto auto;
+        grid-template-rows: auto auto auto auto;
+        column-gap: 5px;
+    }
+</style>
+
 <head>
     <title>Coloria 2.0 Weight Converter</title>
     <link rel="shortcut icon" type="image/jpg" href="https://rus1130.github.io/projects/coloria2/view/images/metaimg.png"/>
@@ -8,90 +22,89 @@
     <meta property="og:image:width" content="400">
     <meta property="og:image:height" content="362">
 </head>
-<body>
-    this is not finished
-    <br>
-    convert from:
-    <select id="startunit" onchange="createConversion(), getValue()">
-        <option value="10000">Treeweight (ke)</option>
-        <option value="5000">Halftree (ke)</option>
-        <option value="2000">Birch (ke)</option>
-        <option value="2000">Boatload (st)</option>
-        <option value="2000">Boatload (jw)</option>
-        <option value="1000">Catch (st)</option>
-        <option value="1000">Halfbirch (ke)</option>
-        <option value="1000">Half Boatload (jw)</option>
-        <option value="666.66">Third Boatload (jw)</option>
-        <option value="500">Stump (ke)</option>
-        <option value="400">Lift (st)</option>
-        <option value="333.33">Sixth Boatload (jw)</option>
-        <option value="250">Body (st)</option>
-        <option value="250">Halfstump (ke)</option>
-        <option value="187">Horseload (cuv)</option>
-        <option value="187">Horseload (jw)</option>
-        <option value="100">Twig (ke)</option>
-        <option value="93.7">Half Horseload (jw)</option>
-        <option value="62.7">Third Horseload (jw)</option>
-        <option value="50">Halftwig (ke)</option>
-        <option value="31.21">Sixth Horseload (jw)</option>
-        <option value="25">Quartertwig (ke)</option>
-        <option value="14.8">Rockfull (jw)</option>
-        <option value="10">Sack (ke)</option>
-        <option value="5">Halfsack (ke)</option>
-        <option value="2.44">Boulderfull (jw)</option>
-        <option value="2.2">Kilogram (E)</option>
-        <option value="2">Twicebag (ke)</option>
-        <option value="1.2">Rainworth (jw)</option>
-        <option value="1">Bag (ke)</option>
-        <option value="1">Pound (E)</option>
-        <option value="0.5">Halfbag (ke)</option>
-        <option value="0.2">Waterworth (jw)</option>
-        <option value="0.04">Dropworth (jw)</option>
-    </select>
-    <br>
-    value:
-    <input id="amnt" type="text" value="1" onchange="createConversion(), getValue()">
-    <br>
-    convert to:
-    <select id="endunit" onchange="createConversion(), getValue()">
-        <option value="10000">Treeweight (ke)</option>
-        <option value="5000">Halftree (ke)</option>
-        <option value="2000">Birch (ke)</option>
-        <option value="2000">Boatload (st)</option>
-        <option value="2000">Boatload (jw)</option>
-        <option value="1000">Catch (st)</option>
-        <option value="1000">Halfbirch (ke)</option>
-        <option value="1000">Half Boatload (jw)</option>
-        <option value="666.66">Third Boatload (jw)</option>
-        <option value="500">Stump (ke)</option>
-        <option value="400">Lift (st)</option>
-        <option value="333.33">Sixth Boatload (jw)</option>
-        <option value="250">Body (st)</option>
-        <option value="250">Halfstump (ke)</option>
-        <option value="187">Horseload (cuv)</option>
-        <option value="187">Horseload (jw)</option>
-        <option value="100">Twig (ke)</option>
-        <option value="93.7">Half Horseload (jw)</option>
-        <option value="62.7">Third Horseload (jw)</option>
-        <option value="50">Halftwig (ke)</option>
-        <option value="31.21">Sixth Horseload (jw)</option>
-        <option value="25">Quartertwig (ke)</option>
-        <option value="14.8">Rockfull (jw)</option>
-        <option value="10">Sack (ke)</option>
-        <option value="5">Halfsack (ke)</option>
-        <option value="2.44">Boulderfull (jw)</option>
-        <option value="2.2">Kilogram (E)</option>
-        <option value="2">Twicebag (ke)</option>
-        <option value="1.2">Rainworth (jw)</option>
-        <option value="1">Bag (ke)</option>
-        <option value="1">Pound (E)</option>
-        <option value="0.5">Halfbag (ke)</option>
-        <option value="0.2">Waterworth (jw)</option>
-        <option value="0.04">Dropworth (jw)</option>
-    </select>
-    <br>
-    output: 
-    <span id="output">1</span><span id="referer"> Treeweight</span>
+<body class="center">
+    <div id="grid">
+        Convert From:
+        <select id="startunit" onchange="createConversion(), getValue()">
+            <option value="10000">Treeweight (ke)</option>
+            <option value="5000">Halftree (ke)</option>
+            <option value="2000">Birch (ke)</option>
+            <option value="2000">Boatload (st)</option>
+            <option value="2000">Boatload (jw)</option>
+            <option value="1000">Catch (st)</option>
+            <option value="1000">Halfbirch (ke)</option>
+            <option value="1000">Half Boatload (jw)</option>
+            <option value="666.66">Third Boatload (jw)</option>
+            <option value="500">Stump (ke)</option>
+            <option value="400">Lift (st)</option>
+            <option value="333.33">Sixth Boatload (jw)</option>
+            <option value="250">Body (st)</option>
+            <option value="250">Halfstump (ke)</option>
+            <option value="187">Horseload (cuv)</option>
+            <option value="187">Horseload (jw)</option>
+            <option value="100">Twig (ke)</option>
+            <option value="93.7">Half Horseload (jw)</option>
+            <option value="62.7">Third Horseload (jw)</option>
+            <option value="50">Halftwig (ke)</option>
+            <option value="31.21">Sixth Horseload (jw)</option>
+            <option value="25">Quartertwig (ke)</option>
+            <option value="14.8">Rockfull (jw)</option>
+            <option value="10">Sack (ke)</option>
+            <option value="5">Halfsack (ke)</option>
+            <option value="2.44">Boulderfull (jw)</option>
+            <option value="2.2">Kilogram (E)</option>
+            <option value="2">Twicebag (ke)</option>
+            <option value="1.2">Rainworth (jw)</option>
+            <option value="1">Bag (ke)</option>
+            <option value="1">Pound (E)</option>
+            <option value="0.5">Halfbag (ke)</option>
+            <option value="0.2">Waterworth (jw)</option>
+            <option value="0.04">Dropworth (jw)</option>
+        </select>
+        Value:
+        <input id="amnt" type="text" value="1" onchange="createConversion(), getValue()">
+        Convert To:
+        <select id="endunit" onchange="createConversion(), getValue()">
+            <option value="10000">Treeweight (ke)</option>
+            <option value="5000">Halftree (ke)</option>
+            <option value="2000">Birch (ke)</option>
+            <option value="2000">Boatload (st)</option>
+            <option value="2000">Boatload (jw)</option>
+            <option value="1000">Catch (st)</option>
+            <option value="1000">Halfbirch (ke)</option>
+            <option value="1000">Half Boatload (jw)</option>
+            <option value="666.66">Third Boatload (jw)</option>
+            <option value="500">Stump (ke)</option>
+            <option value="400">Lift (st)</option>
+            <option value="333.33">Sixth Boatload (jw)</option>
+            <option value="250">Body (st)</option>
+            <option value="250">Halfstump (ke)</option>
+            <option value="187">Horseload (cuv)</option>
+            <option value="187">Horseload (jw)</option>
+            <option value="100">Twig (ke)</option>
+            <option value="93.7">Half Horseload (jw)</option>
+            <option value="62.7">Third Horseload (jw)</option>
+            <option value="50">Halftwig (ke)</option>
+            <option value="31.21">Sixth Horseload (jw)</option>
+            <option value="25">Quartertwig (ke)</option>
+            <option value="14.8">Rockfull (jw)</option>
+            <option value="10">Sack (ke)</option>
+            <option value="5">Halfsack (ke)</option>
+            <option value="2.44">Boulderfull (jw)</option>
+            <option value="2.2">Kilogram (E)</option>
+            <option value="2">Twicebag (ke)</option>
+            <option value="1.2">Rainworth (jw)</option>
+            <option value="1">Bag (ke)</option>
+            <option value="1">Pound (E)</option>
+            <option value="0.5">Halfbag (ke)</option>
+            <option value="0.2">Waterworth (jw)</option>
+            <option value="0.04">Dropworth (jw)</option>
+        </select>
+        Output:
+        <div>
+            <span id="output">1</span><span id="referer"> Treeweight</span>
+        </div>
+    </div>
 </body>
 <script>
 
@@ -139,8 +152,8 @@ var jsonReferer = {
         pl:"Boatloads"
     },
     "Boatload (jw)":{
-        sng:"",
-        pl:""
+        sng:"Boatload",
+        pl:"Boatloads"
     },
     "Catch (st)":{
         sng:"Catch",
