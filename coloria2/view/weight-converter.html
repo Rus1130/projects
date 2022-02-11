@@ -9,8 +9,8 @@
         display: grid;
         grid-template-columns: auto auto;
         grid-template-rows: auto auto auto auto;
-        column-gap: 5px;
-        row-gap: 2px;
+        column-gap: 7px;
+        row-gap: 3px;
         position: absolute;
     }
     html {
@@ -29,6 +29,18 @@
     select::-webkit-scrollbar {
         display: none;
     }
+    .descriptor {
+        display: flex;
+        align-items: center;
+        justify-content: end;
+    }
+    .value {
+        max-width: 400px; 
+        padding: 5px;
+        font-size: 12pt;
+        border-radius: 0%;
+        border-width: 1px;
+    }
 </style>
 
 <head>
@@ -43,7 +55,7 @@
 </head>
 <body class="center">
     <div id="grid">
-        <span style="text-align: right">Convert From:</span>
+        <span class="descriptor">Convert From:</span>
         <select id="startunit" onchange="createConversion(), getValue()" style="max-width: 400px;">
             <option value="10000">Treeweight (ke)</option>
             <option value="5000">Halftree (ke)</option>
@@ -80,9 +92,9 @@
             <option value="0.2">Waterworth (jw)</option>
             <option value="0.04">Dropworth (jw)</option>
         </select>
-        <span style="text-align: right">Value:</span>
-        <input id="amnt" type="text" value="1" onchange="createConversion(), getValue()" style="max-width: 400px; padding: 5px;">
-        <span style="text-align: right">Convert to:</span>
+        <span class="descriptor">Value:</span>
+        <input class="value" id="amnt" type="text" value="1" onchange="createConversion(), getValue()">
+        <span class="descriptor">Convert to:</span>
         <select id="endunit" onchange="createConversion(), getValue()" style="max-width: 400px;">
             <option value="10000">Treeweight (ke)</option>
             <option value="5000">Halftree (ke)</option>
@@ -119,7 +131,7 @@
             <option value="0.2">Waterworth (jw)</option>
             <option value="0.04">Dropworth (jw)</option>
         </select>
-        <span style="text-align: right">Output:</span>
+        <span class="descriptor">Output:</span>
         <div>
             <span id="output" style="max-width: 400px;">1</span><span id="referer" style="max-width: 400px;"> Treeweight</span>
         </div>
