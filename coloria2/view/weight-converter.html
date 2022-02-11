@@ -1,8 +1,18 @@
+<head>
+    <title>Coloria 2.0 Weight Converter</title>
+    <link rel="shortcut icon" type="image/jpg" href="https://rus1130.github.io/projects/coloria2/view/images/metaimg.png"/>
+    <meta property="og:title" content="Coloria 2.0 Weight Converter">
+    <meta property="og:description" content="Coloria 2.0 Weight Converter">
+    <meta property="og:image" content="https://rus1130.github.io/projects/coloria2/view/images/metaimg.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="400">
+    <meta property="og:image:height" content="362">
+</head>
 <body>
     this is not finished
     <br>
     convert from:
-    <select id="startunit" onchange="createConversion()">
+    <select id="startunit" onchange="createConversion(), getValue()">
         <option value="10000">Treeweight (ke)</option>
         <option value="5000">Halftree (ke)</option>
         <option value="2000">Birch (ke)</option>
@@ -35,12 +45,12 @@
         <option value="1">Bag (ke)</option>
         <option value="1">Pound (E)</option>
         <option value="0.5">Halfbag (ke)</option>
-        <option value="0.2">Rainworth (jw)</option>
+        <option value="0.2">Waterworth (jw)</option>
         <option value="0.04">Dropworth (jw)</option>
     </select>
     <br>
     value:
-    <input id="amnt" type="text" value="1" onchange="createConversion()">
+    <input id="amnt" type="text" value="1" onchange="createConversion(), getValue()">
     <br>
     convert to:
     <select id="endunit" onchange="createConversion(), getValue()">
@@ -76,30 +86,181 @@
         <option value="1">Bag (ke)</option>
         <option value="1">Pound (E)</option>
         <option value="0.5">Halfbag (ke)</option>
-        <option value="0.2">Rainworth (jw)</option>
+        <option value="0.2">Waterworth (jw)</option>
         <option value="0.04">Dropworth (jw)</option>
     </select>
     <br>
     output: 
-    <span id="output"></span>
+    <span id="output">1</span><span id="referer"> Treeweight</span>
 </body>
 <script>
 
 let output
-var text
-var select
 
 function createConversion(){
     var startVal = document.getElementById("startunit").value;
     var convertAmnt = document.getElementById("amnt").value;
     var endVal = document.getElementById("endunit").value;
-    output = ((startVal * convertAmnt) / endVal).toLocaleString(10);
+
+    output = ((startVal * convertAmnt) / endVal).toLocaleString(5);
     document.getElementById("output").innerHTML = output;
 }
 
 function getValue(){
-    select = document.getElementById('endunit');
-    text = select.options[select.selectedIndex].text;
-    console.log(text);
+    var select = document.getElementById('endunit');
+    var text = select.options[select.selectedIndex].text;
+    var sngText = jsonReferer[document.getElementById('endunit').options[document.getElementById('endunit').selectedIndex].text]["sng"]
+    var plText = jsonReferer[document.getElementById('endunit').options[document.getElementById('endunit').selectedIndex].text]["pl"]
+
+    if(output == 1){
+        document.getElementById("referer").innerHTML = " "+sngText;
+    } else {
+        document.getElementById("referer").innerHTML = " "+plText;
+
+    }
 }
+//json =============================================================================
+
+var jsonReferer = {
+    "Treeweight (ke)":{
+        sng:"Treeweight",
+        pl:"Treeweights"
+    },
+    "Halftree (ke)":{
+        sng:"Halftree",
+        pl:"Halftrees"
+    },
+    "Birch (ke)":{
+        sng:"Birch",
+        pl:"Birches"
+    },
+    "Boatload (st)":{
+        sng:"Boatload",
+        pl:"Boatloads"
+    },
+    "Boatload (jw)":{
+        sng:"",
+        pl:""
+    },
+    "Catch (st)":{
+        sng:"Catch",
+        pl:"Catches"
+    },
+    "Halfbirch (ke)":{
+        sng:"Halfbirch",
+        pl:"Halfbirches"
+    },
+    "Half Boatload (jw)":{
+        sng:"Half Boatload",
+        pl:"Half Boatloads"
+    },
+    "Third Boatload (jw)":{
+        sng:"Third Boatload",
+        pl:"Third Boatloads"
+    },
+    "Stump (ke)":{
+        sng:"Stump",
+        pl:"Stumps"
+    },
+    "Lift (st)":{
+        sng:"Lift",
+        pl:"Lifts"
+    },
+    "Sixth Boatload (jw)":{
+        sng:"Sixth Boatload",
+        pl:"Sixth Boatloads"
+    },
+    "Body (st)":{
+        sng:"Body",
+        pl:"Bodies"
+    },
+    "Halfstump (ke)":{
+        sng:"Halfstump",
+        pl:"Halfstumps"
+    },
+    "Horseload (cuv)":{
+        sng:"Horseload",
+        pl:"Horseloads"
+    },
+    "Horseload (jw)":{
+        sng:"Horseload",
+        pl:"Horseloads"
+    },
+    "Twig (ke)":{
+        sng:"Twig",
+        pl:"Twigs"
+    },
+    "Half Horseload (jw)":{
+        sng:"Half Horseload",
+        pl:"Half Horseloads"
+    },
+    "Third Horseload (jw)":{
+        sng:"Third Horseload",
+        pl:"Third Horseloads"
+    },
+    "Halftwig (ke)":{
+        sng:"Halftwig",
+        pl:"Halftwigs"
+    },
+    "Sixth Horseload (jw)":{
+        sng:"Sixth Horseload",
+        pl:"Sixth Horseloads"
+    },
+    "Quartertwig (ke)":{
+        sng:"Quartertwig",
+        pl:"Quartertwigs"
+    },
+    "Rockfull (jw)":{
+        sng:"Rockfull",
+        pl:"Rockfulls"
+    },
+    "Sack (ke)":{
+        sng:"Sack",
+        pl:"Sacks"
+    },
+    "Halfsack (ke)":{
+        sng:"Halfsack",
+        pl:"Halfsacks"
+    },
+    "Boulderfull (jw)":{
+        sng:"Boulderfull",
+        pl:"Boulderfulls"
+    },
+    "Kilogram (E)":{
+        sng:"Kilogram",
+        pl:"Kilograms"
+    },
+    "Twicebag (ke)":{
+        sng:"Twicebag",
+        pl:"Twicebags"
+    },
+    "Rainworth (jw)":{
+        sng:"Rainworth",
+        pl:"Rainworths"
+    },
+    "Bag (ke)":{
+        sng:"Bag",
+        pl:"Bags"
+    },
+    "Pound (E)":{
+        sng:"Pound",
+        pl:"Pounds"
+    },
+    "Halfbag (ke)":{
+        sng:"Halfbag",
+        pl:"Halfbags"
+    },
+    "Waterworth (jw)":{
+        sng:"Waterworth",
+        pl:"Waterworths"
+    },
+    "Dropworth (jw)":{
+        sng:"Dropworth",
+        pl:"Dropworths"
+    },
+}
+
+
+
+//end json =========================================================================
 </script>
