@@ -19,6 +19,15 @@
     select {
         font-size: 12pt;
         border-radius: 0%;
+        padding: 5px;
+    }
+    select:focus {
+        font-size: 12pt;
+        border-radius: 0%;
+        padding: 5px;
+    }
+    select::-webkit-scrollbar {
+        display: none;
     }
 </style>
 
@@ -72,7 +81,7 @@
             <option value="0.04">Dropworth (jw)</option>
         </select>
         <span style="text-align: right">Value:</span>
-        <input id="amnt" type="text" value="1" onchange="createConversion(), getValue()" style="max-width: 400px;">
+        <input id="amnt" type="text" value="1" onchange="createConversion(), getValue()" style="max-width: 400px; padding: 5px;">
         <span style="text-align: right">Convert to:</span>
         <select id="endunit" onchange="createConversion(), getValue()" style="max-width: 400px;">
             <option value="10000">Treeweight (ke)</option>
