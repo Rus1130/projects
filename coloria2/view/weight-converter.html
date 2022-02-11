@@ -3,12 +3,22 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        
     }
     #grid {
         display: grid;
         grid-template-columns: auto auto;
         grid-template-rows: auto auto auto auto;
         column-gap: 5px;
+        row-gap: 2px;
+        position: absolute;
+    }
+    html {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    select {
+        font-size: 12pt;
+        border-radius: 0%;
     }
 </style>
 
@@ -24,8 +34,8 @@
 </head>
 <body class="center">
     <div id="grid">
-        Convert From:
-        <select id="startunit" onchange="createConversion(), getValue()">
+        <span style="text-align: right">Convert From:</span>
+        <select id="startunit" onchange="createConversion(), getValue()" style="max-width: 400px;">
             <option value="10000">Treeweight (ke)</option>
             <option value="5000">Halftree (ke)</option>
             <option value="2000">Birch (ke)</option>
@@ -61,10 +71,10 @@
             <option value="0.2">Waterworth (jw)</option>
             <option value="0.04">Dropworth (jw)</option>
         </select>
-        Value:
-        <input id="amnt" type="text" value="1" onchange="createConversion(), getValue()">
-        Convert To:
-        <select id="endunit" onchange="createConversion(), getValue()">
+        <span style="text-align: right">Value:</span>
+        <input id="amnt" type="text" value="1" onchange="createConversion(), getValue()" style="max-width: 400px;">
+        <span style="text-align: right">Convert to:</span>
+        <select id="endunit" onchange="createConversion(), getValue()" style="max-width: 400px;">
             <option value="10000">Treeweight (ke)</option>
             <option value="5000">Halftree (ke)</option>
             <option value="2000">Birch (ke)</option>
@@ -100,9 +110,9 @@
             <option value="0.2">Waterworth (jw)</option>
             <option value="0.04">Dropworth (jw)</option>
         </select>
-        Output:
+        <span style="text-align: right">Output:</span>
         <div>
-            <span id="output">1</span><span id="referer"> Treeweight</span>
+            <span id="output" style="max-width: 400px;">1</span><span id="referer" style="max-width: 400px;"> Treeweight</span>
         </div>
     </div>
 </body>
@@ -115,7 +125,7 @@ function createConversion(){
     var convertAmnt = document.getElementById("amnt").value;
     var endVal = document.getElementById("endunit").value;
 
-    output = ((startVal * convertAmnt) / endVal).toLocaleString(5);
+    output = ((startVal * convertAmnt) / endVal).toLocaleString(10);
     document.getElementById("output").innerHTML = output;
 }
 
