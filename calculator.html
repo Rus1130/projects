@@ -47,64 +47,64 @@
 
 <script>
 
-var firstNumber;
+var firstNumber = document.getElementById("display").innerHTML;
 var secondNumber;
 var operation;
-var numSwitch = false;
 var output;
+var cont = false;
+var switched;
 
 function add(){
-    numSwitch = true;
+    cont = true;
     operation = "add";
-    document.getElementById("display").innerHTML = null;
 }
 
 function sub(){
-    numSwitch = true;
-    operation = "min";
-    document.getElementById("display").innerHTML = null;
+    cont = true;
+    operation = "sub";
 }
 
 function mult(){
-    numSwitch = true;
+    cont = true;
     operation = "mult";
-    document.getElementById("display").innerHTML = null;
 }
 
 function div(){
-    numSwitch = true;
+    cont = true;
     operation = "div";
-    document.getElementById("display").innerHTML = null;
 }
 
 function getValue(value){
     document.getElementById("display").append(value)
-    if(numSwitch == true){
-        secondNumber = document.getElementById("display").innerHTML;
-    } else {
+    if(cont == false){
+        switched = false;
         firstNumber = document.getElementById("display").innerHTML;
+    } else {
+        if(!switched){
+            switched = true;
+            document.getElementById("display").innerHTML = null;
+            document.getElementById("display").append(value)
+        }
+        secondNumber = document.getElementById("display").innerHTML;
     }
 }
 
 function calculate(){
-    numSwitch = false;
+    cont = false;
     switch(operation){
         case "add":
-            output = firstNumber += secondNumber
-            document.getElementById("display").innerHTML = output;
-        break;
-        case "min":
-            output = firstNumber -= secondNumber
-            document.getElementById("display").innerHTML = output;
-        break;
-        case "div":
-            output = firstNumber /= secondNumber
-            document.getElementById("display").innerHTML = output;
-        break;
+            output = firstNumber += secondNumber;
+            break;
+        case "sub":
+            output = (firstNumber -= secondNumber);
+            break;
         case "mult":
-            output = firstNumber *= secondNumber
-            document.getElementById("display").innerHTML = output;
-        break;
+            output = (firstNumber *= secondNumber);
+            break;
+        case "div":
+            output = (firstNumber /= secondNumber);
+            break;
     }
+    document.getElementById("display").innerHTML = output;
 }
 </script>
