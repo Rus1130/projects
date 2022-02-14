@@ -1,0 +1,110 @@
+<style>
+    #grid1 {
+        display: grid;
+        grid-template-columns: 50px 50px 50px 50px;
+        grid-template-rows: 50px 50px 50px 50px 50px;
+        row-gap: 5px;
+        column-gap: 5px;
+    }
+    button {
+        border-radius: 0%;
+        border-width: 0.5px;
+        border-color: black;
+    }
+    #display {
+        grid-column: 1/5;
+        width: 215px;
+        height: 50px;
+        border: 0.5px solid black;
+        font-size: 20pt;
+        display: flex;
+        align-items: center;
+        padding: 0;
+    }
+
+</style>
+<body>
+    <div id="grid1">
+        <div id="display"></div>
+        <button id="button7" onclick="getValue(this.value)" value="7">7</button>
+        <button id="button8" onclick="getValue(this.value)" value="8">8</button>
+        <button id="button9" onclick="getValue(this.value)" value="9">9</button>
+        <button id="operation" onclick="div()">/</button>
+        <button id="button4" onclick="getValue(this.value)" value="4">4</button>
+        <button id="button5" onclick="getValue(this.value)" value="5">5</button>
+        <button id="button6" onclick="getValue(this.value)" value="6">6</button>
+        <button id="operation" onclick="mult()">*</button>
+        <button id="button1" onclick="getValue(this.value)" value="1">1</button>
+        <button id="button2" onclick="getValue(this.value)" value="2">2</button>
+        <button id="button3" onclick="getValue(this.value)" value="3">3</button>
+        <button id="operation" onclick="sub()">-</button>
+        <span></span>
+        <button id="button0" onclick="getValue(this.value)" value="0">0</button>
+        <button id="operation" onclick="add()">+</button>
+        <button id="operation" onclick="calculate()">=</button>
+    </div>
+</body>
+
+<script>
+
+var firstNumber;
+var secondNumber;
+var operation;
+var numSwitch = false;
+var output;
+
+function add(){
+    numSwitch = true;
+    operation = "add";
+    document.getElementById("display").innerHTML = null;
+}
+
+function sub(){
+    numSwitch = true;
+    operation = "min";
+    document.getElementById("display").innerHTML = null;
+}
+
+function mult(){
+    numSwitch = true;
+    operation = "mult";
+    document.getElementById("display").innerHTML = null;
+}
+
+function div(){
+    numSwitch = true;
+    operation = "div";
+    document.getElementById("display").innerHTML = null;
+}
+
+function getValue(value){
+    document.getElementById("display").append(value)
+    if(numSwitch == true){
+        secondNumber = document.getElementById("display").innerHTML;
+    } else {
+        firstNumber = document.getElementById("display").innerHTML;
+    }
+}
+
+function calculate(){
+    numSwitch = false;
+    switch(operation){
+        case "add":
+            output = firstNumber += secondNumber
+            document.getElementById("display").innerHTML = output;
+        break;
+        case "min":
+            output = firstNumber -= secondNumber
+            document.getElementById("display").innerHTML = output;
+        break;
+        case "div":
+            output = firstNumber /= secondNumber
+            document.getElementById("display").innerHTML = output;
+        break;
+        case "mult":
+            output = firstNumber *= secondNumber
+            document.getElementById("display").innerHTML = output;
+        break;
+    }
+}
+</script>
