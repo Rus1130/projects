@@ -2,7 +2,7 @@
     #grid1 {
         display: grid;
         grid-template-columns: 50px 50px 50px 50px;
-        grid-template-rows: 50px 50px 50px 50px 50px;
+        grid-template-rows: 50px 50px 50px 50px 50px 50px;
         row-gap: 5px;
         column-gap: 5px;
     }
@@ -24,7 +24,7 @@
         padding-left: 5px;
         padding-right: 5px;
     }
-    .invisible {
+    .none {
         display: none;
     }
     html {
@@ -35,31 +35,36 @@
     <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
 </head>
 <body>
-    <div id="devtools" class="invisible">
-        <div id="innerNum1">0</div>
-        <div id="innerNum2">0</div>
-        <div id="cont">false</div>
-        <div id="newline">false</div>
-        <div id="call">undefined</div>
+    <div id="devtools" class="none">
+        <div id="innerNum1"></div>
+        <div id="innerNum2"></div>
+        <div id="cont"></div>
+        <div id="newline"></div>
+        <div id="call"></div>
+        <div id="output"></div>
     </div>
     <div id="grid1">
         <div id="display"></div>
         <button onclick="getValue(this.value)" value="7">7</button>
         <button onclick="getValue(this.value)" value="8">8</button>
         <button onclick="getValue(this.value)" value="9">9</button>
-        <button onclick="opDiv()">/</button>
+        <button onclick="opDiv()" id="div">÷</button>
         <button onclick="getValue(this.value)" value="4">4</button>
         <button onclick="getValue(this.value)" value="5">5</button>
         <button onclick="getValue(this.value)" value="6">6</button>
-        <button onclick="opMult()">*</button>
+        <button onclick="opMult()" id="mult">×</button>
         <button onclick="getValue(this.value)" value="1">1</button>
         <button onclick="getValue(this.value)" value="2">2</button>
         <button onclick="getValue(this.value)" value="3">3</button>
-        <button onclick="opSub()">-</button>
-        <span></span>
+        <button onclick="opSub()" id="sub">-</button>
+        <button onclick="opMod()" title="modulus" id="mod">%</button>
         <button onclick="getValue(this.value)" value="0">0</button>
-        <button onclick="opAdd()">+</button>
+        <button onclick="opAdd()" id="add">+</button>
         <button onclick="calculate()">=</button>
+        <button onclick="neg()">(-)</button>
+        <button onclick="opPow()"title="exponentiation" id="exp">xˣ</button>
+        <button></button>
+        <button></button>
     </div>
 </body>
 
@@ -69,8 +74,8 @@ var innerNum1 = 0;
 var innerNum2 = 0;
 var cont = false;
 var newline = false;
-var call;
-let output;
+var call = "none";
+let output = "none";
 var display = document.getElementById("display")
 
 function opAdd(){
@@ -85,7 +90,6 @@ function opSub(){
     cont = true;
     newline = true;
     call = "sub";
-
 }
 
 function opMult(){
@@ -93,7 +97,6 @@ function opMult(){
     cont = true;
     newline = true;
     call = "mult"
-
 }
 
 function opDiv(){
@@ -101,10 +104,28 @@ function opDiv(){
     cont = true;
     newline = true;
     call = "div"
+}
+
+function opMod(){
+    solve()
+    cont = true;
+    newline = true;
+    call = "mod";
+}
+
+function opPow(){
+    solve()
+    cont = true;
+    newline = true;
+    call = "pwr";
+}
+
+function neg(){
+    display.prepend("-")
 
 }
 
-function basicMath(operation, num1, num2){
+function math(operation, num1, num2){
     switch(operation){
         case "a":
             return parseInt(num1) + parseInt(num2);
@@ -116,7 +137,13 @@ function basicMath(operation, num1, num2){
             return parseInt(num1) * parseInt(num2);
             break;
         case "d":
-            return parseInt(num1 / num2);
+            return parseInt(num1) / parseInt(num2);
+            break;
+        case "mo":
+            return parseInt(num1) & parseInt(num2)
+            break;
+        case "p":
+            return parseInt(num1) ** parseInt(num2);
             break;
     }
 }
@@ -145,16 +172,21 @@ function solve(){
 function calculate(){
     cont = false;
     switch(call){
-        case "add": output = basicMath("a", innerNum1, innerNum2)
+        case "add": output = math("a", innerNum1, innerNum2)
         break;
-        case "sub": output = basicMath("s", innerNum1, innerNum2)
+        case "sub": output = math("s", innerNum1, innerNum2)
         break;
-        case "mult": output = basicMath("m", innerNum1, innerNum2)
+        case "mult": output = math("m", innerNum1, innerNum2)
         break;
-        case "div": output = basicMath("d", innerNum1, innerNum2)
+        case "div": output = math("d", innerNum1, innerNum2)
+        break;
+        case "mod": output = math("mo",innerNum1, innerNum2)
+        break;
+        case "pwr": output = math("p", innerNum1, innerNum2)
     }
     innerNum1 = 0;
     innerNum2 = 0;
+    call = "none";
     document.getElementById("display").innerHTML = output;
 }
 
@@ -164,14 +196,54 @@ setInterval(function(){
     document.getElementById("cont").innerHTML = "cont: " + cont;
     document.getElementById("newline").innerHTML = "newline: " + newline;
     document.getElementById("call").innerHTML = "call: " + call;
+    document.getElementById("output").innerHTML = "output: " + output;
 },1)
 
-hotkeys("d", function(){
-    if(document.getElementById("devtools").hasAttribute("class","invisible")){
-        document.getElementById("devtools").removeAttribute("class","invisible")
+hotkeys("[", function(){
+    if(document.getElementById("devtools").hasAttribute("class","none")){
+        document.getElementById("devtools").removeAttribute("class","none")
     } else {
-        document.getElementById("devtools").setAttribute("class","invisible")
+        document.getElementById("devtools").setAttribute("class","none")
     }
 })
+hotkeys("1", function (){
+    getValue(1);
+})
+hotkeys("2", function (){
+    getValue(2);
+})
+hotkeys("3", function (){
+    getValue(3);
+})
+hotkeys("4", function (){
+    getValue(4);
+})
+hotkeys("5", function (){
+    getValue(5);
+})
+hotkeys("6", function (){
+    getValue(6);
+})
+hotkeys("7", function (){
+    getValue(7);
+})
+hotkeys("8", function (){
+    getValue(8);
+})
+hotkeys("9", function (){
+    getValue(9);
+})
+hotkeys("0", function (){
+    getValue(0);
+})
+hotkeys("enter", function (){
+    calculate();
+})
+hotkeys("alt + -", function(){
+    neg();
+})
 
+hotkeys("backspace", function(){
+    display.removeChild(display.lastChild)
+})
 </script>
