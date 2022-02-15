@@ -14,3 +14,7 @@ function basicMath(operation, num1, num2){
             break;
     }
 }
+
+function basicMathHelp(){
+    return "operaton: add (a), subtract (s), multiply (m), and divide (d) \n num1: a number \n num2: another number"
+}
