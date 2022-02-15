@@ -1,3 +1,5 @@
+//basic math
+
 function basicMath(operation, num1, num2){
     switch(operation){
         case "a":
@@ -17,4 +19,10 @@ function basicMath(operation, num1, num2){
 
 function basicMathHelp(){
     return "operaton: add (a), subtract (s), multiply (m), and divide (d) \n num1: a number \n num2: another number"
+}
+
+//advanced math
+
+function advMath(operation, num1, num2){
+
 }
