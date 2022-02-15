@@ -1,5 +1,5 @@
 <style>
-    #grid {
+    .grid {
         display: grid;
         grid-template-columns: 50px 50px 50px 50px 50px;
         grid-template-rows: 50px 50px 50px 50px 50px 50px 50px;
@@ -33,9 +33,6 @@
         padding: 0;
         padding-left: 5px;
         padding-right: 5px;
-    }
-    .none {
-        display: none;
     }
     html {
         font-family: Arial, Helvetica, sans-serif;
@@ -90,63 +87,104 @@
         min-width: 226px;
         font-size: 15pt;
     }
+    .unfocus {
+        display: none;
+    }
+    .focus {
+        display: initial;
+    }
+    .buttongrid {
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: 5px;
+        display: grid;
+        grid-template-rows: 50px 50px;
+        row-gap: 5px;
+        grid-template-columns: 100px;
+    }
+    .button-container {
+        border: 0.5px solid black;
+        width: 100px;
+        height: 50px;
+    }
 </style>
 <head>
     <title>Calculator</title>
     <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
 </head>
 <body>
-    <div id="devtools" class="none" style="position: absolute; top: 125px; left: 324px;">
-        <div id="innerNum1"></div>
-        <div id="innerNum2"></div>
-        <div id="cont"></div>
-        <div id="newline"></div>
-        <div id="call"></div>
-        <div id="output"></div>
+    <div id="calculator" class="focus">
+        <div id="devtools" class="unfocus" style="position: absolute; top: 5px; left: 5px;">
+            <div id="innerNum1"></div>
+            <div id="innerNum2"></div>
+            <div id="cont"></div>
+            <div id="newline"></div>
+            <div id="call"></div>
+            <div id="output"></div>
+        </div>
+        <div id="grid" class="grid">
+            <div id="display"></div>
+            <button onclick="getValue(this.value)" value="7">7</button>
+            <button onclick="getValue(this.value)" value="8">8</button>
+            <button onclick="getValue(this.value)" value="9">9</button>
+            <button onclick="opDiv()" id="div">÷</button>
+            <button onclick="getValue(this.value)" value="4">4</button>
+            <button onclick="getValue(this.value)" value="5">5</button>
+            <button onclick="getValue(this.value)" value="6">6</button>
+            <button onclick="opMult()" id="mult">×</button>
+            <button onclick="getValue(this.value)" value="1">1</button>
+            <button onclick="getValue(this.value)" value="2">2</button>
+            <button onclick="getValue(this.value)" value="3">3</button>
+            <button onclick="opSub()" id="sub">-</button>
+            <button onclick="opMod()" title="modulus" id="mod">%</button>
+            <button onclick="getValue(this.value)" value="0">0</button>
+            <button onclick="neg()">(-)</button>
+            <button onclick="opAdd()" id="add">+</button>
+            <button onclick="opPow()"title="exponentiation" id="exp">xˣ</button>
+            <button title="Bitand" onclick="opAnd()">&</button>
+            <button title="Bitor" onclick="opOr()">|</button>
+            <button title="Bitxor" onclick="opXor()">^</button>
+            <button onclick="calculate()" style="grid-column: 5/5; grid-row: 2/8; height: 325px">=</button>
+            <button></button>
+            <button></button>
+            <button></button>
+            <button></button>
+        </div>
     </div>
-    <div id="grid">
-        <div id="display"></div>
-        <button onclick="getValue(this.value)" value="7">7</button>
-        <button onclick="getValue(this.value)" value="8">8</button>
-        <button onclick="getValue(this.value)" value="9">9</button>
-        <button onclick="opDiv()" id="div">÷</button>
-        <button onclick="getValue(this.value)" value="4">4</button>
-        <button onclick="getValue(this.value)" value="5">5</button>
-        <button onclick="getValue(this.value)" value="6">6</button>
-        <button onclick="opMult()" id="mult">×</button>
-        <button onclick="getValue(this.value)" value="1">1</button>
-        <button onclick="getValue(this.value)" value="2">2</button>
-        <button onclick="getValue(this.value)" value="3">3</button>
-        <button onclick="opSub()" id="sub">-</button>
-        <button onclick="opMod()" title="modulus" id="mod">%</button>
-        <button onclick="getValue(this.value)" value="0">0</button>
-        <button onclick="neg()">(-)</button>
-        <button onclick="opAdd()" id="add">+</button>
-        <button onclick="opPow()"title="exponentiation" id="exp">xˣ</button>
-        <button title="Bitand" onclick="opAnd()">&</button>
-        <button title="Bitor" onclick="opOr()">|</button>
-        <button title="Bitxor" onclick="opXor()">^</button>
-        <button onclick="calculate()" style="grid-column: 5/5; grid-row: 2/8; height: 325px">=</button>
-        <button></button>
-        <button></button>
-        <button></button>
-        <button></button>
+    <div id="slope" class="unfocus">
+        <div id="slopegrid" class="slopegrid" class="unfocus">
+            <div class="slopedisplay" id="slopedisplay"></div>
+            <div class="slope-container-short">y1</div>
+            <input type="text" class="slope-container-long" id="y1">
+            <div class="slope-container-short">x1</div>
+            <input type="text" class="slope-container-long" id="x1">
+            <div class="slope-container-short">y2</div>
+            <input type="text" class="slope-container-long" id="y2">
+            <div class="slope-container-short">x2</div>
+            <input type="text" class="slope-container-long" id="x2">
+            <button class="slopesubmit" onclick="calculateSlope()">Submit Slope</button>
+        </div>
     </div>
-    <div class="slopegrid" style="position: absolute; top: 5px; left: 5px;">
-        <div class="slopedisplay" id="slopedisplay"></div>
-        <div class="slope-container-short">y1</div>
-        <input type="text" class="slope-container-long" id="y1">
-        <div class="slope-container-short">x1</div>
-        <input type="text" class="slope-container-long" id="x1">
-        <div class="slope-container-short">y2</div>
-        <input type="text" class="slope-container-long" id="y2">
-        <div class="slope-container-short">x2</div>
-        <input type="text" class="slope-container-long" id="x2">
-        <button class="slopesubmit" onclick="calculateSlope()">Submit Slope</button>
+    <div class="buttongrid">
+        <button class="button-container" onclick="switchFocusCalc()">Calculator</button>
+        <button class="button-container" onclick="switchFocusSlope()">Slope</button>
     </div>
 </body>
 
 <script>
+// math switcher ===================================================
+
+function switchFocusCalc(){
+    document.getElementById("calculator").setAttribute("class","focus");
+    document.getElementById("slope").setAttribute("class","unfocus");
+}
+function switchFocusSlope(){
+    document.getElementById("calculator").setAttribute("class","unfocus");
+    document.getElementById("slope").setAttribute("class","focus");
+}
+
+//calculator ======================================================
 
 var innerNum1 = 0;
 var innerNum2 = 0;
@@ -316,10 +354,10 @@ setInterval(function(){
 
 
 hotkeys("[", function(){
-    if(document.getElementById("devtools").hasAttribute("class","none")){
-        document.getElementById("devtools").removeAttribute("class","none")
+    if(document.getElementById("devtools").hasAttribute("class","unfocus") && document.getElementById("grid").hasAttribute("class","focus")){
+        document.getElementById("devtools").removeAttribute("class","unfocus")
     } else {
-        document.getElementById("devtools").setAttribute("class","none")
+        document.getElementById("devtools").setAttribute("class","unfocus")
     }
 })
 hotkeys("1", function (){
@@ -361,11 +399,8 @@ hotkeys("alt + -", function(){
 hotkeys("c", function(){
     innerNum1 = 0;
     innerNum2 = 0;
-    if(display.innerHTML == ""){
-        display.innerHTML = ""
-    } else {
-        display.innerHTML = 0; 
-    }
+    display.innerHTML = ""
+
 })
 
 hotkeys("backspace", function(){
