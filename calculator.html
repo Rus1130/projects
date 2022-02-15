@@ -1,7 +1,7 @@
 <style>
     #grid1 {
         display: grid;
-        grid-template-columns: 50px 50px 50px 50px;
+        grid-template-columns: 50px 50px 50px 50px 50px;
         grid-template-rows: 50px 50px 50px 50px 50px 50px;
         row-gap: 5px;
         column-gap: 5px;
@@ -10,10 +10,12 @@
         border-radius: 0%;
         border-width: 0.5px;
         border-color: black;
+        width: 50px;
+        height: 50px;
     }
     #display {
-        grid-column: 1/5;
-        min-width: 204px;
+        grid-column: 1/6;
+        min-width: 259px;
         width:fit-content;
         height: 50px;
         border: 0.5px solid black;
@@ -59,12 +61,13 @@
         <button onclick="opSub()" id="sub">-</button>
         <button onclick="opMod()" title="modulus" id="mod">%</button>
         <button onclick="getValue(this.value)" value="0">0</button>
-        <button onclick="opAdd()" id="add">+</button>
-        <button onclick="calculate()">=</button>
         <button onclick="neg()">(-)</button>
+        <button onclick="opAdd()" id="add">+</button>
+        <button onclick="calculate()" style="grid-column: 5/5; grid-row: 2/7; height: 270px">=</button>
         <button onclick="opPow()"title="exponentiation" id="exp">xˣ</button>
-        <button></button>
-        <button></button>
+        <button title="Bitand" onclick="opAnd()">&</button>
+        <button title="Bitor" onclick="opOr()">|</button>
+        <button title="Bitxor" onclick="opXor()">^</button>
     </div>
 </body>
 
@@ -74,8 +77,8 @@ var innerNum1 = 0;
 var innerNum2 = 0;
 var cont = false;
 var newline = false;
-var call = "none";
-let output = "none";
+var call = null;
+let output = null;
 var display = document.getElementById("display")
 
 function opAdd(){
@@ -122,7 +125,27 @@ function opPow(){
 
 function neg(){
     display.prepend("-")
+}
 
+function opAnd(){
+    solve()
+    cont = true;
+    newline = true;
+    call = "an";
+}
+
+function opOr(){
+    solve()
+    cont = true;
+    newline = true;
+    call = "or";
+}
+
+function opXor(){
+    solve()
+    cont = true;
+    newline = true;
+    call = "xr";
 }
 
 function math(operation, num1, num2){
@@ -140,10 +163,19 @@ function math(operation, num1, num2){
             return parseInt(num1) / parseInt(num2);
             break;
         case "mo":
-            return parseInt(num1) & parseInt(num2)
+            return parseInt(num1) % parseInt(num2)
             break;
         case "p":
             return parseInt(num1) ** parseInt(num2);
+            break;
+        case "an":
+            return parseInt(num1) & parseInt(num2);
+            break;
+        case "o":
+            return parseInt(num1) | parseInt(num2);
+            break;
+        case "x":
+            return parseInt(num1) ^ parseInt(num2);
             break;
     }
 }
@@ -183,10 +215,17 @@ function calculate(){
         case "mod": output = math("mo",innerNum1, innerNum2)
         break;
         case "pwr": output = math("p", innerNum1, innerNum2)
+        break;
+        case "an": output = math("an", innerNum1, innerNum2)
+        break;
+        case "or": output = math("o", innerNum1, innerNum2)
+        break;
+        case "xr": output = math("x", innerNum1, innerNum2)
+        break;
     }
     innerNum1 = 0;
     innerNum2 = 0;
-    call = "none";
+    call = null;
     document.getElementById("display").innerHTML = output;
 }
 
@@ -198,6 +237,7 @@ setInterval(function(){
     document.getElementById("call").innerHTML = "call: " + call;
     document.getElementById("output").innerHTML = "output: " + output;
 },1)
+
 
 hotkeys("[", function(){
     if(document.getElementById("devtools").hasAttribute("class","none")){
