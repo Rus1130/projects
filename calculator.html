@@ -2,9 +2,17 @@
     #grid {
         display: grid;
         grid-template-columns: 50px 50px 50px 50px 50px;
-        grid-template-rows: 50px 50px 50px 50px 50px 50px;
+        grid-template-rows: 50px 50px 50px 50px 50px 50px 50px;
         row-gap: 5px;
         column-gap: 5px;
+    }
+    .slopegrid {
+        display: grid;
+        grid-template-columns: 50px 50px 50px 50px;
+        grid-template-rows: 50px 50px;
+        row-gap: 5px;
+        column-gap: 5px;
+        font-size: 15pt;
     }
     button {
         border-radius: 0%;
@@ -37,13 +45,58 @@
         justify-content: center;
         align-items: center;
     }
+    .slopedisplay{
+        grid-column: 1/5;
+        min-width: 215px;
+        border: 0.5px solid black;
+        width:fit-content;
+        height: 50px;
+        font-size: 20pt;
+        display: flex;
+        align-items: center;
+        padding: 0;
+        padding-left: 5px;
+        padding-right: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .slope-container-long{
+        min-width: 171px;
+        grid-column: 2/5;
+        height: 51px;
+        border: 0.5px solid black;
+        display: flex;
+        align-items: center;
+        padding-left: 5px;
+        font-size: 15pt;
+    }
+    .slope-container-long:focus{
+        outline: none;
+        border: 0.5px solid black;
+        font-size: 15pt;
+    }
+    .slope-container-short{
+        width: 50px;
+        height: 50px;
+        border: 0.5px solid black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 15pt;
+    }
+    .slopesubmit {
+        grid-column: 1/5;
+        min-width: 226px;
+        font-size: 15pt;
+    }
 </style>
 <head>
     <title>Calculator</title>
     <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
 </head>
 <body>
-    <div id="devtools" class="none">
+    <div id="devtools" class="none" style="position: absolute; top: 125px; left: 324px;">
         <div id="innerNum1"></div>
         <div id="innerNum2"></div>
         <div id="cont"></div>
@@ -69,11 +122,27 @@
         <button onclick="getValue(this.value)" value="0">0</button>
         <button onclick="neg()">(-)</button>
         <button onclick="opAdd()" id="add">+</button>
-        <button onclick="calculate()" style="grid-column: 5/5; grid-row: 2/7; height: 270px">=</button>
         <button onclick="opPow()"title="exponentiation" id="exp">xˣ</button>
         <button title="Bitand" onclick="opAnd()">&</button>
         <button title="Bitor" onclick="opOr()">|</button>
         <button title="Bitxor" onclick="opXor()">^</button>
+        <button onclick="calculate()" style="grid-column: 5/5; grid-row: 2/8; height: 325px">=</button>
+        <button></button>
+        <button></button>
+        <button></button>
+        <button></button>
+    </div>
+    <div class="slopegrid" style="position: absolute; top: 5px; left: 5px;">
+        <div class="slopedisplay" id="slopedisplay"></div>
+        <div class="slope-container-short">y1</div>
+        <input type="text" class="slope-container-long" id="y1">
+        <div class="slope-container-short">x1</div>
+        <input type="text" class="slope-container-long" id="x1">
+        <div class="slope-container-short">y2</div>
+        <input type="text" class="slope-container-long" id="y2">
+        <div class="slope-container-short">x2</div>
+        <input type="text" class="slope-container-long" id="x2">
+        <button class="slopesubmit" onclick="calculateSlope()">Submit Slope</button>
     </div>
 </body>
 
@@ -83,8 +152,8 @@ var innerNum1 = 0;
 var innerNum2 = 0;
 var cont = false;
 var newline = false;
-var call = null;
-let output = null;
+var call = "pass";
+let output = 0;
 var display = document.getElementById("display")
 
 function opAdd(){
@@ -154,16 +223,6 @@ function opXor(){
     call = "xr";
 }
 
-function findSlope(y2, y1, x2, x1){
-    var y;
-    var x;
-    var m;
-    y = parseInt(y2) - parseInt(y1);
-    x = parseInt(x2) - parseInt(x1);
-    m = parseInt(y) / parseInt(x)
-    return m;
-}
-
 function math(operation, num1, num2){
     switch(operation){
         case "a":
@@ -205,7 +264,6 @@ function getValue(value){
         display.append(value)
         innerNum2 = display.innerHTML;
     }
-
 }
 
 function solve(){
@@ -238,10 +296,12 @@ function calculate(){
         break;
         case "xr": output = math("x", innerNum1, innerNum2)
         break;
+        case "pass": output = innerNum1 || innerNum2
+        break;
     }
     innerNum1 = 0;
     innerNum2 = 0;
-    call = null;
+    call = "pass";
     display.innerHTML = output;
 }
 
@@ -252,7 +312,7 @@ setInterval(function(){
     document.getElementById("newline").innerHTML = "newline: " + newline;
     document.getElementById("call").innerHTML = "call: " + call;
     document.getElementById("output").innerHTML = "output: " + output;
-},1)
+},125)
 
 
 hotkeys("[", function(){
@@ -298,8 +358,67 @@ hotkeys("enter", function (){
 hotkeys("alt + -", function(){
     neg();
 })
+hotkeys("c", function(){
+    innerNum1 = 0;
+    innerNum2 = 0;
+    if(display.innerHTML == ""){
+        display.innerHTML = ""
+    } else {
+        display.innerHTML = 0; 
+    }
+})
 
 hotkeys("backspace", function(){
     display.removeChild(display.lastChild)
+    if(cont == false){
+        if(display.innerHTML == ""){
+            innerNum1 = 0;
+        } else {
+            innerNum1 = display.innerHTML
+        }
+    } else {
+        if(cont == true){
+            if(display.innerHTML == ""){
+                innerNum2 = 0;
+            } else {
+                innerNum2 = display.innerHTML
+            }
+        }
+    }
 })
+
+//slope ==========================================================
+
+var slopedisplay = document.getElementById("slopedisplay")
+var y_2;
+var y_1;
+var x_2;
+var x_1;
+var z
+
+function calculateSlope(){
+    y_2 = document.getElementById("y2").value;
+    y_1 = document.getElementById("y1").value;
+    x_2 = document.getElementById("x2").value;
+    x_1 = document.getElementById("x1").value;
+    z = findSlope(y_2, y_1, x_2, x_1).toLocaleString(5);
+    if(z == "∞" || z == "-∞"){
+        slopedisplay.innerHTML = "undefined";
+    } else {
+        if(z == "-0"){
+            slopedisplay = 0;
+        } else {
+            slopedisplay.innerHTML = z;
+        }
+    }
+}
+
+
+function findSlope(y2, y1, x2, x1){
+    var y;
+    var x;
+    y = parseInt(y2) - parseInt(y1);
+    x = parseInt(x2) - parseInt(x1);
+    return parseInt(y) / parseInt(x)
+}
 </script>
