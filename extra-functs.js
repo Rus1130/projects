@@ -24,5 +24,5 @@ function basicMathHelp(){
 //advanced math
 
 function advMath(operation, num1, num2){
-
+    
 }
