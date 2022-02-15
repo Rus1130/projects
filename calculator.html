@@ -1,5 +1,5 @@
 <style>
-    #grid1 {
+    #grid {
         display: grid;
         grid-template-columns: 50px 50px 50px 50px 50px;
         grid-template-rows: 50px 50px 50px 50px 50px 50px;
@@ -45,7 +45,7 @@
         <div id="call"></div>
         <div id="output"></div>
     </div>
-    <div id="grid1">
+    <div id="grid">
         <div id="display"></div>
         <button onclick="getValue(this.value)" value="7">7</button>
         <button onclick="getValue(this.value)" value="8">8</button>
@@ -148,6 +148,16 @@ function opXor(){
     call = "xr";
 }
 
+function findSlope(y2, y1, x2, x1){
+    var y;
+    var x;
+    var m;
+    y = parseInt(y2) - parseInt(y1);
+    x = parseInt(x2) - parseInt(x1);
+    m = parseInt(y) / parseInt(x)
+    return m;
+}
+
 function math(operation, num1, num2){
     switch(operation){
         case "a":
@@ -181,23 +191,23 @@ function math(operation, num1, num2){
 }
 
 function getValue(value){
-    document.getElementById("display").append(value)
+    display.append(value)
     solve()
     if(newline == true){
-        document.getElementById("display").innerHTML = null;
+        display.innerHTML = null;
         newline = false;
-        document.getElementById("display").append(value)
-        innerNum2 = document.getElementById("display").innerHTML;
+        display.append(value)
+        innerNum2 = display.innerHTML;
     }
 
 }
 
 function solve(){
     if(cont == false){
-        innerNum1 = document.getElementById("display").innerHTML
+        innerNum1 = display.innerHTML
     } 
     if(cont == true){
-        innerNum2 = document.getElementById("display").innerHTML;
+        innerNum2 = display.innerHTML;
     }
 }
 
@@ -226,7 +236,7 @@ function calculate(){
     innerNum1 = 0;
     innerNum2 = 0;
     call = null;
-    document.getElementById("display").innerHTML = output;
+    display.innerHTML = output;
 }
 
 setInterval(function(){
