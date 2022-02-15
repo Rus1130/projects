@@ -13,98 +13,165 @@
     }
     #display {
         grid-column: 1/5;
-        width: 215px;
+        min-width: 204px;
+        width:fit-content;
         height: 50px;
         border: 0.5px solid black;
         font-size: 20pt;
         display: flex;
         align-items: center;
         padding: 0;
+        padding-left: 5px;
+        padding-right: 5px;
     }
-
+    .invisible {
+        display: none;
+    }
+    html {
+        font-family: Arial, Helvetica, sans-serif;
+    }
 </style>
+<head>
+    <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
+</head>
 <body>
+    <div id="devtools" class="invisible">
+        <div id="innerNum1">0</div>
+        <div id="innerNum2">0</div>
+        <div id="cont">false</div>
+        <div id="newline">false</div>
+        <div id="call">undefined</div>
+    </div>
     <div id="grid1">
         <div id="display"></div>
-        <button id="button7" onclick="getValue(this.value)" value="7">7</button>
-        <button id="button8" onclick="getValue(this.value)" value="8">8</button>
-        <button id="button9" onclick="getValue(this.value)" value="9">9</button>
-        <button id="operation" onclick="div()">/</button>
-        <button id="button4" onclick="getValue(this.value)" value="4">4</button>
-        <button id="button5" onclick="getValue(this.value)" value="5">5</button>
-        <button id="button6" onclick="getValue(this.value)" value="6">6</button>
-        <button id="operation" onclick="mult()">*</button>
-        <button id="button1" onclick="getValue(this.value)" value="1">1</button>
-        <button id="button2" onclick="getValue(this.value)" value="2">2</button>
-        <button id="button3" onclick="getValue(this.value)" value="3">3</button>
-        <button id="operation" onclick="sub()">-</button>
+        <button onclick="getValue(this.value)" value="7">7</button>
+        <button onclick="getValue(this.value)" value="8">8</button>
+        <button onclick="getValue(this.value)" value="9">9</button>
+        <button onclick="opDiv()">/</button>
+        <button onclick="getValue(this.value)" value="4">4</button>
+        <button onclick="getValue(this.value)" value="5">5</button>
+        <button onclick="getValue(this.value)" value="6">6</button>
+        <button onclick="opMult()">*</button>
+        <button onclick="getValue(this.value)" value="1">1</button>
+        <button onclick="getValue(this.value)" value="2">2</button>
+        <button onclick="getValue(this.value)" value="3">3</button>
+        <button onclick="opSub()">-</button>
         <span></span>
-        <button id="button0" onclick="getValue(this.value)" value="0">0</button>
-        <button id="operation" onclick="add()">+</button>
-        <button id="operation" onclick="calculate()">=</button>
+        <button onclick="getValue(this.value)" value="0">0</button>
+        <button onclick="opAdd()">+</button>
+        <button onclick="calculate()">=</button>
     </div>
 </body>
 
 <script>
 
-var firstNumber = document.getElementById("display").innerHTML;
-var secondNumber;
-var operation;
-var output;
+var innerNum1 = 0;
+var innerNum2 = 0;
 var cont = false;
-var switched;
+var newline = false;
+var call;
+let output;
+var display = document.getElementById("display")
 
-function add(){
+function opAdd(){
+    solve()
     cont = true;
-    operation = "add";
+    newline = true;
+    call = "add";
 }
 
-function sub(){
+function opSub(){
+    solve()
     cont = true;
-    operation = "sub";
+    newline = true;
+    call = "sub";
+
 }
 
-function mult(){
+function opMult(){
+    solve()
     cont = true;
-    operation = "mult";
+    newline = true;
+    call = "mult"
+
 }
 
-function div(){
+function opDiv(){
+    solve()
     cont = true;
-    operation = "div";
+    newline = true;
+    call = "div"
+
+}
+
+function basicMath(operation, num1, num2){
+    switch(operation){
+        case "a":
+            return parseInt(num1) + parseInt(num2);
+            break
+        case "s":
+            return parseInt(num1) - parseInt(num2);
+            break;
+        case "m":
+            return parseInt(num1) * parseInt(num2);
+            break;
+        case "d":
+            return parseInt(num1 / num2);
+            break;
+    }
 }
 
 function getValue(value){
     document.getElementById("display").append(value)
+    solve()
+    if(newline == true){
+        document.getElementById("display").innerHTML = null;
+        newline = false;
+        document.getElementById("display").append(value)
+        innerNum2 = document.getElementById("display").innerHTML;
+    }
+
+}
+
+function solve(){
     if(cont == false){
-        switched = false;
-        firstNumber = document.getElementById("display").innerHTML;
-    } else {
-        if(!switched){
-            switched = true;
-            document.getElementById("display").innerHTML = null;
-            document.getElementById("display").append(value)
-        }
-        secondNumber = document.getElementById("display").innerHTML;
+        innerNum1 = document.getElementById("display").innerHTML
+    } 
+    if(cont == true){
+        innerNum2 = document.getElementById("display").innerHTML;
     }
 }
 
 function calculate(){
     cont = false;
-    switch(operation){
-        case "add":
-            output = firstNumber += secondNumber;
-            break;
-        case "sub":
-            output = (firstNumber -= secondNumber);
-            break;
-        case "mult":
-            output = (firstNumber *= secondNumber);
-            break;
-        case "div":
-            output = (firstNumber /= secondNumber);
-            break;
+    switch(call){
+        case "add": output = basicMath("a", innerNum1, innerNum2)
+        break;
+        case "sub": output = basicMath("s", innerNum1, innerNum2)
+        break;
+        case "mult": output = basicMath("m", innerNum1, innerNum2)
+        break;
+        case "div": output = basicMath("d", innerNum1, innerNum2)
     }
+    innerNum1 = 0;
+    innerNum2 = 0;
     document.getElementById("display").innerHTML = output;
 }
+
+setInterval(function(){
+    document.getElementById("innerNum1").innerHTML = "innerNum1: " + innerNum1;
+    document.getElementById("innerNum2").innerHTML = "innerNum2: " + innerNum2;
+    document.getElementById("cont").innerHTML = "cont: " + cont;
+    document.getElementById("newline").innerHTML = "newline: " + newline;
+    document.getElementById("call").innerHTML = "call: " + call;
+},1)
+
+hotkeys("d", function(){
+    if(document.getElementById("devtools").hasAttribute("class","invisible")){
+        document.getElementById("devtools").removeAttribute("class","invisible")
+    } else {
+        document.getElementById("devtools").setAttribute("class","invisible")
+    }
+})
+
 </script>
