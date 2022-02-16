@@ -142,9 +142,9 @@
         <div id="grid" class="grid">
             <div id="display"></div>
             <button onclick="opPow()"title="exponentiation" id="exp">xˣ</button>
-            <button></button>
-            <button></button>
-            <button></button>
+            <button title="BITAND (not functioning)">&</button>
+            <button title="BITOR (not functioning)">|</button>
+            <button title="BITXOR (not fuctioning)">X</button>
             <button onclick="back()">Delete</button>
             <button onclick="getValue(this.value)" value="7">7</button>
             <button onclick="getValue(this.value)" value="8">8</button>
@@ -247,6 +247,9 @@ function neg(){
     display.prepend("-")
 }
 
+function decimal(){
+    display.append(".")
+}
 function math(operation, num1, num2){
     switch(operation){
         case "a":
@@ -285,10 +288,6 @@ function solve(){
     if(cont == true){
         innerNum2 = display.innerHTML;
     }
-}
-
-function decimal(){
-    display.append(".")
 }
 
 document.getElementById("clear").addEventListener("click",function(){
