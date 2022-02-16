@@ -141,6 +141,10 @@
         </div>
         <div id="grid" class="grid">
             <div id="display"></div>
+            <button onclick="opAnd()"  title="Bitand">&</button>
+            <button  onclick="opOr()" title="Bitor">|</button>
+            <button onclick="opXor()" title="Bitxor">^</button>
+            <button id="clear" title="clear (c)">Clear</button>
             <button onclick="getValue(this.value)" value="7">7</button>
             <button onclick="getValue(this.value)" value="8">8</button>
             <button onclick="getValue(this.value)" value="9">9</button>
@@ -153,19 +157,15 @@
             <button onclick="getValue(this.value)" value="2">2</button>
             <button onclick="getValue(this.value)" value="3">3</button>
             <button onclick="opSub()" id="sub" title="subtraction">-</button>
-            <button onclick="opMod()" title="modulus (%)" id="mod">%</button>
+            <button onclick="opPow()"title="exponentiation" id="exp">xˣ</button>
             <button onclick="getValue(this.value)" value="0">0</button>
             <button onclick="neg()" title="negative (-)">(-)</button>
             <button onclick="opAdd()" id="add" title="addition">+</button>
-            <button onclick="opPow()"title="exponentiation" id="exp">xˣ</button>
-            <button onclick="opAnd()"  title="Bitand">&</button>
-            <button  onclick="opOr()" title="Bitor">|</button>
-            <button onclick="opXor()" title="Bitxor">^</button>
+            <button onclick="opMod()" title="modulus" id="mod">M</button>
+            <button onclick="getValue(this.value)" value=".">.</button>
+            <button></button>
+            <button></button>
             <button onclick="calculate()" style="grid-column: 5/5; grid-row: 2/8; height: 325px" title="calculate (enter)">=</button>
-            <button id="clear" title="clear (c)">Clear</button>
-            <button></button>
-            <button></button>
-            <button></button>
         </div>
     </div>
     <div id="slope" class="unfocus">
