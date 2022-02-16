@@ -142,9 +142,13 @@
         <div id="grid" class="grid">
             <div id="display"></div>
             <button onclick="opAnd()"  title="Bitand">&</button>
-            <button  onclick="opOr()" title="Bitor">|</button>
-            <button onclick="opXor()" title="Bitxor">^</button>
+            <button onclick="opOr()" title="Bitor">|</button>
+            <button onclick="back()">Delete</button>
             <button id="clear" title="clear (c)">Clear</button>
+            <button onclick="opXor()" title="Bitxor">^</button>
+            <button onclick="opPow()"title="exponentiation" id="exp">xˣ</button>
+            <button></button>
+            <button></button>
             <button onclick="getValue(this.value)" value="7">7</button>
             <button onclick="getValue(this.value)" value="8">8</button>
             <button onclick="getValue(this.value)" value="9">9</button>
@@ -157,14 +161,10 @@
             <button onclick="getValue(this.value)" value="2">2</button>
             <button onclick="getValue(this.value)" value="3">3</button>
             <button onclick="opSub()" id="sub" title="subtraction">-</button>
-            <button onclick="opPow()"title="exponentiation" id="exp">xˣ</button>
-            <button onclick="getValue(this.value)" value="0">0</button>
             <button onclick="neg()" title="negative (-)">(-)</button>
+            <button onclick="getValue(this.value)" value="0">0</button>
+            <button onclick="decimal()">.</button>
             <button onclick="opAdd()" id="add" title="addition">+</button>
-            <button onclick="opMod()" title="modulus" id="mod">M</button>
-            <button></button>
-            <button></button>
-            <button></button>
             <button onclick="calculate()" style="grid-column: 5/5; grid-row: 2/8; height: 325px" title="calculate (enter)">=</button>
         </div>
     </div>
@@ -238,13 +238,6 @@ function opDiv(){
     call = "div"
 }
 
-function opMod(){
-    solve()
-    cont = true;
-    newline = true;
-    call = "mod";
-}
-
 function opPow(){
     solve()
     cont = true;
@@ -280,31 +273,28 @@ function opXor(){
 function math(operation, num1, num2){
     switch(operation){
         case "a":
-            return parseInt(num1) + parseInt(num2);
+            return parseFloat(num1) + parseFloat(num2);
             break
         case "s":
-            return parseInt(num1) - parseInt(num2);
+            return parseFloat(num1) - parseFloat(num2);
             break;
         case "m":
-            return parseInt(num1) * parseInt(num2);
+            return parseFloat(num1) * parseFloat(num2);
             break;
         case "d":
-            return parseInt(num1) / parseInt(num2);
-            break;
-        case "mo":
-            return parseInt(num1) % parseInt(num2)
+            return parseFloat(num1) / parseFloat(num2);
             break;
         case "p":
-            return parseInt(num1) ** parseInt(num2);
+            return parseFloat(num1) ** parseFloat(num2);
             break;
         case "an":
-            return parseInt(num1) & parseInt(num2);
+            return parseFloat(num1) & parseFloat(num2);
             break;
         case "o":
-            return parseInt(num1) | parseInt(num2);
+            return parseFloat(num1) | parseFloat(num2);
             break;
         case "x":
-            return parseInt(num1) ^ parseInt(num2);
+            return parseFloat(num1) ^ parseFloat(num2);
             break;
     }
 }
@@ -329,6 +319,10 @@ function solve(){
     }
 }
 
+function decimal(){
+    display.append(".")
+}
+
 document.getElementById("clear").addEventListener("click",function(){
     clear()
 })
@@ -349,8 +343,6 @@ function calculate(){
         case "mult": output = math("m", innerNum1, innerNum2)
         break;
         case "div": output = math("d", innerNum1, innerNum2)
-        break;
-        case "mod": output = math("mo",innerNum1, innerNum2)
         break;
         case "pwr": output = math("p", innerNum1, innerNum2)
         break;
@@ -453,6 +445,25 @@ hotkeys("backspace", function(){
         }
     }
 })
+
+function back(){
+    display.removeChild(display.lastChild)
+    if(cont == false){
+        if(display.innerHTML == ""){
+            innerNum1 = 0;
+        } else {
+            innerNum1 = display.innerHTML
+        }
+    } else {
+        if(cont == true){
+            if(display.innerHTML == ""){
+                innerNum2 = 0;
+            } else {
+                innerNum2 = display.innerHTML
+            }
+        }
+    }
+}
 
 //slope ==========================================================
 
