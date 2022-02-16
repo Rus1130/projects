@@ -250,19 +250,19 @@ function neg(){
 function math(operation, num1, num2){
     switch(operation){
         case "a":
-            return parseFloat(num1) + parseFloat(num2);
+            return parseFloat((parseFloat(num1) + parseFloat(num2)).toPrecision(12));
             break
         case "s":
-            return parseFloat(num1) - parseFloat(num2);
+            return parseFloat((parseFloat(num1) - parseFloat(num2)).toPrecision(12));
             break;
         case "m":
-            return parseFloat(num1) * parseFloat(num2);
+            return parseFloat((parseFloat(num1) * parseFloat(num2)).toPrecision(12));
             break;
         case "d":
-            return parseFloat(num1) / parseFloat(num2);
+            return parseFloat((parseFloat(num1) / parseFloat(num2)).toPrecision(12));
             break;
         case "p":
-            return parseFloat(num1) ** parseFloat(num2);
+            return parseFloat((parseFloat(num1) ** parseFloat(num2)).toPrecision(12));
             break;
     }
 }
