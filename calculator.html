@@ -2,7 +2,7 @@
     .grid {
         display: grid;
         grid-template-columns: 50px 50px 50px 50px 50px;
-        grid-template-rows: 50px 50px 50px 50px 50px 50px 50px;
+        grid-template-rows: 50px 50px 50px 50px 50px 50px;
         row-gap: 5px;
         column-gap: 5px;
     }
@@ -141,18 +141,16 @@
         </div>
         <div id="grid" class="grid">
             <div id="display"></div>
-            <button onclick="opAnd()"  title="Bitand">&</button>
-            <button onclick="opOr()" title="Bitor">|</button>
-            <button onclick="back()">Delete</button>
-            <button id="clear" title="clear (c)">Clear</button>
-            <button onclick="opXor()" title="Bitxor">^</button>
             <button onclick="opPow()"title="exponentiation" id="exp">xˣ</button>
             <button></button>
             <button></button>
+            <button></button>
+            <button onclick="back()">Delete</button>
             <button onclick="getValue(this.value)" value="7">7</button>
             <button onclick="getValue(this.value)" value="8">8</button>
             <button onclick="getValue(this.value)" value="9">9</button>
             <button onclick="opDiv()" id="div" title="division">÷</button>
+            <button id="clear" title="clear (c)">Clear</button>
             <button onclick="getValue(this.value)" value="4">4</button>
             <button onclick="getValue(this.value)" value="5">5</button>
             <button onclick="getValue(this.value)" value="6">6</button>
@@ -165,7 +163,7 @@
             <button onclick="getValue(this.value)" value="0">0</button>
             <button onclick="decimal()">.</button>
             <button onclick="opAdd()" id="add" title="addition">+</button>
-            <button onclick="calculate()" style="grid-column: 5/5; grid-row: 2/8; height: 325px" title="calculate (enter)">=</button>
+            <button onclick="calculate()" style="grid-column: 5/5; grid-row: 4/8; height: 160px" title="calculate (enter)">=</button>
         </div>
     </div>
     <div id="slope" class="unfocus">
@@ -249,27 +247,6 @@ function neg(){
     display.prepend("-")
 }
 
-function opAnd(){
-    solve()
-    cont = true;
-    newline = true;
-    call = "an";
-}
-
-function opOr(){
-    solve()
-    cont = true;
-    newline = true;
-    call = "or";
-}
-
-function opXor(){
-    solve()
-    cont = true;
-    newline = true;
-    call = "xr";
-}
-
 function math(operation, num1, num2){
     switch(operation){
         case "a":
@@ -286,15 +263,6 @@ function math(operation, num1, num2){
             break;
         case "p":
             return parseFloat(num1) ** parseFloat(num2);
-            break;
-        case "an":
-            return parseFloat(num1) & parseFloat(num2);
-            break;
-        case "o":
-            return parseFloat(num1) | parseFloat(num2);
-            break;
-        case "x":
-            return parseFloat(num1) ^ parseFloat(num2);
             break;
     }
 }
@@ -345,12 +313,6 @@ function calculate(){
         case "div": output = math("d", innerNum1, innerNum2)
         break;
         case "pwr": output = math("p", innerNum1, innerNum2)
-        break;
-        case "an": output = math("an", innerNum1, innerNum2)
-        break;
-        case "or": output = math("o", innerNum1, innerNum2)
-        break;
-        case "xr": output = math("x", innerNum1, innerNum2)
         break;
         case "pass": output = innerNum1 || innerNum2
         break;
