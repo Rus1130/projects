@@ -142,9 +142,9 @@
         <div id="grid" class="grid">
             <div id="display"></div>
             <button onclick="opPow()"title="exponentiation" id="exp">xˣ</button>
-            <button title="BITAND (not functioning)">&</button>
-            <button title="BITOR (not functioning)">|</button>
-            <button title="BITXOR (not fuctioning)">X</button>
+            <button onclick="opAn()" title="BITAND">AND</button>
+            <button onclick="opOr()" title="BITOR">OR</button>
+            <button onclick="opXr()" title="BITXOR">XOR</button>
             <button onclick="back()">Delete</button>
             <button onclick="getValue(this.value)" value="7">7</button>
             <button onclick="getValue(this.value)" value="8">8</button>
@@ -243,6 +243,27 @@ function opPow(){
     call = "pwr";
 }
 
+function opAn(){
+    solve()
+    cont = true;
+    newline = true;
+    call = "an";
+}
+
+function opOr(){
+    solve()
+    cont = true;
+    newline = true;
+    call = "or";
+}
+
+function opXr(){
+    solve()
+    cont = true;
+    newline = true;
+    call = "xr";
+}
+
 function neg(){
     display.prepend("-")
 }
@@ -266,6 +287,15 @@ function math(operation, num1, num2){
             break;
         case "p":
             return parseFloat((parseFloat(num1) ** parseFloat(num2)).toPrecision(12));
+            break;
+        case "an":
+            return parseFloat((parseFloat(num1) & parseFloat(num2)).toPrecision(12));
+            break;
+        case "o":
+            return parseFloat((parseFloat(num1) | parseFloat(num2)).toPrecision(12));
+            break;
+        case "x":
+            return parseFloat((parseFloat(num1) ^ parseFloat(num2)).toPrecision(12));
             break;
     }
 }
@@ -312,6 +342,12 @@ function calculate(){
         case "div": output = math("d", innerNum1, innerNum2)
         break;
         case "pwr": output = math("p", innerNum1, innerNum2)
+        break;
+        case "an": output = math("an", innerNum1, innerNum2)
+        break;
+        case "or": output = math("o", innerNum1, innerNum2)
+        break;
+        case "xr": output = math("x", innerNum1, innerNum2)
         break;
         case "pass": output = innerNum1 || innerNum2
         break;
