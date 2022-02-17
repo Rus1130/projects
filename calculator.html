@@ -437,8 +437,8 @@ hotkeys(".", function(){
 window.hotkeys("space", function(){
     if(document.getElementById("cover").hasAttribute("class","unfocus")){
         document.getElementById("cover").removeAttribute("class","unfocus");
-        document.getElementById("cover-text").innerHTML = "killing, cannot be cancelled";
-        setTimeout(function(){window.close()},1500)
+        document.getElementById("cover-text").innerHTML = "page unuseable";
+        setTimeout(function(){window.open("https://www.google.com", "_blank")},100)
     }
 })
 
