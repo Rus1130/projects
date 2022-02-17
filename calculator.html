@@ -289,28 +289,28 @@ function decimal(){
 }
 function math(operation, num1, num2){
     switch(operation){
-        case "a":
+        case "a": //add
             return parseFloat((parseFloat(num1) + parseFloat(num2)).toPrecision(12));
             break
-        case "s":
+        case "s": //subtract
             return parseFloat((parseFloat(num1) - parseFloat(num2)).toPrecision(12));
             break;
-        case "m":
+        case "m": //multiply
             return parseFloat((parseFloat(num1) * parseFloat(num2)).toPrecision(12));
             break;
-        case "d":
+        case "d": //divide
             return parseFloat((parseFloat(num1) / parseFloat(num2)).toPrecision(12));
             break;
-        case "p":
+        case "p": //power
             return parseFloat((parseFloat(num1) ** parseFloat(num2)).toPrecision(12));
             break;
-        case "an":
+        case "an": //bitand
             return parseFloat((parseFloat(num1) & parseFloat(num2)).toPrecision(12));
             break;
-        case "o":
+        case "o": //bitor
             return parseFloat((parseFloat(num1) | parseFloat(num2)).toPrecision(12));
             break;
-        case "x":
+        case "x": //bitxor
             return parseFloat((parseFloat(num1) ^ parseFloat(num2)).toPrecision(12));
             break;
     }
@@ -375,12 +375,12 @@ function calculate(){
 }
 
 setInterval(function(){
-    document.getElementById("innerNum1").innerHTML = "innerNum1: " + innerNum1;
-    document.getElementById("innerNum2").innerHTML = "innerNum2: " + innerNum2;
-    document.getElementById("cont").innerHTML = "cont: " + cont;
-    document.getElementById("newline").innerHTML = "newline: " + newline;
-    document.getElementById("call").innerHTML = "call: " + call;
-    document.getElementById("output").innerHTML = "output: " + output;
+    document.getElementById("innerNum1").innerHTML = `innerNum1: ${innerNum1}`;
+    document.getElementById("innerNum2").innerHTML = `innerNum2: ${innerNum2}`;
+    document.getElementById("cont").innerHTML = `cont: ${cont}`;
+    document.getElementById("newline").innerHTML = `newline: ${newline}`;
+    document.getElementById("call").innerHTML = `call: ${call}`;
+    document.getElementById("output").innerHTML = `output: ${output}`;
 },125)
 
 
