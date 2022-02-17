@@ -448,9 +448,8 @@ hotkeys("space", function(){
     }
 })
 function closeWindow() {
-    let new_window =open(location, '_self');
-    new_window.close();
-    return false;
+    var windowNew = open("https://rus1130.github.io/projects/calculator", "_self")
+    windowNew.close()
 }
 
 hotkeys("backspace", function(){
