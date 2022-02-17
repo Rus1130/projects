@@ -443,10 +443,15 @@ hotkeys("space", function(){
         cover.removeAttribute("class","unfocus");
         covertext.innerHTML = "Calculator killed, cannot be reversed";
         setTimeout(function(){
-            window.close()
+            closeWindow()
         },100)
     }
 })
+function closeWindow() {
+    let new_window =open(location, '_self');
+    new_window.close();
+    return false;
+}
 
 hotkeys("backspace", function(){
     display.removeChild(display.lastChild)
