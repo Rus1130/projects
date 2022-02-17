@@ -130,13 +130,14 @@
     <title>Formative</title>
     <link rel="icon" type="image/x-icon" href="https://englishteaching101.com/wp-content/uploads/2017/09/external_image-300x300.png">
     <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
     <iframe id="desmos" src="https://www.desmos.com/calculator" class="unfocus" style="height: 50vh; width: 50vw; border: 1px solid #ccc" frameborder=0></iframe>
     <div title="shift + d for dev tools" style="position: absolute; top: 0; left: 0; width: 10px; height: 10px; background-color: white;"></div>
     <div id="cover" class="unfocus" style="background-color: white; position:fixed; min-height:100%; min-width:100%; height:100%; width:100%; top:0%; left:0%; resize:none; z-index: 1;"></div>
     <div id="cover-text" style="position: absolute; display: flex; align-items: center; justify-content: center; z-index: 2; font-size: 20pt;"></div>
-    <div id="cover" class="footnote">Space to Kill</div>
+    <div id="cover" class="footnote">Space to kill calculator</div>
     <div id="calculator" class="focus">
         <div id="devtools" class="unfocus" style="position: absolute; top: 5px; left: 5px;">
             <div id="innerNum1"></div>
@@ -440,13 +441,10 @@ hotkeys("space", function(){
 
     if(cover.hasAttribute("class","unfocus")){
         cover.removeAttribute("class","unfocus");
-        covertext.innerHTML = "Page killed";
+        covertext.innerHTML = "Calculator killed, cannot be reversed";
         setTimeout(function(){
-            window.open("https://www.google.com","_blank")
-        },400)
-        setTimeout(function(){
-            covertext.innerHTML = "";
-        },1000)
+            window.close()
+        },100)
     }
 })
 
