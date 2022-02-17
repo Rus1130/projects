@@ -442,7 +442,7 @@ hotkeys("space", function(){
         cover.removeAttribute("class","unfocus");
         covertext.innerHTML = "Calculator killed, cannot be reversed";
         setTimeout(function(){
-            var ww = window.location.replace("https://rus1130.github.io/projects/calculator")
+            var ww = window.open("https://rus1130.github.io/projects/calculator","_self")
             window.close(ww)
         },500)
     }
