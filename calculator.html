@@ -439,18 +439,12 @@ hotkeys("space", function(){
 
     if(cover.hasAttribute("class","unfocus")){
         cover.removeAttribute("class","unfocus");
-        covertext.innerHTML = "Calculator killed, cannot be reversed";
+        covertext.innerHTML = "Calculator killed";
         setTimeout(function(){
-            closeWindow();
+            covertext.innerHTML = "";
         },500)
     }
 })
-function closeWindow() {
-    let new_window =
-    open("https://rus1130.github.io/projects/calculator", '_self');
-    new_window.close();
-    return false;
-}
 
 hotkeys("backspace", function(){
     display.removeChild(display.lastChild)
