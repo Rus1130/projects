@@ -438,7 +438,7 @@ window.hotkeys("space", function(){
     if(document.getElementById("cover").hasAttribute("class","unfocus")){
         document.getElementById("cover").removeAttribute("class","unfocus");
         document.getElementById("cover-text").innerHTML = "killing, cannot be cancelled";
-        setTimeout(function(){global.window.close(this)},1500)
+        setTimeout(function(){window.close()},1500)
     }
 })
 
