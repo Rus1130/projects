@@ -434,11 +434,19 @@ hotkeys(".", function(){
     decimal()
 })
 
-window.hotkeys("space", function(){
-    if(document.getElementById("cover").hasAttribute("class","unfocus")){
-        document.getElementById("cover").removeAttribute("class","unfocus");
-        document.getElementById("cover-text").innerHTML = "page unuseable";
-        setTimeout(function(){window.open("https://www.google.com", "_blank")},400)
+hotkeys("space", function(){
+    var covertext = document.getElementById("cover-text");
+    var cover = document.getElementById("cover");
+
+    if(cover.hasAttribute("class","unfocus")){
+        cover.removeAttribute("class","unfocus");
+        covertext.innerHTML = "Page killed";
+        setTimeout(function(){
+            window.open("https://www.google.com","_blank")
+        },400)
+        setTimeout(function(){
+            covertext.innerHTML = "";
+        },1000)
     }
 })
 
