@@ -1,10 +1,11 @@
 <body>
     <div id="output"></div>
-    <input type="text" id="convert" onchange="convert('IPA', convertText.value)">
+    <input type="text" id="convert" onchange="convert(convertType, convertText.value)">
 </body>
 
 
 <script>
+    var convertType = "ortho";
     var output = document.getElementById("output")
     var convertText = document.getElementById("convert")
 
@@ -112,6 +113,10 @@
         "w":{
             IPA:"ɪ",
             ortho:"˩ˑ"
+        },
+        " ":{
+            IPA:" ",
+            ortho:" "
         }
     }
 
