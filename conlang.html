@@ -1,15 +1,36 @@
 <body>
-    <div id="IPA"></div>
+    <div id="output"></div>
+    <input type="text" id="convert" onchange="convert('IPA', convertText.value)">
 </body>
 
 
 <script>
-    var ipaText = document.getElementById("IPA")
-    function conToIPA(text){
-        [...text].forEach(function(c){
-            console.log(inventory[c]['IPA'])
+    var output = document.getElementById("output")
+    var convertText = document.getElementById("convert")
+
+    let conversionHandlerArray = new Array();
+
+    function convert(type, text){
+        switch(type){
+            case "IPA":
+                conversionHandlerArray = [];
+                [...text].forEach(function(c){
+                    adder = inventory[c]["IPA"]
+                    conversionHandlerArray.push(adder);
+                })
+                break;
+            case "ortho":
+                conversionHandlerArray = [];
+                [...text].forEach(function(c){
+                    adder = inventory[c]["ortho"]
+                    conversionHandlerArray.push(adder);
+                })
+                break;
+            default:
+                return console.error("syntax error");
         }
-    )}
+        output.innerHTML = conversionHandlerArray.join("")
+    }
 
     const inventory = {
         "p":{
@@ -30,31 +51,39 @@
         },
         "r":{
             IPA:"r",
-            ortho:"꜊"
+            ortho:"˥ˑ"
         },
         "x":{
             IPA:"ɾ",
-            ortho:"꜏"
+            ortho:"˦ˑ"
         },
         "f":{
             IPA:"ɸ",
-            ortho:"꜋"
+            ortho:"꜊"
         },
         "v":{
             IPA:"β",
-            ortho:"꜐"
+            ortho:"꜏"
         },
         "s":{
             IPA:"ɕ",
-            ortho:"꜌"
+            ortho:"꜋"
         },
         "z":{
             IPA:"ʐ",
+            ortho:"꜐"
+        },
+        "k":{
+            IPA:"k",
+            ortho:"꜌"
+        },
+        "g":{
+            IPA:"g",
             ortho:"꜑"
         },
         "j":{
             IPA:"j",
-            ortho:"˧"
+            ortho:"˧ˑ"
         },
         "i":{
             IPA:"i",
@@ -76,13 +105,13 @@
             IPA:"a",
             ortho:"꜖"
         },
-        "k":{
-            IPA:"k",
-            ortho:"˥"
+        "o":{
+            IPA:"o",
+            ortho:"˨ˑ"
         },
-        "g":{
-            IPA:"g",
-            ortho:"˩"
+        "w":{
+            IPA:"ɪ",
+            ortho:"˩ˑ"
         }
     }
 
