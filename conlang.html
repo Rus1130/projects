@@ -1,15 +1,17 @@
 <body>
-    hi
+    <div id="IPA"></div>
 </body>
 
 
 <script>
-    function conToOrtho(text){
-        [...text].forEach(input => console.log(input))
-    }
+    var ipaText = document.getElementById("IPA")
+    function conToIPA(text){
+        [...text].forEach(function(c){
+            console.log(inventory[c]['IPA'])
+        }
+    )}
 
-
-    var inventory = {
+    const inventory = {
         "p":{
            IPA:"p",
            ortho:"꜈" 
