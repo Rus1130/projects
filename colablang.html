@@ -24,6 +24,21 @@
     .unfocus {
         display: none;
     }
+    .vert {
+        writing-mode: vertical-rl;
+    }
+    .horiz {
+        writing-mode: horizontal-tb;
+    }
+    .horizPos {
+        position:initial;
+    }
+    .vertPos {
+        position: absolute;
+        top: 3px;
+        left: 40px;
+        margin: 8px;
+    }
 </style>
 
 <head>
@@ -31,7 +46,7 @@
 </head>
 
 <body>
-    <div id="output" style="height: 30px; font-size: 20pt;">&nbsp;</div>
+    <div id="output" style="height: max-content; font-size: 20pt;">&nbsp;</div>
     <div id="rus" class="focus">
         <input type="text" id="convert" onchange="convertRus(convertType.value, convertText.value)">
         <select id="typeSelect" onchange="convertRus(convertType.value, convertText.value)" title="Type" style="cursor: pointer;">
@@ -109,17 +124,23 @@
     function checkMarks(){
         if (typeType == "phagspa" && seMarksCheckbox.checked == true){
             document.getElementById("seMarksFull").setAttribute("class","focus")
+            rusDialect.setAttribute("class","vertPos")
+            output.setAttribute("class","vert")
             leftMarks = "ꡲ";
             rightMarks = "ꡳ";
             output.innerHTML = leftMarks + conversionHandlerArray.join("") + rightMarks
         } else {
             if(typeType == "IPA"){
+                rusDialect.setAttribute("class","horizPos")
+                output.setAttribute("class","horiz")
                 document.getElementById("seMarksFull").setAttribute("class","unfocus")
                 leftMarks = "[";
                 rightMarks = "]";
                 output.innerHTML = leftMarks + conversionHandlerArray.join("") + rightMarks
             } else {
                 if(seMarksCheckbox.checked == false){
+                    rusDialect.setAttribute("class","horizPos")
+                    output.setAttribute("class","horiz")
                     document.getElementById("seMarksFull").setAttribute("class","focus")
                     leftMarks = "";
                     rightMarks = "";
