@@ -76,6 +76,7 @@
     var output = document.getElementById("output");
     var convertText = document.getElementById("convert");
     var adder;
+    var flourishCheckbox = document.getElementById("flourish")
     var leftFlourish;
     var rightFlourish;
     var typeType = "IPA";
@@ -106,7 +107,7 @@
     }
 
     function checkFlourish(){
-        if ($('#flourish').is(":checked") && typeType == "phagspa"){
+        if (typeType == "phagspa" && flourishCheckbox.checked == true){
             document.getElementById("flourishFull").setAttribute("class","focus")
             leftFlourish = "ꡲ";
             rightFlourish = "ꡳ";
@@ -118,9 +119,12 @@
                 rightFlourish = "]";
                 output.innerHTML = leftFlourish + conversionHandlerArray.join("") + rightFlourish
             } else {
-                leftFlourish = "";
-                rightFlourish = "";
-                output.innerHTML = leftFlourish + conversionHandlerArray.join("") + rightFlourish
+                if(flourishCheckbox.checked == false){
+                    document.getElementById("flourishFull").setAttribute("class","focus")
+                    leftFlourish = "";
+                    rightFlourish = "";
+                    output.innerHTML = leftFlourish + conversionHandlerArray.join("") + rightFlourish
+                }
             }
         }
     }
