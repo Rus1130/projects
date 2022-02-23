@@ -77,8 +77,8 @@
     var convertText = document.getElementById("convert");
     var adder;
     var seMarksCheckbox = document.getElementById("seMarks")
-    var leftFlourish;
-    var rightFlourish;
+    var leftMarks;
+    var rightMarks;
     var typeType = "IPA";
 
     let conversionHandlerArray = new Array();
@@ -106,31 +106,31 @@
         }
     }
 
-    function checkFlourish(){
+    function checkMarks(){
         if (typeType == "phagspa" && seMarksCheckbox.checked == true){
             document.getElementById("seMarksFull").setAttribute("class","focus")
-            leftFlourish = "ꡲ";
-            rightFlourish = "ꡳ";
-            output.innerHTML = leftFlourish + conversionHandlerArray.join("") + rightFlourish
+            leftMarks = "ꡲ";
+            rightMarks = "ꡳ";
+            output.innerHTML = leftMarks + conversionHandlerArray.join("") + rightMarks
         } else {
             if(typeType == "IPA"){
                 document.getElementById("seMarksFull").setAttribute("class","unfocus")
-                leftFlourish = "[";
-                rightFlourish = "]";
-                output.innerHTML = leftFlourish + conversionHandlerArray.join("") + rightFlourish
+                leftMarks = "[";
+                rightMarks = "]";
+                output.innerHTML = leftMarks + conversionHandlerArray.join("") + rightMarks
             } else {
                 if(seMarksCheckbox.checked == false){
                     document.getElementById("seMarksFull").setAttribute("class","focus")
-                    leftFlourish = "";
-                    rightFlourish = "";
-                    output.innerHTML = leftFlourish + conversionHandlerArray.join("") + rightFlourish
+                    leftMarks = "";
+                    rightMarks = "";
+                    output.innerHTML = leftMarks + conversionHandlerArray.join("") + rightMarks
                 }
             }
         }
     }
 
     setInterval(function(){
-        checkFlourish()
+        checkMarks()
     },1)
 
     function dialectRusShow(){
