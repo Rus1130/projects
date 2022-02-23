@@ -26,7 +26,7 @@
     <input type="text" id="convert" onchange="convert(convertType.value, convertText.value)">
     <select id="typeSelect" onchange="convert(convertType.value, convertText.value)" title="Type" style="cursor: pointer;">
         <option value="IPA">IPA</option>
-        <option value="ogham">Ogham</option>
+        <option value="phagspa">Phagspa</option>
     </select>
     <select title="Dialect" style="cursor: pointer;">
         <option value="rus">Dialect Rus</option>
@@ -51,10 +51,10 @@
                     conversionHandlerArray.push(adder);
                 })
                 break;
-            case "ogham":
+            case "phagspa":
                 conversionHandlerArray = [];
                 [...text].forEach(function(c){
-                    adder = inventory[c]["ogham"]
+                    adder = inventory[c]["phagspa"]
                     conversionHandlerArray.push(adder)
                 })
                 break;
@@ -65,8 +65,8 @@
             case "IPA":
                 output.innerHTML = "[" + conversionHandlerArray.join("") + "]";
                 break;
-            case "ogham":
-                output.innerHTML = "᚛" + conversionHandlerArray.join("") + "᚜";
+            case "phagspa":
+                output.innerHTML = "ꡲ" + conversionHandlerArray.join("") + "ꡳ";
         }
         
     }
@@ -74,111 +74,111 @@
     const inventory = {
         "p":{
             IPA:"p",
-            ogham:"ᚆ"
+            phagspa:"ꡁ"
         },
         "b":{
             IPA:"b",
-            ogham:"ᚁ"
+            phagspa:"ꡂ"
         },
         "t":{
             IPA:"t",
-            ogham:"ᚇ"
+            phagspa:"ꡎ"
         },
         "d":{
             IPA:"d",
-            ogham:"ᚂ"
+            phagspa:"ꡍ"
         },
         "k":{
             IPA:"k",
-            ogham:"ᚈ"
+            phagspa:"ꡌ"
         },
         "g":{
             IPA:"g",
-            ogham:"ᚃ"
+            phagspa:"ꡖ"
         },
         "f":{
             IPA:"f",
-            ogham:"ᚉ"
+            phagspa:"ꡰ"
         },
         "s":{
             IPA:"s",
-            ogham:"ᚄ"
+            phagspa:"ꡞ"
         },
         "c":{
             IPA:"ɕ",
-            ogham:"ᚊ"
+            phagspa:"ꡟ"
         },
         "h":{
             IPA:"x",
-            ogham:"ᚅ"
+            phagspa:"ꡜ"
         },
         "j":{
             IPA:"j",
-            ogham:"ᚐ"
+            phagspa:"ꡬ"
         },
         "r":{
             IPA:"ɾ",
-            ogham:"ᚑ"
+            phagspa:"ꡮ"
         },
         "x":{
             IPA:"ɬ",
-            ogham:"ᚒ"
+            phagspa:"ꡤ"
         },
         "l":{
             IPA:"ʎ",
-            ogham:"ᚓ"
+            phagspa:"ꡣ"
         },
         "z":{
             IPA:"t͡s",
-            ogham:"ᚔ"
+            phagspa:"ꡔ"
         },
         "m":{
             IPA:"m",
-            ogham:"ᚎ"
+            phagspa:"ꡋ"
         },
         "n":{
             IPA:"n",
-            ogham:"ᚏ"
+            phagspa:"ꡏ"
         },
         "i":{
             IPA:"i",
-            ogham:"ᚋ"
+            phagspa:"ꡱ"
         },
         "í":{
             IPA:"ɨ",
-            ogham:"ᚗ"
+            phagspa:"ꡙ"
         },
         "ú":{
             IPA:"ɯ",
-            ogham:"ᚙ"
+            phagspa:"ꡯ"
         },
         "u":{
             IPA:"u",
-            ogham:"ᚕ"
+            phagspa:"ꡊ"
         },
         "ö":{
             IPA:"ø",
-            ogham:"ᚖ"
+            phagspa:"ꡧ"
         },
         "o":{
             IPA:"o",
-            ogham:"ᚍ"
+            phagspa:"ꡑ"
         },
         "e":{
             IPA:"ɛ",
-            ogham:"ᚌ"
+            phagspa:"ꡭ"
         },
         "ó":{
             IPA:"ɔ",
-            ogham:"ᚘ"
+            phagspa:"ꡨ"
         },
         "a":{
             IPA:"a",
-            ogham:"ᚚ"
+            phagspa:"ꡅ"
         },
         " ":{
             IPA:" ",
-            ogham:" "
+            phagspa:" "
         }
     }
 
