@@ -1,13 +1,41 @@
+<style>
+    input {
+        border: 0.5px solid black;
+    }
+    input:focus {
+        outline: none;
+        border: 0.5px solid black;
+    }
+    select {
+        border: 0.5px solid black;
+    }
+    select:focus {
+        outline: none;
+        border: 0.5px solid black;
+    }
+
+    html {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 20px;
+    }
+</style>
+
+
 <body>
-    <div id="output"></div>
-    <input type="text" id="convert" onchange="convert(convertType, convertText.value)">
+    <div id="output">&nbsp;</div>
+    <input type="text" id="convert" onchange="convert(convertType.value, convertText.value)">
+    <select id="typeSelect" onchange="convert(convertType.value, convertText.value)">
+        <option value="IPA">IPA</option>
+        <option value="ogham">Ogham</option>
+    </select>
 </body>
 
 
 <script>
-    var convertType = "ortho";
-    var output = document.getElementById("output")
-    var convertText = document.getElementById("convert")
+    var convertType = document.getElementById("typeSelect");
+    var output = document.getElementById("output");
+    var convertText = document.getElementById("convert");
+    var adder = "";
 
     let conversionHandlerArray = new Array();
 
@@ -20,103 +48,134 @@
                     conversionHandlerArray.push(adder);
                 })
                 break;
-            case "ortho":
+            case "ogham":
                 conversionHandlerArray = [];
                 [...text].forEach(function(c){
-                    adder = inventory[c]["ortho"]
-                    conversionHandlerArray.push(adder);
+                    adder = inventory[c]["ogham"]
+                    conversionHandlerArray.push(adder)
                 })
                 break;
             default:
                 return console.error("syntax error");
         }
-        output.innerHTML = conversionHandlerArray.join("")
+        switch(type){
+            case "IPA":
+                output.innerHTML = "[" + conversionHandlerArray.join("") + "]";
+                break;
+            case "ogham":
+                output.innerHTML = "᚛" + conversionHandlerArray.join("") + "᚜";
+        }
+        
     }
 
     const inventory = {
         "p":{
-           IPA:"p",
-           ortho:"꜈" 
+            IPA:"p",
+            ogham:"ᚆ"
         },
         "b":{
             IPA:"b",
-            ortho:"꜍"
+            ogham:"ᚁ"
         },
-        "m":{
-            IPA:"m",
-            ortho:"꜉"
+        "t":{
+            IPA:"t",
+            ogham:"ᚇ"
         },
-        "n":{
-            IPA:"n",
-            ortho:"꜎"
-        },
-        "r":{
-            IPA:"r",
-            ortho:"˥ˑ"
-        },
-        "x":{
-            IPA:"ɾ",
-            ortho:"˦ˑ"
-        },
-        "f":{
-            IPA:"ɸ",
-            ortho:"꜊"
-        },
-        "v":{
-            IPA:"β",
-            ortho:"꜏"
-        },
-        "s":{
-            IPA:"ɕ",
-            ortho:"꜋"
-        },
-        "z":{
-            IPA:"ʐ",
-            ortho:"꜐"
+        "d":{
+            IPA:"d",
+            ogham:"ᚂ"
         },
         "k":{
             IPA:"k",
-            ortho:"꜌"
+            ogham:"ᚈ"
         },
         "g":{
             IPA:"g",
-            ortho:"꜑"
+            ogham:"ᚃ"
+        },
+        "f":{
+            IPA:"f",
+            ogham:"ᚉ"
+        },
+        "s":{
+            IPA:"s",
+            ogham:"ᚄ"
+        },
+        "c":{
+            IPA:"ɕ",
+            ogham:"ᚊ"
+        },
+        "h":{
+            IPA:"x",
+            ogham:"ᚅ"
         },
         "j":{
             IPA:"j",
-            ortho:"˧ˑ"
+            ogham:"ᚐ"
+        },
+        "r":{
+            IPA:"ɾ",
+            ogham:"ᚑ"
+        },
+        "x":{
+            IPA:"ɬ",
+            ogham:"ᚒ"
+        },
+        "l":{
+            IPA:"ʎ",
+            ogham:"ᚓ"
+        },
+        "z":{
+            IPA:"t͡s",
+            ogham:"ᚔ"
+        },
+        "m":{
+            IPA:"m",
+            ogham:"ᚎ"
+        },
+        "n":{
+            IPA:"n",
+            ogham:"ᚏ"
         },
         "i":{
             IPA:"i",
-            ortho:"꜒"
+            ogham:"ᚋ"
         },
-        "y":{
+        "í":{
+            IPA:"ɨ",
+            ogham:"ᚗ"
+        },
+        "ú":{
             IPA:"ɯ",
-            ortho:"꜓"
+            ogham:"ᚙ"
         },
         "u":{
             IPA:"u",
-            ortho:"꜔"
+            ogham:"ᚕ"
         },
-        "e":{
-            IPA:"ɛ",
-            ortho:"꜕"
-        },
-        "a":{
-            IPA:"a",
-            ortho:"꜖"
+        "ö":{
+            IPA:"ø",
+            ogham:"ᚖ"
         },
         "o":{
             IPA:"o",
-            ortho:"˨ˑ"
+            ogham:"ᚍ"
         },
-        "w":{
-            IPA:"ɪ",
-            ortho:"˩ˑ"
+        "e":{
+            IPA:"ɛ",
+            ogham:"ᚌ"
+        },
+        "ó":{
+            IPA:"ɔ",
+            ogham:"ᚘ"
+        },
+        "a":{
+            IPA:"a",
+            ogham:"ᚚ"
         },
         " ":{
             IPA:" ",
-            ortho:" "
+            ogham:" "
         }
     }
 
