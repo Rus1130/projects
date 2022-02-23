@@ -18,6 +18,12 @@
         font-family: Arial, Helvetica, sans-serif;
         font-size: 14pt;
     }
+    .focus {
+        display: initial;
+    }
+    .unfocus {
+        display: none;
+    }
 </style>
 
 <head>
@@ -26,31 +32,60 @@
 
 <body>
     <div id="output" style="height: 30px; font-size: 20pt;">&nbsp;</div>
-    Dialect Rus:
-    <input type="text" id="convert" onchange="convertRus(convertType.value, convertText.value)">
-    <select id="typeSelect" onchange="convertRus(convertType.value, convertText.value)" title="Type" style="cursor: pointer;">
-        <option value="IPA">IPA</option>
-        <option value="phagspa">Phagspa</option>
-    </select>
-    <input type="checkbox" id="flourish" name="flourish" checked>
-    <label for="flourish"> Dialect Rus Flourish</label>
+    <div id="rus" class="focus">
+        <input type="text" id="convert" onchange="convertRus(convertType.value, convertText.value)">
+        <select id="typeSelect" onchange="convertRus(convertType.value, convertText.value)" title="Type" style="cursor: pointer;">
+            <option value="IPA">IPA</option>
+            <option value="phagspa">Phagspa</option>
+        </select>
+        <span style="font-size: 12pt;">
+            Dialect:
+            <select id="dialectSelect">
+                <option value="rus">Rus</option>
+            </select>
+        </span>
+        <span id="flourishFull" class="unfocus">
+            <input type="checkbox" id="flourish" name="flourish" checked>
+            <label for="flourish">Flourish</label>
+        </span>
+    </div>
+
+    <div id="aspyn" class="unfocus">
+        <input type="text" id="convert" onchange="convertRus(convertType.value, convertText.value)">
+        <select id="typeSelect" onchange="convertRus(convertType.value, convertText.value)" title="Type" style="cursor: pointer;">
+            <option value="IPA">IPA</option>
+            <option value="phagspa">Phagspa</option>
+        </select>
+        <span style="font-size: 12pt;">
+            Dialect:
+            <select id="dialectSelect">
+                <option value="rus">Rus</option>
+            </select>
+        </span>
+    </div>
 </body>
 
 
 <script>
+
+    var rusDialect = document.getElementById("rus")
+    var aspynDialect = document.getElementById("aspyn")
+
+
     var convertType = document.getElementById("typeSelect");
     var output = document.getElementById("output");
     var convertText = document.getElementById("convert");
-    var adder = "";
-    var leftFlourish = "ꡲ";
-    var rightFlourish = "ꡳ";
+    var adder;
+    var leftFlourish;
+    var rightFlourish;
+    var typeType = "IPA";
 
     let conversionHandlerArray = new Array();
-
 
     function convertRus(type, text){
         switch(type){
             case "IPA":
+                typeType = "IPA";
                 conversionHandlerArray = [];
                 [...text].forEach(function(c){
                     adder = inventory[c]["IPA"]
@@ -58,6 +93,7 @@
                 })
                 break;
             case "phagspa":
+                typeType = "phagspa";
                 conversionHandlerArray = [];
                 [...text].forEach(function(c){
                     adder = inventory[c]["phagspa"]
@@ -67,24 +103,40 @@
             default:
                 return console.error("syntax error");
         }
-        switch(type){
-            case "IPA":
-                output.innerHTML = "[" + conversionHandlerArray.join("") + "]";
-                break;
-            case "phagspa":
-                output.innerHTML = "ꡲ" + conversionHandlerArray.join("") + "ꡳ";
-        }
-        
     }
 
     function checkFlourish(){
-        if ($('#flourish').is(":checked")){
+        if ($('#flourish').is(":checked") && typeType == "phagspa"){
+            document.getElementById("flourishFull").setAttribute("class","focus")
             leftFlourish = "ꡲ";
             rightFlourish = "ꡳ";
+            output.innerHTML = leftFlourish + conversionHandlerArray.join("") + rightFlourish
         } else {
-            leftFlourish = "";
-            rightFlourish = "";
+            if(typeType == "IPA"){
+                document.getElementById("flourishFull").setAttribute("class","unfocus")
+                leftFlourish = "[";
+                rightFlourish = "]";
+                output.innerHTML = leftFlourish + conversionHandlerArray.join("") + rightFlourish
+            } else {
+                leftFlourish = "";
+                rightFlourish = "";
+                output.innerHTML = leftFlourish + conversionHandlerArray.join("") + rightFlourish
+            }
         }
+    }
+
+    setInterval(function(){
+        checkFlourish()
+    },1)
+
+    function dialectRusShow(){
+        rusDialect.setAttribute("class","focus")
+        aspynDialect.setAttribute("class","unfocus")
+    }
+
+    function dialectAspynShow(){
+        rusDialect.setAttribute("class","unfocus")
+        aspynDialect.setAttribute("class","focus")
     }
 
 
@@ -196,6 +248,10 @@
         " ":{
             IPA:" ",
             phagspa:" "
+        },
+        ".":{
+            IPA:".",
+            phagspa:""
         }
     }
 
