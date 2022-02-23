@@ -22,11 +22,14 @@
 
 
 <body>
-    <div id="output">&nbsp;</div>
+    <div id="output" style="height: 25px;">&nbsp;</div>
     <input type="text" id="convert" onchange="convert(convertType.value, convertText.value)">
-    <select id="typeSelect" onchange="convert(convertType.value, convertText.value)">
+    <select id="typeSelect" onchange="convert(convertType.value, convertText.value)" title="Type" style="cursor: pointer;">
         <option value="IPA">IPA</option>
         <option value="ogham">Ogham</option>
+    </select>
+    <select title="Dialect" style="cursor: pointer;">
+        <option value="rus">Dialect Rus</option>
     </select>
 </body>
 
