@@ -16,21 +16,24 @@
 
     html {
         font-family: Arial, Helvetica, sans-serif;
-        font-size: 20px;
+        font-size: 14pt;
     }
 </style>
 
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
 
 <body>
-    <div id="output" style="height: 25px;">&nbsp;</div>
-    <input type="text" id="convert" onchange="convert(convertType.value, convertText.value)">
-    <select id="typeSelect" onchange="convert(convertType.value, convertText.value)" title="Type" style="cursor: pointer;">
+    <div id="output" style="height: 30px; font-size: 20pt;">&nbsp;</div>
+    Dialect Rus:
+    <input type="text" id="convert" onchange="convertRus(convertType.value, convertText.value)">
+    <select id="typeSelect" onchange="convertRus(convertType.value, convertText.value)" title="Type" style="cursor: pointer;">
         <option value="IPA">IPA</option>
         <option value="phagspa">Phagspa</option>
     </select>
-    <select title="Dialect" style="cursor: pointer;">
-        <option value="rus">Dialect Rus</option>
-    </select>
+    <input type="checkbox" id="flourish" name="flourish" checked>
+    <label for="flourish"> Dialect Rus Flourish</label>
 </body>
 
 
@@ -39,10 +42,13 @@
     var output = document.getElementById("output");
     var convertText = document.getElementById("convert");
     var adder = "";
+    var leftFlourish = "ꡲ";
+    var rightFlourish = "ꡳ";
 
     let conversionHandlerArray = new Array();
 
-    function convert(type, text){
+
+    function convertRus(type, text){
         switch(type){
             case "IPA":
                 conversionHandlerArray = [];
@@ -70,6 +76,17 @@
         }
         
     }
+
+    function checkFlourish(){
+        if ($('#flourish').is(":checked")){
+            leftFlourish = "ꡲ";
+            rightFlourish = "ꡳ";
+        } else {
+            leftFlourish = "";
+            rightFlourish = "";
+        }
+    }
+
 
     const inventory = {
         "p":{
