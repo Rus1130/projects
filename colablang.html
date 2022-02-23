@@ -44,9 +44,9 @@
                 <option value="rus">Rus</option>
             </select>
         </span>
-        <span id="flourishFull" class="unfocus">
-            <input type="checkbox" id="flourish" name="flourish" checked>
-            <label for="flourish">Flourish</label>
+        <span id="seMarksFull" class="unfocus">
+            <input type="checkbox" id="seMarks" name="seMarks" checked>
+            <label for="seMarks">Start and End marks</label>
         </span>
     </div>
 
@@ -76,7 +76,7 @@
     var output = document.getElementById("output");
     var convertText = document.getElementById("convert");
     var adder;
-    var flourishCheckbox = document.getElementById("flourish")
+    var seMarksCheckbox = document.getElementById("seMarks")
     var leftFlourish;
     var rightFlourish;
     var typeType = "IPA";
@@ -107,20 +107,20 @@
     }
 
     function checkFlourish(){
-        if (typeType == "phagspa" && flourishCheckbox.checked == true){
-            document.getElementById("flourishFull").setAttribute("class","focus")
+        if (typeType == "phagspa" && seMarksCheckbox.checked == true){
+            document.getElementById("seMarksFull").setAttribute("class","focus")
             leftFlourish = "ꡲ";
             rightFlourish = "ꡳ";
             output.innerHTML = leftFlourish + conversionHandlerArray.join("") + rightFlourish
         } else {
             if(typeType == "IPA"){
-                document.getElementById("flourishFull").setAttribute("class","unfocus")
+                document.getElementById("seMarksFull").setAttribute("class","unfocus")
                 leftFlourish = "[";
                 rightFlourish = "]";
                 output.innerHTML = leftFlourish + conversionHandlerArray.join("") + rightFlourish
             } else {
-                if(flourishCheckbox.checked == false){
-                    document.getElementById("flourishFull").setAttribute("class","focus")
+                if(seMarksCheckbox.checked == false){
+                    document.getElementById("seMarksFull").setAttribute("class","focus")
                     leftFlourish = "";
                     rightFlourish = "";
                     output.innerHTML = leftFlourish + conversionHandlerArray.join("") + rightFlourish
