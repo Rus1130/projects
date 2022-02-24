@@ -20,13 +20,13 @@
     <h1 id="optionDisplay"></h1>
     <input type="text" id="input"></input>
     <br>
-    <span>Loaded: <span id="loadText"></span></span>
+    <h3>Loaded: <span id="loadText"></span></h3>
     <div>
-        <br>
         Enter to save<br>
         l to load <br>
         space to cycle <br>
         shift + space for debug <br>
+        p to write protect <br>
     </div>
     <div id="debug" class="unfocus">
         <h1>Debug:</h1>
@@ -41,8 +41,8 @@
 </body>
 
 <script>
-    var cycleCount = 1;
-    var disk = 1;
+    var diskNum = 1;
+    var suffixes = "";
     var loadText = document.getElementById("loadText")
     var optionDisplay = document.getElementById("optionDisplay");
     var input = document.getElementById("input")
@@ -56,23 +56,17 @@
     
 
     function optionSwitcher(){
-        switch(cycleCount){
-            case 1: optionDisplay.innerHTML = "Disk 1", disk = 1; break;
-            case 2: optionDisplay.innerHTML = "Disk 2", disk = 2; break;
-            case 3: optionDisplay.innerHTML = "Disk 3", disk = 3; break;
-            case 4: optionDisplay.innerHTML = "Disk 4", disk = 4; break;
-            case 5: optionDisplay.innerHTML = "Disk 5", disk = 5; break;
-        }
+        optionDisplay.innerHTML = `Disk ${diskNum}${suffixes}`;
         setDebugValues()
     }
 
-    function cycleOption(){
-        if(cycleCount == 5){
-            cycleCount = 1;
-            HDD["currentDisk"] = disk;
+    function cycleDisk(){
+        if(diskNum == 5){
+            diskNum = 1;
+            HDD["currentDisk"] = diskNum;
         } else {
-            cycleCount++;
-            HDD["currentDisk"] = disk;
+            diskNum++;
+            HDD["currentDisk"] = diskNum;
         }
         setDebugValues();
         optionSwitcher();
@@ -81,37 +75,47 @@
     var HDD = {
         1:{
             "text":"",
-            "inUse":false
+            "inUse":false,
+            "writeProtect":false,
+            "sfxs":""
         },
         2:{
             "text":"",
-            "inUse":false
+            "inUse":false,
+            "writeProtect":false,
+            "sfxs":""
         },
         3:{
             "text":"",
-            "inUse":false
+            "inUse":false,
+            "writeProtect":false,
+            "sfxs":""
         },
         4:{
             "text":"",
-            "inUse":false
+            "inUse":false,
+            "writeProtect":false,
+            "sfxs":""
         },
         5:{
             "text":"",
-            "inUse":false
+            "inUse":false,
+            "writeProtect":false,
+            "sfxs":""
         },
         "loadedDisk":"",
         "currentDisk":""
     }
 
     function save(){
-        HDD[disk]['text'] = input.value;
-        (HDD[disk]['text'] == '' ? HDD[disk]['inUse'] = false : HDD[disk]['inUse'] = true);
+        HDD[diskNum]['text'] = input.value;
+        (HDD[diskNum]['text'] == '' ? HDD[diskNum]['inUse'] = false : HDD[diskNum]['inUse'] = true);
         setDebugValues();
     }
 
     function load(){
-        loadText.innerHTML = HDD[disk]['text'];
-        HDD["loadedDisk"] = disk;
+        loadText.innerHTML = HDD[diskNum]['text'];
+        HDD["loadedDisk"] = diskNum;
         setDebugValues();
     }
 
@@ -125,7 +129,8 @@
     //========
 
     function setDebugValues(){
-        HDD["currentDisk"] = disk;
+        HDD["currentDisk"] = diskNum;
+
         document.getElementById("hddHTML1").innerHTML = '{"1":'+JSON.stringify(HDD[1])+",";
         document.getElementById("hddHTML2").innerHTML = '"2":'+JSON.stringify(HDD[2])+",";
         document.getElementById("hddHTML3").innerHTML = '"3":'+JSON.stringify(HDD[3])+",";
@@ -148,7 +153,29 @@
     })
 
     hotkeys("space",function(){
-        cycleOption()
+        cycleDisk()
     })
+
+    hotkeys("p", function(){
+        writeProtectCheck();
+        setDebugValues()
+    })
+
+    var diskCapture;
+
+    function writeProtectCheck(){
+        diskCapture = optionDisplay.innerHTML.toString().replace(/\D/g,'')
+        HDD[diskNum]["writeProtect"] = !HDD[diskNum]["writeProtect"];
+
+        //disk 1
+        if(HDD[diskNum] == HDD[diskCapture] && HDD[diskNum]["writeProtect"] == true){
+            console.log(`${diskNum} is write locked`)
+        } else {
+            if(HDD[diskNum]["writeProtect"] == false){
+                console.log(`${diskNum} is write unlocked`)
+            }
+        }
+        setDebugValues()
+    }
 
 </script>
