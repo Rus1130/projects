@@ -1,0 +1,46 @@
+<head>
+    <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
+</head>
+
+<body>
+    Data: <span id="data">0</span>
+    <br>
+    Store: <span id="store">0</span>
+    <br>
+    Output <span id="output">0</span>
+</body>
+<script>
+
+    var data = 0;
+    var store = 0;
+    var output = 0;
+
+    var faceData = document.getElementById("data")
+    var faceStore = document.getElementById("store")
+    var out = document.getElementById("output")
+
+    function dLatch(){
+        if(store == 1){
+            output = data;
+            console.log(`output: ${output} data: ${data} store: ${store}`)
+        }
+    }
+
+    function flipData(){
+        data = ~~!data
+        faceData.innerHTML = data;
+
+    }
+    function flipStore(){
+        store = ~~!store
+        store.innerHTML = store;
+    }
+
+    hotkeys("d",function(){
+        flipData()
+    })
+    hotkeys("s",function(){
+        flipStore()
+    })
+
+</script>
