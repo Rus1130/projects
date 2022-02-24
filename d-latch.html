@@ -19,13 +19,6 @@
     var faceStore = document.getElementById("store")
     var out = document.getElementById("output")
 
-    function dLatch(){
-        if(store == 1){
-            output = data;
-            console.log(`output: ${output} data: ${data} store: ${store}`)
-        }
-    }
-
     function flipData(){
         data = ~~!data
         faceData.innerHTML = data;
