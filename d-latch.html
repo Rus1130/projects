@@ -15,18 +15,27 @@
     var store = 0;
     var output = 0;
 
-    var faceData = document.getElementById("data")
-    var faceStore = document.getElementById("store")
-    var out = document.getElementById("output")
+    var HTMLData = document.getElementById("data")
+    var HTMLStore = document.getElementById("store")
+    var HTMLOut = document.getElementById("output")
 
+    function dLatch(){
+        if(store == 1){
+            output = data;
+            HTMLOut.innerHTML = output
+        }
+    }
+    
     function flipData(){
         data = ~~!data
-        faceData.innerHTML = data;
+        HTMLData.innerHTML = data;
+        dLatch()
 
     }
     function flipStore(){
         store = ~~!store
-        store.innerHTML = store;
+        HTMLStore.innerHTML = store;
+        dLatch()
     }
 
     hotkeys("d",function(){

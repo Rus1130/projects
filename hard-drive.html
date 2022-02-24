@@ -1,0 +1,154 @@
+<style>
+    html {
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    input:focus {
+        outline: none;
+    }
+    .focus {
+        display: initial;
+    }
+    .unfocus {
+        display: none;
+    }
+</style>
+<head>
+    <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1 id="optionDisplay"></h1>
+    <input type="text" id="input"></input>
+    <br>
+    <span>Loaded: <span id="loadText"></span></span>
+    <div>
+        <br>
+        Enter to save<br>
+        l to load <br>
+        space to cycle <br>
+        shift + space for debug <br>
+    </div>
+    <div id="debug" class="unfocus">
+        <h1>Debug:</h1>
+        <div id="hddHTML1"></div>
+        <div id="hddHTML2"></div>
+        <div id="hddHTML3"></div>
+        <div id="hddHTML4"></div>
+        <div id="hddHTML5"></div>
+        <div id="hddHTML6"></div>
+        <div id="hddHTML7"></div>
+    </div>
+</body>
+
+<script>
+    var cycleCount = 1;
+    var disk = 1;
+    var loadText = document.getElementById("loadText")
+    var optionDisplay = document.getElementById("optionDisplay");
+    var input = document.getElementById("input")
+    var debug = document.getElementById("debug")
+
+    optionDisplay.innerHTML = "Disk 1"
+
+    window.addEventListener('load', (event) => {
+        setDebugValues()
+    });
+    
+
+    function optionSwitcher(){
+        switch(cycleCount){
+            case 1: optionDisplay.innerHTML = "Disk 1", disk = 1; break;
+            case 2: optionDisplay.innerHTML = "Disk 2", disk = 2; break;
+            case 3: optionDisplay.innerHTML = "Disk 3", disk = 3; break;
+            case 4: optionDisplay.innerHTML = "Disk 4", disk = 4; break;
+            case 5: optionDisplay.innerHTML = "Disk 5", disk = 5; break;
+        }
+        setDebugValues()
+    }
+
+    function cycleOption(){
+        if(cycleCount == 5){
+            cycleCount = 1;
+            HDD["currentDisk"] = disk;
+        } else {
+            cycleCount++;
+            HDD["currentDisk"] = disk;
+        }
+        setDebugValues();
+        optionSwitcher();
+    }
+
+    var HDD = {
+        1:{
+            "text":"",
+            "inUse":false
+        },
+        2:{
+            "text":"",
+            "inUse":false
+        },
+        3:{
+            "text":"",
+            "inUse":false
+        },
+        4:{
+            "text":"",
+            "inUse":false
+        },
+        5:{
+            "text":"",
+            "inUse":false
+        },
+        "loadedDisk":"",
+        "currentDisk":""
+    }
+
+    function save(){
+        HDD[disk]['text'] = input.value;
+        (HDD[disk]['text'] == '' ? HDD[disk]['inUse'] = false : HDD[disk]['inUse'] = true);
+        setDebugValues();
+    }
+
+    function load(){
+        loadText.innerHTML = HDD[disk]['text'];
+        HDD["loadedDisk"] = disk;
+        setDebugValues();
+    }
+
+    //submit text on enter
+    $(document).on("keypress", function(e){
+        if(e.which == 13){
+            save()
+            setDebugValues()
+        }
+    });
+    //========
+
+    function setDebugValues(){
+        HDD["currentDisk"] = disk;
+        document.getElementById("hddHTML1").innerHTML = '{"1":'+JSON.stringify(HDD[1])+",";
+        document.getElementById("hddHTML2").innerHTML = '"2":'+JSON.stringify(HDD[2])+",";
+        document.getElementById("hddHTML3").innerHTML = '"3":'+JSON.stringify(HDD[3])+",";
+        document.getElementById("hddHTML4").innerHTML = '"4":'+JSON.stringify(HDD[4])+",";
+        document.getElementById("hddHTML5").innerHTML = '"5":'+JSON.stringify(HDD[5])+",";
+        document.getElementById("hddHTML6").innerHTML = '"loadedDisk":'+JSON.stringify(HDD["loadedDisk"])+",";
+        document.getElementById("hddHTML7").innerHTML = '"currentDisk":'+JSON.stringify(HDD["currentDisk"])+"}";
+    }
+
+    hotkeys("shift + space",function(){
+        if(debug.hasAttribute("class","unfocus")){
+            debug.removeAttribute("class","unfocus")
+        } else {
+            debug.setAttribute("class","unfocus")
+        }
+    })
+
+    hotkeys("l",function(){
+        load()
+    })
+
+    hotkeys("space",function(){
+        cycleOption()
+    })
+
+</script>
