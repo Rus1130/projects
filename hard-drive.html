@@ -54,6 +54,10 @@
 </body>
 
 <script>
+    window.onload = (event) => {
+        HDD = JSON.parse(localStorage.getItem("HDD_Data"));
+    };
+
     var diskNum = 1;
     var loadText = document.getElementById("loadText")
     var optionDisplay = document.getElementById("optionDisplay");
@@ -216,7 +220,10 @@
     //========
 
     function setDebugValues(){
+        
+
         HDD["currentDisk"] = diskNum;
+
         document.getElementById("debugHDD1").innerHTML = '{"1":' + JSON.stringify(HDD[1]) + ",";
         document.getElementById("debugHDD2").innerHTML = '"2":' + JSON.stringify(HDD[2]) + ",";
         document.getElementById("debugHDD3").innerHTML = '"3":' + JSON.stringify(HDD[3]) + ",";
@@ -237,6 +244,7 @@
         document.getElementById("debugHDD18").innerHTML = '"18":' + JSON.stringify(HDD[18]) + ",";
         document.getElementById("debugHDD19").innerHTML = '"19":' + JSON.stringify(HDD[19]) + ",";
         document.getElementById("debugHDD20").innerHTML = '"20":' + JSON.stringify(HDD[20]) + "}";
+        
 
         if(HDD[diskNum]["writeProtect"] == true){
             input.disabled = true;
@@ -247,6 +255,8 @@
             input.removeAttribute("style","cursor: no-drop; user-select: none;")
             input.removeAttribute("title")
         }
+
+        window.localStorage.setItem("HDD_Data", JSON.stringify(HDD));
     }
 
     hotkeys("shift + space",function(){
@@ -278,5 +288,7 @@
         HDD[diskNum]["writeProtect"] = !HDD[diskNum]["writeProtect"];
         setDebugValues()
     }
+
+
 
 </script>
