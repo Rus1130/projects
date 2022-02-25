@@ -24,13 +24,15 @@
     <div>
         Enter to save<br>
         l to load <br>
-        space to cycle disks <br>
-        p to write protect <br>
+        space to cycle disks right <br>
+        ctrl + space to cycle disks left <br>
+        p to toggle write protect <br>
         / to focus on input <br>
-        delete key to wipe <br>
-        shift + space for debug <br>
         a to set admin password <br>
         shift + a to reset admin password <br>
+        <span id="specialSignNeeded1" class="unfocus">delete key to wipe <br></span>
+        <span id="specialSignNeeded2" class="unfocus">shift + p to toggle write protect Admin password necessity <br></span>
+        <span id="specialSignNeeded3" class="unfocus">shift + space for debug <br></span> 
     </div>
     <div id="debug" class="unfocus">
         <h1>Debug:</h1>
@@ -80,16 +82,30 @@
         setDebugValues()
     }
 
-    function cycleDisk(){
-        if(diskNum == 20){
-            diskNum = 1;
-            HDD["currentDisk"] = diskNum;
-        } else {
-            diskNum++;
-            HDD["currentDisk"] = diskNum;
-        }
-        setDebugValues();
-        optionSwitcher();
+    function cycleDisk(direction){
+        switch(direction){
+            case "right":
+                if(diskNum == 20){
+                    diskNum = 1;
+                    HDD["currentDisk"] = diskNum;
+                } else {
+                    diskNum++;
+                    HDD["currentDisk"] = diskNum;
+                }
+                setDebugValues();
+                optionSwitcher();
+            break;
+            case "left":
+                if(diskNum == 0){
+                        diskNum = 20;
+                        HDD["currentDisk"] = diskNum;
+                    } else {
+                        diskNum--;
+                        HDD["currentDisk"] = diskNum;
+                    }
+                    setDebugValues();
+                    optionSwitcher();
+                }
     }
 
     var HDD = {
@@ -224,7 +240,6 @@
     //========
 
     function setDebugValues(){
-        
 
         HDD["currentDisk"] = diskNum;
 
@@ -250,49 +265,54 @@
         document.getElementById("debugHDD20").innerHTML = '"20":' + JSON.stringify(HDD[20]) + ",";
         document.getElementById("debugHDD21").innerHTML = '"loadedDisk":' + JSON.stringify(HDD["loadedDisk"]) + ",";
         document.getElementById("debugHDD22").innerHTML = '"currentDisk":' + JSON.stringify(HDD["currentDisk"]) + "}";
+
+        if(specialSigned == true){
+            document.getElementById("specialSignNeeded1").removeAttribute("class","unfocus")
+            document.getElementById("specialSignNeeded2").removeAttribute("class","unfocus")
+            document.getElementById("specialSignNeeded3").removeAttribute("class","unfocus")
+        } else {
+            document.getElementById("specialSignNeeded1").setAttribute("class","unfocus")
+            document.getElementById("specialSignNeeded2").setAttribute("class","unfocus")
+            document.getElementById("specialSignNeeded3").setAttribute("class","unfocus")
+        }
     }
 
     var signed = false;
 
     hotkeys("shift + space",function(){
-        if(HDD["admin"] == '' && signed == false){
-            alert("Please set an Admin password.")
+        if(HDD["admin"] == ""){
+            return false;
         } else {
-            if(signed == false){
-                adminpassword = prompt("Enter the Admin password:")
-                if(adminpassword == HDD["admin"]){
-                    signed = true;
+            if(debug.hasAttribute("class","unfocus")){
+                    debug.removeAttribute("class","unfocus")
+                } else {
+                    debug.setAttribute("class","unfocus")
                 }
-            }
-            if(signed == true){
-                if(debug.hasAttribute("class","unfocus")){
-                        debug.removeAttribute("class","unfocus")
-                    } else {
-                        debug.setAttribute("class","unfocus")
-                    }
-                }
-            }
         }
-    )
+    })
 
     hotkeys("l",function(){
         load()
     })
 
     hotkeys("space",function(){
-        cycleDisk()
+        cycleDisk("right")
+    })
+
+    hotkeys("ctrl + space",function(){
+        cycleDisk("left")
     })
 
     hotkeys("p", function(){
-        writeProtectCheck();
+        writeProtectFlip();
         setDebugValues()
 
-        if(HDD["admin"] == ""){
-            writeProtect()
+        if(HDD["admin"] == "" || specialSigned == true){
+            writeProtectCheck()
         } else {
             adminCheck = prompt("Please enter the Admin password:")
             if(adminCheck = HDD["admin"]){
-                writeProtect()
+                writeProtectCheck()
             } else {
                 alert("Incorrect Admin password.")
             }
@@ -308,8 +328,7 @@
 
     var diskCapture;
 
-    function writeProtectCheck(){
-
+    function writeProtectFlip(){
         diskCapture = optionDisplay.innerHTML.toString().replace(/\D/g,'')
 
         HDD[diskNum]["writeProtect"] = !HDD[diskNum]["writeProtect"];
@@ -334,6 +353,7 @@
                     HDD["currentDisk"] = "";
                     HDD["admin"] = "";
                     signed = false;
+                    specialSigned = false;
                     setDebugValues()
                 }
             } else {
@@ -347,6 +367,7 @@
             adminPrompt = prompt("Please set an Admin password:")
                 if(adminPrompt != null){
                 HDD["admin"] = adminPrompt;
+                specialSigned = true;
                 setDebugValues()
             }
         } else {
@@ -372,8 +393,20 @@
         
     })
 
-    function writeProtect(){
+    var specialSigned = false;
+
+    hotkeys("shift + p",function(){
+        if(signed == false){
+            return false;
+        } else {
+            specialSigned = !specialSigned
+        }
+    })
+
+    function writeProtectCheck(){
+
         if(HDD[diskNum]["writeProtect"] == true){
+                
                 input.value = "";
                 input.disabled = true;
                 input.setAttribute("style","cursor: no-drop; user-select: none;")
@@ -386,7 +419,7 @@
     }
 
     setInterval(function(){
-        writeProtect()
+        writeProtectCheck()
     },1)
 
 </script>
