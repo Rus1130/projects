@@ -252,13 +252,28 @@
         document.getElementById("debugHDD22").innerHTML = '"currentDisk":' + JSON.stringify(HDD["currentDisk"]) + "}";
     }
 
+    var signed = false;
+
     hotkeys("shift + space",function(){
-        if(debug.hasAttribute("class","unfocus")){
-            debug.removeAttribute("class","unfocus")
+        if(HDD["admin"] == '' && signed == false){
+            alert("Please set an Admin password.")
         } else {
-            debug.setAttribute("class","unfocus")
+            if(signed == false){
+                adminpassword = prompt("Enter the Admin password:")
+                if(adminpassword == HDD["admin"]){
+                    signed = true;
+                }
+            }
+            if(signed == true){
+                if(debug.hasAttribute("class","unfocus")){
+                        debug.removeAttribute("class","unfocus")
+                    } else {
+                        debug.setAttribute("class","unfocus")
+                    }
+                }
+            }
         }
-    })
+    )
 
     hotkeys("l",function(){
         load()
@@ -302,20 +317,28 @@
     }
 
     hotkeys("delete", function(){
-        wipeConfirm = confirm("Are you sure you want to wipe? This cannot be undone.")
-        if(wipeConfirm){
-                let i;
-            for (i = 1; i < 20; i++) {
-                HDD[i]["text"] = ""; 
-                HDD[i]["inUse"] = false; 
-                HDD[i]["writeProtect"] = false;
+        if(HDD["admin"] == ""){
+            alert("Please set an Admin password.")
+        } else {
+            password = prompt("Please enter the Admin password:")
+            if(password == HDD["admin"]){
+                wipeConfirm = confirm("Are you sure you want to wipe? This cannot be undone.")
+                if(wipeConfirm){
+                        let i;
+                    for (i = 1; i < 20; i++) {
+                        HDD[i]["text"] = ""; 
+                        HDD[i]["inUse"] = false; 
+                        HDD[i]["writeProtect"] = false;
+                    }
+                    HDD["loadedDisk"] = 1;
+                    HDD["currentDisk"] = "";
+                    HDD["admin"] = "";
+                    setDebugValues()
+                }
+            } else {
+                alert("Incorrect Admin password.")
             }
-            HDD["loadedDisk"] = 1;
-            HDD["currentDisk"] = "";
-            HDD["admin"] = "";
-            setDebugValues()
         }
-
     })
 
     hotkeys("a", function(){
