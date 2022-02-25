@@ -1,6 +1,7 @@
 <style>
     html {
         font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        user-select: none;
     }
     input:focus {
         outline: none;
@@ -11,6 +12,19 @@
     .unfocus {
         display: none;
     }
+    .loadPosition {
+        position: absolute;
+        height: 20px;
+        min-width: 162px;
+        width: fix-content;
+        top: 103px;
+        left: 8px;
+        border: 1px solid black;
+        font-weight:500;
+        padding-left: 3px;
+        padding-right: 3px;
+        border-radius: 2px;
+    }
 </style>
 <head>
     <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
@@ -20,19 +34,21 @@
     <h1 id="optionDisplay"></h1>
     <input type="text" id="input"></input>
     <br>
-    <h3>Loaded: <span id="loadText"></span></h3>
+    <br>
+    <br>
+    <div class="loadPosition">Loaded: <span id="loadText"></span></div>
     <div>
-        Enter to save<br>
-        l to load <br>
+        Enter to write <br>
+        l to read <br>
         space to cycle disks right <br>
         ctrl + space to cycle disks left <br>
         p to toggle write protect <br>
         / to focus on input <br>
-        a to set admin password <br>
-        shift + a to reset admin password <br>
-        <span id="specialSignNeeded1" class="unfocus">delete key to wipe <br></span>
-        <span id="specialSignNeeded2" class="unfocus">shift + p to toggle write protect Admin password necessity <br></span>
-        <span id="specialSignNeeded3" class="unfocus">shift + space for debug <br></span> 
+        shift + s + d for disclaimer <br>
+        <span id="adminSetReset"> <br></span>
+        <span id="adminNeeded1" class="unfocus">delete key to wipe <br></span>
+        <span id="adminNeeded2" class="unfocus">q to toggle write protect Admin password necessity <br></span>
+        <span id="adminNeeded3" class="unfocus">shift + space for debug <br></span> 
     </div>
     <div id="debug" class="unfocus">
         <h1>Debug:</h1>
@@ -73,13 +89,13 @@
     optionDisplay.innerHTML = "Disk 1"
 
     window.addEventListener('load', (event) => {
-        setDebugValues()
+        
     });
     
 
     function optionSwitcher(){
         optionDisplay.innerHTML = `Disk ${diskNum}`;
-        setDebugValues()
+        
     }
 
     function cycleDisk(direction){
@@ -92,7 +108,7 @@
                     diskNum++;
                     HDD["currentDisk"] = diskNum;
                 }
-                setDebugValues();
+                ;
                 optionSwitcher();
             break;
             case "left":
@@ -103,7 +119,7 @@
                         diskNum--;
                         HDD["currentDisk"] = diskNum;
                     }
-                    setDebugValues();
+                    ;
                     optionSwitcher();
                 }
     }
@@ -221,20 +237,20 @@
             HDD[diskNum]['text'] = input.value;
             (HDD[diskNum]['text'] == '' ? HDD[diskNum]['inUse'] = false : HDD[diskNum]['inUse'] = true);
         }
-        setDebugValues();
+        ;
     }
 
     function load(){
         loadText.innerHTML = HDD[diskNum]['text'];
         HDD["loadedDisk"] = diskNum;
-        setDebugValues();
+        ;
     }
 
     //submit text on enter
     $(document).on("keypress", function(e){
         if(e.which == 13){
             save()
-            setDebugValues()
+            
         }
     });
     //========
@@ -266,18 +282,21 @@
         document.getElementById("debugHDD21").innerHTML = '"loadedDisk":' + JSON.stringify(HDD["loadedDisk"]) + ",";
         document.getElementById("debugHDD22").innerHTML = '"currentDisk":' + JSON.stringify(HDD["currentDisk"]) + "}";
 
-        if(specialSigned == true){
-            document.getElementById("specialSignNeeded1").removeAttribute("class","unfocus")
-            document.getElementById("specialSignNeeded2").removeAttribute("class","unfocus")
-            document.getElementById("specialSignNeeded3").removeAttribute("class","unfocus")
+        document.getElementById("adminSetReset").innerHTML = `a to ${adminSetReset} Admin password <br>`;
+
+        if(HDD["admin"] != ""){
+            document.getElementById("adminNeeded1").removeAttribute("class","unfocus")
+            document.getElementById("adminNeeded2").removeAttribute("class","unfocus")
+            document.getElementById("adminNeeded3").removeAttribute("class","unfocus")
         } else {
-            document.getElementById("specialSignNeeded1").setAttribute("class","unfocus")
-            document.getElementById("specialSignNeeded2").setAttribute("class","unfocus")
-            document.getElementById("specialSignNeeded3").setAttribute("class","unfocus")
+            document.getElementById("adminNeeded1").setAttribute("class","unfocus")
+            document.getElementById("adminNeeded2").setAttribute("class","unfocus")
+            document.getElementById("adminNeeded3").setAttribute("class","unfocus")
         }
     }
 
     var signed = false;
+    var adminSetReset = "set";
 
     hotkeys("shift + space",function(){
         if(HDD["admin"] == ""){
@@ -304,19 +323,17 @@
     })
 
     hotkeys("p", function(){
-        writeProtectFlip();
-        setDebugValues()
-
         if(HDD["admin"] == "" || specialSigned == true){
             writeProtectCheck()
         } else {
             adminCheck = prompt("Please enter the Admin password:")
-            if(adminCheck = HDD["admin"]){
+            if(adminCheck = HDD["admin"] && adminCheck != null){
                 writeProtectCheck()
             } else {
                 alert("Incorrect Admin password.")
             }
         }
+        writeProtectFlip();
     })
 
     hotkeys("/", function(){
@@ -332,7 +349,7 @@
         diskCapture = optionDisplay.innerHTML.toString().replace(/\D/g,'')
 
         HDD[diskNum]["writeProtect"] = !HDD[diskNum]["writeProtect"];
-        setDebugValues()
+        
     }
 
     hotkeys("delete", function(){
@@ -353,8 +370,7 @@
                     HDD["currentDisk"] = "";
                     HDD["admin"] = "";
                     signed = false;
-                    specialSigned = false;
-                    setDebugValues()
+                    specialSigned = false; 
                 }
             } else {
                 alert("Incorrect Admin password.")
@@ -368,39 +384,27 @@
                 if(adminPrompt != null){
                 HDD["admin"] = adminPrompt;
                 specialSigned = true;
-                setDebugValues()
+                adminSetReset = "reset"
+                
             }
         } else {
             if(HDD["admin"] != ""){
-                alert("There is already a set Admin password.")
+                oldAdminPassword = prompt("Please enter the old Admin password:")
+                if(oldAdminPassword != HDD["admin"] || null || ""){
+                    setTimeout(function(){alert("There was an issue resetting the Admin password.")},100)
+                } else {
+                    newAdminPassword = prompt("Please enter the new Admin password:")
+                    HDD["admin"] = newAdminPassword
+                    alert("Password resetting successful.")
+                }
             }
         }
     })
 
-    hotkeys("shift + a", function(){
-        if(HDD["admin"] == ''){
-            alert("Please set an admin password first.")
-        } else {
-            oldAdminPassword = prompt("Please enter the old Admin password:")
-            if(oldAdminPassword != HDD["admin"] || null || ""){
-                alert("There was an issue resetting the Admin password.")
-            } else {
-                newAdminPassword = prompt("Please enter the new Admin password:")
-                HDD["admin"] = newAdminPassword
-                alert("Password resetting successful.")
-            }
-        }
-        
-    })
+    var specialSigned = true;
 
-    var specialSigned = false;
-
-    hotkeys("shift + p",function(){
-        if(signed == false){
-            return false;
-        } else {
-            specialSigned = !specialSigned
-        }
+    hotkeys("q",function(){
+        specialSigned = !specialSigned
     })
 
     function writeProtectCheck(){
@@ -418,8 +422,14 @@
             }
     }
 
+    hotkeys("shift + s + d", function(){
+        alert('This is NOT supposed to be really secure, as it\'s not. This is just for fun.');
+    })
+
     setInterval(function(){
         writeProtectCheck()
+        setDebugValues()
     },1)
+
 
 </script>
