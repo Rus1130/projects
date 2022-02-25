@@ -30,13 +30,26 @@
     </div>
     <div id="debug" class="unfocus">
         <h1>Debug:</h1>
-        <div id="hddHTML1"></div>
-        <div id="hddHTML2"></div>
-        <div id="hddHTML3"></div>
-        <div id="hddHTML4"></div>
-        <div id="hddHTML5"></div>
-        <div id="hddHTML6"></div>
-        <div id="hddHTML7"></div>
+        <div id="debugHDD1"></div>
+        <div id="debugHDD2"></div>
+        <div id="debugHDD3"></div>
+        <div id="debugHDD4"></div>
+        <div id="debugHDD5"></div>
+        <div id="debugHDD6"></div>
+        <div id="debugHDD7"></div>
+        <div id="debugHDD8"></div>
+        <div id="debugHDD9"></div>
+        <div id="debugHDD10"></div>
+        <div id="debugHDD11"></div>
+        <div id="debugHDD12"></div>
+        <div id="debugHDD13"></div>
+        <div id="debugHDD14"></div>
+        <div id="debugHDD15"></div>
+        <div id="debugHDD16"></div>
+        <div id="debugHDD17"></div>
+        <div id="debugHDD18"></div>
+        <div id="debugHDD19"></div>
+        <div id="debugHDD20"></div>
     </div>
 </body>
 
@@ -46,6 +59,7 @@
     var optionDisplay = document.getElementById("optionDisplay");
     var input = document.getElementById("input")
     var debug = document.getElementById("debug")
+    var debugHDD = document.getElementById("debugHDD")
 
     optionDisplay.innerHTML = "Disk 1"
 
@@ -60,7 +74,7 @@
     }
 
     function cycleDisk(){
-        if(diskNum == 5){
+        if(diskNum == 20){
             diskNum = 1;
             HDD["currentDisk"] = diskNum;
         } else {
@@ -97,6 +111,81 @@
             "inUse":false,
             "writeProtect":false,
         },
+        6:{
+            "text":"",
+            "inUse":false,
+            "writeProtect":false,
+        },
+        7:{
+            "text":"",
+            "inUse":false,
+            "writeProtect":false,
+        },
+        8:{
+            "text":"",
+            "inUse":false,
+            "writeProtect":false,
+        },
+        9:{
+            "text":"",
+            "inUse":false,
+            "writeProtect":false,
+        },
+        10:{
+            "text":"",
+            "inUse":false,
+            "writeProtect":false,
+        },
+        11:{
+            "text":"",
+            "inUse":false,
+            "writeProtect":false,
+        },
+        12:{
+            "text":"",
+            "inUse":false,
+            "writeProtect":false,
+        },
+        13:{
+            "text":"",
+            "inUse":false,
+            "writeProtect":false,
+        },
+        14:{
+            "text":"",
+            "inUse":false,
+            "writeProtect":false,
+        },
+        15:{
+            "text":"",
+            "inUse":false,
+            "writeProtect":false,
+        },
+        16:{
+            "text":"",
+            "inUse":false,
+            "writeProtect":false,
+        },
+        17:{
+            "text":"",
+            "inUse":false,
+            "writeProtect":false,
+        },
+        18:{
+            "text":"",
+            "inUse":false,
+            "writeProtect":false,
+        },
+        19:{
+            "text":"",
+            "inUse":false,
+            "writeProtect":false,
+        },
+        20:{
+            "text":"",
+            "inUse":false,
+            "writeProtect":false,
+        },
         "loadedDisk":"",
         "currentDisk":""
     }
@@ -128,6 +217,26 @@
 
     function setDebugValues(){
         HDD["currentDisk"] = diskNum;
+        document.getElementById("debugHDD1").innerHTML = '{"1":' + JSON.stringify(HDD[1]) + ",";
+        document.getElementById("debugHDD2").innerHTML = '"2":' + JSON.stringify(HDD[2]) + ",";
+        document.getElementById("debugHDD3").innerHTML = '"3":' + JSON.stringify(HDD[3]) + ",";
+        document.getElementById("debugHDD4").innerHTML = '"4":' + JSON.stringify(HDD[4]) + ",";
+        document.getElementById("debugHDD5").innerHTML = '"5":' + JSON.stringify(HDD[5]) + ",";
+        document.getElementById("debugHDD6").innerHTML = '"6":' + JSON.stringify(HDD[6]) + ",";
+        document.getElementById("debugHDD7").innerHTML = '"7":' + JSON.stringify(HDD[7]) + ",";
+        document.getElementById("debugHDD8").innerHTML = '"8":' + JSON.stringify(HDD[8]) + ",";
+        document.getElementById("debugHDD9").innerHTML = '"9":' + JSON.stringify(HDD[9]) + ",";
+        document.getElementById("debugHDD10").innerHTML = '"10":' + JSON.stringify(HDD[10]) + ",";
+        document.getElementById("debugHDD11").innerHTML = '"11":' + JSON.stringify(HDD[11]) + ",";
+        document.getElementById("debugHDD12").innerHTML = '"12":' + JSON.stringify(HDD[12]) + ",";
+        document.getElementById("debugHDD13").innerHTML = '"13":' + JSON.stringify(HDD[13]) + ",";
+        document.getElementById("debugHDD14").innerHTML = '"14":' + JSON.stringify(HDD[14]) + ",";
+        document.getElementById("debugHDD15").innerHTML = '"15":' + JSON.stringify(HDD[15]) + ",";
+        document.getElementById("debugHDD16").innerHTML = '"16":' + JSON.stringify(HDD[16]) + ",";
+        document.getElementById("debugHDD17").innerHTML = '"17":' + JSON.stringify(HDD[17]) + ",";
+        document.getElementById("debugHDD18").innerHTML = '"18":' + JSON.stringify(HDD[18]) + ",";
+        document.getElementById("debugHDD19").innerHTML = '"19":' + JSON.stringify(HDD[19]) + ",";
+        document.getElementById("debugHDD20").innerHTML = '"20":' + JSON.stringify(HDD[20]) + "}";
 
         if(HDD[diskNum]["writeProtect"] == true){
             input.disabled = true;
@@ -138,14 +247,6 @@
             input.removeAttribute("style","cursor: no-drop; user-select: none;")
             input.removeAttribute("title")
         }
-
-        document.getElementById("hddHTML1").innerHTML = '{"1":'+JSON.stringify(HDD[1])+",";
-        document.getElementById("hddHTML2").innerHTML = '"2":'+JSON.stringify(HDD[2])+",";
-        document.getElementById("hddHTML3").innerHTML = '"3":'+JSON.stringify(HDD[3])+",";
-        document.getElementById("hddHTML4").innerHTML = '"4":'+JSON.stringify(HDD[4])+",";
-        document.getElementById("hddHTML5").innerHTML = '"5":'+JSON.stringify(HDD[5])+",";
-        document.getElementById("hddHTML6").innerHTML = '"loadedDisk":'+JSON.stringify(HDD["loadedDisk"])+",";
-        document.getElementById("hddHTML7").innerHTML = '"currentDisk":'+JSON.stringify(HDD["currentDisk"])+"}";
     }
 
     hotkeys("shift + space",function(){
