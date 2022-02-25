@@ -26,7 +26,11 @@
         l to load <br>
         space to cycle <br>
         p to write protect <br>
+        / to focus on input <br>
+        delete key to wipe <br>
         shift + space for debug <br>
+        a to set admin password <br>
+        shift + a to reset admin password <br>
     </div>
     <div id="debug" class="unfocus">
         <h1>Debug:</h1>
@@ -50,13 +54,12 @@
         <div id="debugHDD18"></div>
         <div id="debugHDD19"></div>
         <div id="debugHDD20"></div>
+        <div id="debugHDD21"></div>
+        <div id="debugHDD22"></div>
     </div>
 </body>
 
 <script>
-    window.onload = (event) => {
-        HDD = JSON.parse(localStorage.getItem("HDD_Data"));
-    };
 
     var diskNum = 1;
     var loadText = document.getElementById("loadText")
@@ -191,7 +194,8 @@
             "writeProtect":false,
         },
         "loadedDisk":"",
-        "currentDisk":""
+        "currentDisk":"",
+        "admin":""
     }
 
     function save(){
@@ -243,20 +247,9 @@
         document.getElementById("debugHDD17").innerHTML = '"17":' + JSON.stringify(HDD[17]) + ",";
         document.getElementById("debugHDD18").innerHTML = '"18":' + JSON.stringify(HDD[18]) + ",";
         document.getElementById("debugHDD19").innerHTML = '"19":' + JSON.stringify(HDD[19]) + ",";
-        document.getElementById("debugHDD20").innerHTML = '"20":' + JSON.stringify(HDD[20]) + "}";
-        
-
-        if(HDD[diskNum]["writeProtect"] == true){
-            input.disabled = true;
-            input.setAttribute("style","cursor: no-drop; user-select: none;")
-            input.title = "Write Protected";
-        } else {
-            input.disabled = false;
-            input.removeAttribute("style","cursor: no-drop; user-select: none;")
-            input.removeAttribute("title")
-        }
-
-        window.localStorage.setItem("HDD_Data", JSON.stringify(HDD));
+        document.getElementById("debugHDD20").innerHTML = '"20":' + JSON.stringify(HDD[20]) + ",";
+        document.getElementById("debugHDD21").innerHTML = '"loadedDisk":' + JSON.stringify(HDD["loadedDisk"]) + ",";
+        document.getElementById("debugHDD22").innerHTML = '"currentDisk":' + JSON.stringify(HDD["currentDisk"]) + "}";
     }
 
     hotkeys("shift + space",function(){
@@ -278,17 +271,92 @@
     hotkeys("p", function(){
         writeProtectCheck();
         setDebugValues()
+
+        if(HDD["admin"] == ""){
+            writeProtect()
+        } else {
+            adminCheck = prompt("Please enter the Admin password:")
+            if(adminCheck = HDD["admin"]){
+                writeProtect()
+            } else {
+                alert("Incorrect Admin password.")
+            }
+        }
+    })
+
+    hotkeys("/", function(){
+        input.value = "";
+        setTimeout(function(){
+            input.focus();
+        }, 0.01)
     })
 
     var diskCapture;
 
     function writeProtectCheck(){
+
         diskCapture = optionDisplay.innerHTML.toString().replace(/\D/g,'')
 
         HDD[diskNum]["writeProtect"] = !HDD[diskNum]["writeProtect"];
         setDebugValues()
     }
 
+    hotkeys("delete", function(){
+        wipeConfirm = confirm("Are you sure you want to wipe? This cannot be undone.")
+        if(wipeConfirm){
+                let i;
+            for (i = 1; i < 20; i++) {
+                HDD[i]["text"] = ""; 
+                HDD[i]["inUse"] = false; 
+                HDD[i]["writeProtect"] = false;
+            }
+            HDD["loadedDisk"] = 1;
+            HDD["currentDisk"] = "";
+            HDD["admin"] = "";
+            setDebugValues()
+        }
 
+    })
+
+    hotkeys("a", function(){
+        adminPrompt = prompt("Please set an Admin password:")
+        if(adminPrompt != null){
+            HDD["admin"] = adminPrompt;
+            setDebugValues()
+        }
+    })
+
+    hotkeys("shift + a", function(){
+        if(HDD["admin"] == ''){
+            alert("Please set an admin password first.")
+        } else {
+            oldAdminPassword = prompt("Please enter the old Admin password:")
+            if(oldAdminPassword != HDD["admin"] || null){
+                alert("There was an issue resetting the Admin password.")
+            } else {
+                newAdminPassword = prompt("Please enter the new Admin password:")
+                HDD["admin"] = newAdminPassword
+                alert("Password resetting successful.")
+            }
+        }
+        
+    })
+
+    function writeProtect(){
+        if(HDD[diskNum]["writeProtect"] == true){
+                input.value = "";
+                input.disabled = true;
+                input.setAttribute("style","cursor: no-drop; user-select: none;")
+                input.title = "Write Protected";
+            } else {
+                input.disabled = false;
+                input.removeAttribute("style","cursor: no-drop; user-select: none;")
+                input.removeAttribute("title")
+            }
+    }
+
+    setInterval(function(){
+        writeProtect()
+    },1)
 
 </script>
