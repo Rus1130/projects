@@ -333,6 +333,7 @@
                     HDD["loadedDisk"] = 1;
                     HDD["currentDisk"] = "";
                     HDD["admin"] = "";
+                    signed = false;
                     setDebugValues()
                 }
             } else {
@@ -342,10 +343,16 @@
     })
 
     hotkeys("a", function(){
-        adminPrompt = prompt("Please set an Admin password:")
-        if(adminPrompt != null){
-            HDD["admin"] = adminPrompt;
-            setDebugValues()
+        if(HDD["admin"] == ""){
+            adminPrompt = prompt("Please set an Admin password:")
+                if(adminPrompt != null){
+                HDD["admin"] = adminPrompt;
+                setDebugValues()
+            }
+        } else {
+            if(HDD["admin"] != ""){
+                alert("There is already a set Admin password.")
+            }
         }
     })
 
@@ -354,7 +361,7 @@
             alert("Please set an admin password first.")
         } else {
             oldAdminPassword = prompt("Please enter the old Admin password:")
-            if(oldAdminPassword != HDD["admin"] || null){
+            if(oldAdminPassword != HDD["admin"] || null || ""){
                 alert("There was an issue resetting the Admin password.")
             } else {
                 newAdminPassword = prompt("Please enter the new Admin password:")
