@@ -52,6 +52,7 @@
             Dialect:
             <select id="dialectSelect">
                 <option value="rus">Rus</option>
+                <option value="aspyn">Aspyn</option>
             </select>
         </span>
         <span id="seMarksFull" class="unfocus">
@@ -61,15 +62,16 @@
     </div>
 
     <div id="aspyn" class="unfocus">
-        <input type="text" id="convert" onchange="convertRus(convertType.value, convertText.value)">
-        <select id="typeSelect" onchange="convertRus(convertType.value, convertText.value)" title="Type" style="cursor: pointer;">
+        <input type="text" id="convert" onchange="convertAspyn(convertType.value, convertText.value)">
+        <select id="typeSelect" onchange="convertAspyn(convertType.value, convertText.value)" title="Type" style="cursor: pointer;">
             <option value="IPA">IPA</option>
-            <option value="phagspa">Phagspa</option>
+            <option value="mongol">Mongol</option>
         </select>
         <span style="font-size: 12pt;">
             Dialect:
             <select id="dialectSelect">
                 <option value="rus">Rus</option>
+                <option value="aspyn">Aspyn</option>
             </select>
         </span>
     </div>
@@ -99,7 +101,7 @@
                 typeType = "IPA";
                 conversionHandlerArray = [];
                 [...text].forEach(function(c){
-                    adder = inventory[c]["IPA"]
+                    adder = inventoryRus[c]["IPA"]
                     conversionHandlerArray.push(adder);
                 })
                 break;
@@ -107,7 +109,7 @@
                 typeType = "phagspa";
                 conversionHandlerArray = [];
                 [...text].forEach(function(c){
-                    adder = inventory[c]["phagspa"]
+                    adder = inventoryRus[c]["phagspa"]
                     conversionHandlerArray.push(adder)
                 })
                 break;
@@ -116,37 +118,64 @@
         }
     }
 
-    function checkMarks(){
-        if (typeType == "phagspa" && seMarksCheckbox.checked == true){
-            document.getElementById("seMarksFull").setAttribute("class","focus")
-            rusDialect.setAttribute("class","vertPos")
-            output.setAttribute("class","vert")
-            leftMarks = "ꡲ";
-            rightMarks = "ꡳ";
-            output.innerHTML = leftMarks + conversionHandlerArray.join("") + rightMarks
-        } else {
-            if(typeType == "IPA"){
-                rusDialect.setAttribute("class","horizPos")
-                output.setAttribute("class","horiz")
-                document.getElementById("seMarksFull").setAttribute("class","unfocus")
-                leftMarks = "[";
-                rightMarks = "]";
+    function convertAspyn(type, text){
+        switch(type){
+            case "IPA":
+                typeType = "IPA";
+                conversionHandlerArray = [];
+                [...text].forEach(function(c){
+                    adder = inventoryAspyn[c]["IPA"]
+                    conversionHandlerArray.push(adder);
+                })
+                break;
+            case "mongol":
+                typeType = "mongol";
+                conversionHandlerArray = [];
+                [...text].forEach(function(c){
+                    adder = inventoryAspyn[c]["mongol"]
+                    conversionHandlerArray.push(adder)
+                })
+                break;
+            default:
+                return console.error("syntax error");
+        }
+    }
+
+    function checkMarks(dialect){
+        switch("rus"){
+            case "rus":
+            if (typeType == "phagspa" && seMarksCheckbox.checked == true){
+                document.getElementById("seMarksFull").setAttribute("class","focus")
+                rusDialect.setAttribute("class","vertPos")
+                output.setAttribute("class","vert")
+                leftMarks = "ꡲ";
+                rightMarks = "ꡳ";
                 output.innerHTML = leftMarks + conversionHandlerArray.join("") + rightMarks
             } else {
-                if(seMarksCheckbox.checked == false){
+                if(typeType == "IPA"){
                     rusDialect.setAttribute("class","horizPos")
                     output.setAttribute("class","horiz")
-                    document.getElementById("seMarksFull").setAttribute("class","focus")
-                    leftMarks = "";
-                    rightMarks = "";
+                    document.getElementById("seMarksFull").setAttribute("class","unfocus")
+                    leftMarks = "[";
+                    rightMarks = "]";
                     output.innerHTML = leftMarks + conversionHandlerArray.join("") + rightMarks
+                } else {
+                    if(seMarksCheckbox.checked == false){
+                        rusDialect.setAttribute("class","horizPos")
+                        output.setAttribute("class","vert")
+                        document.getElementById("seMarksFull").setAttribute("class","focus")
+                        leftMarks = "";
+                        rightMarks = "";
+                        output.innerHTML = leftMarks + conversionHandlerArray.join("") + rightMarks
+                    }
                 }
             }
+            break;
         }
     }
 
     setInterval(function(){
-        checkMarks()
+        checkMarks("rus")
     },1)
 
     function dialectRusShow(){
@@ -160,7 +189,7 @@
     }
 
 
-    const inventory = {
+    const inventoryRus = {
         "p":{
             IPA:"p",
             phagspa:"ꡁ"
@@ -272,6 +301,153 @@
         ".":{
             IPA:".",
             phagspa:""
+        }
+    }
+
+    const inventoryAspyn = {
+        "p":{
+            IPA:"p",
+            mongol:"ᠢ"
+        },
+        "b":{
+            IPA:"b",
+            mongol:"ᠦ᠋"
+        },
+        "t":{
+            IPA:"t̪",
+            mongol:"ᠯ"
+        },
+        "d":{
+            IPA:"d̪",
+            mongol:"ᠯᠯ"
+        },
+        "k":{
+            IPA:"k",
+            mongol:"ᠷ"
+        },
+        "g":{
+            IPA:"g",
+            mongol:"ᠷᠷ"
+        },
+        "m":{
+            IPA:"m",
+            mongol:"ᠠ᠋᠊ᡴ᠋"
+        },
+        "n":{
+            IPA:"n̪",
+            mongol:"ᢊ᠊ᡴ᠋"
+        },
+        "f":{
+            IPA:"ɸ",
+            mongol:"ᢒᠠ᠋"
+        },
+        "v":{
+            IPA:"β",
+            mongol:"ᠹᠠ᠋"
+        },
+        "s":{
+            IPA:"s̪",
+            mongol:"ᠮᠠ᠋"
+        },
+        "c":{
+            IPA:"ɕ",
+            mongol:"ᠭᠮᠠ᠋"
+        },
+        "x":{
+            IPA:"ç",
+            mongol:"ᢋᠠ᠋"
+        },
+        "h":{
+            IPA:"ʝ",
+            mongol:"ᢌᠠ᠋"
+        },
+        "j":{
+            IPA:"j",
+            mongol:"ᢎ"
+        },
+        "r":{
+            IPA:"r",
+            mongol:"ᠺ"
+        },
+        "l":{
+            IPA:"ɾ̪",
+            mongol:"ᠾ"
+        },
+        "i":{
+            IPA:"i",
+            mongol:"ᢏ"
+        },
+        "w":{
+            IPA:"ɯ",
+            mongol:"ᠨ"
+        },
+        "u":{
+            IPA:"u",
+            mongol:"ᠨᠨ"
+        },
+        "o":{
+            IPA:"o",
+            mongol:"ᢔᢔᠰ"
+        },
+        "e":{
+            IPA:"ɛ",
+            mongol:"ᠲ"
+        },
+        "y":{
+            IPA:"ʌ",
+            mongol:"ᠮ"
+        },
+        "0":{
+            IPA:"ɔ",
+            mongol:"ᠮᠮ"
+        },
+        "a":{
+            IPA:"a",
+            mongol:"ᠱ"
+        },
+        "q":{
+            IPA:"ɑ",
+            mongol:"ᠱᠱ"
+        },
+        "!":{
+            IPA:"",
+            mongol:"ᡅᠠ᠋"
+        },
+        "#":{
+            IPA:"",
+            mongol:"ᠺᡓ"
+        },
+        "$":{
+            IPA:"",
+            mongol:"ᢖ"
+        },
+        "%":{
+            IPA:"",
+            mongol:"ᢇ"
+        },
+        "&":{
+            IPA:"",
+            mongol:"ᡏ"
+        },
+        "?":{
+            IPA:"",
+            mongol:"ᡰ"
+        },
+        "_":{
+            IPA:"",
+            mongol:"ᡪ"
+        },
+        "-":{
+            IPA:"",
+            mongol:"᠆"
+        },
+        ".":{
+            IPA:".",
+            mongol:""
+        },
+        " ":{
+            IPA:" ",
+            mongol:" "
         }
     }
 
