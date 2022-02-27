@@ -8,10 +8,14 @@
     }
 </style>
 
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
 <body>
     Input: <input id="input"/> <br><br>
     <button onClick="convert();">Convert!</button> <br><br>
-    Output: <ul id="output" style="font-size: 30pt;"></ul>
+    Output:<ul id="output" style="font-size: 25pt;"></ul>
 </body>
 
 <script>
@@ -24,24 +28,10 @@
         output.innerHTML = "";
         
         for (var i = 0; i < input.length; i++) {
-            createdElement = document.createElement("div")
-            createdElement.id = "dummy" + i;
-            createdElement.innerHTML = input[i]
-            output.appendChild(createdElement)
+            createdElement = document.createElement("span")
+            createdElement.innerHTML += input[i].charCodeAt(0).toString(2) + " ";
+            createdElement.id = "highlight" + i;
+            
         }
-
-        
-        
-        //fix =================================================================
-        
-        createdElement.onmouseover = function() {ColorChangeMouseIn()};
-        createdElement.onmouseout = function() {ColorChangeMouseOut()};
-
-        function ColorChangeMouseIn(){
-                createdElement.style.color = "red";
-            }
-            function ColorChangeMouseOut(){
-                createdElement.style.color = "black";
-            }
     }
 </script>
