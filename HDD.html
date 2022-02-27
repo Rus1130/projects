@@ -37,15 +37,15 @@
     <br>
     <div class="loadPosition">Loaded: <span id="loadText"></span></div>
     <div>
+        shift + s + d for disclaimer <br>
         Enter to write <br>
         l to read <br>
         space to cycle disks right <br>
         ctrl + space to cycle disks left <br>
         p to toggle write protect <br>
         / to focus on input <br>
-        shift + s + d for disclaimer <br>
         <span id="adminSetReset"> <br></span>
-        <span id="adminNeeded1" class="unfocus">delete key to wipe <br></span>
+        <span id="adminNeeded1" class="unfocus">shift + delete key to wipe all disks<br></span>
         <span id="adminNeeded2" class="unfocus">q to toggle write protect Admin password necessity <br></span>
         <span id="adminNeeded3" class="unfocus">shift + space for debug <br></span> 
     </div>
@@ -78,7 +78,7 @@
 
 <script>
 
-    var diskNum = 1;
+    var currentDisk = 1;
     var loadText = document.getElementById("loadText")
     var optionDisplay = document.getElementById("optionDisplay");
     var input = document.getElementById("input")
@@ -93,30 +93,30 @@
     
 
     function optionSwitcher(){
-        optionDisplay.innerHTML = `Disk ${diskNum}`;
+        optionDisplay.innerHTML = `Disk ${currentDisk}`;
         
     }
 
     function cycleDisk(direction){
         switch(direction){
             case "right":
-                if(diskNum == 20){
-                    diskNum = 1;
-                    HDD["currentDisk"] = diskNum;
+                if(currentDisk == 20){
+                    currentDisk = 1;
+                    HDD["currentDisk"] = currentDisk;
                 } else {
-                    diskNum++;
-                    HDD["currentDisk"] = diskNum;
+                    currentDisk++;
+                    HDD["currentDisk"] = currentDisk;
                 }
                 ;
                 optionSwitcher();
             break;
             case "left":
-                if(diskNum == 0){
-                        diskNum = 20;
-                        HDD["currentDisk"] = diskNum;
+                if(currentDisk == 0){
+                        currentDisk = 20;
+                        HDD["currentDisk"] = currentDisk;
                     } else {
-                        diskNum--;
-                        HDD["currentDisk"] = diskNum;
+                        currentDisk--;
+                        HDD["currentDisk"] = currentDisk;
                     }
                     ;
                     optionSwitcher();
@@ -230,17 +230,17 @@
     }
 
     function save(){
-        if(HDD[diskNum]["writeProtect"] == true){
-            HDD[diskNum]['text'] = "";
+        if(HDD[currentDisk]["writeProtect"] == true){
+            HDD[currentDisk]['text'] = "";
         } else {
-            HDD[diskNum]['text'] = input.value;
-            (HDD[diskNum]['text'] == '' ? HDD[diskNum]['inUse'] = false : HDD[diskNum]['inUse'] = true);
+            HDD[currentDisk]['text'] = input.value;
+            (HDD[currentDisk]['text'] == '' ? HDD[currentDisk]['inUse'] = false : HDD[currentDisk]['inUse'] = true);
         }
     }
 
     function load(){
-        loadText.innerHTML = HDD[diskNum]['text'];
-        HDD["loadedDisk"] = diskNum;
+        loadText.innerHTML = HDD[currentDisk]['text'];
+        HDD["loadedDisk"] = currentDisk;
         ;
     }
 
@@ -255,7 +255,7 @@
 
     function setDebugValues(){
 
-        HDD["currentDisk"] = diskNum;
+        HDD["currentDisk"] = currentDisk;
 
         document.getElementById("debugHDD1").innerHTML = '{"1":' + JSON.stringify(HDD[1]) + ",";
         document.getElementById("debugHDD2").innerHTML = '"2":' + JSON.stringify(HDD[2]) + ",";
@@ -346,17 +346,16 @@
     function writeProtectFlip(){
         diskCapture = optionDisplay.innerHTML.toString().replace(/\D/g,'')
 
-        HDD[diskNum]["writeProtect"] = !HDD[diskNum]["writeProtect"];
+        HDD[currentDisk]["writeProtect"] = !HDD[currentDisk]["writeProtect"];
         
     }
 
-    hotkeys("delete", function(){
+    hotkeys("shift + delete", function(){
         if(HDD["admin"] == ""){
-            alert("Please set an Admin password.")
+            return false;
         } else {
-            password = prompt("Please enter the Admin password:")
-            if(password == HDD["admin"]){
-                wipeConfirm = confirm("Are you sure you want to wipe? This cannot be undone.")
+            if(specialSigned == true){
+                wipeConfirm = confirm("Are you sure you want to wipe all disks? This cannot be undone.")
                 if(wipeConfirm){
                         let i;
                     for (i = 1; i < 20; i++) {
@@ -369,9 +368,23 @@
                     HDD["admin"] = "";
                     signed = false;
                     specialSigned = false; 
+                    alert("All disks wiped.")
                 }
-            } else {
-                alert("Incorrect Admin password.")
+            }
+        }
+    })
+
+    hotkeys("delete", function(){
+        if(HDD["admin"] == ""){
+            return false;
+        } else {
+            if(specialSigned == true){
+                wipeConfirm = confirm("Are you sure you want to wipe current disk? This cannot be undone.")
+                if(wipeConfirm){
+                    HDD[currentDisk]["text"] = "";
+                    HDD[currentDisk]["inUse"] = false;
+                    HDD[currentDisk]["writeProtect"] = false;
+                }
             }
         }
     })
@@ -407,7 +420,7 @@
 
     function writeProtectCheck(){
 
-        if(HDD[diskNum]["writeProtect"] == true){
+        if(HDD[currentDisk]["writeProtect"] == true){
                 
                 input.value = "";
                 input.disabled = true;
