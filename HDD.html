@@ -45,10 +45,12 @@
         p to toggle write protect <br>
         / to focus on input <br>
         <span id="adminSetReset"> <br></span>
-        <span id="adminNeeded1" class="unfocus">delete key to wipe current disk<br></span>
-        <span id="adminNeeded2" class="unfocus">shift + delete key to wipe all disks<br></span>
-        <span id="adminNeeded3" class="unfocus">q to toggle write protect Admin password necessity <br></span>
-        <span id="adminNeeded4" class="unfocus">shift + space for debug <br></span> 
+        <div id="adminNeeded" class="unfocus">
+            delete key to wipe current disk<br>
+            shift + delete key to wipe all disks<br>
+            q to toggle write protect Admin password necessity <br>
+            shift + space for debug <br>
+        </div>
     </div>
     <div id="debug" class="unfocus">
         <h1>Debug:</h1>
@@ -284,15 +286,9 @@
         document.getElementById("adminSetReset").innerHTML = `a to ${adminSetReset} Admin password <br>`;
 
         if(HDD["admin"] != ""){
-            document.getElementById("adminNeeded1").removeAttribute("class","unfocus")
-            document.getElementById("adminNeeded2").removeAttribute("class","unfocus")
-            document.getElementById("adminNeeded3").removeAttribute("class","unfocus")
-            document.getElementById("adminNeeded4").removeAttribute("class","unfocus")
+            document.getElementById("adminNeeded").removeAttribute("class","unfocus")
         } else {
-            document.getElementById("adminNeeded1").setAttribute("class","unfocus")
-            document.getElementById("adminNeeded2").setAttribute("class","unfocus")
-            document.getElementById("adminNeeded3").setAttribute("class","unfocus")
-            document.getElementById("adminNeeded4").setAttribute("class","unfocus")
+            document.getElementById("adminNeeded").setAttribute("class","unfocus")
         }
     }
 
@@ -404,12 +400,18 @@
         } else {
             if(HDD["admin"] != ""){
                 oldAdminPassword = prompt("Please enter the old Admin password:")
-                if(oldAdminPassword != HDD["admin"] || null || ""){
-                    setTimeout(function(){alert("There was an issue resetting the Admin password.")},100)
+                if(oldAdminPassword != HDD["admin"] || oldAdminPassword == null || oldAdminPassword == ""){
+                    setTimeout(function(){
+                        alert("Incorrect Admin password.")
+                    },100)
                 } else {
                     newAdminPassword = prompt("Please enter the new Admin password:")
-                    HDD["admin"] = newAdminPassword
-                    alert("Password resetting successful.")
+                    if(newAdminPassword == HDD["admin"] || newAdminPassword == null || newAdminPassword == ""){
+                        alert("The new Admin password does not meet requirements.")
+                    } else {
+                        HDD["admin"] = newAdminPassword
+                        alert("Password resetting successful.")
+                    }
                 }
             }
         }
