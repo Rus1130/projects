@@ -45,9 +45,10 @@
         p to toggle write protect <br>
         / to focus on input <br>
         <span id="adminSetReset"> <br></span>
-        <span id="adminNeeded1" class="unfocus">shift + delete key to wipe all disks<br></span>
-        <span id="adminNeeded2" class="unfocus">q to toggle write protect Admin password necessity <br></span>
-        <span id="adminNeeded3" class="unfocus">shift + space for debug <br></span> 
+        <span id="adminNeeded1" class="unfocus">delete key to wipe current disk<br></span>
+        <span id="adminNeeded2" class="unfocus">shift + delete key to wipe all disks<br></span>
+        <span id="adminNeeded3" class="unfocus">q to toggle write protect Admin password necessity <br></span>
+        <span id="adminNeeded4" class="unfocus">shift + space for debug <br></span> 
     </div>
     <div id="debug" class="unfocus">
         <h1>Debug:</h1>
@@ -286,10 +287,12 @@
             document.getElementById("adminNeeded1").removeAttribute("class","unfocus")
             document.getElementById("adminNeeded2").removeAttribute("class","unfocus")
             document.getElementById("adminNeeded3").removeAttribute("class","unfocus")
+            document.getElementById("adminNeeded4").removeAttribute("class","unfocus")
         } else {
             document.getElementById("adminNeeded1").setAttribute("class","unfocus")
             document.getElementById("adminNeeded2").setAttribute("class","unfocus")
             document.getElementById("adminNeeded3").setAttribute("class","unfocus")
+            document.getElementById("adminNeeded4").setAttribute("class","unfocus")
         }
     }
 
