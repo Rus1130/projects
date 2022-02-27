@@ -1,0 +1,46 @@
+<style>
+    input:focus {
+        outline: none;
+    }
+    html {
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        user-select: none;
+    }
+</style>
+
+<body>
+    Input: <input id="input"/> <br><br>
+    <button onClick="convert();">Convert!</button> <br><br>
+    Output: <ul id="output" style="font-size: 30pt;"></ul>
+</body>
+
+<script>
+
+    
+    function convert() {
+        var input = document.getElementById("input").value;
+        var output = document.getElementById("output");
+
+        output.innerHTML = "";
+        
+        for (var i = 0; i < input.length; i++) {
+            createdElement = document.createElement("div")
+            createdElement.id = "dummy" + i;
+            createdElement.innerHTML = input[i]
+            output.appendChild(createdElement)
+        }
+
+        
+        
+        //fix
+        createdElement.onmouseover = function() {ColorChangeMouseIn()};
+        createdElement.onmouseout = function() {ColorChangeMouseOut()};
+
+        function ColorChangeMouseIn(){
+                createdElement.style.color = "red";
+            }
+            function ColorChangeMouseOut(){
+                createdElement.style.color = "black";
+            }
+    }
+</script>
