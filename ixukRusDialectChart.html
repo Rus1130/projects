@@ -1,0 +1,177 @@
+<style>
+    html {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14pt;
+    }
+    #grid {
+        display: grid;
+        grid-template-columns: 100px 130px 100px 100px;
+        grid-template-rows: 25px 25px 25px 25px 25px 25px 25px 25px 25px 25px 25px 25px 25px 25px 25px 25px 25px 25px 25px 25px 25px 25px 25px 25px 25px 25px 25px 25px;
+        background-color: black;
+        width: fit-content;
+        height: max-content;
+        gap: 2px;
+        border: 2px solid black;
+        position: absolute;
+        top: 5px;
+        right: 250px;
+    }
+
+    #grid-container {
+        background-color: white;
+    }
+    .aligner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+
+<head>
+    <div id="grid"> 
+        <span id="grid-container" class="aligner">IPA</span>
+        <span id="grid-container" class="aligner">Romanization</span>
+        <span id="grid-container" class="aligner">Ortho</span>
+        <span id="grid-container" class="aligner">Harmony</span>
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">p</span> <!--IPA-->
+        <span id="grid-container" class="aligner">p</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡁ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">None</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">b</span> <!--IPA-->
+        <span id="grid-container" class="aligner">b</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡂ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">None</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">t</span> <!--IPA-->
+        <span id="grid-container" class="aligner">t</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡎ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">None</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">d</span> <!--IPA-->
+        <span id="grid-container" class="aligner">d</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡍ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">None</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">k</span> <!--IPA-->
+        <span id="grid-container" class="aligner">k</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡌ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">None</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">g</span> <!--IPA-->
+        <span id="grid-container" class="aligner">g</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡖ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">None</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">m</span> <!--IPA-->
+        <span id="grid-container" class="aligner">m</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡋ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">None</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">n</span> <!--IPA-->
+        <span id="grid-container" class="aligner">n</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡏ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">None</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">t͡s</span> <!--IPA-->
+        <span id="grid-container" class="aligner">z</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡔ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">Top</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">t͡ʃ</span> <!--IPA-->
+        <span id="grid-container" class="aligner">ç</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡛ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">Top</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">f</span> <!--IPA-->
+        <span id="grid-container" class="aligner">f</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡰ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">None</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">s</span> <!--IPA-->
+        <span id="grid-container" class="aligner">s</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡞ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">None</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">ɕ</span> <!--IPA-->
+        <span id="grid-container" class="aligner">c</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡟ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">Bottom</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">x</span> <!--IPA-->
+        <span id="grid-container" class="aligner">h</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡜ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">None</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">j</span> <!--IPA-->
+        <span id="grid-container" class="aligner">j</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡬ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">None</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">ɾ</span> <!--IPA-->
+        <span id="grid-container" class="aligner">r</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡮ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">None</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">ɬ</span> <!--IPA-->
+        <span id="grid-container" class="aligner">x</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡝ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">Bottom</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">ʎ</span> <!--IPA-->
+        <span id="grid-container" class="aligner">l</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡣ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">None</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">i</span> <!--IPA-->
+        <span id="grid-container" class="aligner">i</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡱ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">none</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">ɨ</span> <!--IPA-->
+        <span id="grid-container" class="aligner">î</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡙ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">left</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">ɯ</span> <!--IPA-->
+        <span id="grid-container" class="aligner">û</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡯ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">left</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">u</span> <!--IPA-->
+        <span id="grid-container" class="aligner">u</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡊ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">right</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">ø</span> <!--IPA-->
+        <span id="grid-container" class="aligner">ö</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡧ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">left</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">ɤ</span> <!--IPA-->
+        <span id="grid-container" class="aligner">ô</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡇ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">right</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">o</span> <!--IPA-->
+        <span id="grid-container" class="aligner">o</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡑ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">right</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">ɛ</span> <!--IPA-->
+        <span id="grid-container" class="aligner">e</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡭ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">none</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">ɔ</span> <!--IPA-->
+        <span id="grid-container" class="aligner">ó</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡨ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">left</span> <!--Harmony-->
+        <!------------------------------------------------------------------>
+        <span id="grid-container" class="aligner">a</span> <!--IPA-->
+        <span id="grid-container" class="aligner">a</span> <!--Roman-->
+        <span id="grid-container" class="aligner">ꡅ</span> <!--Ortho-->
+        <span id="grid-container" class="aligner">right</span> <!--Harmony-->
+    </div>
+</head>
