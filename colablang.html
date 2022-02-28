@@ -13,7 +13,6 @@
         outline: none;
         border: 0.5px solid black;
     }
-
     html {
         font-family: Arial, Helvetica, sans-serif;
         font-size: 14pt;
@@ -24,14 +23,10 @@
     .unfocus {
         display: none;
     }
-    .vert {
+    .topToBottom {
         writing-mode: vertical-rl;
-        position: absolute;
-        top: 25px;
-        left: 3px;
-        margin-top: 9px;
     }
-    .horiz {
+    .leftToRight {
         writing-mode: horizontal-tb;
     }
     #grid {
@@ -54,47 +49,37 @@
         align-items: center;
         justify-content: center;
     }
-    .vert-grid {
+    .grid {
         position: absolute;
-        top: 36px;
-        left: 60px;
-    }
-    .horiz-grid {
-        position: absolute;
-        top: 10px;
-        left: 372px;
+        top: 5px;
+        right: 250px;
     }
 </style>
 
 <head>
+    <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
 <body>
 
     <!--Rus------------------------------------------------------------------------------------------------------------------------->
-    <div id="output" style="height: max-content; font-size: 20pt;">&nbsp;</div>
     <div id="rus" class="focus">
-        <input type="text" id="convert" onchange="convertRus(convertType.value, convertText.value)">
-        <select id="typeSelect" onchange="convertRus(convertType.value, convertText.value)" title="Type" style="cursor: pointer;">
+        <input type="text" id="input">
+        <select id="typeSelect" title="Type" style="cursor: pointer;">
             <option value="IPA">IPA</option>
-            <option value="phagspa">Phagspa</option>
+            <option value="ortho">Phagspa</option>
         </select>
-        <span style="font-size: 12pt;">
-            Dialect:
-            <select id="dialectSelect">
-                <option value="rus">Rus</option>
-            </select>
-        </span>
         <span id="seMarksFull" class="unfocus">
             <input type="checkbox" id="seMarks" name="seMarks" checked>
             <label for="seMarks">Start and End marks</label>
         </span>
     </div>
+    <div id="output" style="height: max-content; font-size: 20pt;">&nbsp;</div>
 
     <br>
 
-    <div id="grid" class="grid-pos"> 
+    <div id="grid" class="grid"> 
         <span id="grid-container" class="aligner">IPA</span>
         <span id="grid-container" class="aligner">Romanization</span>
         <span id="grid-container" class="aligner">Ortho</span>
@@ -240,23 +225,6 @@
         <span id="grid-container" class="aligner">ꡅ</span> <!--Ortho-->
         <span id="grid-container" class="aligner">right</span> <!--Harmony-->
     </div>
-
-
-    <!--Aspyn------------------------------------------------------------------------------------------------------------------------->
-    <div id="aspyn" class="unfocus">
-        <input type="text" id="convert" onchange="convertAspyn(convertType.value, convertText.value)">
-        <select id="typeSelect" onchange="convertAspyn(convertType.value, convertText.value)" title="Type" style="cursor: pointer;">
-            <option value="IPA">IPA</option>
-            <option value="mongol">Mongol</option>
-        </select>
-        <span style="font-size: 12pt;">
-            Dialect:
-            <select id="dialectSelect">
-                <option value="rus">Rus</option>
-                <option value="aspyn">Aspyn</option>
-            </select>
-        </span>
-    </div>
 </body>
 
 
@@ -264,385 +232,200 @@
 
     var rusDialect = document.getElementById("rus")
     var grid = document.getElementById("grid")
-    var aspynDialect = document.getElementById("aspyn")
 
 
-    var convertType = document.getElementById("typeSelect");
+    var type = document.getElementById("typeSelect");
     var output = document.getElementById("output");
-    var convertText = document.getElementById("convert");
+    var input = document.getElementById("input")
     var adder;
     var seMarksCheckbox = document.getElementById("seMarks")
-    var leftMarks;
-    var rightMarks;
-    var typeType = "IPA";
+    var leftMark = "[";
+    var rightMark = "]";
+    var directionType = "ltr";
 
     let conversionHandlerArray = new Array();
 
-    function convertRus(type, text){
+    function convert(text, type, direction, marks){
+        conversionHandlerArray = [];
+        switch(direction){
+            case "ttb":
+                output.removeAttribute("class","leftToRight");
+                output.setAttribute("class","topToBottom");
+            break;
+            case "ltr":
+                output.removeAttribute("class","topToBottom");
+                output.setAttribute("class","leftToRight");
+            break;
+        }
         switch(type){
             case "IPA":
-                typeType = "IPA";
-                conversionHandlerArray = [];
+                seMarksCheckbox.checked = true;
                 [...text].forEach(function(c){
-                    adder = inventoryRus[c]["IPA"]
+                    adder = inventory[c]["IPA"]
                     conversionHandlerArray.push(adder);
                 })
-                break;
-            case "phagspa":
-                typeType = "phagspa";
-                conversionHandlerArray = [];
-                [...text].forEach(function(c){
-                    adder = inventoryRus[c]["phagspa"]
-                    conversionHandlerArray.push(adder)
-                })
-                break;
-            default:
-                return console.error("syntax error");
-        }
-    }
-
-    function convertAspyn(type, text){
-        switch(type){
-            case "IPA":
-                typeType = "IPA";
-                conversionHandlerArray = [];
-                [...text].forEach(function(c){
-                    adder = inventoryAspyn[c]["IPA"]
-                    conversionHandlerArray.push(adder);
-                })
-                break;
-            case "mongol":
-                typeType = "mongol";
-                conversionHandlerArray = [];
-                [...text].forEach(function(c){
-                    adder = inventoryAspyn[c]["mongol"]
-                    conversionHandlerArray.push(adder)
-                })
-                break;
-            default:
-                return console.error("syntax error");
-        }
-    }
-
-    function checkMarks(dialect){
-        switch("rus"){
-            case "rus":
-            if (typeType == "phagspa" && seMarksCheckbox.checked == true){
-                document.getElementById("seMarksFull").setAttribute("class","focus")
-                rusDialect.setAttribute("class","vertPos")
-                grid.setAttribute("class","vert-grid")
-                output.setAttribute("class","vert")
-                leftMarks = "ꡲ";
-                rightMarks = "ꡳ";
-                output.innerHTML = leftMarks + conversionHandlerArray.join("") + rightMarks
-            } else {
-                if(typeType == "IPA"){
-                    rusDialect.setAttribute("class","horizPos")
-                    grid.setAttribute("class","horiz-grid")
-                    output.setAttribute("class","horiz")
-                    document.getElementById("seMarksFull").setAttribute("class","unfocus")
-                    leftMarks = "[";
-                    rightMarks = "]";
-                    output.innerHTML = leftMarks + conversionHandlerArray.join("") + rightMarks
+                if(marks == true){
+                    leftMark = "[";
+                    rightMark = "]";
                 } else {
-                    if(seMarksCheckbox.checked == false){
-                        rusDialect.setAttribute("class","horizPos")
-                        output.setAttribute("class","vert")
-                        grid.setAttribute("class","vert-grid")
-                        document.getElementById("seMarksFull").setAttribute("class","focus")
-                        leftMarks = "";
-                        rightMarks = "";
-                        output.innerHTML = leftMarks + conversionHandlerArray.join("") + rightMarks
-                    }
+                    leftMark = "";
+                    rightMark = "";
                 }
-            }
+                directionType = "ltr";
+                output.innerHTML = leftMark + conversionHandlerArray.join("") + rightMark;
+            break;
+            case "ortho": 
+                [...text].forEach(function(c){
+                    adder = inventory[c]["ortho"]
+                    conversionHandlerArray.push(adder);
+                })
+                if(marks == true){
+                    leftMark = "ꡲ";
+                    rightMark = "ꡳ";
+                } else {
+                    leftMark = "";
+                    rightMark = "";
+                }
+                directionType = "ttb"
+                output.innerHTML = leftMark + conversionHandlerArray.join("") + rightMark;
             break;
         }
     }
 
     setInterval(function(){
-        checkMarks("rus")
+        if(type.value == "ortho"){
+            document.getElementById("seMarksFull").removeAttribute("class","unfocus");
+        } else {
+            document.getElementById("seMarksFull").setAttribute("class","unfocus");
+        }
+        convert(input.value,type.value,directionType,seMarksCheckbox.checked)
     },1)
 
-    function dialectRusShow(){
-        rusDialect.setAttribute("class","focus")
-        aspynDialect.setAttribute("class","unfocus")
-    }
-
-    function dialectAspynShow(){
-        rusDialect.setAttribute("class","unfocus")
-        aspynDialect.setAttribute("class","focus")
-    }
-
-
-    const inventoryRus = {
+    const inventory = {
         "p":{
             IPA:"p",
-            phagspa:"ꡁ"
+            ortho:"ꡁ"
         },
         "b":{
             IPA:"b",
-            phagspa:"ꡂ"
+            ortho:"ꡂ"
         },
         "t":{
             IPA:"t",
-            phagspa:"ꡎ"
+            ortho:"ꡎ"
         },
         "d":{
             IPA:"d",
-            phagspa:"ꡍ"
+            ortho:"ꡍ"
         },
         "k":{
             IPA:"k",
-            phagspa:"ꡌ"
+            ortho:"ꡌ"
         },
         "g":{
             IPA:"g",
-            phagspa:"ꡖ"
+            ortho:"ꡖ"
         },
         "m":{
             IPA:"m",
-            phagspa:"ꡋ"
+            ortho:"ꡋ"
         },
         "n":{
             IPA:"n",
-            phagspa:"ꡏ"
+            ortho:"ꡏ"
         },
         "f":{
             IPA:"f",
-            phagspa:"ꡰ"
+            ortho:"ꡰ"
         },
         "s":{
             IPA:"s",
-            phagspa:"ꡞ"
+            ortho:"ꡞ"
         },
         "c":{
             IPA:"ɕ",
-            phagspa:"ꡟ"
+            ortho:"ꡟ"
         },
         "h":{
             IPA:"x",
-            phagspa:"ꡜ"
+            ortho:"ꡜ"
         },
         "j":{
             IPA:"j",
-            phagspa:"ꡬ"
+            ortho:"ꡬ"
         },
         "r":{
             IPA:"ɾ",
-            phagspa:"ꡮ"
+            ortho:"ꡮ"
         },
         "x":{
             IPA:"ɬ",
-            phagspa:"ꡝ"
+            ortho:"ꡝ"
         },
         "l":{
             IPA:"ʎ",
-            phagspa:"ꡣ"
+            ortho:"ꡣ"
         },
         "z":{
             IPA:"t͡s",
-            phagspa:"ꡔ"
+            ortho:"ꡔ"
         },
         "ç":{
             IPA:"t͡ʃ",
-            phagspa:"ꡛ"
+            ortho:"ꡛ"
         },
         "i":{
             IPA:"i",
-            phagspa:"ꡱ"
+            ortho:"ꡱ"
         },
         "î":{
             IPA:"ɨ",
-            phagspa:"ꡙ"
+            ortho:"ꡙ"
         },
         "û":{
             IPA:"ɯ",
-            phagspa:"ꡯ"
+            ortho:"ꡯ"
         },
         "u":{
             IPA:"u",
-            phagspa:"ꡊ"
+            ortho:"ꡊ"
         },
         "ö":{
             IPA:"ø",
-            phagspa:"ꡧ"
+            ortho:"ꡧ"
         },
         "ô":{
             IPA:"ɤ",
-            phagspa:"ꡇ"
+            ortho:"ꡇ"
         },
         "o":{
             IPA:"o",
-            phagspa:"ꡑ"
+            ortho:"ꡑ"
         },
         "e":{
             IPA:"ɛ",
-            phagspa:"ꡭ"
+            ortho:"ꡭ"
         },
         "ó":{
             IPA:"ɔ",
-            phagspa:"ꡨ"
+            ortho:"ꡨ"
         },
         "a":{
             IPA:"a",
-            phagspa:"ꡅ"
+            ortho:"ꡅ"
         },
         " ":{
             IPA:" ",
-            phagspa:"꡶ ꡶"
+            ortho:"꡶ ꡶"
         },
         ".":{
             IPA:".",
-            phagspa:""
+            ortho:""
         }
     }
 
-    const inventoryAspyn = {
-        "p":{
-            IPA:"p",
-            mongol:"ᠢ"
-        },
-        "b":{
-            IPA:"b",
-            mongol:"ᠦ᠋"
-        },
-        "t":{
-            IPA:"t̪",
-            mongol:"ᠯ"
-        },
-        "d":{
-            IPA:"d̪",
-            mongol:"ᠯᠯ"
-        },
-        "k":{
-            IPA:"k",
-            mongol:"ᠷ"
-        },
-        "g":{
-            IPA:"g",
-            mongol:"ᠷᠷ"
-        },
-        "m":{
-            IPA:"m",
-            mongol:"ᠠ᠋᠊ᡴ᠋"
-        },
-        "n":{
-            IPA:"n̪",
-            mongol:"ᢊ᠊ᡴ᠋"
-        },
-        "f":{
-            IPA:"ɸ",
-            mongol:"ᢒᠠ᠋"
-        },
-        "v":{
-            IPA:"β",
-            mongol:"ᠹᠠ᠋"
-        },
-        "s":{
-            IPA:"s̪",
-            mongol:"ᠮᠠ᠋"
-        },
-        "c":{
-            IPA:"ɕ",
-            mongol:"ᠭᠮᠠ᠋"
-        },
-        "x":{
-            IPA:"ç",
-            mongol:"ᢋᠠ᠋"
-        },
-        "h":{
-            IPA:"ʝ",
-            mongol:"ᢌᠠ᠋"
-        },
-        "j":{
-            IPA:"j",
-            mongol:"ᢎ"
-        },
-        "r":{
-            IPA:"r",
-            mongol:"ᠺ"
-        },
-        "l":{
-            IPA:"ɾ̪",
-            mongol:"ᠾ"
-        },
-        "i":{
-            IPA:"i",
-            mongol:"ᢏ"
-        },
-        "w":{
-            IPA:"ɯ",
-            mongol:"ᠨ"
-        },
-        "u":{
-            IPA:"u",
-            mongol:"ᠨᠨ"
-        },
-        "o":{
-            IPA:"o",
-            mongol:"ᢔᢔᠰ"
-        },
-        "e":{
-            IPA:"ɛ",
-            mongol:"ᠲ"
-        },
-        "y":{
-            IPA:"ʌ",
-            mongol:"ᠮ"
-        },
-        "0":{
-            IPA:"ɔ",
-            mongol:"ᠮᠮ"
-        },
-        "a":{
-            IPA:"a",
-            mongol:"ᠱ"
-        },
-        "q":{
-            IPA:"ɑ",
-            mongol:"ᠱᠱ"
-        },
-        "!":{
-            IPA:"",
-            mongol:"ᡅᠠ᠋"
-        },
-        "#":{
-            IPA:"",
-            mongol:"ᠺᡓ"
-        },
-        "$":{
-            IPA:"",
-            mongol:"ᢖ"
-        },
-        "%":{
-            IPA:"",
-            mongol:"ᢇ"
-        },
-        "&":{
-            IPA:"",
-            mongol:"ᡏ"
-        },
-        "?":{
-            IPA:"",
-            mongol:"ᡰ"
-        },
-        "_":{
-            IPA:"",
-            mongol:"ᡪ"
-        },
-        "-":{
-            IPA:"",
-            mongol:"᠆"
-        },
-        ".":{
-            IPA:".",
-            mongol:""
-        },
-        " ":{
-            IPA:" ",
-            mongol:" "
-        }
-    }
+    hotkeys("enter",function(){
+        convert(input.value,type.value,directionType,seMarksCheckbox.checked)
+    })
 
 </script>
