@@ -95,7 +95,7 @@
 
     let conversionHandlerArray = new Array();
 
-    function convert(text, type, direction, marks){
+    function convert(text, type_of_text, direction, marks){
         conversionHandlerArray = [];
         switch(direction){
             case "ttb":
@@ -107,7 +107,7 @@
                 output.setAttribute("class","leftToRight");
             break;
         }
-        switch(type){
+        switch(type_of_text){
             case "IPA":
                 seMarksCheckbox.checked = true;
                 [...text].forEach(function(c){
