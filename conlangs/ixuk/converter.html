@@ -29,6 +29,16 @@
     .leftToRight {
         writing-mode: horizontal-tb;
     }
+    #key {
+        width: 440px;
+        height: 785px;
+        border: none;
+    }
+    #keydiv {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 </style>
 
 <head>
@@ -38,6 +48,7 @@
 
 <body>
     <!--Rus------------------------------------------------------------------------------------------------------------------------->
+    k for key <br>
     <div id="rus" class="focus">
         <input type="text" id="input">
         <select id="typeSelect" title="Type" style="cursor: pointer;">
@@ -51,13 +62,17 @@
     </div>
     <p id="output" style="font-size: 20pt; max-width: 200px; display: block;">&nbsp;</p>
     <br>
-    <iframe src="ruschart.html" style="width: 440px; height: 785px; border: none; top: 10px; position: absolute; left: 750px;"></iframe>
+    <div id="keydiv">
+        <iframe src="ruschart.html" class="unfocus" id="key"></iframe>
+    </div>
 </body>
 <script>
 
-    var rusDialect = document.getElementById("rus")
-    var grid = document.getElementById("grid")
+    hotkeys("k", function(){
+        key.hasAttribute("class","unfocus") ? key.removeAttribute("class","unfocus") : key.setAttribute("class","unfocus");
+    })
 
+    var key = document.getElementById("key")
 
     var type = document.getElementById("typeSelect");
     var output = document.getElementById("output");
@@ -124,7 +139,7 @@
             document.getElementById("seMarksFull").setAttribute("class","unfocus");
         }
         convert(input.value,type.value,directionType,seMarksCheckbox.checked)
-    },1)
+    },10)
 
     const inventory = {
         "p":{
