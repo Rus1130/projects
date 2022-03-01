@@ -5,6 +5,9 @@
     select:focus {
         outline: none;
     }
+    button:focus {
+        outline: none;
+    }
     html {
         font-family: Verdana, Geneva, Tahoma, sans-serif;
         font-size: 14pt;
@@ -21,6 +24,7 @@
     </select>
     <button onclick="convert(input.value, parseInt(typeSelector.value))" title="convert">Convert!</button>
     <div id="output" title="output"></div>
+    <div id="converted-output" title="converted output"></div>
 </head>
 <script>
     var input = document.getElementById("input")
@@ -28,6 +32,7 @@
     var typeSelector = document.getElementById("typeSelector")
     var noiseStrength = document.getElementById("strength")
     var output = document.getElementById("output")
+    var output2 = document.getElementById("converted-output")
 
     function convert(text, type) { 
         outputArray = [];
@@ -43,22 +48,27 @@
             break;
         }
         var outputType = typeSelector.value;
-        var preMessage = outputArray.join(" ");
-        var rdex = random(1,outputArray.length)-1;
-        var rdexCont = outputArray[random(1,outputArray.length)-1];
-        var rdexDigit = rdexCont.charAt(random(1,rdexCont.length));
-        var noise = injectError(rdexCont,noiseStrength.value);
-        var fullMessage = preMessage.replace(rdexCont,noise)
+        var firstMessage = outputArray.join(" ");
 
-        console.log(
-            `type: ${outputType}\n`+
-            `inputted message: ${preMessage}\n`+
-            `rdex: ${rdex}\n`+
-            `rdex content: ${rdexCont}\n`+
-            `rdex w/ noise: ${outputType == 0 ? "N/A" : noise}\n`+
-            `completed message: ${outputType == 0 ? preMessage : fullMessage}`
-        )
+        var rdexCont1 = outputArray[random(1,outputArray.length)-1];
+        var noise1 = injectError(rdexCont1,noiseStrength.value);
+
+        var rdexCont2 = outputArray[random(1,outputArray.length)-1];
+        var noise2 = injectError(rdexCont2,noiseStrength.value);
+
+        var rdexCont3 = outputArray[random(1,outputArray.length)-1];
+        var noise3 = injectError(rdexCont3,noiseStrength.value);
+
+        var rdexCont4 = outputArray[random(1,outputArray.length)-1];
+        var noise4 = injectError(rdexCont4,noiseStrength.value);
+
+        var rdexCont5 = outputArray[random(1,outputArray.length)-1];
+        var noise5 = injectError(rdexCont5,noiseStrength.value);
+
+        var fullMessage = firstMessage.replace(rdexCont1,noise1).replace(rdexCont2,noise2).replace(rdexCont3,noise3).replace(rdexCont4,noise4).replace(rdexCont5,noise5);
+
         output.innerHTML = fullMessage;
+        output2.innerHTML = binaryAgent(fullMessage);
     }
 
     function injectError(binary_number, strength){
@@ -71,8 +81,31 @@
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
+    let noiseMax = 100;
+    for(i = 0; i <= noiseMax; i++){
 
-    for(i = 0; i <= 80; i++){
         noiseStrength.insertAdjacentHTML('beforeend', `<option value="${i}">${i}</option>`)
     }
+    let randomArray = new Array;
+
+    function getRandomFromOutputArray(amount){
+        if(amount > outputArray.length){
+            return console.error(`amount greater than outputArray length`);
+        } else {
+            randomArray = [];
+            for(i = amount; i > 0; i--){
+                randomArray.push(outputArray[random(0,outputArray.length - 1)])
+            }
+            return randomArray;
+        }
+    }
+
+
+    function binaryAgent(str) {
+        var binString = '';
+        str.split(' ').map(function(bin) {
+            binString += String.fromCharCode(parseInt(bin, 2));
+        });
+        return binString;
+    }  
 </script>
