@@ -17,15 +17,17 @@
         <option value="2">Binary</option>
         <option value="0">Raw</option>
     </select>
+    <select title="noise strength" id="strength" style="width: 50px;">
+    </select>
     <button onclick="convert(input.value, parseInt(typeSelector.value))" title="convert">Convert!</button>
     <div id="output" title="output"></div>
 </head>
 <script>
     var input = document.getElementById("input")
-
     let outputArray = new Array;
-
     var typeSelector = document.getElementById("typeSelector")
+    var noiseStrength = document.getElementById("strength")
+    var output = document.getElementById("output")
 
     function convert(text, type) { 
         outputArray = [];
@@ -41,17 +43,36 @@
             break;
         }
         var outputType = typeSelector.value;
-        var fullMessage = outputArray.join(" ");
+        var preMessage = outputArray.join(" ");
         var rdex = random(1,outputArray.length)-1;
         var rdexCont = outputArray[random(1,outputArray.length)-1];
-        var rdexDigit = rdexCont.charAt(random(1,rdexCont.length))
+        var rdexDigit = rdexCont.charAt(random(1,rdexCont.length));
+        var noise = injectError(rdexCont,noiseStrength.value);
+        var fullMessage = preMessage.replace(rdexCont,noise)
 
-        console.log(`type: ${outputType}\nfull message: ${fullMessage}\nrdex: ${rdex}\nrdex content: ${rdexCont}\nrdex content random digit: ${rdexDigit}`)
+        console.log(
+            `type: ${outputType}\n`+
+            `inputted message: ${preMessage}\n`+
+            `rdex: ${rdex}\n`+
+            `rdex content: ${rdexCont}\n`+
+            `rdex w/ noise: ${outputType == 0 ? "N/A" : noise}\n`+
+            `completed message: ${outputType == 0 ? preMessage : fullMessage}`
+        )
+        output.innerHTML = fullMessage;
+    }
+
+    function injectError(binary_number, strength){
+        x = (random(1,strength-1) + parseInt(binary_number, 2)).toString(2)
+        return parseInt(x)
     }
 
     function random(min, max) {
         min = Math.ceil(min);
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
+    for(i = 0; i <= 80; i++){
+        noiseStrength.insertAdjacentHTML('beforeend', `<option value="${i}">${i}</option>`)
     }
 </script>
