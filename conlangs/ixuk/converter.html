@@ -58,7 +58,7 @@
 
 <body>
     <!--Rus------------------------------------------------------------------------------------------------------------------------->
-    k for key <br>
+    k to toggle key <br>
     <div id="rus" class="focus">
         <input type="text" id="input">
         <select id="typeSelect" title="Type" style="cursor: pointer;">
@@ -73,7 +73,7 @@
     <p id="output" style="font-size: 20pt; max-width: 200px; display: block;">&nbsp;</p>
     <br>
     <div id="keydiv">
-        <iframe src="ruschart.html" class="unfocus" id="key"></iframe>
+        <iframe src="ruschart.html" id="key"></iframe>
     </div>
 </body>
 <script>
@@ -137,7 +137,7 @@
                     rightMark = "";
                 }
                 directionType = "ttb"
-                output.innerHTML = leftMark + conversionHandlerArray.join("").replaceAll("ꡲ ꡶ꡘ꡶ ","ꡲ") + rightMark;
+                output.innerHTML = leftMark + conversionHandlerArray.join("").replaceAll("ꡲ ","ꡲ") + rightMark;
             break;
         }
     }
@@ -266,7 +266,7 @@
         },
         " ":{
             IPA:" ",
-            ortho:" ꡶ꡘ꡶ "
+            ortho:" "
         },
         ".":{
             IPA:".",
