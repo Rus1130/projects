@@ -1,0 +1,57 @@
+<style>
+    input:focus {
+        outline: none;
+    }
+    select:focus {
+        outline: none;
+    }
+    html {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 14pt;
+    }
+</style>
+
+<head>
+    <input type="text" id="input" title="input" style="width: 300px;">
+    <select title="type of output" id="typeSelector">
+        <option value="2">Binary</option>
+        <option value="0">Raw</option>
+    </select>
+    <button onclick="convert(input.value, parseInt(typeSelector.value))" title="convert">Convert!</button>
+    <div id="output" title="output"></div>
+</head>
+<script>
+    var input = document.getElementById("input")
+
+    let outputArray = new Array;
+
+    var typeSelector = document.getElementById("typeSelector")
+
+    function convert(text, type) { 
+        outputArray = [];
+        switch(type){
+            case 0: // raw
+                outputArray.push(...input.value)
+            break;
+
+            case 2: // binary
+                for ( i = 0; i < text.length; i++) {
+                    outputArray.push(text[i].charCodeAt(0).toString(2));
+                }
+            break;
+        }
+        var outputType = typeSelector.value;
+        var fullMessage = outputArray.join(" ");
+        var rdex = random(1,outputArray.length)-1;
+        var rdexCont = outputArray[random(1,outputArray.length)-1];
+        var rdexDigit = rdexCont.charAt(random(1,rdexCont.length))
+
+        console.log(`type: ${outputType}\nfull message: ${fullMessage}\nrdex: ${rdex}\nrdex content: ${rdexCont}\nrdex content random digit: ${rdexDigit}`)
+    }
+
+    function random(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+</script>
