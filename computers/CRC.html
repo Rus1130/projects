@@ -48,32 +48,9 @@
             break;
         }
         var outputType = typeSelector.value;
-        var firstMessage = outputArray.join(" ");
 
-        var rdexCont1 = outputArray[random(1,outputArray.length)-1];
-        var noise1 = injectError(rdexCont1,noiseStrength.value);
-
-        var rdexCont2 = outputArray[random(1,outputArray.length)-1];
-        var noise2 = injectError(rdexCont2,noiseStrength.value);
-
-        var rdexCont3 = outputArray[random(1,outputArray.length)-1];
-        var noise3 = injectError(rdexCont3,noiseStrength.value);
-
-        var rdexCont4 = outputArray[random(1,outputArray.length)-1];
-        var noise4 = injectError(rdexCont4,noiseStrength.value);
-
-        var rdexCont5 = outputArray[random(1,outputArray.length)-1];
-        var noise5 = injectError(rdexCont5,noiseStrength.value);
-
-        var fullMessage = firstMessage.replace(rdexCont1,noise1).replace(rdexCont2,noise2).replace(rdexCont3,noise3).replace(rdexCont4,noise4).replace(rdexCont5,noise5);
-
-        output.innerHTML = fullMessage;
-        output2.innerHTML = binaryAgent(fullMessage);
-    }
-
-    function injectError(binary_number, strength){
-        x = (random(1,strength-1) + parseInt(binary_number, 2)).toString(2)
-        return parseInt(x)
+        //fucking broken
+        output.innerHTML = injectError(outputArray.length, noiseStrength.value).join(" ");
     }
 
     function random(min, max) {
@@ -81,22 +58,27 @@
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
+
     let noiseMax = 100;
     for(i = 0; i <= noiseMax; i++){
-
         noiseStrength.insertAdjacentHTML('beforeend', `<option value="${i}">${i}</option>`)
     }
-    let randomArray = new Array;
 
-    function getRandomFromOutputArray(amount){
+    let errorArray = new Array;
+
+
+    //fucking broken
+    function injectError(amount, strength){
+        var error = parseInt(strength.toString(2))
         if(amount > outputArray.length){
-            return console.error(`amount greater than outputArray length`);
+            return undefined;
         } else {
-            randomArray = [];
+            errorArray = [];
+
             for(i = amount; i > 0; i--){
-                randomArray.push(outputArray[random(0,outputArray.length - 1)])
+                errorArray.push(parseInt(outputArray[random(0,outputArray.length - 1)] + error))
             }
-            return randomArray;
+            return errorArray
         }
     }
 
