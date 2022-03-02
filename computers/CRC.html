@@ -18,7 +18,7 @@
     <input type="text" id="input" title="input" style="width: 300px;">
     <select title="noise strength" id="strength" style="width: 50px;">
     </select>
-    <button onclick="convert(input.value)" title="convert">Convert!</button>
+    <button onclick="convert(input.value), injectError(outputArray.length, noise.value)" title="convert">Convert!</button>
     <div id="output" title="output"></div>
     <div id="converted-output" title="converted output"></div>
 </head>
@@ -29,8 +29,6 @@
     let noise = document.getElementById("strength")
     var output = document.getElementById("output")
     var output2 = document.getElementById("converted-output")
-    let noiseBinary = Number(noise.value)
-    
 
     function convert(text) { 
         outputArray = [];
@@ -38,8 +36,8 @@
                 outputArray.push(text[i].charCodeAt(0).toString(2));
             }
 
-        //fucking broken
-        console.log(injectError(outputArray.length, noise.value).join(" "));
+        output.innerHTML = finalArray.join(" ");
+
     }
 
     function random(min, max) {
@@ -55,8 +53,6 @@
 
     let finalArray = new Array;
 
-
-    //fucking broken
     function injectError(amount, strength){
         if(amount > outputArray.length){
             return undefined;
@@ -64,9 +60,16 @@
             finalArray = [];
 
             for(i = amount; i > 0; i--){
-                finalArray.push(parseInt(outputArray[random(0,outputArray.length - 1)]))
+                var baseValue = parseInt(outputArray[random(0,outputArray.length - 1)],2)
+                var modifier = random(-2,strength) + random(-1,1)
+                var trueValue = baseValue + modifier
+                finalArray.push(trueValue.toString(2))
             }
-            return finalArray
+            if(noise.value == 0){
+                output.innerHTML = outputArray.join(" ")
+            } else {
+                return finalArray;
+            }
         }
     }
 
