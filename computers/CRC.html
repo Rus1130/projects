@@ -36,8 +36,7 @@
                 outputArray.push(text[i].charCodeAt(0).toString(2));
             }
 
-        output.innerHTML = finalArray.join(" ");
-        console.log(binaryAgent(finalArray.join(" ")))
+        output.innerHTML = outputArray.join(" ");
     }
 
     function random(min, max) {
@@ -60,16 +59,19 @@
             finalArray = [];
 
             //fix ==========================================================
-            for(i = amount; i > 0; i--){
-                var baseValue = parseInt(outputArray[random(0,outputArray.length-1)])
-                var modifier = Number(random(0,strength).toString(2))
-                var trueValue = baseValue + 
-                finalArray.push(baseValue.toString(2).replace(baseValue, baseValue + modifier))
-            }
-            if(noise.value == 0){
-                output.innerHTML = outputArray.join(" ")
+            if(strength == 0){
+                console.log(finalArray)
             } else {
-                return finalArray
+
+                for(i = amount; i > 0; i--){
+                    var string = parseInt(outputArray[i-1],2)
+                    if(random(0,100) >= 0){
+                        finalArray.push(string + random(0,strength))
+                    } else { //output for 
+                        finalArray.push(string)
+                    }
+                }
+                console.log(finalArray)
             }
         }
     }
