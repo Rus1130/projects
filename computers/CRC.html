@@ -16,41 +16,30 @@
 
 <head>
     <input type="text" id="input" title="input" style="width: 300px;">
-    <select title="type of output" id="typeSelector">
-        <option value="2">Binary</option>
-        <option value="0">Raw</option>
-    </select>
     <select title="noise strength" id="strength" style="width: 50px;">
     </select>
-    <button onclick="convert(input.value, parseInt(typeSelector.value))" title="convert">Convert!</button>
+    <button onclick="convert(input.value)" title="convert">Convert!</button>
     <div id="output" title="output"></div>
     <div id="converted-output" title="converted output"></div>
 </head>
+
 <script>
     var input = document.getElementById("input")
     let outputArray = new Array;
-    var typeSelector = document.getElementById("typeSelector")
-    var noiseStrength = document.getElementById("strength")
+    let noise = document.getElementById("strength")
     var output = document.getElementById("output")
     var output2 = document.getElementById("converted-output")
+    let noiseBinary = Number(noise.value)
+    
 
-    function convert(text, type) { 
+    function convert(text) { 
         outputArray = [];
-        switch(type){
-            case 0: // raw
-                outputArray.push(...input.value)
-            break;
-
-            case 2: // binary
-                for ( i = 0; i < text.length; i++) {
-                    outputArray.push(text[i].charCodeAt(0).toString(2));
-                }
-            break;
-        }
-        var outputType = typeSelector.value;
+            for ( i = 0; i < text.length; i++) {
+                outputArray.push(text[i].charCodeAt(0).toString(2));
+            }
 
         //fucking broken
-        output.innerHTML = injectError(outputArray.length, noiseStrength.value).join(" ");
+        console.log(injectError(outputArray.length, noise.value).join(" "));
     }
 
     function random(min, max) {
@@ -61,24 +50,23 @@
 
     let noiseMax = 100;
     for(i = 0; i <= noiseMax; i++){
-        noiseStrength.insertAdjacentHTML('beforeend', `<option value="${i}">${i}</option>`)
+        noise.insertAdjacentHTML('beforeend', `<option value="${i}">${i}</option>`)
     }
 
-    let errorArray = new Array;
+    let finalArray = new Array;
 
 
     //fucking broken
     function injectError(amount, strength){
-        var error = parseInt(strength.toString(2))
         if(amount > outputArray.length){
             return undefined;
         } else {
-            errorArray = [];
+            finalArray = [];
 
             for(i = amount; i > 0; i--){
-                errorArray.push(parseInt(outputArray[random(0,outputArray.length - 1)] + error))
+                finalArray.push(parseInt(outputArray[random(0,outputArray.length - 1)]))
             }
-            return errorArray
+            return finalArray
         }
     }
 
