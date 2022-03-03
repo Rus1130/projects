@@ -15,29 +15,43 @@
 </style>
 
 <head>
-    <input type="text" id="input" title="input" style="width: 300px;">
-    <select title="noise strength" id="strength" style="width: 50px;">
-    </select>
-    <button onclick="convert(input.value), injectError(outputArray.length, noise.value)" title="convert">Convert!</button>
-    <div id="output" title="output"></div>
-    <div id="converted-output" title="converted output"></div>
+    <input type="text" id="input" title="Input" style="width: 300px;">
+    <input type="number" id="strength" title="Noise strength" min="0" max="100" value="0">
+    <input type="number" id="frequency" title="Noise frequency" min="0" max="500" value="10">
+    <button onclick="convert(input.value, errorValueDropdown.value, errorFrequencyDropdown.value)" title="Convert input">Convert!</button>
+    <div id="output" title="Binary output"></div>
+    <br>
+    <div id="converted-output" title="Converted output"></div>
 </head>
 
 <script>
     var input = document.getElementById("input")
+    let convertArray = new Array;
     let outputArray = new Array;
-    let noise = document.getElementById("strength")
+    let errorValueDropdown = document.getElementById("strength")
     var output = document.getElementById("output")
     var output2 = document.getElementById("converted-output")
+    var errorFrequencyDropdown = document.getElementById("frequency")
 
-    function convert(text) { 
+    function convert(text, errorValue, errorFrequency) { 
+        convertArray = [];
         outputArray = [];
-            for ( i = 0; i < text.length; i++) {
-                outputArray.push(text[i].charCodeAt(0).toString(2));
+        for(i = input.value.length; i > 0; i--){
+            var inputValues = input.value.charCodeAt(input.value.length - i).toString(2);
+            if(random(0,500) <= errorFrequency){
+                convertArray.push(parseInt(inputValues,2) + random(0, errorValue))
+            } else {
+                convertArray.push(parseInt(inputValues,2))
             }
-
-        output.innerHTML = outputArray.join(" ");
+            
+        }
+        for(i = 0; i <= convertArray.length - 1; i++){
+            outputArray.push(convertArray[i].toString(2))
+        }
+        output.innerHTML = outputArray.join(" ")
+        output2.innerHTML = binaryAgent(outputArray.join(" "));
     }
+
 
     function random(min, max) {
         min = Math.ceil(min);
@@ -47,35 +61,8 @@
 
     let noiseMax = 100;
     for(i = 0; i <= noiseMax; i++){
-        noise.insertAdjacentHTML('beforeend', `<option value="${i}">${i}</option>`)
+        errorValueDropdown.insertAdjacentHTML('beforeend', `<option value="${i}">${i}</option>`)
     }
-
-    let finalArray = new Array;
-
-    function injectError(amount, strength){
-        if(amount > outputArray.length){
-            return undefined;
-        } else {
-            finalArray = [];
-
-            //fix ==========================================================
-            if(strength == 0){
-                console.log(finalArray)
-            } else {
-
-                for(i = amount; i > 0; i--){
-                    var string = parseInt(outputArray[i-1],2)
-                    if(random(0,100) >= 0){
-                        finalArray.push(string + random(0,strength))
-                    } else { //output for 
-                        finalArray.push(string)
-                    }
-                }
-                console.log(finalArray)
-            }
-        }
-    }
-
 
     function binaryAgent(str) {
         var binString = '';
