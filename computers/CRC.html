@@ -16,9 +16,9 @@
 
 <head>
     <input type="text" id="input" title="Input" style="width: 300px;">
-    <input type="number" id="strength" title="Noise strength" min="0" max="100" value="0">
-    <input type="number" id="frequency" title="Noise frequency" min="0" max="500" value="10">
-    <button onclick="convert(input.value, errorValueDropdown.value, errorFrequencyDropdown.value)" title="Convert input">Convert!</button>
+    <input type="number" id="strength" title="Noise strength" min="0" max="1000" value="0">
+    <input type="number" id="frequency" title="Noise frequency" min="0" max="100" value="0">
+    <button onclick="convert(input.value, errorStrengthNumber.value, errorFrequencyNumber.value)" title="Convert input">Convert!</button>
     <div id="output" title="Binary output"></div>
     <br>
     <div id="converted-output" title="Converted output"></div>
@@ -27,31 +27,26 @@
 <script>
     //inputs
     var input = document.getElementById("input")
-    var errorValueDropdown = document.getElementById("strength")
-    var errorFrequencyDropdown = document.getElementById("frequency")
+    var errorStrengthNumber = document.getElementById("strength")
+    var errorFrequencyNumber = document.getElementById("frequency")
 
     //arrays
+    let inputArray = new Array;
     let convertArray = new Array;
     let outputArray = new Array;
-    let checksumArray = new Array;
-    let finalArray = new Array;
-    let intermediateArray = new Array;
 
     //outputs
     var binaryOutput = document.getElementById("output")
     var textOutput = document.getElementById("converted-output")
 
-    //misc
-    let errorValueMax = 100;
-
-    function convert(text, errorValue, errorFrequency) { 
+    function convert(text, errorStrength, errorFrequency) { 
         convertArray = [];
-        outputArray = [];
+        inputArray = [];
 
         for(i = input.value.length; i > 0; i--){
             var inputValues = input.value.charCodeAt(input.value.length - i).toString(2);
-            if(random(0,500) <= errorFrequency){
-                convertArray.push(parseInt(inputValues,2) + random(0, errorValue))
+            if(random(0,100) < errorFrequency){
+                convertArray.push(parseInt(inputValues,2) + random(0, errorStrength))
             } else {
                 convertArray.push(parseInt(inputValues,2))
             }
@@ -59,13 +54,11 @@
         }
 
         for(i = 0; i <= convertArray.length - 1; i++){
-            outputArray.push(convertArray[i].toString(2).padStart(8,"0"))
+            inputArray.push(convertArray[i].toString(2).padStart(8,"0"))
         }
-
-        console.log(getChecksum())
         
-        binaryOutput.innerHTML = outputArray.join(" ")
-        textOutput.innerHTML = binaryAgent(outputArray.join(" "));
+        binaryOutput.innerHTML = inputArray.join(" ")
+        textOutput.innerHTML = binaryAgent(inputArray.join(" "));
     }
 
 
@@ -75,53 +68,28 @@
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
 
-    for(i = 0; i <= errorValueMax; i++){
-        errorValueDropdown.insertAdjacentHTML('beforeend', `<option value="${i}">${i}</option>`)
-    }
+    // function injectError(amount, strength){
+    //     if(amount > inputArray.length){
+    //         return undefined;
+    //     } else {
+    //         outputArray = [];
 
-    function injectError(amount, strength){
-        if(amount > outputArray.length){
-            return undefined;
-        } else {
-            finalArray = [];
+    //         if(strength == 0){
+    //             return undefined
+    //         } else {
 
-            if(strength == 0){
-                return undefined
-            } else {
-
-                for(i = amount; i > 0; i--){
-                    var string = parseInt(outputArray[i-1],2)
-                    if(random(0,100) >= 0){
-                        finalArray.push(string + random(0,strength))
-                    } else {
-                        finalArray.push(string)
-                    }
-                }
-                console.log(finalArray)
-            }
-        }
-    }
-
-    let checksum;
-
-    function getChecksum(){
-        checksum = 0;
-        checksumArray = []
-        intermediateArray = [];
-        for (i = 0; i < input.value.length; i++) {
-            intermediateArray.push(parseInt(input.value[i].charCodeAt(0).toString(10)));
-        }
-        for (i = 0; i < intermediateArray.length; i++) {
-            checksum += intermediateArray[i];
-        }
-
-        checksumArray = checksum.toString(2).match(/.{1,8}/g)
-        for (i = 0; i < checksumArray.length; i++){
-            checksumArray[i] = parseInt(checksumArray[i],2)
-        }
-
-        return checksumArray;
-    }
+    //             for(i = amount; i > 0; i--){
+    //                 var string = parseInt(inputArray[i-1],2)
+    //                 if(random(0,100) >= 0){
+    //                     outputArray.push(string + random(0,strength))
+    //                 } else {
+    //                     outputArray.push(string)
+    //                 }
+    //             }
+    //             console.log(outputArray)
+    //         }
+    //     }
+    // }
 
     function reverseString(str){
         return str.split("").reverse().join("")
