@@ -530,4 +530,28 @@ function findSlope(y2, y1, x2, x1){
     x = parseInt(x2) - parseInt(x1);
     return parseInt(y) / parseInt(x)
 }
+
+function whatIs(number1, operation, number2){
+    var result;
+    switch(operation){
+        case "plus":
+            result = number1 + number2;
+            break;
+        case "minus":
+            result = number1 - number2;
+            break;
+        case "multiplied by":
+            result = number1 * number2;
+            break;
+        case "divided by":
+            result = number1 / number2;
+            break;
+    }
+    return `${number1} ${operation} ${number2} is ${result}`;
+}
+
+
+
+
+
 </script>
