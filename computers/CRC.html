@@ -25,24 +25,29 @@
 </head>
 
 <script>
+    //inputs
     var input = document.getElementById("input")
+    var errorValueDropdown = document.getElementById("strength")
+    var errorFrequencyDropdown = document.getElementById("frequency")
+
+    //arrays
     let convertArray = new Array;
     let outputArray = new Array;
     let checksumArray = new Array;
-    let noise = document.getElementById("strength")
-    let errorValueDropdown = document.getElementById("strength")
-    var output = document.getElementById("output")
-    var output2 = document.getElementById("converted-output")
-    var errorFrequencyDropdown = document.getElementById("frequency")
+    let finalArray = new Array;
+    let intermediateArray = new Array;
+
+    //outputs
+    var binaryOutput = document.getElementById("output")
+    var textOutput = document.getElementById("converted-output")
+
+    //misc
+    let errorValueMax = 100;
 
     function convert(text, errorValue, errorFrequency) { 
         convertArray = [];
         outputArray = [];
-        for ( i = 0; i < text.length; i++) {
-            outputArray.push(text[i].charCodeAt(0).toString(2));
-        }
 
-        output.innerHTML = outputArray.join(" ");
         for(i = input.value.length; i > 0; i--){
             var inputValues = input.value.charCodeAt(input.value.length - i).toString(2);
             if(random(0,500) <= errorFrequency){
@@ -52,11 +57,15 @@
             }
             
         }
+
         for(i = 0; i <= convertArray.length - 1; i++){
-            outputArray.push(convertArray[i].toString(2))
+            outputArray.push(convertArray[i].toString(2).padStart(8,"0"))
         }
-        output.innerHTML = outputArray.join(" ")
-        output2.innerHTML = binaryAgent(outputArray.join(" "));
+
+        console.log(getChecksum())
+        
+        binaryOutput.innerHTML = outputArray.join(" ")
+        textOutput.innerHTML = binaryAgent(outputArray.join(" "));
     }
 
 
@@ -66,12 +75,9 @@
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
 
-    let noiseMax = 100;
-    for(i = 0; i <= noiseMax; i++){
-        noise.insertAdjacentHTML('beforeend', `<option value="${i}">${i}</option>`)
+    for(i = 0; i <= errorValueMax; i++){
+        errorValueDropdown.insertAdjacentHTML('beforeend', `<option value="${i}">${i}</option>`)
     }
-
-    let finalArray = new Array;
 
     function injectError(amount, strength){
         if(amount > outputArray.length){
@@ -79,7 +85,6 @@
         } else {
             finalArray = [];
 
-            //fix ==========================================================
             if(strength == 0){
                 return undefined
             } else {
@@ -88,7 +93,7 @@
                     var string = parseInt(outputArray[i-1],2)
                     if(random(0,100) >= 0){
                         finalArray.push(string + random(0,strength))
-                    } else { //output for 
+                    } else {
                         finalArray.push(string)
                     }
                 }
@@ -97,13 +102,29 @@
         }
     }
 
-    //continue working on ==========================
+    let checksum;
+
     function getChecksum(){
+        checksum = 0;
         checksumArray = []
-        for ( i = 0; i < input.value.length; i++) {
-            checksumArray.push(parseInt(input.value[i].charCodeAt(0).toString(10)));
+        intermediateArray = [];
+        for (i = 0; i < input.value.length; i++) {
+            intermediateArray.push(parseInt(input.value[i].charCodeAt(0).toString(10)));
         }
-        return checksumArray
+        for (i = 0; i < intermediateArray.length; i++) {
+            checksum += intermediateArray[i];
+        }
+
+        checksumArray = checksum.toString(2).match(/.{1,8}/g)
+        for (i = 0; i < checksumArray.length; i++){
+            checksumArray[i] = parseInt(checksumArray[i],2)
+        }
+
+        return checksumArray;
+    }
+
+    function reverseString(str){
+        return str.split("").reverse().join("")
     }
 
     function binaryAgent(str) {
