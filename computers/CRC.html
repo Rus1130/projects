@@ -26,15 +26,16 @@
 <script>
     var input = document.getElementById("input")
     let outputArray = new Array;
+    let checksumArray = new Array;
     let noise = document.getElementById("strength")
     var output = document.getElementById("output")
     var output2 = document.getElementById("converted-output")
 
     function convert(text) { 
         outputArray = [];
-            for ( i = 0; i < text.length; i++) {
-                outputArray.push(text[i].charCodeAt(0).toString(2));
-            }
+        for ( i = 0; i < text.length; i++) {
+            outputArray.push(text[i].charCodeAt(0).toString(2));
+        }
 
         output.innerHTML = outputArray.join(" ");
     }
@@ -60,7 +61,7 @@
 
             //fix ==========================================================
             if(strength == 0){
-                console.log(finalArray)
+                return undefined
             } else {
 
                 for(i = amount; i > 0; i--){
@@ -76,6 +77,14 @@
         }
     }
 
+    //continue working on ==========================
+    function getChecksum(){
+        checksumArray = []
+        for ( i = 0; i < input.value.length; i++) {
+            checksumArray.push(parseInt(input.value[i].charCodeAt(0).toString(10)));
+        }
+        return checksumArray
+    }
 
     function binaryAgent(str) {
         var binString = '';
