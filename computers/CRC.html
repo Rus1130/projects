@@ -16,12 +16,14 @@
 
 <head>
     <input type="text" id="input" title="Input" style="width: 300px;">
-    <input type="number" id="strength" title="Noise strength" min="0" max="1000" value="0">
+    <input type="number" id="strength" title="Noise strength" min="0" max="2000" value="0">
     <input type="number" id="frequency" title="Noise frequency" min="0" max="100" value="0">
     <button onclick="convert(input.value, errorStrengthNumber.value, errorFrequencyNumber.value)" title="Convert input">Convert!</button>
     <div id="output" title="Binary output"></div>
     <br>
     <div id="converted-output" title="Converted output"></div>
+    <br>
+    <div id="checksum" title="checksum"></div>
 </head>
 
 <script>
@@ -34,14 +36,18 @@
     let inputArray = new Array;
     let convertArray = new Array;
     let outputArray = new Array;
+    let checksumArray = new Array;
 
     //outputs
     var binaryOutput = document.getElementById("output")
     var textOutput = document.getElementById("converted-output")
+    var checksumDisplay = document.getElementById("checksum")
 
     function convert(text, errorStrength, errorFrequency) { 
         convertArray = [];
         inputArray = [];
+        outputArray = [];
+        checksumArray = [];
 
         for(i = input.value.length; i > 0; i--){
             var inputValues = input.value.charCodeAt(input.value.length - i).toString(2);
@@ -54,11 +60,12 @@
         }
 
         for(i = 0; i <= convertArray.length - 1; i++){
-            inputArray.push(convertArray[i].toString(2).padStart(8,"0"))
+            outputArray.push(convertArray[i].toString(2).padStart(8,"0"))
         }
-        
-        binaryOutput.innerHTML = inputArray.join(" ")
-        textOutput.innerHTML = binaryAgent(inputArray.join(" "));
+
+        checksumDisplay.innerHTML = getChecksum();
+        binaryOutput.innerHTML = outputArray.join(" ")
+        textOutput.innerHTML = binaryAgent(outputArray.join(" "));
     }
 
 
@@ -68,31 +75,21 @@
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
 
-    // function injectError(amount, strength){
-    //     if(amount > inputArray.length){
-    //         return undefined;
-    //     } else {
-    //         outputArray = [];
-
-    //         if(strength == 0){
-    //             return undefined
-    //         } else {
-
-    //             for(i = amount; i > 0; i--){
-    //                 var string = parseInt(inputArray[i-1],2)
-    //                 if(random(0,100) >= 0){
-    //                     outputArray.push(string + random(0,strength))
-    //                 } else {
-    //                     outputArray.push(string)
-    //                 }
-    //             }
-    //             console.log(outputArray)
-    //         }
-    //     }
-    // }
-
     function reverseString(str){
         return str.split("").reverse().join("")
+    }
+
+    function getChecksum(){
+        let outputChecksum = 0;
+        let textChecksum = 0;
+        //outputted checkum
+        for(i = 0; i < outputArray.length; i++){
+            checksumArray.push(parseInt(outputArray[i],2))
+        }
+        for(i = 0; i < checksumArray.length; i++){
+            outputChecksum += checksumArray[i]
+        }
+        return binaryAgent(outputChecksum.toString(2))
     }
 
     function binaryAgent(str) {
