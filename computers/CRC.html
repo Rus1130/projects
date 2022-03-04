@@ -37,9 +37,11 @@
     let convertArray = new Array;
     let outputArray = new Array;
     let checksumArray = new Array;
+    let base = 16;
+    let pad = 2;
 
     //outputs
-    var binaryOutput = document.getElementById("output")
+    var output = document.getElementById("output")
     var textOutput = document.getElementById("converted-output")
     var checksumDisplay = document.getElementById("checksum")
 
@@ -50,20 +52,20 @@
         checksumArray = [];
 
         for(i = input.value.length; i > 0; i--){
-            var inputValues = input.value.charCodeAt(input.value.length - i).toString(2);
+            var inputValues = input.value.charCodeAt(input.value.length - i).toString(base);
             if(random(0,100) < errorFrequency){
-                convertArray.push(parseInt(inputValues,2) + random(0, errorStrength))
+                convertArray.push(parseInt(inputValues,base) + random(0, errorStrength))
             } else {
-                convertArray.push(parseInt(inputValues,2))
+                convertArray.push(parseInt(inputValues,base))
             }
             
         }
 
         for(i = 0; i <= convertArray.length - 1; i++){
-            outputArray.push(convertArray[i].toString(2).padStart(8,"0"))
+            outputArray.push(convertArray[i].toString(base).padStart(pad,"0"))
         }
 
-        binaryOutput.innerHTML = outputArray.join(" ")
+        output.innerHTML = outputArray.join(" ").toUpperCase()
         textOutput.innerHTML = binaryAgent(outputArray.join(" "));
     }
 
@@ -79,23 +81,24 @@
     }
 
     function getChecksum(){
+        checksumArray = [];
         let outputChecksum = 0;
         let textChecksum = 0;
         //outputted checkum
         for(i = 0; i < outputArray.length; i++){
-            checksumArray.push(parseInt(outputArray[i],2))
+            checksumArray.push(parseInt(outputArray[i],base))
         }
         for(i = 0; i < checksumArray.length; i++){
             outputChecksum += checksumArray[i]
         }
-        return outputChecksum
+        return outputChecksum.toString(36)
     }
 
     function binaryAgent(str) {
         var binString = '';
         str.split(' ').map(function(bin) {
-            binString += String.fromCharCode(parseInt(bin, 2));
+            binString += String.fromCharCode(parseInt(bin, base));
         });
         return binString;
-    }  
+    }
 </script>
