@@ -63,7 +63,6 @@
             outputArray.push(convertArray[i].toString(2).padStart(8,"0"))
         }
 
-        checksumDisplay.innerHTML = getChecksum();
         binaryOutput.innerHTML = outputArray.join(" ")
         textOutput.innerHTML = binaryAgent(outputArray.join(" "));
     }
@@ -89,7 +88,7 @@
         for(i = 0; i < checksumArray.length; i++){
             outputChecksum += checksumArray[i]
         }
-        return binaryAgent(outputChecksum.toString(2))
+        return outputChecksum
     }
 
     function binaryAgent(str) {
