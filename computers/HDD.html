@@ -90,14 +90,8 @@
 
     optionDisplay.innerHTML = "Disk 1"
 
-    window.addEventListener('load', (event) => {
-        
-    });
-    
-
     function optionSwitcher(){
         optionDisplay.innerHTML = `Disk ${currentDisk}`;
-        
     }
 
     function cycleDisk(direction){
@@ -250,8 +244,7 @@
     //submit text on enter
     $(document).on("keypress", function(e){
         if(e.which == 13){
-            save()
-            
+            save() 
         }
     });
     //========

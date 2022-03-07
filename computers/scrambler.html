@@ -39,6 +39,7 @@
 </style>
 <head>
     <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
     <div id="keybinds-grid">
@@ -59,7 +60,7 @@
     <input type="number" id="strength" title="Noise strength" min="0" max="2000" value="0">
     <input type="number" id="frequency" title="Noise frequency" min="0" max="100" value="0">
     <button onclick="convert(input.value, errorStrengthNumber.value, errorFrequencyNumber.value)" title="Convert input">Convert!</button>
-    <div id="output" title="Binary output"></div>
+    <div id="output" title="Binary output" style="width: fit-content; max-width: 810px;"></div>
     <br>
     <div id="converted-output" title="Converted output"></div>
 </body>
@@ -124,8 +125,18 @@
         return binString;
     }
 
+    /* hotkeys arrow function
+    hotkeys("enter", () => ) */
 
-    hotkeys("enter", () => convert(input.value, errorStrengthNumber.value, errorFrequencyNumber.value))
-    
+    $(document).on("keypress", function(e){
+        if(e.which == 13){
+            input == document.activeElement ? convert(input.value, errorStrengthNumber.value, errorFrequencyNumber.value) : setTimeout(function(){input.focus();}, 0.01)
+        }
+    });
 
+    hotkeys("up", () => errorStrengthNumber.stepUp(1))
+    hotkeys("down", () => errorStrengthNumber.stepDown(1))
+
+    hotkeys("shift + up", () => errorFrequencyNumber.stepUp(1))
+    hotkeys("shift + down", () => errorFrequencyNumber.stepDown(1))
 </script>
