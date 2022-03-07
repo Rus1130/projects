@@ -46,7 +46,7 @@
         <div class="container">Keybind:</div>
         <div class="container">Function:</div>
         <div class="container">enter</div>
-        <div class="container">submit</div>
+        <div class="container">select input/submit</div>
         <div class="container">up arrow</div>
         <div class="container">increment noise strength</div>
         <div class="container">down arrow</div>
@@ -81,7 +81,6 @@
     //outputs
     var output = document.getElementById("output")
     var textOutput = document.getElementById("converted-output")
-    var checksumDisplay = document.getElementById("checksum")
 
     function convert(text, errorStrength, errorFrequency) { 
         convertArray = [];
@@ -139,4 +138,15 @@
 
     hotkeys("shift + up", () => errorFrequencyNumber.stepUp(1))
     hotkeys("shift + down", () => errorFrequencyNumber.stepDown(1))
+
+    $(document).on("keypress", function(e){
+        if(e.which == 32){
+            errorStrengthNumber.value = 0;
+            errorFrequencyNumber.value = 0;
+            input.value = "";
+            output.innerHTML = "";
+            textOutput.innerHTML = "";
+
+        }
+    });
 </script>
