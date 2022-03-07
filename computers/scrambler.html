@@ -124,9 +124,6 @@
         return binString;
     }
 
-    /* hotkeys arrow function
-    hotkeys("enter", () => ) */
-
     $(document).on("keypress", function(e){
         if(e.which == 13){
             input == document.activeElement ? convert(input.value, errorStrengthNumber.value, errorFrequencyNumber.value) : setTimeout(function(){input.focus();}, 0.01)
