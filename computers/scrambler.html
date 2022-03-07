@@ -12,9 +12,49 @@
         font-family: Verdana, Geneva, Tahoma, sans-serif;
         font-size: 14pt;
     }
+    #keybinds-grid {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        display: grid;
+        grid-template-rows: 50px 50px 50px 50px 50px 50px;
+        grid-template-columns: 200px 250px;
+        width: 450px;
+        height: 300px;
+        border: 1px solid black;
+    }
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 12pt;
+        border-bottom: 1px solid black;
+    }
+    .container:nth-child(odd) {
+        border-right: 1px solid black;
+    }
+    .container:last-child, .container:nth-last-child(2):nth-child(odd) {
+        border-bottom: none;
+    }
 </style>
-
 <head>
+    <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
+</head>
+<body>
+    <div id="keybinds-grid">
+        <div class="container">Keybind:</div>
+        <div class="container">Function:</div>
+        <div class="container">enter</div>
+        <div class="container">submit</div>
+        <div class="container">up arrow</div>
+        <div class="container">increment noise strength</div>
+        <div class="container">down arrow</div>
+        <div class="container">decrement noise strength</div>
+        <div class="container">shift + up arrow</div>
+        <div class="container">increment noise frequency</div>
+        <div class="container">shift + down arrow</div>
+        <div class="container">decrement noise frequency</div>
+    </div>
     <input type="text" id="input" title="Input" style="width: 300px;">
     <input type="number" id="strength" title="Noise strength" min="0" max="2000" value="0">
     <input type="number" id="frequency" title="Noise frequency" min="0" max="100" value="0">
@@ -22,9 +62,7 @@
     <div id="output" title="Binary output"></div>
     <br>
     <div id="converted-output" title="Converted output"></div>
-    <br>
-    <div id="checksum" title="checksum"></div>
-</head>
+</body>
 
 <script>
     //inputs
@@ -36,9 +74,8 @@
     let inputArray = new Array;
     let convertArray = new Array;
     let outputArray = new Array;
-    let checksumArray = new Array;
-    let base = 16;
-    let pad = 2;
+    let base = 2;
+    let pad = 8;
 
     //outputs
     var output = document.getElementById("output")
@@ -49,7 +86,6 @@
         convertArray = [];
         inputArray = [];
         outputArray = [];
-        checksumArray = [];
 
         for(i = input.value.length; i > 0; i--){
             var inputValues = input.value.charCodeAt(input.value.length - i).toString(base);
@@ -80,20 +116,6 @@
         return str.split("").reverse().join("")
     }
 
-    function getChecksum(){
-        checksumArray = [];
-        let outputChecksum = 0;
-        let textChecksum = 0;
-        //outputted checkum
-        for(i = 0; i < outputArray.length; i++){
-            checksumArray.push(parseInt(outputArray[i],base))
-        }
-        for(i = 0; i < checksumArray.length; i++){
-            outputChecksum += checksumArray[i]
-        }
-        return outputChecksum.toString(36)
-    }
-
     function binaryAgent(str) {
         var binString = '';
         str.split(' ').map(function(bin) {
@@ -101,4 +123,9 @@
         });
         return binString;
     }
+
+
+    hotkeys("enter", () => convert(input.value, errorStrengthNumber.value, errorFrequencyNumber.value))
+    
+
 </script>
