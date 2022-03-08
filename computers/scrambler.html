@@ -17,10 +17,10 @@
         top: 0px;
         right: 0px;
         display: grid;
-        grid-template-rows: 50px 50px 50px 50px 50px 50px;
+        grid-template-rows: 50px 50px 50px 50px 50px 50px 50px;
         grid-template-columns: 200px 250px;
         width: 450px;
-        height: 300px;
+        height: 350px;
         border: 1px solid black;
     }
     .container {
@@ -36,26 +36,34 @@
     .container:last-child, .container:nth-last-child(2):nth-child(odd) {
         border-bottom: none;
     }
+    .unfocus {
+        display: none;
+    }
 </style>
 <head>
     <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-    <div id="keybinds-grid">
-        <div class="container">Keybind:</div>
-        <div class="container">Function:</div>
-        <div class="container">enter</div>
-        <div class="container">select input/submit</div>
-        <div class="container">up arrow</div>
-        <div class="container">increment noise strength</div>
-        <div class="container">down arrow</div>
-        <div class="container">decrement noise strength</div>
-        <div class="container">shift + up arrow</div>
-        <div class="container">increment noise frequency</div>
-        <div class="container">shift + down arrow</div>
-        <div class="container">decrement noise frequency</div>
+    <div id="grid-shell" class="unfocus">
+        <div id="keybinds-grid" class="unfocus">
+            <div class="container">Keybind:</div>
+            <div class="container">Function:</div>
+            <div class="container">enter</div>
+            <div class="container">select input/submit</div>
+            <div class="container">up arrow</div>
+            <div class="container">increment noise strength</div>
+            <div class="container">down arrow</div>
+            <div class="container">decrement noise strength</div>
+            <div class="container">shift + up arrow</div>
+            <div class="container">increment noise frequency</div>
+            <div class="container">shift + down arrow</div>
+            <div class="container">decrement noise frequency</div>
+            <div class="container">delete</div>
+            <div class="container">clear all</div>
+        </div>
     </div>
+
     <input type="text" id="input" title="Input" style="width: 300px;">
     <input type="number" id="strength" title="Noise strength" min="0" max="2000" value="0">
     <input type="number" id="frequency" title="Noise frequency" min="0" max="100" value="0">
@@ -136,14 +144,19 @@
     hotkeys("shift + up", () => errorFrequencyNumber.stepUp(1))
     hotkeys("shift + down", () => errorFrequencyNumber.stepDown(1))
 
-    $(document).on("keypress", function(e){
-        if(e.which == 32){
+    hotkeys("delete", function(){
+        confirmClear = window.confirm("Are you sure you want to clear all?")
+        if(confirmClear){
             errorStrengthNumber.value = 0;
             errorFrequencyNumber.value = 0;
             input.value = "";
             output.innerHTML = "";
             textOutput.innerHTML = "";
-
         }
-    });
+    })
+
+    hotkeys("space", function(){
+        var gridKey = document.getElementById("grid-shell");
+        gridKey.classList.toggle("unfocus");
+    })
 </script>
