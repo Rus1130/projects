@@ -37,11 +37,11 @@ const characters = [
 ]
 
 let gameboard = [
-    [[],[],[],[],[]],
-    [[],[],[],[],[]],
-    [[],[],[],[],[]],
-    [[],[],[],[],[]],
-    [[],[],[],[],[]]
+    [["0"],[],[],[],[]], // y0
+    [["1"],[],[],[],[]], // y1
+    [["2"],[],[],[],[]], // y2
+    [["3"],[],[],[],[]], // y3
+    [["4"],[],[],[],[]] // y4
 ]
 
 function random(min, max) {
@@ -59,7 +59,8 @@ let player = [
 let board;
 
 function updateBoard(){
-    board = JSON.stringify(gameboard).replaceAll("]],","]]\n").replaceAll("[[[","[").replaceAll("]]]","]").replaceAll("[[","[").replaceAll("]]","]").replaceAll(",\"","[").replaceAll("\",","],")
+    gameboard[player.y][player.x] = player.sprite
+    console.log(gameboard)
 }
 
 readline.question(`Choose your character: (${charNames.join(", ")})\n`, chosenCharacter => {
@@ -67,34 +68,18 @@ readline.question(`Choose your character: (${charNames.join(", ")})\n`, chosenCh
     let charIndex = charNames.indexOf(chosenCharacter)
     if(charIndex == -1) return console.log(`'${chosenCharacter}' is not a chooseable character.`)
     player.sprite = characters[charIndex].join()
-    console.log(player.sprite)
-    console.log("controls: 'wasd' to move, 'q' to exit")
-    player.y = random(0, gameboard.length - 1)
-    player.x = random(0, gameboard[player.y].length - 1)
+    player.y = random(0, 4)
+    player.x = random(0, 4)
+    console.log(player.y)
+    console.log(player.x)
     gameboard[player.y][player.x] = player.sprite
+    console.log("controls: 'wasd' to move, 'q' to exit")
     updateBoard()
-    console.log(board)
     
     readline.on('line', (input) => {
         if(input == "q"){
             console.log("quitting...")
             readline.close()
-        }
-        if(input == "w"){
-            updateBoard()
-            console.log(board)
-        }
-        if(input == "a"){
-            updateBoard()
-            console.log(board)
-        }
-        if(input == "s"){
-            updateBoard()
-            console.log(board)
-        }
-        if(input == "d"){
-            updateBoard()
-            console.log(board)
         }
     });
 });
