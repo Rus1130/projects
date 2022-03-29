@@ -15,79 +15,67 @@
     <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
 </head>
 <body>
-    <span id="char-list"></span><br>
-    <label for="character-input">Character Input:</label>
-    <input type="text" id="character-input" onchange="setCharacter(this.value)"><br>
-    <span id="gamegrid"></span>
+    <div id="gamegrid" style="width: 725.5px; cursor: none"></div>
 </body>
 
 <script>
-    
-const characters = [
-    smile = [
-        "🙂"
-    ],
-    grin = [
-        "😀"
-    ],
-    noface = [
-        "😶"
-    ],
-    poker = [
-        "😐"
-    ],
-    devil = [
-        "😈"
-    ],
-    tongue = [
-        "😋"
-    ],
-    nerd = [
-        "🤓"
-    ],
-    sunglasses = [
-        "😎"
-    ],
-    hearts = [
-        "🥰"
-    ],
-    kiss = [
-        "😘"
-    ]
-]
+// constant bank
 
-const charNames = ["smile","grin","noface","poker","devil","tongue","nerd","sunglasses","hearts","kiss"]
+
+let coin = [
+    sprite = '',
+    x = '',
+    y = ''
+];
+
 let player = [
     sprite = '',
     x = '',
     y = ''
 ];
 
-const charList = document.getElementById("char-list")
-charList.innerHTML = charNames.join(", ")
+const board = document.getElementById("gamegrid")
+const bkgd = "░" // ░
 
 let gameboard = [
-    [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]], // 0
-    [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]], // 1
-    [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]], // 2
-    [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]], // 3
-    [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]], // 4
-    [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]], // 5
-    [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]], // 6
-    [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]], // 7
-    [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]], // 8
-    [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]], // 9
-    [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]], // 10
-    [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]], // 11
-    [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]], // 12
-    [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]], // 13
-    [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]], // 14
-    [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]], // 15
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
+    [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]]
 ]
+
 const minX = 0;
 const minY = 0;
-const maxX = 15;
-const maxY = 15;
+const maxX = gameboard[0].length - 1
+const maxY = gameboard.length - 1
 
 function random(min, max) {
     min = Math.ceil(min);
@@ -95,25 +83,22 @@ function random(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+player.sprite = "█"
 player.y = random(0, gameboard.length - 1)
 player.x = random(0, gameboard[player.y].length - 1)
 gameboard[player.y][player.x] = `[${player.sprite}]`
 
-const board = document.getElementById("gamegrid")
-let gameState = "character-choose"
-
 function updateBoard(){
-    gameboard[player.y][player.x] = `[${player.sprite}]`
-    let updatedGameboard = JSON.stringify(gameboard).replaceAll("\"[","[").replaceAll("]\"","]").replaceAll("]],[[","] [").replaceAll("[[[","[").replaceAll("]]]","]").replaceAll(",","")
-    board.innerHTML = updatedGameboard
-}
-
-function setCharacter(character){
-    let charIndex = charNames.indexOf(character)
-    if(charIndex == -1) return alert(`'${character}' is not a chooseable character. `)
-    player.sprite = characters[charIndex].join()
-    Game()
     
+    gameboard[player.y][player.x] = `[${player.sprite}]`
+    let updatedGameboard = JSON.stringify(gameboard).replaceAll("\"[","[").replaceAll("]\"","]").replaceAll("]],[[","] [").replaceAll("[[[","[").replaceAll("]]]","]").replaceAll(",","").replaceAll("\"","").replaceAll("[","").replaceAll("]","").replaceAll("null",`${bkgd}`)
+    let gameboardArray = updatedGameboard.split(" ")
+    board.innerHTML = ''
+    for(i = 0; i < updatedGameboard.split(" ").length; i++){
+        let gameLine = document.createElement("span");
+        gameLine.innerHTML = gameboardArray[i] + "<br>"
+        board.appendChild(gameLine)
+    }
 }
 
 function Game(){
@@ -122,43 +107,36 @@ function Game(){
     switch (handler.key) {
         case "w":
             if(player.y > minY){
-                gameboard[player.y][player.x] = []
+                gameboard[player.y][player.x] = [`${bkgd}`]
                 player.y -= 1
                 updateBoard()
-            } else {
-                return console.log("You cannot move in this direction anymore!")
-            }
+            } else {}
             break;
         case "a":
             if(player.x > minX){
-                gameboard[player.y][player.x] = []
+                gameboard[player.y][player.x] = [`${bkgd}`]
                 player.x -= 1
                 updateBoard()
-            } else {
-                return console.log("You cannot move in this direction anymore!")
-            }
+            } else {}
             break;
         case "s":
             if(player.y < maxY){
-                gameboard[player.y][player.x] = []
+                gameboard[player.y][player.x] = [`${bkgd}`]
                 player.y += 1
                 updateBoard()
-            } else {
-                return console.log("You cannot move in this direction anymore!")
-            }
+            } else {}
             break;
         case "d":
             if(player.x < maxX){
-                gameboard[player.y][player.x] = []
+                gameboard[player.y][player.x] = [`${bkgd}`]
                 player.x += 1
                 updateBoard()
-            } else {
-                return console.log("You cannot move in this direction anymore!")
-            }
+            } else {}
             break;
         default:
             console.log("That is not a valid control!")
     }
-});
-}
+})}
+
+Game()
 </script>
