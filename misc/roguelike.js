@@ -37,12 +37,19 @@ const characters = [
 ]
 
 let gameboard = [
-    [["0"],[],[],[],[]], // y0
-    [["1"],[],[],[],[]], // y1
-    [["2"],[],[],[],[]], // y2
-    [["3"],[],[],[],[]], // y3
-    [["4"],[],[],[],[]] // y4
+    [[],[],[],[],[],[],[],[],[]], // 0
+    [[],[],[],[],[],[],[],[],[]], // 1
+    [[],[],[],[],[],[],[],[],[]], // 2
+    [[],[],[],[],[],[],[],[],[]], // 3
+    [[],[],[],[],[],[],[],[],[]], // 4
+    [[],[],[],[],[],[],[],[],[]], // 5
+    [[],[],[],[],[],[],[],[],[]], // 6
 ]
+
+const minX = 0;
+const minY = 0;
+const maxX = 8;
+const maxY = 6;
 
 function random(min, max) {
     min = Math.ceil(min);
@@ -58,28 +65,69 @@ let player = [
 ];
 let board;
 
+player.y = random(0, gameboard.length - 1)
+player.x = random(0, gameboard[player.y].length - 1)
+gameboard[player.y][player.x] = `[${player.sprite}]`
+
 function updateBoard(){
-    gameboard[player.y][player.x] = player.sprite
-    console.log(gameboard)
+    gameboard[player.y][player.x] = `[${player.sprite}]`
+    console.log(JSON.stringify(gameboard).replaceAll("\"[","[").replaceAll("]\"","]").replaceAll("]],[[","]\n[").replaceAll("[[[","[").replaceAll("]]]","]").replaceAll(",",""))
 }
 
 readline.question(`Choose your character: (${charNames.join(", ")})\n`, chosenCharacter => {
     
     let charIndex = charNames.indexOf(chosenCharacter)
-    if(charIndex == -1) return console.log(`'${chosenCharacter}' is not a chooseable character.`)
+    if(charIndex == -1) return console.log(`'${chosenCharacter}' is not a chooseable character. `), readline.close()
     player.sprite = characters[charIndex].join()
-    player.y = random(0, 4)
-    player.x = random(0, 4)
-    console.log(player.y)
-    console.log(player.x)
-    gameboard[player.y][player.x] = player.sprite
     console.log("controls: 'wasd' to move, 'q' to exit")
+    
+    console.log(`${player.x}\n${player.y}`)
     updateBoard()
     
     readline.on('line', (input) => {
-        if(input == "q"){
-            console.log("quitting...")
-            readline.close()
+        switch(input){
+            case "q":
+                console.log("quitting...")
+                readline.close()
+                break;
+            case "w":
+                if(player.y > minY){
+                    gameboard[player.y][player.x] = []
+                    player.y -= 1
+                    updateBoard()
+                } else {
+                    return console.log("You cannot move in this direction anymore!")
+                }
+                break;
+            case "a":
+                if(player.x > minX){
+                    gameboard[player.y][player.x] = []
+                    player.x -= 1
+                    updateBoard()
+                } else {
+                    return console.log("You cannot move in this direction anymore!")
+                }
+                break;
+            case "s":
+                if(player.y < maxY){
+                    gameboard[player.y][player.x] = []
+                    player.y += 1
+                    updateBoard()
+                } else {
+                    return console.log("You cannot move in this direction anymore!")
+                }
+                break;
+            case "d":
+                if(player.x < maxX){
+                    gameboard[player.y][player.x] = []
+                    player.x += 1
+                    updateBoard()
+                } else {
+                    return console.log("You cannot move in this direction anymore!")
+                }
+                break;
+            default:
+                console.log("That is not a valid control!")
         }
     });
 });
