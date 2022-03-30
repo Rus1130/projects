@@ -1,26 +1,22 @@
 <style>
     html {
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: monospace;
         user-select: none;
+        font-size: 19px;
     }
-    input {
-        font-family: Arial, Helvetica, sans-serif;
-        user-select: none;
-    }
-    input:focus{
-        outline: none;
-    }
+
 </style>
 <head>
     <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
 </head>
 <body>
-    <div id="gamegrid" style="width: 725.5px; cursor: none"></div>
+    <h1 id="death-text"></h1>
+    <span style="font-family: monospace">Healthbar: <span id="healthbar" style="font-family: Arial, Helvetica, sans-serif;"></span></span><br><br>
+    <div id="gamegrid" style="width: 725.5px; cursor: none !important"></div>
 </body>
 
 <script>
-// constant bank
-
+// var bank
 
 let coin = [
     sprite = '',
@@ -28,14 +24,9 @@ let coin = [
     y = ''
 ];
 
-let player = [
-    sprite = '',
-    x = '',
-    y = ''
-];
-
 const board = document.getElementById("gamegrid")
-const bkgd = "░" // ░
+const healthbarHTML = document.getElementById("healthbar")
+const bkgd = "▒" // ▒
 
 let gameboard = [
     [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
@@ -83,13 +74,54 @@ function random(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-player.sprite = "█"
+let player = [
+    sprite = '',
+    x = '',
+    y = ''
+];
+
+let zombie = [
+    sprite = '',
+    x = '',
+    y = ''
+];
+
+player.sprite = "█" // █
 player.y = random(0, gameboard.length - 1)
 player.x = random(0, gameboard[player.y].length - 1)
 gameboard[player.y][player.x] = `[${player.sprite}]`
+let healthNodes = 30
+let maxZombieAmount = 10
+let healthbar = new Array;
+let zombies = new Array;
 
-function updateBoard(){
-    
+function reset(){
+    location.reload()
+}
+
+for(i = 0; i < healthNodes; i++){
+    healthbar.push("▓")
+}
+zombie.sprite = "▓"
+for(i = 0; i < maxZombieAmount; i++){
+    zombie.y = random(0, gameboard.length - 1)
+    zombie.x = random(0, gameboard[zombie.y].length - 1)
+
+    gameboard[zombie.y][zombie.x] = `[${zombie.sprite}]`
+
+    zombies.push({x: zombie.x, y: zombie.y})
+}
+
+function updateHP(){
+    healthbar.pop()
+    healthbarHTML.innerHTML = healthbar.join("")
+    if(healthbar.length == 0){
+        document.getElementById("death-text").innerHTML = "You died! Reseting..."
+        setTimeout(function(){reset()}, 1000)
+    }
+}
+
+function GameUpdate(){
     gameboard[player.y][player.x] = `[${player.sprite}]`
     let updatedGameboard = JSON.stringify(gameboard).replaceAll("\"[","[").replaceAll("]\"","]").replaceAll("]],[[","] [").replaceAll("[[[","[").replaceAll("]]]","]").replaceAll(",","").replaceAll("\"","").replaceAll("[","").replaceAll("]","").replaceAll("null",`${bkgd}`)
     let gameboardArray = updatedGameboard.split(" ")
@@ -101,36 +133,41 @@ function updateBoard(){
     }
 }
 
-function Game(){
-    updateBoard()
+// 60 FPS
+setInterval(function(){
+    GameUpdate()
+}, 16.67)
+
+setInterval(() => {
+    updateHP()
+},2000)
+
+healthbarHTML.innerHTML = healthbar.join("")
+function GameStart(){
     hotkeys('w,a,s,d', function (event, handler){
     switch (handler.key) {
         case "w":
             if(player.y > minY){
                 gameboard[player.y][player.x] = [`${bkgd}`]
                 player.y -= 1
-                updateBoard()
             } else {}
             break;
         case "a":
             if(player.x > minX){
                 gameboard[player.y][player.x] = [`${bkgd}`]
                 player.x -= 1
-                updateBoard()
             } else {}
             break;
         case "s":
             if(player.y < maxY){
                 gameboard[player.y][player.x] = [`${bkgd}`]
                 player.y += 1
-                updateBoard()
             } else {}
             break;
         case "d":
             if(player.x < maxX){
                 gameboard[player.y][player.x] = [`${bkgd}`]
                 player.x += 1
-                updateBoard()
             } else {}
             break;
         default:
@@ -138,5 +175,5 @@ function Game(){
     }
 })}
 
-Game()
+GameStart()
 </script>
