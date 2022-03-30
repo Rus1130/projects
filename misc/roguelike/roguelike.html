@@ -11,6 +11,7 @@
 </head>
 <body>
     <h1 id="death-text"></h1>
+    <h1 id="paused"></h1>
     <span style="font-family: monospace">Healthbar: <span id="healthbar" style="font-family: Arial, Helvetica, sans-serif;"></span></span><br><br>
     <div id="gamegrid" style="width: 725.5px; cursor: none !important"></div>
 </body>
@@ -26,6 +27,8 @@ let coin = [
 
 const board = document.getElementById("gamegrid")
 const healthbarHTML = document.getElementById("healthbar")
+const deathtext = document.getElementById("death-text")
+const paused = document.getElementById("paused")
 const bkgd = "▒" // ▒
 
 let gameboard = [
@@ -91,13 +94,19 @@ player.y = random(0, gameboard.length - 1)
 player.x = random(0, gameboard[player.y].length - 1)
 gameboard[player.y][player.x] = `[${player.sprite}]`
 let healthNodes = 30
-let maxZombieAmount = 10
+let maxZombieAmount = 40
+const zombieDamage = 1
 let healthbar = new Array;
-let zombies = new Array;
+let zombies = new Object;
 
 function reset(){
-    location.reload()
+    deathtext.innerHTML = "You died! resetting..."
+    setTimeout(() => {
+        location.reload()
+    },1000)
 }
+
+let state = "play"
 
 for(i = 0; i < healthNodes; i++){
     healthbar.push("▓")
@@ -106,19 +115,10 @@ zombie.sprite = "▓"
 for(i = 0; i < maxZombieAmount; i++){
     zombie.y = random(0, gameboard.length - 1)
     zombie.x = random(0, gameboard[zombie.y].length - 1)
-
+    let zombieName = `zombie${i}`
     gameboard[zombie.y][zombie.x] = `[${zombie.sprite}]`
 
-    zombies.push({x: zombie.x, y: zombie.y})
-}
-
-function updateHP(){
-    healthbar.pop()
-    healthbarHTML.innerHTML = healthbar.join("")
-    if(healthbar.length == 0){
-        document.getElementById("death-text").innerHTML = "You died! Reseting..."
-        setTimeout(function(){reset()}, 1000)
-    }
+    zombies[zombieName] = {x: zombie.x, y: zombie.y}
 }
 
 function GameUpdate(){
@@ -131,47 +131,116 @@ function GameUpdate(){
         gameLine.innerHTML = gameboardArray[i] + "<br>"
         board.appendChild(gameLine)
     }
+    for(i = 0; i < maxZombieAmount; i++){
+        let zombieName = "zombie" + i
+        if(zombies[zombieName] == undefined){} else {
+            if(zombies[zombieName].x == player.x && zombies[zombieName].y == player.y){
+                delete zombies[zombieName]
+                for(i = 0; i < zombieDamage; i++){
+                    healthbar.pop()
+                }
+                healthbarHTML.innerHTML = healthbar.join("")
+                if(healthbar.length == 0){
+                    state = "dead"
+                    reset()
+                }
+            }
+        }
+    }
 }
+
+hotkeys("q", () => {
+    switch(state){
+        case "play":
+            state = "pause"
+            break;
+        case "pause":
+            state = "play"
+            break
+    }
+})
 
 // 60 FPS
 setInterval(function(){
-    GameUpdate()
+    if(state == "pause"){
+        paused.innerHTML = "game paused"
+    } else {
+        paused.innerHTML = ""
+        GameUpdate()
+    }
 }, 16.67)
 
+const sight = 2
+
+function zombieMovement(){
+    for(i = 0; i < maxZombieAmount; i++){
+        let zombieName = "zombie" + i
+        if(zombies[zombieName] == undefined){} else { // █
+            if(zombies[zombieName].x < player.x){
+                gameboard[zombies[zombieName].y][zombies[zombieName].x] = [`${bkgd}`]
+                zombies[zombieName].x += 1
+                gameboard[zombies[zombieName].y][zombies[zombieName].x] = `[${zombie.sprite}]`
+            }
+            if(zombies[zombieName].x > player.x){
+                gameboard[zombies[zombieName].y][zombies[zombieName].x] = [`${bkgd}`]
+                zombies[zombieName].x -= 1
+                gameboard[zombies[zombieName].y][zombies[zombieName].x] = `[${zombie.sprite}]`
+            }
+            if(zombies[zombieName].y > player.y){
+                gameboard[zombies[zombieName].y][zombies[zombieName].x] = [`${bkgd}`]
+                zombies[zombieName].y -= 1
+                gameboard[zombies[zombieName].y][zombies[zombieName].x] = `[${zombie.sprite}]`
+            }
+            if(zombies[zombieName].y < player.y){
+                gameboard[zombies[zombieName].y][zombies[zombieName].x] = [`${bkgd}`]
+                zombies[zombieName].y += 1
+                gameboard[zombies[zombieName].y][zombies[zombieName].x] = `[${zombie.sprite}]`
+            }
+        }
+    }
+}
+
 setInterval(() => {
-    updateHP()
-},2000)
+    if(state == "pause"){
+        paused.innerHTML = "game paused"
+    } else {
+        paused.innerHTML = ""
+        zombieMovement()
+    }
+}, 500)
 
 healthbarHTML.innerHTML = healthbar.join("")
 function GameStart(){
     hotkeys('w,a,s,d', function (event, handler){
-    switch (handler.key) {
-        case "w":
-            if(player.y > minY){
-                gameboard[player.y][player.x] = [`${bkgd}`]
-                player.y -= 1
-            } else {}
-            break;
-        case "a":
-            if(player.x > minX){
-                gameboard[player.y][player.x] = [`${bkgd}`]
-                player.x -= 1
-            } else {}
-            break;
-        case "s":
-            if(player.y < maxY){
-                gameboard[player.y][player.x] = [`${bkgd}`]
-                player.y += 1
-            } else {}
-            break;
-        case "d":
-            if(player.x < maxX){
-                gameboard[player.y][player.x] = [`${bkgd}`]
-                player.x += 1
-            } else {}
-            break;
-        default:
-            console.log("That is not a valid control!")
+        if(state == "play"){
+            switch (handler.key) {
+                case "w":
+                    if(player.y > minY){
+                        gameboard[player.y][player.x] = [`${bkgd}`]
+                        player.y -= 1
+                    } else {}
+                    break;
+                case "a":
+                    if(player.x > minX){
+                        gameboard[player.y][player.x] = [`${bkgd}`]
+                        player.x -= 1
+                    } else {}
+                    break;
+                case "s":
+                    if(player.y < maxY){
+                        gameboard[player.y][player.x] = [`${bkgd}`]
+                        player.y += 1
+                    } else {}
+                    break;
+                case "d":
+                    if(player.x < maxX){
+                        gameboard[player.y][player.x] = [`${bkgd}`]
+                        player.x += 1
+                    } else {}
+                    break;
+                default:
+                    console.log("That is not a valid control!")
+            }
     }
 })}
 
