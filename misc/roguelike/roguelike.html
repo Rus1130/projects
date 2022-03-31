@@ -2,7 +2,7 @@
     html {
         font-family: monospace;
         user-select: none;
-        font-size: 25px;
+        font-size: 18px;
     }
     input:focus {
         outline: none;
@@ -48,7 +48,7 @@ const deathtext = document.getElementById("death-text")
 const paused = document.getElementById("paused")
 const gamespace = document.getElementById("gamespace")
 const setupspace = document.getElementById("setup-space")
-const bkgd = "&nbsp;" // ▒
+const bkgd = "&nbsp;" // &nbsp; test: ▒
 
 let gameboard = [
     [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]],
@@ -85,23 +85,16 @@ let gameboard = [
     [[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`],[`${bkgd}`]]
 ]
 
-let mockGameboard = []
-let mockRowsCount = 16;
-let mockColsCount = 16;
-let mockCols = new Array;
-let mockBkgd = "a"
-
-for(i = 0; i < mockColsCount; i++){
-    mockCols.push(Array(mockBkgd))
-}
-for(i = 0; i < mockRowsCount; i++){
-    mockGameboard.push(`${mockCols}`)
-}
-
 const minX = 0;
 const minY = 0;
 const maxX = gameboard[0].length - 1
 const maxY = gameboard.length - 1
+let gameboardArray = new Array;
+let mockCols = 15
+let mockRows = 15
+let mockBkdg = new Array("a")
+let mockGameboardArray = new Array;
+
 
 let state = "setup"
 
@@ -150,7 +143,7 @@ function completeSetup(){
     }
 }
 
-player.sprite = "█" // █
+player.sprite = "O" // █
 player.y = random(0, gameboard.length - 1)
 player.x = random(0, gameboard[player.y].length - 1)
 gameboard[player.y][player.x] = `[${player.sprite}]`
@@ -166,7 +159,7 @@ function reset(){
 for(i = 0; i < healthNodes; i++){
     healthbar.push("▓")
 }
-zombie.sprite = "▓"
+zombie.sprite = "¤"
 
 function GameUpdate(){
     gameboard[player.y][player.x] = `[${player.sprite}]`
