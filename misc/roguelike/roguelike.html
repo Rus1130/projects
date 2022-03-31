@@ -4,17 +4,33 @@
         user-select: none;
         font-size: 25px;
     }
+    input:focus {
+        outline: none;
+    }
+    .visible {
+        display: initial;
+    }
+    .invisible {
+        display: none;
+    }
 
 </style>
 <head>
     <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
 </head>
 <body>
-    <h1 id="death-text" style="font-size: 20px"></h1>
-    <h1 id="paused" style="font-size: 20px"></h1>
-    <span style="font-size: 15px">Health: <span id="healthbar" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px"></span></span><br><br>
-    <div id="gamegrid" style="width: 725.5px; cursor: none !important"></div>
-    <span style="font-size: 15px">controls:<br>wasd to move, q to pause</span>
+    <div id="setup-space" style="font-size: 15px">
+        Zombie Damage: <input type="number" id="zombie-damage" style="width: 100px" min="1" max="30"><br>
+        Zombie Amount: <input type="number" id="zombie-amount" style="width: 100px" min="1" max="2000"><br>
+        <input type="button" value="Begin Game" onclick="completeSetup()">
+    </div>
+    <div id="gamespace" class="invisible">
+        <h1 id="death-text" style="font-size: 20px"></h1>
+        <h1 id="paused" style="font-size: 20px"></h1>
+        <span style="font-size: 15px">Health: <span id="healthbar" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px"></span></span><br><br>
+        <div id="gamegrid" style="width: 725.5px; cursor: none !important"></div>
+        <span style="font-size: 15px">controls:<br>wasd to move, q to pause</span>
+    </div>
 </body>
 
 <script>
@@ -30,6 +46,8 @@ const board = document.getElementById("gamegrid")
 const healthbarHTML = document.getElementById("healthbar")
 const deathtext = document.getElementById("death-text")
 const paused = document.getElementById("paused")
+const gamespace = document.getElementById("gamespace")
+const setupspace = document.getElementById("setup-space")
 const bkgd = "▒" // ▒
 
 let gameboard = [
@@ -72,7 +90,7 @@ const minY = 0;
 const maxX = gameboard[0].length - 1
 const maxY = gameboard.length - 1
 
-let state = "play"
+let state = "setup"
 
 function random(min, max) {
     min = Math.ceil(min);
@@ -92,15 +110,38 @@ let zombie = [
     y = ''
 ];
 
+let zombies = new Object;
+let zombieAmount;
+let zombieDamage;
+let healthbar = new Array;
+let submittedZombieAmount = document.getElementById("zombie-amount")
+let submittedZombieDamage = document.getElementById("zombie-damage")
+
+function completeSetup(){
+    if(submittedZombieAmount.value == "" || submittedZombieDamage.value == ""){
+        alert("Please fill everything out")
+    } else {
+        gamespace.removeAttribute("class","invisible")
+        setupspace.setAttribute("class","invisible")
+        zombieAmount = parseInt(submittedZombieAmount.value);
+        zombieDamage = parseInt(submittedZombieDamage.value);
+        for(i = 0; i < zombieAmount; i++){
+            zombie.y = random(0, gameboard.length - 1)
+            zombie.x = random(0, gameboard[zombie.y].length - 1)
+            let zombieName = `zombie${i}`
+            gameboard[zombie.y][zombie.x] = `[${zombie.sprite}]`
+
+            zombies[zombieName] = {x: zombie.x, y: zombie.y}
+        }
+        state = "play"
+    }
+}
+
 player.sprite = "█" // █
 player.y = random(0, gameboard.length - 1)
 player.x = random(0, gameboard[player.y].length - 1)
 gameboard[player.y][player.x] = `[${player.sprite}]`
 let healthNodes = 30
-let maxZombieAmount = 40
-const zombieDamage = 1
-let healthbar = new Array;
-let zombies = new Object;
 
 function reset(){
     deathtext.innerHTML = "You died! resetting..."
@@ -109,20 +150,10 @@ function reset(){
     },5000)
 }
 
-
-
 for(i = 0; i < healthNodes; i++){
     healthbar.push("▓")
 }
 zombie.sprite = "▓"
-for(i = 0; i < maxZombieAmount; i++){
-    zombie.y = random(0, gameboard.length - 1)
-    zombie.x = random(0, gameboard[zombie.y].length - 1)
-    let zombieName = `zombie${i}`
-    gameboard[zombie.y][zombie.x] = `[${zombie.sprite}]`
-
-    zombies[zombieName] = {x: zombie.x, y: zombie.y}
-}
 
 function GameUpdate(){
     gameboard[player.y][player.x] = `[${player.sprite}]`
@@ -134,7 +165,7 @@ function GameUpdate(){
         gameLine.innerHTML = gameboardArray[i] + "<br>"
         board.appendChild(gameLine)
     }
-    for(i = 0; i < maxZombieAmount; i++){
+    for(i = 0; i < zombieAmount; i++){
         let zombieName = "zombie" + i
         if(zombies[zombieName] == undefined){} else {
             if(zombies[zombieName].x == player.x && zombies[zombieName].y == player.y){
@@ -176,7 +207,7 @@ setInterval(function(){
 const collisionRange = 2
 
 function zombieMovement(){
-    for(i = 0; i < maxZombieAmount; i++){
+    for(i = 0; i < zombieAmount; i++){
         let zombieName = "zombie" + i
         if(zombies[zombieName] == undefined){} else {
             if(zombies[zombieName].x < player.x){
