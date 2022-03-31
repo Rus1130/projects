@@ -36,12 +36,6 @@
 <script>
 // var bank
 
-let coin = [
-    sprite = '',
-    x = '',
-    y = ''
-];
-
 const board = document.getElementById("gamegrid")
 const healthbarHTML = document.getElementById("healthbar")
 const deathtext = document.getElementById("death-text")
@@ -89,12 +83,18 @@ const minX = 0;
 const minY = 0;
 const maxX = gameboard[0].length - 1
 const maxY = gameboard.length - 1
-let gameboardArray = new Array;
-let mockCols = 15
-let mockRows = 15
-let mockBkdg = new Array("a")
-let mockGameboardArray = new Array;
 
+let straightSegment = new Array();
+const topLeftCorner = new Array("╔")
+const topRightCorner = new Array("╗")
+const bottomLeftCorner = new Array("╚")
+const bottomRightCorner = new Array("╝")
+
+for(i = 0; i < gameboard[0].length; i++){
+    straightSegment.push("═")
+}
+const topBorder = topLeftCorner.concat(straightSegment).concat(topRightCorner).join("")
+const bottomBorder = bottomLeftCorner.concat(straightSegment).concat(bottomRightCorner).join("")
 
 let state = "setup"
 
