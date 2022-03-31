@@ -1,0 +1,85 @@
+<style>
+    html {
+        font-family: monospace;
+        user-select: none;
+        font-size: 18px;
+        margin: 0px;
+    }
+    input:focus {
+        outline: none;
+    }
+    .visible {
+        display: initial;
+    }
+    .invisible {
+        display: none;
+    }
+    #new-game-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: monospace;
+        border: 1px black solid;
+        border-radius: 2px;
+        font-size: 15px;
+        background-color: beige;
+    }
+
+</style>
+<head>
+    <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
+</head>
+<body>
+    <div id="setup-container">
+        Gameboard Rows: <input type="number" id="board-rows" min="8" max="64" value="16"><br>
+        Gameboard Columns: <input type="number" id="board-columns" min="8" max="64" value="16"><br>
+        <button id="new-game-btn" onclick="setup()">New Game</button>
+    </div>
+    <br>
+    <div id="game-space">
+    </div>
+</body>
+
+<script>
+
+const bkgd = Array("▒") // &nbsp; test: ▒
+const setupContainer = document.getElementById("setup-container")
+let rowsInput = document.getElementById("board-rows")
+let colsInput = document.getElementById("board-columns")
+let gamespace = document.getElementById("game-space")
+
+let gameboard = new Array;
+let colsSetup = new Array;
+let state = "setup";
+let player = {
+    sprite: "O",
+    x: "",
+    y: ""
+}
+
+function random(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function setup(){
+    if(state != "setup"){} else {
+        if(rowsInput.value == "" || colsInput.value == ""){
+            alert("Please fill out all fields.")
+        } else {
+
+        }
+    }
+}
+
+setInterval(() => boardUpdate(), 16.67)
+
+function boardUpdate(){
+    if(state != "play"){} else {
+
+    }
+}
+
+
+</script>
