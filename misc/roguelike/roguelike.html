@@ -2,7 +2,7 @@
     html {
         font-family: monospace;
         user-select: none;
-        font-size: 19px;
+        font-size: 25px;
     }
 
 </style>
@@ -10,10 +10,11 @@
     <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
 </head>
 <body>
-    <h1 id="death-text"></h1>
-    <h1 id="paused"></h1>
-    <span style="font-family: monospace">Healthbar: <span id="healthbar" style="font-family: Arial, Helvetica, sans-serif;"></span></span><br><br>
+    <h1 id="death-text" style="font-size: 20px"></h1>
+    <h1 id="paused" style="font-size: 20px"></h1>
+    <span style="font-size: 15px">Healthbar: <span id="healthbar" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px"></span></span><br><br>
     <div id="gamegrid" style="width: 725.5px; cursor: none !important"></div>
+    <span style="font-size: 10px"></span>
 </body>
 
 <script>
@@ -71,6 +72,8 @@ const minY = 0;
 const maxX = gameboard[0].length - 1
 const maxY = gameboard.length - 1
 
+let state = "play"
+
 function random(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -103,10 +106,10 @@ function reset(){
     deathtext.innerHTML = "You died! resetting..."
     setTimeout(() => {
         location.reload()
-    },1000)
+    },2000)
 }
 
-let state = "play"
+
 
 for(i = 0; i < healthNodes; i++){
     healthbar.push("▓")
@@ -170,12 +173,13 @@ setInterval(function(){
     }
 }, 16.67)
 
-const sight = 2
+const collisionRange = 2
 
 function zombieMovement(){
     for(i = 0; i < maxZombieAmount; i++){
         let zombieName = "zombie" + i
-        if(zombies[zombieName] == undefined){} else { // █
+        console.log(zombies[zombieName])
+        if(zombies[zombieName] == undefined){} else {
             if(zombies[zombieName].x < player.x){
                 gameboard[zombies[zombieName].y][zombies[zombieName].x] = [`${bkgd}`]
                 zombies[zombieName].x += 1
@@ -201,13 +205,15 @@ function zombieMovement(){
 }
 
 setInterval(() => {
-    if(state == "pause"){
-        paused.innerHTML = "game paused"
-    } else {
-        paused.innerHTML = ""
-        zombieMovement()
+    if(state == "dead"){} else {
+        if(state == "pause"){
+            paused.innerHTML = "game paused"
+        } else {
+            paused.innerHTML = ""
+            zombieMovement()
+        }
     }
-}, 500)
+}, 800)
 
 healthbarHTML.innerHTML = healthbar.join("")
 function GameStart(){
