@@ -31,8 +31,8 @@
 </head>
 <body>
     <div id="setup-container">
-        Gameboard Rows: <input type="number" id="board-rows" min="8" max="32" value="16"><br>
-        Gameboard Columns: <input type="number" id="board-columns" min="16" max="64" value="32"><br>
+        Gameboard Rows: <input type="number" id="board-rows" min="4" max="32" value="16"><br>
+        Gameboard Columns: <input type="number" id="board-columns" min="8" max="64" value="32"><br>
         Partitions <input type="number" id="partition-amount" min="2" max="16" value="8"><br>
         <button id="btn" onclick="setup()">New Game</button>
     </div>
@@ -50,11 +50,18 @@
 
 const bkgd = "&nbsp;" // &nbsp; test: ▒
 const setupContainer = document.getElementById("setup-container")
-let rowsInput = document.getElementById("board-rows")
-let colsInput = document.getElementById("board-columns")
 let gamespace = document.getElementById("game-space")
 const alertBox = document.getElementById("alert-box")
 const partitionAmount = document.getElementById("partition-amount")
+const rowsInput = document.getElementById("board-rows")
+const colsInput = document.getElementById("board-columns")
+
+const rowMin = 4
+const rowMax = 32
+const colMin = 8
+const colMax = 64
+const partMin = 2
+const partMax = 16
 
 let gameboard = [];
 let straightFrame = [];
@@ -128,38 +135,43 @@ function reset(){
 
 function setup(){
     if(state != "setup"){} else {
-        if(rowsInput.value == "" || colsInput.value == "" || partitionAmount.value == ""){
-            alert("Please fill out all fields.")
+        if(parseInt(rowsInput.value) > rowMax || parseInt(rowsInput.value) < rowMin || parseInt(colsInput.value) > colMax || parseInt(rowsInput.value) < colMin || parseInt(partitionAmount.value) > partMax || parseInt(partitionAmount.value) < partMin){
+            alert("Invalid Setup Values")
         } else {
-            document.getElementById("ui-container").removeAttribute("class","invisible")
-            document.getElementById("setup-container").setAttribute("class","invisible")
-            for (i = 0; i < rowsInput.value; i++) {
-                gameboard.push([]);
-                for (j = 0; j < colsInput.value; j++) {
-                    gameboard[i].push(bkgd);
-                }
-            }
-            for(k = 0; k < gameboard[0].length; k++){
-                straightFrame.push("═")
-                
-            }
-            for(l = 0; l < partitionAmount.value; l++){
-                let identifier = "partition" + l
-                let partitionY = random(3, gameboard.length - 3)
-                let partitionX = random(3, gameboard[partitionY].length - 3)
-                partitions.push({
-                        quality: randomizer(partitionRarity),
-                        x: partitionX,
-                        y: partitionY
+
+            if(parseInt(rowsInput.value) == "" || parseInt(colsInput.value) == "" || parseInt(partitionAmount.value) == ""){
+                alert("Please fill out all fields.")
+            } else {
+                document.getElementById("ui-container").removeAttribute("class","invisible")
+                document.getElementById("setup-container").setAttribute("class","invisible")
+                for (i = 0; i < parseInt(rowsInput.value); i++) {
+                    gameboard.push([]);
+                    for (j = 0; j < parseInt(colsInput.value); j++) {
+                        gameboard[i].push(bkgd);
                     }
-                )
+                }
+                for(k = 0; k < gameboard[0].length; k++){
+                    straightFrame.push("═")
+                    
+                }
+                for(l = 0; l < parseInt(partitionAmount.value); l++){
+                    let identifier = "partition" + l
+                    let partitionY = random(3, gameboard.length - 3)
+                    let partitionX = random(3, gameboard[partitionY].length - 3)
+                    partitions.push({
+                            quality: randomizer(partitionRarity),
+                            x: partitionX,
+                            y: partitionY
+                        }
+                    )
+                }
+                document.getElementById("top-border").innerHTML = "╔" + straightFrame.join("") + "╗"
+                document.getElementById("bottom-border").innerHTML = "╚" + straightFrame.join("") + "╝"
+                player.y = random(0, gameboard.length)
+                player.x = random(0, gameboard[player.y].length - 1)
+                gamespace.innerHTML = JSON.stringify(gameboard).replaceAll("],[","║<br>║").replace("[[","║").replace("]]","║").replaceAll('"',"").replaceAll(",","")
+                state = "play"
             }
-            document.getElementById("top-border").innerHTML = "╔" + straightFrame.join("") + "╗"
-            document.getElementById("bottom-border").innerHTML = "╚" + straightFrame.join("") + "╝"
-            player.y = random(0, gameboard.length)
-            player.x = random(0, gameboard[player.y].length - 1)
-            gamespace.innerHTML = JSON.stringify(gameboard).replaceAll("],[","║<br>║").replace("[[","║").replace("]]","║").replaceAll('"',"").replaceAll(",","")
-            state = "play"
         }
     }
 }
