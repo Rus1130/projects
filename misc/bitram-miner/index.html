@@ -33,13 +33,14 @@
     <div id="setup-container">
         Gameboard Rows: <input type="number" id="board-rows" min="8" max="32" value="16"><br>
         Gameboard Columns: <input type="number" id="board-columns" min="8" max="64" value="32"><br>
-        Partitions <input type="number" id="partition-amount" min="2" max="16" value="8"><br>
+        Partitions: <input type="number" id="partition-amount" min="2" max="16" value="8"><br>
+        Controls: WASD to move, arrow keys to buy bitram partition miners.<br><br>
+        The letters "F", "C", "B", "A", and "S" are exposed bitram partitions.<br>If you go to the exposed bitram partition and press the arrow key in that direction, it will place a bitram miner.
         <button id="btn" onclick="setup()">New Game</button>
     </div>
     <div id="ui-container" class="invisible">
         <button id="btn" onclick="reset()">Back to Menu</button>
         <span style="font-size: 20px">Bitram: <span id=bitram-display></span>Ȣ</span><br> <!--¤-->
-        <span style="font-size: 17px">q for controls</span>
         <div id="alert-box"></div>
     </div>
     <br>
@@ -88,6 +89,14 @@ const randomizer = (values) => {
         }
     }
     return pickedValue;
+}
+
+const partitionMiners = {
+    S: {cost: 800, production: 600},
+    A: {cost: 400, production: 200},
+    B: {cost: 300, production: 50},
+    C: {cost: 200, production: 10},
+    F: {cost: 100, production: 5}
 }
 
 const partitionRarity = [{
@@ -153,7 +162,7 @@ function setup(){
                     straightFrame.push("═")
                     
                 }
-                for(l = 0; l < parseInt(partitionAmount.value); l++){
+                for(l = 0; l < parseInt(partitionAmount.value) - 1; l++){
                     let partitionY = random(3, gameboard.length - 5)
                     let partitionX = random(3, gameboard[partitionY].length - 5)
                     partitions.push({
@@ -163,6 +172,14 @@ function setup(){
                         }
                     )
                 }
+                let gY = random(3, gameboard.length - 5)
+                let gX = random(3, gameboard[gY].length - 5)
+                partitions.push({
+                            quality: "F",
+                            x: gX,
+                            y: gY
+                        }
+                    )
                 document.getElementById("top-border").innerHTML = "╔" + straightFrame.join("") + "╗"
                 document.getElementById("bottom-border").innerHTML = "╚" + straightFrame.join("") + "╝"
                 player.y = random(0, gameboard.length)
@@ -183,13 +200,8 @@ setInterval(() => {
     }
 }, 3000)
 
-hotkeys('w,a,s,d,q,up,down,left,right', function (event, handler){
+hotkeys('w,a,s,d,up,down,left,right', function (event, handler){
     switch (handler.key){
-        case 'q':
-            if(state != "play"){} else {
-                alert("wasd to move")
-            }
-        break;
         case 'w':
             if(state != "play"){} else {
                 if(player.y > 0){
@@ -236,9 +248,61 @@ hotkeys('w,a,s,d,q,up,down,left,right', function (event, handler){
         break;
         case "up":
             if(state != "play"){} else {
-                if(gameboard[player.y - 1][player.x].charCodeAt(0) < 65 || gameboard[player.y - 1][player.x].charCodeAt(0) > 83){} else {
-                    gameboard[player.y - 1][player.x] = "¤"
-                    
+                if(gameboard[player.y - 1][player.x].charCodeAt(0) < 65 || gameboard[player.y - 1][player.x].charCodeAt(0) > 83){
+                    alertBox.innerHTML = "You cannot place a Bitram Miner here!"
+                } else {
+                    if(player.bitram < partitionMiners[gameboard[player.y - 1][player.x]].cost){
+                        alertBox.innerHTML = "You don't have enough bitram to place a Bitram Miner!"
+                    } else {
+                        player.bitram -= partitionMiners[gameboard[player.y - 1][player.x]].cost
+                        player.production += partitionMiners[gameboard[player.y - 1][player.x]].production
+                        gameboard[player.y - 1][player.x] = "¤"
+                    }
+                }
+            }
+        break;
+        case "left":
+            if(state != "play"){} else {
+                if(gameboard[player.y][player.x - 1].charCodeAt(0) < 65 || gameboard[player.y][player.x - 1].charCodeAt(0) > 83){
+                    alertBox.innerHTML = "You cannot place a Bitram Miner here!"
+                } else {
+                    if(player.bitram < partitionMiners[gameboard[player.y][player.x - 1]].cost){
+                        alertBox.innerHTML = "You don't have enough bitram to place a Bitram Miner!"
+                    } else {
+                        player.bitram -= partitionMiners[gameboard[player.y][player.x - 1]].cost
+                        player.production += partitionMiners[gameboard[player.y][player.x - 1]].production
+                        gameboard[player.y][player.x - 1] = "¤"
+                    }
+                }
+            }
+        break;
+        case "down":
+            if(state != "play"){} else {
+                if(gameboard[player.y + 1][player.x].charCodeAt(0) < 65 || gameboard[player.y + 1][player.x].charCodeAt(0) > 83){
+                    alertBox.innerHTML = "You cannot place a Bitram Miner here!"
+                } else {
+                    if(player.bitram < partitionMiners[gameboard[player.y + 1][player.x]].cost){
+                        alertBox.innerHTML = "You don't have enough bitram to place a Bitram Miner!"
+                    } else {
+                        player.bitram -= partitionMiners[gameboard[player.y + 1][player.x]].cost
+                        player.production += partitionMiners[gameboard[player.y + 1][player.x]].production
+                        gameboard[player.y + 1][player.x] = "¤"
+                    }
+                }
+            }
+        break;
+        case "right":
+            if(state != "play"){} else {
+                if(gameboard[player.y][player.x + 1].charCodeAt(0) <= 65 || gameboard[player.y][player.x + 1].charCodeAt(0) >= 83){
+                    alertBox.innerHTML = "You cannot place a Bitram Miner here!"
+                } else {
+                    if(player.bitram < partitionMiners[gameboard[player.y][player.x + 1]].cost){
+                        alertBox.innerHTML = "You don't have enough bitram to place a Bitram Miner!"
+                    } else {
+                        player.bitram -= partitionMiners[gameboard[player.y][player.x + 1]].cost
+                        player.production += partitionMiners[gameboard[player.y][player.x + 1]].production
+                        gameboard[player.y][player.x + 1] = "¤"
+                    }
                 }
             }
         break;
