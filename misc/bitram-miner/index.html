@@ -156,8 +156,8 @@ function setup(){
                 }
                 for(l = 0; l < parseInt(partitionAmount.value); l++){
                     let identifier = "partition" + l
-                    let partitionY = random(3, gameboard.length - 3)
-                    let partitionX = random(3, gameboard[partitionY].length - 3)
+                    let partitionY = random(3, gameboard.length - 2)
+                    let partitionX = random(3, gameboard[partitionY].length - 2)
                     partitions.push({
                             quality: randomizer(partitionRarity),
                             x: partitionX,
