@@ -34,6 +34,7 @@
         Gameboard Rows: <input type="number" id="board-rows" min="8" max="32" value="16"><br>
         Gameboard Columns: <input type="number" id="board-columns" min="8" max="64" value="32"><br>
         <button id="btn" onclick="setup()">New Game</button>
+        WASD to move, space to shoot
     </div>
     <div id="ui-container" class="invisible">
         <button id="btn" onclick="reset()">Back to Menu</button>
@@ -53,6 +54,11 @@ let gamespace = document.getElementById("game-space")
 const alertBox = document.getElementById("alert-box")
 const rowsInput = document.getElementById("board-rows")
 const colsInput = document.getElementById("board-columns")
+
+const playerUpState = "╧"
+const playerLeftState = "╢"
+const playerDownState = "╤"
+const playerRightState = "╟"
 
 const rowMin = 8
 const rowMax = 32
@@ -85,11 +91,40 @@ const randomizer = (values) => {
 
 let state = "setup";
 
+const randomPlayerState = [{
+    value: "facing-up",
+    probability: 0.25,
+    sprite: playerUpState
+},{
+    value: "facing-left",
+    probability: 0.25,
+    sprite: playerLeftState
+},{
+    value: "facing-down",
+    probability: 0.25,
+    sprite: playerDownState
+},{
+    value: "facing-right",
+    probability: 0.25,
+    sprite: playerRightState
+
+}]
+
+const valueSprites = {
+    "facing-up": playerUpState, "facing-left": playerLeftState, "facing-down": playerDownState, "facing-right": playerRightState
+}
+
+const pickedState = randomizer(randomPlayerState)
+const shotCooldown = 175
+let lastShot = Date.now() - shotCooldown
+
+
+
 let player = {
-    sprite: "╧",
+    sprite: valueSprites[pickedState],
     x: "",
     y: "",
-    state: "facing-up"
+    state: pickedState
 }
 
 function random(min, max) {
@@ -126,14 +161,16 @@ function setup(){
                     straightFrame.push("═")
                     
                 }
+                setTimeout(() => {
+                    document.getElementById("top-border").innerHTML = "╔" + straightFrame.join("") + "╗"
+                    document.getElementById("bottom-border").innerHTML = "╚" + straightFrame.join("") + "╝"
+                    player.y = random(0, gameboard.length)
+                    player.x = random(0, gameboard[player.y].length - 1)
 
-                document.getElementById("top-border").innerHTML = "╔" + straightFrame.join("") + "╗"
-                document.getElementById("bottom-border").innerHTML = "╚" + straightFrame.join("") + "╝"
-                player.y = random(0, gameboard.length)
-                player.x = random(0, gameboard[player.y].length - 1)
+                    gamespace.innerHTML = JSON.stringify(gameboard).replaceAll("],[","║<br>║").replace("[[","║").replace("]]","║").replaceAll('"',"").replaceAll(",","")
+                    state = "play"
+                }, 5)
 
-                gamespace.innerHTML = JSON.stringify(gameboard).replaceAll("],[","║<br>║").replace("[[","║").replace("]]","║").replaceAll('"',"").replaceAll(",","")
-                state = "play"
             }
         }
     }
@@ -143,11 +180,13 @@ hotkeys('w,a,s,d,space', function (event, handler){
     switch (handler.key){
         case 'w':
             if(state != "play"){} else {
+                player.state = "facing-up"
+                player.sprite = playerUpState
                 if(player.y > 0){
                     if(gameboard[player.y - 1][player.x] != "&nbsp;"){} else {
                         gameboard[player.y][player.x] = bkgd
                         player.state = "facing-up"
-                        player.sprite = "╧"
+                        player.sprite = playerUpState
                         player.y -= 1;
                         alertBox.innerHTML = ''
                     }
@@ -156,10 +195,12 @@ hotkeys('w,a,s,d,space', function (event, handler){
         break;
         case 'a':
             if(state != "play"){} else {
+                player.sprite = playerLeftState
+                player.state = "facing-left"
                 if(player.x > 0){
                     if(gameboard[player.y][player.x - 1] != "&nbsp;"){} else {
                         gameboard[player.y][player.x] = bkgd
-                        player.sprite = "╢"
+                        player.sprite = playerLeftState
                         player.state = "facing-left"
                         player.x -= 1;
                         alertBox.innerHTML = ''
@@ -169,10 +210,12 @@ hotkeys('w,a,s,d,space', function (event, handler){
         break;
         case 's':
             if(state != "play"){} else {
+                player.sprite = playerDownState
+                player.state = "facing-down"
                 if(player.y < gameboard.length - 1){
                     if(gameboard[player.y + 1][player.x] != "&nbsp;"){} else {
                         gameboard[player.y][player.x] = bkgd
-                        player.sprite = "╤"
+                        player.sprite = playerDownState
                         player.state = "facing-down"
                         player.y += 1;
                         alertBox.innerHTML = ''
@@ -182,10 +225,12 @@ hotkeys('w,a,s,d,space', function (event, handler){
         break;
         case 'd':
             if(state != "play"){} else {
+                player.sprite = playerRightState
+                player.state = "facing-right"
                 if(player.x < gameboard[0].length - 1){
                     if(gameboard[player.y][player.x + 1] != "&nbsp;"){} else {
                         gameboard[player.y][player.x] = bkgd
-                        player.sprite = "╟"
+                        player.sprite = playerRightState
                         player.state = "facing-right"
                         player.x += 1;
                         alertBox.innerHTML = ''
@@ -195,19 +240,39 @@ hotkeys('w,a,s,d,space', function (event, handler){
         break;
         case 'space':
             if(state != "play"){} else {
-                switch(player.state){
-                    case "facing-up":
-                        bullets.push({y: parseInt(player.y - 1), x: parseInt(player.x), sprite: "╎", state: "up"})
-                    break;
-                    case "facing-left":
-                        bullets.push({y: parseInt(player.y), x: parseInt(player.x - 1), sprite: "╌", state: "left"})
-                    break;
-                    case "facing-down":
-                        bullets.push({y: parseInt(player.y + 1), x: parseInt(player.x), sprite: "╎", state: "down"})
-                    break;
-                    case "facing-left":
-                        bullets.push({y: parseInt(player.y), x: parseInt(player.x + 1), sprite: "╌", state: "left"})
-                    break;
+                if(lastShot + shotCooldown > Date.now()){} else {
+                    switch(player.state){
+                        case "facing-up":
+                            if(gameboard[player.y - 1] == undefined){} else {
+                                if(gameboard[player.y - 1][player.x] == "&nbsp;"){
+                                    bullets.push({y: parseInt(player.y - 1), x: parseInt(player.x), sprite: "╎", state: "up"})
+                                }
+                            }
+                        break;
+                        case "facing-left":
+                            if(gameboard[player.y][player.x - 1] == undefined){} else {
+                                if(gameboard[player.y][player.x - 1] == "&nbsp;"){
+                                    bullets.push({y: parseInt(player.y), x: parseInt(player.x - 1), sprite: "╌", state: "left"})
+                                }
+                            }
+                        break;
+                        case "facing-down":
+                            if(gameboard[player.y + 1] == undefined){} else {
+                                if(gameboard[player.y + 1][player.x] == "&nbsp;"){
+                                    bullets.push({y: parseInt(player.y + 1), x: parseInt(player.x), sprite: "╎", state: "down"})
+                                }
+                            }
+                        break;
+                        case "facing-right":
+                            if(gameboard[player.y][player.x + 1] == undefined){} else {
+                                if(gameboard[player.y][player.x + 1] == "&nbsp;"){
+                                    bullets.push({y: parseInt(player.y), x: parseInt(player.x + 1), sprite: "╌", state: "right"})
+                                }
+                            }
+                            
+                        break;
+                    }
+                    lastShot = Date.now()
                 }
             }
     }
@@ -217,10 +282,35 @@ setInterval(() => {
     for( i = 0; i < bullets.length; i++){
         switch(bullets[i].state){
             case "up":
-                gameboard[bullets[i].y][bullets[i].x] = bkgd
-                bullets[i].y -= 1
                 if(bullets[i].y > 0){
                     gameboard[bullets[i].y][bullets[i].x] = bkgd
+                    bullets[i].y -= 1
+                } else {
+                    bullets[i].sprite = bkgd
+                }
+            break;
+            case "left":
+                if(bullets[i].x > 0){
+                    gameboard[bullets[i].y][bullets[i].x] = bkgd
+                    bullets[i].x -= 1
+                } else {
+                    bullets[i].sprite = bkgd
+                }
+            break;
+            case "down":
+                if(bullets[i].y < gameboard.length - 1){
+                    gameboard[bullets[i].y][bullets[i].x] = bkgd
+                    bullets[i].y += 1
+                } else {
+                    bullets[i].sprite = bkgd
+                }
+            break;
+            case "right":
+                if(bullets[i].x < gameboard[0].length - 1){
+                    gameboard[bullets[i].y][bullets[i].x] = bkgd
+                    bullets[i].x += 1
+                } else {
+                    bullets[i].sprite = bkgd
                 }
             break;
         }
