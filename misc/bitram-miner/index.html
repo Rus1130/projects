@@ -38,6 +38,7 @@
     </div>
     <div id="ui-container" class="invisible">
         <button id="btn" onclick="reset()">Back to Menu</button>
+        <span style="font-size: 20px">Bitram: <span id=bitram-display></span>¤</span><br>
         <span style="font-size: 17px">q for controls</span>
         <div id="alert-box"></div>
     </div>
@@ -56,6 +57,7 @@ const alertBox = document.getElementById("alert-box")
 const partitionAmount = document.getElementById("partition-amount")
 const rowsInput = document.getElementById("board-rows")
 const colsInput = document.getElementById("board-columns")
+const bitramDisplay = document.getElementById("bitram-display")
 
 const rowMin = 8
 const rowMax = 32
@@ -63,6 +65,7 @@ const colMin = 8
 const colMax = 64
 const partMin = 2
 const partMax = 16
+let bitramProduction = 0;
 
 let gameboard = [];
 let straightFrame = [];
@@ -88,11 +91,11 @@ const randomizer = (values) => {
 }
 
 const partitionMiners = {
-    S: "╬",
-    A: "╫",
-    B: "╪",
-    C: "┼",
-    F: "│"
+    S: {sprite: "╬", cost: 800, production: 1000},
+    A: {sprite: "╫", cost: 400, production: 600},
+    B: {sprite: "╪", cost: 200, production: 150},
+    C: {sprite: "┼", cost: 100, production: 50},
+    F: {sprite: "│", cost: 50, production: 25}
 }
 const partitionRarity = [{
         value : 'F',
@@ -121,7 +124,8 @@ let state = "setup";
 let player = {
     sprite: "█",
     x: "",
-    y: ""
+    y: "",
+    bitram: 50
 }
 
 function random(min, max) {
@@ -180,7 +184,7 @@ function setup(){
 }
 
 
-hotkeys('w,a,s,d,q', function (event, handler){
+hotkeys('w,a,s,d,q,up', function (event, handler){
     switch (handler.key){
         case 'q':
             if(state != "play"){} else {
@@ -231,6 +235,14 @@ hotkeys('w,a,s,d,q', function (event, handler){
                 }
             }
         break;
+        case "up":
+            if(state != "play"){} else {
+                if(gameboard[player.y - 1][player.x].charCodeAt(0) < 65 || gameboard[player.y - 1][player.x].charCodeAt(0) > 83){} else {
+                    gameboard[player.y - 1][player.x] = partitionMiners[gameboard[player.y - 1][player.x]].sprite
+                    
+                }
+            }
+        break;
     }
 });
 
@@ -238,6 +250,7 @@ hotkeys('w,a,s,d,q', function (event, handler){
 function boardUpdate(){
     if(state != "play"){} else {
         gameboard[player.y][player.x] = player.sprite
+        bitramDisplay.innerHTML = player.bitram
         gamespace.innerHTML = JSON.stringify(gameboard).replaceAll("],[","║<br>║").replace("[[","║").replace("]]","║").replaceAll('"',"").replaceAll(",","")
         
     }
