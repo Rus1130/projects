@@ -141,6 +141,11 @@ function reset(){
     location.reload()
 }
 
+let portalY;
+let portalX;
+
+let portal
+
 function setup(){
     if(state != "setup"){} else {
         if(parseInt(rowsInput.value) > rowMax || parseInt(rowsInput.value) < rowMin || parseInt(colsInput.value) > colMax || parseInt(rowsInput.value) < colMin || parseInt(partitionAmount.value) > partMax || parseInt(partitionAmount.value) < partMin){
@@ -175,17 +180,24 @@ function setup(){
                 let gY = random(3, gameboard.length - 5)
                 let gX = random(3, gameboard[gY].length - 5)
                 partitions.push({
-                            quality: "F",
-                            x: gX,
-                            y: gY
-                        }
-                    )
+                    quality: "F",
+                    x: gX,
+                    y: gY
+                })
+
                 document.getElementById("top-border").innerHTML = "╔" + straightFrame.join("") + "╗"
                 document.getElementById("bottom-border").innerHTML = "╚" + straightFrame.join("") + "╝"
                 player.y = random(0, gameboard.length)
                 player.x = random(0, gameboard[player.y].length - 1)
                 for(i = 0; i < partitions.length; i++){
                     gameboard[partitions[i].y][partitions[i].x] = partitions[i].quality
+                }
+                portalY = random(3, gameboard.length - 5)
+                portalX = random(3, gameboard[portalY].length - 5)
+                portal = {
+                    x: portalX,
+                    y: portalY,
+                    sprite: "▓"
                 }
                 gamespace.innerHTML = JSON.stringify(gameboard).replaceAll("],[","║<br>║").replace("[[","║").replace("]]","║").replaceAll('"',"").replaceAll(",","")
                 state = "play"
@@ -205,10 +217,16 @@ hotkeys('w,a,s,d,up,down,left,right', function (event, handler){
         case 'w':
             if(state != "play"){} else {
                 if(player.y > 0){
-                    if( gameboard[player.y - 1][player.x] != "&nbsp;"){} else {
+                    if(gameboard[player.y - 1][player.x] == "▓"){
                         gameboard[player.y][player.x] = bkgd
                         player.y -= 1;
                         alertBox.innerHTML = ''
+                    } else {
+                        if(gameboard[player.y - 1][player.x] != "&nbsp;"){} else {
+                            gameboard[player.y][player.x] = bkgd
+                            player.y -= 1;
+                            alertBox.innerHTML = ''
+                        }
                     }
                 }
             }
@@ -216,10 +234,16 @@ hotkeys('w,a,s,d,up,down,left,right', function (event, handler){
         case 'a':
             if(state != "play"){} else {
                 if(player.x > 0){
-                    if(gameboard[player.y][player.x - 1] != "&nbsp;"){} else {
+                    if(gameboard[player.y][player.x - 1] == "▓"){
                         gameboard[player.y][player.x] = bkgd
                         player.x -= 1;
                         alertBox.innerHTML = ''
+                    } else {
+                        if(gameboard[player.y][player.x - 1] != "&nbsp;"){} else {
+                            gameboard[player.y][player.x] = bkgd
+                            player.x -= 1;
+                            alertBox.innerHTML = ''
+                        }
                     }
                 }
             }
@@ -227,10 +251,16 @@ hotkeys('w,a,s,d,up,down,left,right', function (event, handler){
         case 's':
             if(state != "play"){} else {
                 if(player.y < gameboard.length - 1){
-                    if(gameboard[player.y + 1][player.x] != "&nbsp;"){} else {
+                    if(gameboard[player.y + 1][player.x] == "▓"){
                         gameboard[player.y][player.x] = bkgd
                         player.y += 1;
                         alertBox.innerHTML = ''
+                    } else {
+                        if(gameboard[player.y + 1][player.x] != "&nbsp;"){} else {
+                            gameboard[player.y][player.x] = bkgd
+                            player.y += 1;
+                            alertBox.innerHTML = ''
+                        }
                     }
                 }
             }
@@ -238,10 +268,16 @@ hotkeys('w,a,s,d,up,down,left,right', function (event, handler){
         case 'd':
             if(state != "play"){} else {
                 if(player.x < gameboard[0].length - 1){
-                    if(gameboard[player.y][player.x + 1] != "&nbsp;"){} else {
+                    if(gameboard[player.y][player.x + 1] == "▓"){
                         gameboard[player.y][player.x] = bkgd
                         player.x += 1;
                         alertBox.innerHTML = ''
+                    } else {
+                        if(gameboard[player.y][player.x + 1] != "&nbsp;"){} else {
+                            gameboard[player.y][player.x] = bkgd
+                            player.x += 1;
+                            alertBox.innerHTML = ''
+                        }
                     }
                 }
             }
@@ -312,8 +348,9 @@ hotkeys('w,a,s,d,up,down,left,right', function (event, handler){
 
 function boardUpdate(){
     if(state != "play"){} else {
-        gameboard[player.y][player.x] = player.sprite
         bitramDisplay.innerHTML = player.bitram
+        gameboard[portalY][portalX] = portal.sprite
+        gameboard[player.y][player.x] = player.sprite
         gamespace.innerHTML = JSON.stringify(gameboard).replaceAll("],[","║<br>║").replace("[[","║").replace("]]","║").replaceAll('"',"").replaceAll(",","")
         
     }
