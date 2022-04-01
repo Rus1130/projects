@@ -91,11 +91,11 @@ const randomizer = (values) => {
 }
 
 const partitionMiners = {
-    S: {sprite: "╬", cost: 800, production: 1000},
-    A: {sprite: "╫", cost: 400, production: 600},
-    B: {sprite: "╪", cost: 200, production: 150},
-    C: {sprite: "┼", cost: 100, production: 50},
-    F: {sprite: "│", cost: 50, production: 25}
+    S: {sprite: "╬", cost: 800, production: 600},
+    A: {sprite: "╫", cost: 400, production: 200},
+    B: {sprite: "╪", cost: 300, production: 50},
+    C: {sprite: "┼", cost: 200, production: 10},
+    F: {sprite: "│", cost: 100, production: 5}
 }
 const partitionRarity = [{
         value : 'F',
@@ -119,13 +119,39 @@ const partitionRarity = [{
     }
 ]
 
+const portDirectionSprites = {
+    top: "╽",
+    bottom: "╿",
+    left: "╼",
+    right: "╾"
+}
+
+const portDirection = [{
+        value: "t",
+        probability: 0.25
+    },
+    {
+        value: "l",
+        probability: 0.25
+    },
+    {
+        value: "b",
+        probability: 0.25
+    },
+    {
+        value: "r",
+        probability: 0.25,
+    }
+]
+
 let state = "setup";
 
 let player = {
     sprite: "█",
     x: "",
     y: "",
-    bitram: 50
+    bitram: 100,
+    production: 0
 }
 
 function random(min, max) {
@@ -160,8 +186,8 @@ function setup(){
                     
                 }
                 for(l = 0; l < parseInt(partitionAmount.value); l++){
-                    let partitionY = random(3, gameboard.length - 2)
-                    let partitionX = random(3, gameboard[partitionY].length - 2)
+                    let partitionY = random(3, gameboard.length - 5)
+                    let partitionX = random(3, gameboard[partitionY].length - 5)
                     partitions.push({
                             quality: randomizer(partitionRarity),
                             x: partitionX,
@@ -175,6 +201,9 @@ function setup(){
                 player.x = random(0, gameboard[player.y].length - 1)
                 for(i = 0; i < partitions.length; i++){
                     gameboard[partitions[i].y][partitions[i].x] = partitions[i].quality
+                    if(randomizer(portDirection) == "t"){
+                        gameboard[partitions[i].y - 1][partitions[i].x] = portDirectionSprites.top
+                    }
                 }
                 gamespace.innerHTML = JSON.stringify(gameboard).replaceAll("],[","║<br>║").replace("[[","║").replace("]]","║").replaceAll('"',"").replaceAll(",","")
                 state = "play"
@@ -183,8 +212,13 @@ function setup(){
     }
 }
 
+setInterval(() => {
+    if(state != "play"){} else {
+        player.bitram += player.production
+    }
+}, 3000)
 
-hotkeys('w,a,s,d,q,up', function (event, handler){
+hotkeys('w,a,s,d,q,up,down,left,right', function (event, handler){
     switch (handler.key){
         case 'q':
             if(state != "play"){} else {
@@ -232,14 +266,6 @@ hotkeys('w,a,s,d,q,up', function (event, handler){
                         player.x += 1;
                         alertBox.innerHTML = ''
                     }
-                }
-            }
-        break;
-        case "up":
-            if(state != "play"){} else {
-                if(gameboard[player.y - 1][player.x].charCodeAt(0) < 65 || gameboard[player.y - 1][player.x].charCodeAt(0) > 83){} else {
-                    gameboard[player.y - 1][player.x] = partitionMiners[gameboard[player.y - 1][player.x]].sprite
-                    
                 }
             }
         break;
