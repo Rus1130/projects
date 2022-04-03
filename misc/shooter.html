@@ -31,7 +31,7 @@
 </head>
 <body>
     <div id="setup-container">
-        Gameboard Rows: <input type="number" id="board-rows" min="8" max="32" value="16"><br>
+        Gameboard Rows: <input type="number" id="board-rows" min="8" max="64" value="16"><br>
         Gameboard Columns: <input type="number" id="board-columns" min="8" max="64" value="32"><br>
         Amount of Enemies: <input type="number" id="enemy-amount" min="1" max="128" value="16"><br>
         Enemy Damage: <input type="number" id="enemy-damage" min="1" max="16" value="1"><br>
@@ -66,7 +66,7 @@ const playerDownState = "╤"
 const playerRightState = "╟"
 
 
-const rowMax = 32
+const rowMax = 64
 const colMax = 64
 const enemyAmountMax = 128
 const enemyDamageMax = 16
@@ -173,7 +173,7 @@ function setup(){
                     
                 }
                 for(l = 0; l < enemyAmountInput.value; l++){
-                    let enemyY = random(0, gameboard.length)
+                    let enemyY = random(0, gameboard.length - 1)
                     let enemyX = random(0, gameboard[enemyY].length - 1)
                     enemies.push({x: enemyX, y: enemyY, sprite: "¤"})
                 }
@@ -384,6 +384,33 @@ function boardUpdate(){
         
     }
 }
+
+// move all the enemies towards the player
+setInterval(() => {
+    if(state != "play"){} else {
+        for(j = 0; j < enemyAmountInput.value; j++){
+            let enemyName = "enemy" + j
+            if(enemies[enemyName] == undefined){} else {
+                if(enemies[enemyName].x == player.x && enemies[enemyName].y == player.y){
+                    alertBox.innerHTML = "You have been defeated!"
+                    state = "game-over"
+                }
+                if(enemies[enemyName].x > player.x){
+                    enemies[enemyName].x -= 1
+                }
+                if(enemies[enemyName].x < player.x){
+                    enemies[enemyName].x += 1
+                }
+                if(enemies[enemyName].y > player.y){
+                    enemies[enemyName].y -= 1
+                }
+                if(enemies[enemyName].y < player.y){
+                    enemies[enemyName].y += 1
+                }
+            }
+        }
+    }
+}, 1000)
 
 setInterval(() => boardUpdate(), 16.67)
 
