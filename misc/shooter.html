@@ -369,12 +369,6 @@ setInterval(() => {
 function boardUpdate(){
     if(state != "play"){} else {
         for( i = 0; i < bullets.length; i++){
-            for(j = 0; j < enemies.length; j++){
-                if(bullets[i].y == enemies[j].y && bullets[i].x == enemies[j].x){
-                    enemies.splice(j, 1)
-                    bullets.splice(i, 1)
-                }
-            }
             gameboard[bullets[i].y][bullets[i].x] = bullets[i].sprite
         }
         gameboard[player.y][player.x] = player.sprite
