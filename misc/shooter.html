@@ -369,48 +369,19 @@ setInterval(() => {
 function boardUpdate(){
     if(state != "play"){} else {
         for( i = 0; i < bullets.length; i++){
-            gameboard[bullets[i].y][bullets[i].x] = bullets[i].sprite
-        }
-        for(j = 0; j < enemyAmountInput.value; j++){
-            let enemyName = "enemy" + j
-            if(enemies[enemyName] == undefined){} else {
-                if(enemies[enemyName].x == bullets[i].y && enemies[enemyName].y == bullets[i].y){
-                    delete enemies[enemyName]
+            for(j = 0; j < enemies.length; j++){
+                if(bullets[i].y == enemies[j].y && bullets[i].x == enemies[j].x){
+                    enemies.splice(j, 1)
+                    bullets.splice(i, 1)
                 }
             }
+            gameboard[bullets[i].y][bullets[i].x] = bullets[i].sprite
         }
         gameboard[player.y][player.x] = player.sprite
         gamespace.innerHTML = JSON.stringify(gameboard).replaceAll("],[","║<br>║").replace("[[","║").replace("]]","║").replaceAll('"',"").replaceAll(",","")
         
     }
 }
-
-// move all the enemies towards the player
-setInterval(() => {
-    if(state != "play"){} else {
-        for(j = 0; j < enemyAmountInput.value; j++){
-            let enemyName = "enemy" + j
-            if(enemies[enemyName] == undefined){} else {
-                if(enemies[enemyName].x == player.x && enemies[enemyName].y == player.y){
-                    alertBox.innerHTML = "You have been defeated!"
-                    state = "game-over"
-                }
-                if(enemies[enemyName].x > player.x){
-                    enemies[enemyName].x -= 1
-                }
-                if(enemies[enemyName].x < player.x){
-                    enemies[enemyName].x += 1
-                }
-                if(enemies[enemyName].y > player.y){
-                    enemies[enemyName].y -= 1
-                }
-                if(enemies[enemyName].y < player.y){
-                    enemies[enemyName].y += 1
-                }
-            }
-        }
-    }
-}, 1000)
 
 setInterval(() => boardUpdate(), 16.67)
 
