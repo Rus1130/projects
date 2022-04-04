@@ -75,7 +75,7 @@ const rowMin = 8
 const colMin = 8
 const enemyAmountMin = 1
 const enemyDamageMin = 1
-const shotCooldown = 0
+const shotCooldown = 150
 
 let bullets = []
 let enemies = []
@@ -102,6 +102,11 @@ const randomizer = (values) => {
         }
     }
     return pickedValue;
+}
+
+function removeIndex(array, index){
+    array.splice(index, 1);
+    return array;
 }
 
 let state = "setup";
@@ -175,7 +180,7 @@ function setup(){
                 for(l = 0; l < enemyAmountInput.value; l++){
                     let enemyY = random(0, gameboard.length - 1)
                     let enemyX = random(0, gameboard[enemyY].length - 1)
-                    enemies.push({x: enemyX, y: enemyY, sprite: "¤"})
+                    enemies.push({x: enemyX, y: enemyY, sprite: "¤", state: "alive"})
                 }
                 for(m = 0; m < enemies.length; m++){
                     gameboard[enemies[m].y][enemies[m].x] = enemies[m].sprite
@@ -328,14 +333,11 @@ setInterval(() => {
         switch(bullets[i].state){
             case "up":
                 if(bullets[i].y > 0){
-                    if(gameboard[bullets[i].y][bullets[i].x] == "¤"){
-                        bullets[i].sprite = bkgd
-                    } else {
-                        gameboard[bullets[i].y][bullets[i].x] = bkgd
-                        bullets[i].y -= 1
-                    }
+                    gameboard[bullets[i].y][bullets[i].x] = bkgd
+                    bullets[i].y -= 1
                 } else {
-                    bullets[i].sprite = bkgd
+                    gameboard[bullets[i].y][bullets[i].x] = bkgd
+                    bullets[i].state = "collided"
                 }
             break;
             case "left":
@@ -343,7 +345,8 @@ setInterval(() => {
                     gameboard[bullets[i].y][bullets[i].x] = bkgd
                     bullets[i].x -= 1
                 } else {
-                    bullets[i].sprite = bkgd
+                    gameboard[bullets[i].y][bullets[i].x] = bkgd
+                    bullets[i].state = "collided"
                 }
             break;
             case "down":
@@ -351,7 +354,8 @@ setInterval(() => {
                     gameboard[bullets[i].y][bullets[i].x] = bkgd
                     bullets[i].y += 1
                 } else {
-                    bullets[i].sprite = bkgd
+                    gameboard[bullets[i].y][bullets[i].x] = bkgd
+                    bullets[i].state = "collided"
                 }
             break;
             case "right":
@@ -359,7 +363,8 @@ setInterval(() => {
                     gameboard[bullets[i].y][bullets[i].x] = bkgd
                     bullets[i].x += 1
                 } else {
-                    bullets[i].sprite = bkgd
+                    gameboard[bullets[i].y][bullets[i].x] = bkgd
+                    bullets[i].state = "collided"
                 }
             break;
         }
@@ -368,9 +373,19 @@ setInterval(() => {
 
 function boardUpdate(){
     if(state != "play"){} else {
-        for( i = 0; i < bullets.length; i++){
-            gameboard[bullets[i].y][bullets[i].x] = bullets[i].sprite
+        for(i = 0; i < bullets.length; i++){
+            if(bullets[i].state == "collided"){
+                removeIndex(bullets, i)
+            } else {
+                gameboard[bullets[i].y][bullets[i].x] = bullets[i].sprite
+            }
         }
+        for(i = 0; i < enemies.length; i++){
+            if(gameboard[enemies[i].y][enemies[i].x] == "&nbsp;"){
+                removeIndex(enemies, i)
+            }
+        }
+
         gameboard[player.y][player.x] = player.sprite
         gamespace.innerHTML = JSON.stringify(gameboard).replaceAll("],[","║<br>║").replace("[[","║").replace("]]","║").replaceAll('"',"").replaceAll(",","")
         
