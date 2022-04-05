@@ -27,7 +27,7 @@ const appConsole = document.getElementById("console")
 let inputCodeArray;
 let inputCodeLine;
 let consoleArray = []
-let code_state = "";
+let codeStateArray = []
 input.value = ""
 
 hotkeys('enter', () => {
@@ -36,23 +36,76 @@ hotkeys('enter', () => {
 
 let callstack = [] // touchable
 let heap = [] // untouchable
+const reserved_keywords = ["#", "log", "pull", "push"]
 
 function compile(){
-    inputCodeLine = []
+    codeStateArray = [];
+    appConsole.innerHTML = ""
+    consoleArray = []
+    heap = [];
+    callstack = [];
     inputCodeArray = input.value.split("\n")
-    // main code loop
 
-    // variable defining
-    for(i = 0; i < inputCodeArray.length; i++){
-        // fix =========================================================
+    for(let i = 0; i < inputCodeArray.length; i++){
+        inputCodeLine = inputCodeArray[i].split(" ")
+        if(!reserved_keywords.includes(inputCodeLine[0])){
+            consoleArray.push(`Error: Keyword error at line ${i+1}. ("${inputCodeLine[0]}" is an unknown keyword)`)
+            codeStateArray.push(`compile error: unknown keyword`)
+        } else {
+            if(inputCodeLine[0] == reserved_keywords[0]){
+                codeStateArray.push(`attempting to create variable`)
+                if(inputCodeLine.length != 3){
+                    consoleArray.push(`Error: Invalid syntax at line ${i+1}. (missing name or value)`)
+                    codeStateArray.push(`variable exit error: invalid syntax`)
+                } else {
+                    if(heap.find(x => x.name == inputCodeLine[1])){
+                        consoleArray.push(`Error: Variable creation error at line ${i+1}. ("${inputCodeLine[1]}" already exists)`)
+                        codeStateArray.push(`variable exit error: variable already exists`)
+                    } else {
+                        heap.push({name: inputCodeLine[1], value: inputCodeLine[2]})
+                        codeStateArray.push(`variable exit success: created variable with name of "${inputCodeLine[1]}" and value of ${inputCodeLine[2]}`)
+                    }
+                }
+            }
+            if(inputCodeLine[0] == reserved_keywords[1]){
+                codeStateArray.push(`attempting to log the variable ${inputCodeLine[1]}`)
+                if(callstack[callstack.findIndex(x => x.name == inputCodeLine[1])] == undefined){
+                    consoleArray.push(`Error: Variable search error at line ${i+1}. ("${inputCodeLine[1]}" does not exist in callstack)`)
+                    codeStateArray.push(`log exit error: variable search error: variable "${inputCodeLine[1]}" does not exist in callstack`)
+                } else {
+                    consoleArray.push(callstack[callstack.findIndex(x => x.name == inputCodeLine[1])].value)
+                    codeStateArray.push(`log exit success: logged the value of "${inputCodeLine[1]}"`)
+                }
+            }
+            if(inputCodeLine[0] == reserved_keywords[2]){
+                codeStateArray.push(`attempting to pull the variable ${inputCodeLine[1]}`)
+                if(heap.find(x => x.name == inputCodeLine[1])){
+                    callstack.push({name: inputCodeLine[1], value: heap[heap.findIndex(x => x.name == inputCodeLine[1])].value})
+                    heap.splice(heap.findIndex(x => x.name == inputCodeLine[1]), 1)
+                    codeStateArray.push(`pull exit success: pulled the variable "${inputCodeLine[1]}" from heap to callstack`)
+                } else {
+                    consoleArray.push(`Error: Variable search error at line ${i+1}. ("${inputCodeLine[1]}" does not exist in heap)`)
+                    codeStateArray.push(`pull exit error: variable search error: variable "${inputCodeLine[1]}"" does not exist in heap`)
+                }
+            }
+            if(inputCodeLine[0] == reserved_keywords[3]){
+                codeStateArray.push(`attempting to push the variable ${inputCodeLine[1]}`)
+                if(callstack.find(x => x.name == inputCodeLine[1])){
+                    heap.push({name: inputCodeLine[1], value: callstack[callstack.findIndex(x => x.name == inputCodeLine[1])].value})
+                    callstack.splice(callstack.findIndex(x => x.name == inputCodeLine[1]), 1)
+                    codeStateArray.push(`push exit success: pushed the variable "${inputCodeLine[1]}" from callstack to heap`)
+                } else {
+                    consoleArray.push(`Error: Variable search error at line ${i+1}. ("${inputCodeLine[1]}"" does not exist in callstack)`)
+                    codeStateArray.push(`push exit error: variable search error: variable "${inputCodeLine[1]}" does not exist in callstack`)
+                }
+            }
+        }
     }
-    consoleArray.push(input.value + '<br>')
+
     if(consoleArray.length > 6){
         consoleArray.shift()
     }
-    console.log(heap)
-    appConsole.innerHTML = consoleArray.join("")
-
+    appConsole.innerHTML = consoleArray.join("<br>")
 }
 
 </script>

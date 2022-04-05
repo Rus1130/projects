@@ -2,7 +2,31 @@ Heap: Variables that are first created are automatically put into the heap. They
 Callstack: Variables can be moved into the callstack so they can be modified.
 
 Structure of variables:
-{name: "name", value: "value"}
+{name: "variable_name", value: "variable_value"}
 
 Defining variables:
-#name value
+# variable_name variable_value
+
+-----
+
+logging variables:
+log variable_name
+
+Searches the callstack for the variable and outputs it to the application console.
+
+-----
+
+pulling variables:
+pull variable_name
+
+Moves a variable from the heap to the callstack.
+
+-----
+
+pushing variables:
+push variable_name
+
+Moves a variable from the callstack to the heap.
+
+-----
+
