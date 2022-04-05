@@ -14,11 +14,10 @@
 </head>
 <body>
     <a href="docs.txt" download="Rustype-docs">
-        <button style="position: absolute; top: 100px" onclick="">Download Docs</button>
-    </a>
-    <div id="console"></div>
-    <textarea id="input" rows="30" cols="100" autocomplete="off" style="position: absolute; top: 120px;">
-    </textarea>
+        <button position="absolute;">Download Docs</button>
+    </a><br><br>
+    <textarea id="input" rows="30" cols="80" autocomplete="off" spellcheck="false" title="code editor"></textarea>
+    <textarea id="console" rows="30" cols="80" readonly spellcheck="false" title="code output"></textarea>
 </body>
 <script>
 
@@ -36,7 +35,30 @@ hotkeys('enter', () => {
 
 let callstack = [] // touchable
 let heap = [] // untouchable
-const reserved_keywords = ["#", "log", "pull", "push"]
+const reserved_keywords = ["assign", "log", "pull", "push", "drop", "owrite", "eval","show"]
+
+function math(operation, num1, num2){
+    switch(operation){
+        case "add": //add
+            return parseFloat((parseFloat(num1) + parseFloat(num2)).toPrecision(12));
+            break
+        case "sub": //subtract
+            return parseFloat((parseFloat(num1) - parseFloat(num2)).toPrecision(12));
+            break;
+        case "mult": //multiply
+            return parseFloat((parseFloat(num1) * parseFloat(num2)).toPrecision(12));
+            break;
+        case "div": //divide
+            return parseFloat((parseFloat(num1) / parseFloat(num2)).toPrecision(12));
+            break;
+        case "mod": //modulus
+            return parseFloat((parseFloat(num1) % parseFloat(num2)).toPrecision(12));
+            break;
+        default:
+            return false;
+            break;
+    }
+}
 
 function compile(){
     codeStateArray = [];
@@ -54,15 +76,16 @@ function compile(){
         } else {
             if(inputCodeLine[0] == reserved_keywords[0]){
                 codeStateArray.push(`attempting to create variable`)
-                if(inputCodeLine.length != 3){
-                    consoleArray.push(`Error: Invalid syntax at line ${i+1}. (missing name or value)`)
-                    codeStateArray.push(`variable exit error: invalid syntax`)
+                if(!inputCodeLine[2].includes("to")){
+                    consoleArray.push(`Error: Syntax error at line ${i+1}. (missing assignment operator)`)
+                    codeStateArray.push("variable syntax error: missing assignment operator")
                 } else {
                     if(heap.find(x => x.name == inputCodeLine[1])){
                         consoleArray.push(`Error: Variable creation error at line ${i+1}. ("${inputCodeLine[1]}" already exists)`)
                         codeStateArray.push(`variable exit error: variable already exists`)
                     } else {
-                        heap.push({name: inputCodeLine[1], value: inputCodeLine[2]})
+                        let valueToSet = inputCodeArray[0].toString().split("to ")[1]
+                        heap.push({name: inputCodeLine[1], value: valueToSet})
                         codeStateArray.push(`variable exit success: created variable with name of "${inputCodeLine[1]}" and value of ${inputCodeLine[2]}`)
                     }
                 }
@@ -85,7 +108,7 @@ function compile(){
                     codeStateArray.push(`pull exit success: pulled the variable "${inputCodeLine[1]}" from heap to callstack`)
                 } else {
                     consoleArray.push(`Error: Variable search error at line ${i+1}. ("${inputCodeLine[1]}" does not exist in heap)`)
-                    codeStateArray.push(`pull exit error: variable search error: variable "${inputCodeLine[1]}"" does not exist in heap`)
+                    codeStateArray.push(`pull exit error: variable search error: variable "${inputCodeLine[1]}" does not exist in heap`)
                 }
             }
             if(inputCodeLine[0] == reserved_keywords[3]){
@@ -95,17 +118,73 @@ function compile(){
                     callstack.splice(callstack.findIndex(x => x.name == inputCodeLine[1]), 1)
                     codeStateArray.push(`push exit success: pushed the variable "${inputCodeLine[1]}" from callstack to heap`)
                 } else {
-                    consoleArray.push(`Error: Variable search error at line ${i+1}. ("${inputCodeLine[1]}"" does not exist in callstack)`)
+                    consoleArray.push(`Error: Variable search error at line ${i+1}. ("${inputCodeLine[1]}" does not exist in callstack)`)
                     codeStateArray.push(`push exit error: variable search error: variable "${inputCodeLine[1]}" does not exist in callstack`)
+                }
+            }
+            if(inputCodeLine[0] == reserved_keywords[4]){
+                codeStateArray.push(`attempting to drop the variable ${inputCodeLine[1]}`)
+                if(callstack.find(x => x.name == inputCodeLine[1])){
+                    callstack.splice(callstack.findIndex(x => x.name == inputCodeLine[1]), 1)
+                    codeStateArray.push(`drop exit success: dropped the variable "${inputCodeLine[1]}"`)
+                } else {
+                    consoleArray.push(`Error: Variable drop error at line ${i+1}. ("${inputCodeLine[1]}" does not exist)`)
+                    codeStateArray.push(`drop exit error: variable "${inputCodeLine[1]}" does not exist`)
+                }
+            }
+            if(inputCodeLine[0] == reserved_keywords[5]){
+                // check if the specified variable exists in the callstack, if so, overwrite its value with the new value
+                codeStateArray.push(`attempting to overwrite the variable ${inputCodeLine[1]}`)
+                // check if there is a colon
+                if(!inputCodeLine[2].includes("to")){
+                    consoleArray.push(`Error: Syntax error at line ${i+1}. (missing assignment operator)`)
+                    codeStateArray.push(`overwrite exit error: missing assignment operator`)
+                } else {
+                    if(callstack.find(x => x.name == inputCodeLine[1])){
+                        let newValue = inputCodeLine.join(" ").split("to ")[1]
+                        callstack[callstack.findIndex(x => x.name == inputCodeLine[1])].value = newValue
+                        codeStateArray.push(`owrite exit success: overwrote the value of "${inputCodeLine[1]}"`)
+                    } else {
+                        consoleArray.push(`Error: Variable overwrite error at line ${i+1}. ("${inputCodeLine[1]}" does not exist)`)
+                        codeStateArray.push(`owrite exit error: variable "${inputCodeLine[1]}" does not exist`)
+                    }
+                }
+            }
+            if(inputCodeLine[0] == reserved_keywords[6]){
+                codeStateArray.push(`attempting to evaluate expression`)
+                if(inputCodeLine[1] == undefined || inputCodeLine[2] == undefined || inputCodeLine[3] == undefined){
+                    consoleArray.push(`Error: Syntax error at line ${i+1}. (missing evaluation arguments)`)
+                    codeStateArray.push(`evaluation exit error: missing evaluation arguments`)
+                } else {
+                    let number1 = inputCodeLine[1]
+                    let operation = inputCodeLine[2]
+                    let number2 = inputCodeLine[3]
+                    if(math(operation, number1, number2) == false){
+                        consoleArray.push(`Error: Evaluation error at line ${i+1}. (invalid evaluation operation)`)
+                        codeStateArray.push(`evaluation exit error: invalid evaluation operation`)
+                    } else {
+                        consoleArray.push(math(operation, number1, number2))
+                        codeStateArray.push(`evaluation exit success: evaluated expression`)
+                    }
+                }
+            }
+            if(inputCodeLine[0] == reserved_keywords[7]){
+                switch(inputCodeLine[1]){
+                    case "heap":
+                        consoleArray.push("Variables in Heap:\n"+JSON.stringify(heap))
+                        break;
+                    case "callstack":
+                    consoleArray.push("Variables in Heap:\n"+JSON.stringify(callstack))
+                        break;
+                    default:
+                        consoleArray.push(`Error: Invalid argument at line ${i+1}. (${inputCodeLine[0]} is not a valid argument)`)
+                        codeStateArray.push(`invalid argument error: ${inputCodeLine[0]} is not a valid argument`)
                 }
             }
         }
     }
 
-    if(consoleArray.length > 6){
-        consoleArray.shift()
-    }
-    appConsole.innerHTML = consoleArray.join("<br>")
+    appConsole.innerHTML = consoleArray.join("\n")
 }
 
 </script>

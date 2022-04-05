@@ -5,28 +5,64 @@ Structure of variables:
 {name: "variable_name", value: "variable_value"}
 
 Defining variables:
-# variable_name variable_value
+assign variable_name to variable_value
+
+Creates a variable with the name of "variable_name" and value of "variable_value".
 
 -----
 
 logging variables:
 log variable_name
 
-Searches the callstack for the variable and outputs it to the application console.
+Searches the callstack for the variable "variable_name" and outputs it to the application console.
 
 -----
 
 pulling variables:
 pull variable_name
 
-Moves a variable from the heap to the callstack.
+Moves the variable "variable_name" from the heap to the callstack.
 
 -----
 
 pushing variables:
 push variable_name
 
-Moves a variable from the callstack to the heap.
+Moves the variable "variable_name" from the callstack to the heap.
 
 -----
 
+dropping variables:
+drop variable_name
+
+Removes the variable "variable_name" from the callstack and the heap.
+
+-----
+
+overwriting variables:
+owrite variable_name to variabe_value
+
+Overwrites the specified "variable_name" value with "variable_value".
+
+-----
+
+Math:
+
+math number1 operation number2
+
+valid operations:
+add: addition
+sub: subtraction
+mult: multiplication
+div: division
+mod: modulus
+
+Evaluates the specified mathmatical operations.
+
+-----
+
+show:
+
+show callstack / heap
+
+Outputs the callstack or heap to the application console.
