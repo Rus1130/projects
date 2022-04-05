@@ -14,21 +14,34 @@
 </head>
 <body>
     <a href="docs.txt" download="Rustype-docs">
-        <button style="position: absolute;" onclick="">Download Docs</button>
+        <button style="position: absolute; top: 100px" onclick="">Download Docs</button>
     </a>
-    <textarea id="input" rows="70" cols="150" autocomplete="off" style="position: absolute; top: 40px;">
+    <div id="console"></div>
+    <textarea id="input" rows="70" cols="150" autocomplete="off" style="position: absolute; top: 120px;">
     </textarea>
 </body>
 <script>
+
 const input = document.getElementById("input")
+const appConsole = document.getElementById("console")
 input.value = ""
 
 hotkeys('enter', () => {
     compile()
 })
 
+let callstack = [] // touchable
+let heap = [] // untouchable
+
 function compile(){
-    console.log(input.value)
+    let newConsoleLine = document.createElement("div")
+    
+    newConsoleLine.innerHTML = input.value
+    appConsole.appendChild(newConsoleLine)
+
+    if(appConsole.childElementCount > 6){
+        appConsole.removeChild(appConsole.firstChild)
+    }
 }
 
 </script>
