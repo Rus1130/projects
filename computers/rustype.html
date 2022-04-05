@@ -1,0 +1,34 @@
+<style>
+    html {
+        font-family: monospace;
+    }
+    textarea {
+        resize: none;
+    }
+    textarea:focus {
+        outline: none;
+    }
+</style>
+<head>
+    <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
+</head>
+<body>
+    <a href="docs.txt" download="Rustype-docs">
+        <button style="position: absolute;" onclick="">Download Docs</button>
+    </a>
+    <textarea id="input" rows="70" cols="150" autocomplete="off" style="position: absolute; top: 40px;">
+    </textarea>
+</body>
+<script>
+const input = document.getElementById("input")
+input.value = ""
+
+hotkeys('enter', () => {
+    compile()
+})
+
+function compile(){
+    console.log(input.value)
+}
+
+</script>

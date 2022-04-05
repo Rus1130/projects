@@ -1,0 +1,6 @@
+Heap: Variables that are first created are automatically put into the heap, there, they cannot be modified.
+Callstack: Variables can be moved into the callstack so they can be edited.
+Variables are mutable or immutable, if they are immutable they cannot be edited.
+
+Structure of variable:
+{name: "name", value: "value", mut: true/false}
