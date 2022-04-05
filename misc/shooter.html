@@ -31,21 +31,24 @@
 </head>
 <body>
     <div id="setup-container">
-        Gameboard Rows: <input type="number" id="board-rows" min="8" max="32" value="16"><br>
-        Gameboard Columns: <input type="number" id="board-columns" min="8" max="64" value="32"><br>
-        Amount of Enemies: <input type="number" id="enemy-amount" min="1" max="128" value="16"><br>
-        Enemy Damage: <input type="number" id="enemy-damage" min="1" max="16" value="1"><br>
+        Gameboard Rows: <input type="number" id="board-rows" min="8" max="64" value="16" required><br>
+        Gameboard Columns: <input type="number" id="board-columns" min="8" max="64" value="32" required><br>
+        Player Health: <input type="number" id="player-health" min="2" max="50" value="16" required><br>
+        Amount of Enemies: <input type="number" id="enemy-amount" min="1" max="128" value="16" required><br>
+        Enemy Damage: <input type="number" id="enemy-damage" min="1" max="16" value="1" required><br>
+        Enemy Speed: <input type="number" id="enemy-speed" min="50" max="2000" value="1000" required><br>
         <button class="btn" onclick="setup()">New Game</button>
         WASD to move, space to shoot, shift + WASD to rotate
     </div>
     <div id="ui-container" class="invisible">
-        <button class="btn" id="newgamebtn" onclick="reset()">Back to Menu</button>
-        <div id="alert-box"></div>
+        <button class="btn" id="newgamebtn" onclick="reset()">Back to Menu</button><br>
+        <div id="alert-box" style="font-size: 20px;"></div><br>
+        Frames: <span id="frames-counter">0</span><br><br>
+        <div id="health-bar" style="color: red;"></div><br>
+        <div id="top-border"></div>
+        <div id="game-space"></div>
+        <div id="bottom-border"></div>
     </div>
-    <br>
-    <div id="top-border"></div>
-    <div id="game-space"></div>
-    <div id="bottom-border"></div>
 </body>
 
 <script>
@@ -59,28 +62,45 @@ const rowsInput = document.getElementById("board-rows")
 const colsInput = document.getElementById("board-columns")
 const enemyAmountInput = document.getElementById("enemy-amount")
 const enemyDamageInput = document.getElementById("enemy-damage")
+const enemySpeedInput = document.getElementById("enemy-speed")
+const playerHealthInput = document.getElementById("player-health")
+const frames = document.getElementById("frames-counter")
+let innerFrames = 0
+
+const healthbarHTML = document.getElementById("health-bar")
 
 const playerUpState = "╧"
 const playerLeftState = "╢"
 const playerDownState = "╤"
 const playerRightState = "╟"
+const verticalBullet = "|"
+const horizontalBullet = "-"
 
-
-const rowMax = 32
-const colMax = 64
-const enemyAmountMax = 128
-const enemyDamageMax = 16
 
 const rowMin = 8
 const colMin = 8
 const enemyAmountMin = 1
 const enemyDamageMin = 1
-const shotCooldown = 0
+const enemySpeedMin = 50
+const playerHealthMin = 2
+
+const rowMax = 64
+const colMax = 64
+const enemyAmountMax = 128
+const enemyDamageMax = 16
+const enemyspeedMax = 2000
+const playerHealthMax = 50
+
+let won = false;
+
+
+const shotCooldown = 150
 
 let bullets = []
 let enemies = []
+let healthbar = []
 
-const invalidInputsCheck = (rowMin + colMin + enemyAmountMin + enemyDamageMin) <= (parseInt(rowsInput) + parseInt(colsInput) + parseInt(enemyAmountInput) + parseInt(enemyDamageInput)) <= (rowMax + colMax + enemyAmountMax + enemyDamageMax)
+const invalidInputsCheck = (rowMin + colMin + enemyAmountMin + enemyDamageMin + enemySpeedMin + playerHealthMin) <= (parseInt(rowsInput.value) + parseInt(colsInput.value) + parseInt(enemyAmountInput.value) + parseInt(enemyDamageInput.value) + parseInt(enemySpeedInput.value) + parseInt(playerHealthInput.value)) <= (rowMax + colMax + enemyAmountMax + enemyDamageMax + enemyspeedMax + playerHealthMax)
 
 let gameboard = [];
 let straightFrame = [];
@@ -102,6 +122,11 @@ const randomizer = (values) => {
         }
     }
     return pickedValue;
+}
+
+function removeIndex(array, index){
+    array.splice(index, 1);
+    return array;
 }
 
 let state = "setup";
@@ -140,7 +165,8 @@ let player = {
     sprite: valueSprites[pickedState],
     x: "",
     y: "",
-    state: pickedState
+    state: pickedState,
+    health: ""
 }
 
 function random(min, max) {
@@ -158,46 +184,55 @@ function setup(){
         if(!invalidInputsCheck){
             alert("Invalid Setup Values")
         } else {
-            if(parseInt(rowsInput.value) == "" || parseInt(colsInput.value) == ""){
-                alert("Please fill out all fields.")
-            } else {
-                document.getElementById("setup-container").setAttribute("class","invisible")
-                for (i = 0; i < parseInt(rowsInput.value); i++) {
-                    gameboard.push([]);
-                    for (j = 0; j < parseInt(colsInput.value); j++) {
-                        gameboard[i].push(bkgd);
-                    }
+            document.getElementById("setup-container").setAttribute("class","invisible")
+            for (i = 0; i < parseInt(rowsInput.value); i++) {
+                gameboard.push([]);
+                for (j = 0; j < parseInt(colsInput.value); j++) {
+                    gameboard[i].push(bkgd);
                 }
-                for(k = 0; k < gameboard[0].length; k++){
-                    straightFrame.push("═")
-                    
-                }
-                for(l = 0; l < enemyAmountInput.value; l++){
-                    let enemyY = random(0, gameboard.length)
-                    let enemyX = random(0, gameboard[enemyY].length - 1)
-                    enemies.push({x: enemyX, y: enemyY, sprite: "¤"})
-                }
-                for(m = 0; m < enemies.length; m++){
-                    gameboard[enemies[m].y][enemies[m].x] = enemies[m].sprite
-                }
-                setTimeout(() => {
-                    document.getElementById("top-border").innerHTML = "╔" + straightFrame.join("") + "╗"
-                    document.getElementById("bottom-border").innerHTML = "╚" + straightFrame.join("") + "╝"
-                    player.y = random(0, gameboard.length)
-                    player.x = random(0, gameboard[player.y].length)
-                    gameboard[player.y][player.x] = player.sprite
-                    gamespace.innerHTML = JSON.stringify(gameboard).replaceAll("],[","║<br>║").replace("[[","║").replace("]]","║").replaceAll('"',"").replaceAll(",","")
-                    state = "play"
-                    document.getElementById("ui-container").removeAttribute("class","invisible")
-                }, 100)
-
             }
+            for(k = 0; k < gameboard[0].length; k++){
+                straightFrame.push("═")
+                
+            }
+            for(l = 0; l < enemyAmountInput.value; l++){
+                let enemyY = random(0, gameboard.length - 1)
+                let enemyX = random(0, gameboard[enemyY].length - 1)
+                enemies.push({x: enemyX, y: enemyY, sprite: "¤", state: "alive"})
+            }
+            for(m = 0; m < enemies.length; m++){
+                gameboard[enemies[m].y][enemies[m].x] = enemies[m].sprite
+            }
+            for(n = 0; n < playerHealthInput.value; n++){
+                healthbar.push("█")
+            }
+            setTimeout(() => {
+                document.getElementById("top-border").innerHTML = "╔" + straightFrame.join("") + "╗"
+                document.getElementById("bottom-border").innerHTML = "╚" + straightFrame.join("") + "╝"
+                player.y = random(0, gameboard.length)
+                player.x = random(0, gameboard[player.y].length)
+                player.health = healthbar.join("")
+                gameboard[player.y][player.x] = player.sprite
+                gamespace.innerHTML = JSON.stringify(gameboard).replaceAll("],[","║<br>║").replace("[[","║").replace("]]","║").replaceAll('"',"").replaceAll(",","")
+                state = "play"
+                document.getElementById("ui-container").removeAttribute("class","invisible")
+            }, 100)
         }
     }
 }
 
-hotkeys('w,a,s,d,space, shift+w, shift+a, shift+s, shift+d', function (event, handler){
+hotkeys('w,a,s,d,space, shift+w, shift+a, shift+s, shift+d,q', function (event, handler){
     switch (handler.key){
+        case "q":
+            if(state == "play" && won == false){
+                state = "pause"
+                alertBox.innerHTML = "PAUSED"
+                alertBox.setAttribute("class","visible")
+            } else if(state == "pause"){
+                state = "play"
+                alertBox.innerHTML = ""
+                alertBox.setAttribute("class","invisible")
+            }
         case 'w':
             if(state != "play"){} else {
                 player.state = "facing-up"
@@ -265,28 +300,28 @@ hotkeys('w,a,s,d,space, shift+w, shift+a, shift+s, shift+d', function (event, ha
                         case "facing-up":
                             if(gameboard[player.y - 1] == undefined){} else {
                                 if(gameboard[player.y - 1][player.x] == "&nbsp;"){
-                                    bullets.push({y: parseInt(player.y - 1), x: parseInt(player.x), sprite: "╎", state: "up"})
+                                    bullets.push({y: parseInt(player.y - 1), x: parseInt(player.x), sprite: verticalBullet, state: "up"})
                                 }
                             }
                         break;
                         case "facing-left":
                             if(gameboard[player.y][player.x - 1] == undefined){} else {
                                 if(gameboard[player.y][player.x - 1] == "&nbsp;"){
-                                    bullets.push({y: parseInt(player.y), x: parseInt(player.x - 1), sprite: "╌", state: "left"})
+                                    bullets.push({y: parseInt(player.y), x: parseInt(player.x - 1), sprite: horizontalBullet, state: "left"})
                                 }
                             }
                         break;
                         case "facing-down":
                             if(gameboard[player.y + 1] == undefined){} else {
                                 if(gameboard[player.y + 1][player.x] == "&nbsp;"){
-                                    bullets.push({y: parseInt(player.y + 1), x: parseInt(player.x), sprite: "╎", state: "down"})
+                                    bullets.push({y: parseInt(player.y + 1), x: parseInt(player.x), sprite: verticalBullet, state: "down"})
                                 }
                             }
                         break;
                         case "facing-right":
                             if(gameboard[player.y][player.x + 1] == undefined){} else {
                                 if(gameboard[player.y][player.x + 1] == "&nbsp;"){
-                                    bullets.push({y: parseInt(player.y), x: parseInt(player.x + 1), sprite: "╌", state: "right"})
+                                    bullets.push({y: parseInt(player.y), x: parseInt(player.x + 1), sprite: horizontalBullet, state: "right"})
                                 }
                             }
                             
@@ -299,25 +334,25 @@ hotkeys('w,a,s,d,space, shift+w, shift+a, shift+s, shift+d', function (event, ha
         case "shift+w":
             if(state != "play"){} else {
                 player.state = "facing-up"
-                player.sprite = "╧"
+                player.sprite = playerUpState
             }
         break;
         case "shift+a":
             if(state != "play"){} else {
                 player.state = "facing-left"
-                player.sprite = "╢"
+                player.sprite = playerLeftState
             }
         break;
         case "shift+s":
             if(state != "play"){} else {
                 player.state = "facing-down"
-                player.sprite = "╤"
+                player.sprite = playerDownState
             }
         break;
         case "shift+d":
             if(state != "play"){} else {
                 player.state = "facing-right"
-                player.sprite = "╟"
+                player.sprite = playerRightState
             }
         break;
     }
@@ -328,14 +363,11 @@ setInterval(() => {
         switch(bullets[i].state){
             case "up":
                 if(bullets[i].y > 0){
-                    if(gameboard[bullets[i].y][bullets[i].x] == "¤"){
-                        bullets[i].sprite = bkgd
-                    } else {
-                        gameboard[bullets[i].y][bullets[i].x] = bkgd
-                        bullets[i].y -= 1
-                    }
+                    gameboard[bullets[i].y][bullets[i].x] = bkgd
+                    bullets[i].y -= 1
                 } else {
-                    bullets[i].sprite = bkgd
+                    gameboard[bullets[i].y][bullets[i].x] = bkgd
+                    bullets[i].state = "collided"
                 }
             break;
             case "left":
@@ -343,7 +375,8 @@ setInterval(() => {
                     gameboard[bullets[i].y][bullets[i].x] = bkgd
                     bullets[i].x -= 1
                 } else {
-                    bullets[i].sprite = bkgd
+                    gameboard[bullets[i].y][bullets[i].x] = bkgd
+                    bullets[i].state = "collided"
                 }
             break;
             case "down":
@@ -351,7 +384,8 @@ setInterval(() => {
                     gameboard[bullets[i].y][bullets[i].x] = bkgd
                     bullets[i].y += 1
                 } else {
-                    bullets[i].sprite = bkgd
+                    gameboard[bullets[i].y][bullets[i].x] = bkgd
+                    bullets[i].state = "collided"
                 }
             break;
             case "right":
@@ -359,27 +393,85 @@ setInterval(() => {
                     gameboard[bullets[i].y][bullets[i].x] = bkgd
                     bullets[i].x += 1
                 } else {
-                    bullets[i].sprite = bkgd
+                    gameboard[bullets[i].y][bullets[i].x] = bkgd
+                    bullets[i].state = "collided"
                 }
             break;
         }
     }
 }, 100)
 
+setInterval(() => {
+    if(state != "play"){} else {
+        for(i = 0; i < enemies.length; i++){
+            if((enemies[i].x > player.x) && gameboard[enemies[i].y][enemies[i].x - 1] != enemies[i].sprite){
+                gameboard[enemies[i].y][enemies[i].x] = bkgd
+                enemies[i].x -= 1
+            }
+            if(enemies[i].x < player.x && gameboard[enemies[i].y][enemies[i].x + 1] != enemies[i].sprite){
+                gameboard[enemies[i].y][enemies[i].x] = bkgd
+                enemies[i].x += 1
+            }
+            if(enemies[i].y > player.y && gameboard[enemies[i].y - 1][enemies[i].x] != enemies[i].sprite){
+                gameboard[enemies[i].y][enemies[i].x] = bkgd
+                enemies[i].y -= 1
+            }
+            if(enemies[i].y < player.y && gameboard[enemies[i].y + 1][enemies[i].x] != enemies[i].sprite){
+                gameboard[enemies[i].y][enemies[i].x] = bkgd
+                enemies[i].y += 1
+            }
+            gameboard[enemies[i].y][enemies[i].x] = enemies[i].sprite
+        }
+    }
+}, enemySpeedInput.value)
+
 function boardUpdate(){
     if(state != "play"){} else {
-        for( i = 0; i < bullets.length; i++){
-            gameboard[bullets[i].y][bullets[i].x] = bullets[i].sprite
+        for(i = 0; i < bullets.length; i++){
+            if(bullets[i].state == "collided"){
+                removeIndex(bullets, i)
+            } else {
+                gameboard[bullets[i].y][bullets[i].x] = bullets[i].sprite
+            }
         }
-        for(j = 0; j < enemyAmountInput.value; j++){
-            let enemyName = "enemy" + j
-            if(enemies[enemyName] == undefined){} else {
-                if(enemies[enemyName].x == bullets[i].y && enemies[enemyName].y == bullets[i].y){
-                    delete enemies[enemyName]
+        for(i = 0; i < enemies.length; i++){
+            for(j = 0; j < bullets.length; j++){
+                if(enemies[i].x == bullets[j].x && enemies[i].y == bullets[j].y){
+                    gameboard[bullets[j].y][bullets[j].x] = bkgd
+                    removeIndex(bullets, j)
+                    removeIndex(enemies, i)
+                } else {
+                    gameboard[bullets[j].y][bullets[j].x] = bullets[j].sprite
                 }
             }
         }
+
+        for(i = 0; i < enemies.length; i++){
+            if(enemies[i].x == player.x && enemies[i].y == player.y){
+                removeIndex(enemies, i)
+                for(j = 0; j < enemyDamageInput.value; j++){
+                    healthbar.pop()
+                }
+            }
+        }
+        if(healthbar.length == 0){
+            state = "paused"
+            alertBox.innerHTML = "You Died!"
+            setTimeout(() => {
+                reset()
+            }, 1000)
+        }
+        if(enemies.length == 0){
+            alertBox.innerHTML = "You Win!"
+            state = "paused"
+            won = true
+        }
+        if(state != "paused"){
+            innerFrames++
+            frames.innerHTML = innerFrames
+        }
         gameboard[player.y][player.x] = player.sprite
+        healthbarHTML.innerHTML = healthbar.join("")
         gamespace.innerHTML = JSON.stringify(gameboard).replaceAll("],[","║<br>║").replace("[[","║").replace("]]","║").replaceAll('"',"").replaceAll(",","")
         
     }
