@@ -3,3 +3,6 @@ Callstack: Variables can be moved into the callstack so they can be modified.
 
 Structure of variables:
 {name: "name", value: "value"}
+
+Defining variables:
+#name value

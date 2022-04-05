@@ -17,13 +17,17 @@
         <button style="position: absolute; top: 100px" onclick="">Download Docs</button>
     </a>
     <div id="console"></div>
-    <textarea id="input" rows="70" cols="150" autocomplete="off" style="position: absolute; top: 120px;">
+    <textarea id="input" rows="30" cols="100" autocomplete="off" style="position: absolute; top: 120px;">
     </textarea>
 </body>
 <script>
 
 const input = document.getElementById("input")
 const appConsole = document.getElementById("console")
+let inputCodeArray;
+let inputCodeLine;
+let consoleArray = []
+let code_state = "";
 input.value = ""
 
 hotkeys('enter', () => {
@@ -34,14 +38,21 @@ let callstack = [] // touchable
 let heap = [] // untouchable
 
 function compile(){
-    let newConsoleLine = document.createElement("div")
-    
-    newConsoleLine.innerHTML = input.value
-    appConsole.appendChild(newConsoleLine)
+    inputCodeLine = []
+    inputCodeArray = input.value.split("\n")
+    // main code loop
 
-    if(appConsole.childElementCount > 6){
-        appConsole.removeChild(appConsole.firstChild)
+    // variable defining
+    for(i = 0; i < inputCodeArray.length; i++){
+        // fix =========================================================
     }
+    consoleArray.push(input.value + '<br>')
+    if(consoleArray.length > 6){
+        consoleArray.shift()
+    }
+    console.log(heap)
+    appConsole.innerHTML = consoleArray.join("")
+
 }
 
 </script>
