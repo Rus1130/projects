@@ -83,7 +83,7 @@ for(i = 1; i <= displayScreenWidth * displayScreenHeight; i++){
 
 let callstack = [] // touchable
 let heap = [] // untouchable
-const reserved_keywords = ["assign", "log", "pull", "push", "drop", "owrite", "eval", "show", "listener", "screen"]
+const reserved_keywords = ["assign", "log", "pull", "push", "drop", "owrite", "eval", "show", /*"listener"*/, "screen"]
 const allowed_keys = /[a-zA-Z0-9space]/
 
 
@@ -126,7 +126,7 @@ function compile(inputCode, resetValues){
     catch(e){}
     for(let i = 0; i < inputCodeArray.length; i++){
         inputCodeLine = inputCodeArray[i].split(" ")
-        if(!reserved_keywords.includes(inputCodeLine[0]) && inputCodeLine[0] != ""){
+        if(!reserved_keywords.includes(inputCodeLine[0]) && inputCodeLine[0] != "" && inputCodeLine[0] != "\n"){
             consoleArray.push(`Error: Keyword error at line ${i+1}. ("${inputCodeLine[0]}" is an unknown keyword)`)
             codeStateArray.push(`compile error: unknown keyword`)
         } else {
@@ -244,6 +244,7 @@ function compile(inputCode, resetValues){
                 }
             }
             // listeners
+            /*
             if(inputCodeLine[0] == reserved_keywords[8]){
                 codeStateArray.push(`attempting to edit listeners`)
                 if(!inputCodeLine.includes("=>") && inputCodeLine[1] != "remove"){
@@ -257,9 +258,11 @@ function compile(inputCode, resetValues){
                         switch(inputCodeLine[1]){
                             case "add":
                                 hotkeys(`${inputCodeLine[2]}`, () => {
-                                    // for(k = 0; k < array.length; k++){
-                                    //     compile(array[k], false)
-                                    // }
+                                    let codeToRun = inputCodeLine.join(" ").split(" => ")[1].split("; ")
+                                    console.log(codeToRun)
+                                    for(k = 0; k < codeToRun.length; k++){
+                                        compile(codeToRun[k], false)
+                                    }
                                 })
                                 break;
                             case "remove":
@@ -273,6 +276,7 @@ function compile(inputCode, resetValues){
                     }
                 }
             }
+            */
             // screen color
             if(inputCodeLine[0] == reserved_keywords[9]){
                 codeStateArray.push(`attempting to modify screen`)
