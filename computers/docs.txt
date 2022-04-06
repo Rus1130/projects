@@ -48,14 +48,14 @@ Overwrites the specified "variable_name" value with "variable_value".
 
 Math:
 
-math number1 operation number2
+eval number1 operation number2
 
 valid operations:
-add: addition
-sub: subtraction
-mult: multiplication
-div: division
-mod: modulus
++: addition
+-: subtraction
+*: multiplication
+/: division
+%: modulus
 
 Evaluates the specified mathmatical operations.
 
@@ -76,22 +76,22 @@ listener add / remove key => raw code
 add: handler that binds the raw code to the key
 remove: handler that unbinds the raw code from the key
 
-example syntax:
+Example syntax:
 listener add a => log example_var
 listener remove a => log example_var
 
-listeners can have multiple instrunctions given, separation by a semicolon.
-example:
+Listeners can have multiple instrunctions given, separation by a semicolon.
+Example:
 listener add a => assign name to value; pull name; log name
 
 -----
 
 display screen:
 The display screen is a grid of 53x50 pixels. Each pixel has an ID between 1 and 2650. It starts at the top left pixel, and ends at the bottom right.
-Cell example ID = 40
+Pixel example ID = 40
 
 changing the color of a pixel:
-screen color cellID to colorID
+screen pixel pixelID to color colorID
 list of color IDS:
 0: white
 1: black
@@ -103,8 +103,15 @@ list of color IDS:
 7: yellow
 8: orange
 9: brown
-A: pink
-B: purple
-C: gray
-D: light gray
-E: dark gray
+10: pink
+11: purple
+12: gray
+13: light gray
+14: dark gray
+
+Variables can be used as pixelIDs and colorIDs by prefixing the variable with "v:".
+Example:
+screen pixel v:example_var to color v:example_var
+
+Listeners can be used to change the color of a pixel.
+Example: listener add a => screen pixel 40 to color 1

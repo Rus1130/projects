@@ -61,24 +61,24 @@ const colorIDObject = {
     "7": 0xFFFF00, // yellow
     "8": 0xFFA500, // orange
     "9": 0xA52A2A, // brown
-    "A": 0xFF69B4, // pink
-    "B": 0x800080, // purple
-    "C": 0x808080, // gray
-    "D": 0xC0C0C0, // light gray
-    "E": 0xA9A9A9 // dark gray
+    "10": 0xFF69B4, // pink
+    "11": 0x800080, // purple
+    "12": 0x808080, // gray
+    "13": 0xC0C0C0, // light gray
+    "14": 0xA9A9A9 // dark gray
 }
 
-const colorCheck = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E"]
+const colorCheck = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14"]
 
 hotkeys('enter', () => {
     compile(input.value, true)
 })
 
 for(i = 1; i <= displayScreenWidth * displayScreenHeight; i++){
-    let newCell = document.createElement("span")
-    newCell.style.outline = "0.1px solid black"
-    newCell.id = "cell" + i
-    displayScreen.appendChild(newCell)
+    let pixel = document.createElement("span")
+    pixel.style.outline = "0.1px solid black"
+    pixel.id = "pixel" + i
+    displayScreen.appendChild(pixel)
 }
 
 let callstack = [] // touchable
@@ -89,19 +89,19 @@ const allowed_keys = /[a-zA-Z0-9space]/
 
 function math(operation, num1, num2){
     switch(operation){
-        case "add": //add
+        case "+": //add
             return parseFloat((parseFloat(num1) + parseFloat(num2)).toPrecision(12));
             break
-        case "sub": //subtract
+        case "-": //subtract
             return parseFloat((parseFloat(num1) - parseFloat(num2)).toPrecision(12));
             break;
-        case "mult": //multiply
+        case "*": //multiply
             return parseFloat((parseFloat(num1) * parseFloat(num2)).toPrecision(12));
             break;
-        case "div": //divide
+        case "/": //divide
             return parseFloat((parseFloat(num1) / parseFloat(num2)).toPrecision(12));
             break;
-        case "mod": //modulus
+        case "%": //modulus
             return parseFloat((parseFloat(num1) % parseFloat(num2)).toPrecision(12));
             break;
         default:
@@ -118,6 +118,7 @@ function compile(inputCode, resetValues){
         appConsole.innerHTML = "";
         codeStateArray = [];
         consoleArray = [];
+        hotkeys.unbind();
     }
     try {
         inputCodeArray = inputCode.split("\n")
@@ -125,7 +126,7 @@ function compile(inputCode, resetValues){
     catch(e){}
     for(let i = 0; i < inputCodeArray.length; i++){
         inputCodeLine = inputCodeArray[i].split(" ")
-        if(!reserved_keywords.includes(inputCodeLine[0])){
+        if(!reserved_keywords.includes(inputCodeLine[0]) && inputCodeLine[0] != ""){
             consoleArray.push(`Error: Keyword error at line ${i+1}. ("${inputCodeLine[0]}" is an unknown keyword)`)
             codeStateArray.push(`compile error: unknown keyword`)
         } else {
@@ -133,14 +134,14 @@ function compile(inputCode, resetValues){
             if(inputCodeLine[0] == reserved_keywords[0]){
                 codeStateArray.push(`attempting to create variable`)
                 if(!inputCodeLine[2].includes("to")){
-                    consoleArray.push(`Error: Syntax error at line ${i+1}. (missing assignment operator)`)
-                    codeStateArray.push("variable syntax error: missing assignment operator")
+                    consoleArray.push(`Error: Syntax error at line ${i+1}. (missing assignment operator "to")`)
+                    codeStateArray.push(`variable syntax error: missing assignment operator "to"`)
                 } else {
                     if(heap.find(x => x.name == inputCodeLine[1])){
                         consoleArray.push(`Error: Variable creation error at line ${i+1}. ("${inputCodeLine[1]}" already exists)`)
                         codeStateArray.push(`variable exit error: variable already exists`)
                     } else {
-                        let valueToSet = inputCodeArray[0].toString().split("to ")[1]
+                        let valueToSet = inputCodeArray[i].toString().split("to ")[1]
                         heap.push({name: inputCodeLine[1], value: valueToSet})
                         codeStateArray.push(`variable exit success: created variable with name of "${inputCodeLine[1]}" and value of ${inputCodeLine[2]}`)
                     }
@@ -196,8 +197,8 @@ function compile(inputCode, resetValues){
             if(inputCodeLine[0] == reserved_keywords[5]){
                 codeStateArray.push(`attempting to overwrite the variable ${inputCodeLine[1]}`)
                 if(!inputCodeLine[2].includes("to")){
-                    consoleArray.push(`Error: Syntax error at line ${i+1}. (missing assignment operator)`)
-                    codeStateArray.push(`overwrite exit error: missing assignment operator`)
+                    consoleArray.push(`Error: Syntax error at line ${i+1}. (missing assignment operator "to")`)
+                    codeStateArray.push(`overwrite exit error: missing assignment operator "to"`)
                 } else {
                     if(callstack.find(x => x.name == inputCodeLine[1])){
                         let newValue = inputCodeLine.join(" ").split("to ")[1]
@@ -246,8 +247,8 @@ function compile(inputCode, resetValues){
             if(inputCodeLine[0] == reserved_keywords[8]){
                 codeStateArray.push(`attempting to edit listeners`)
                 if(!inputCodeLine.includes("=>") && inputCodeLine[1] != "remove"){
-                    consoleArray.push(`Error: Syntax error at line ${i+1}. (missing assignment operator)`)
-                    codeStateArray.push(`listener modification exit error: missing assignment operator`)
+                    consoleArray.push(`Error: Syntax error at line ${i+1}. (missing assignment operator "=>")`)
+                    codeStateArray.push(`listener modification exit error: missing assignment operator "=>"`)
                 } else {
                     if(!allowed_keys.test(inputCodeLine[2])){
                         consoleArray.push(`Error: System error at line ${i+1}. (assignment to reserved or invalid key)`)
@@ -256,17 +257,16 @@ function compile(inputCode, resetValues){
                         switch(inputCodeLine[1]){
                             case "add":
                                 hotkeys(`${inputCodeLine[2]}`, () => {
-                                    let codeToRun = inputCodeLine.join(" ").split("=> ")[1].split(";")
-                                    for(k = 0; k < codeToRun.length; k++){
-                                        compile(codeToRun[k], false)
-                                    }
+                                    // for(k = 0; k < array.length; k++){
+                                    //     compile(array[k], false)
+                                    // }
                                 })
                                 break;
                             case "remove":
                                     hotkeys.unbind(`${inputCodeLine[2]}`)
                                 break;
                             default:
-                                consoleArray.push(`Error: Listener handling error at line ${i+1}. (missing handler)`)
+                                consoleArray.push(`Error: Listener syntax error at line ${i+1}. (missing handler)`)
                                 codeStateArray.push(`listener modification exit error: missing handler`)
                                 break;
                             }
@@ -276,7 +276,7 @@ function compile(inputCode, resetValues){
             // screen color
             if(inputCodeLine[0] == reserved_keywords[9]){
                 codeStateArray.push(`attempting to modify screen`)
-                if(inputCodeLine.length != 5){
+                if(inputCodeLine.length != 6){
                     consoleArray.push(`Error: Syntax error at line ${i+1}. (missing arguments)`)
                     codeStateArray.push(`screen modification exit error: missing arguments`)
                 } else {
@@ -284,17 +284,44 @@ function compile(inputCode, resetValues){
                         consoleArray.push(`Error: Syntax error at line ${i+1}. (missing assignment operator)`)
                         codeStateArray.push(`screen modification exit error: missing assignment operator`)
                     } else {
-                        let cellID = inputCodeLine[2]
-                        let colorID = inputCodeLine[4]
-                        if(cellID < 1 || cellID > 2650){
-                            consoleArray.push(`Error: Syntax error at line ${i+1}. (invalid cellID)`)
-                            codeStateArray.push(`screen modification exit error: invalid cellID`)
+                        if(inputCodeLine[1] != "pixel" || inputCodeLine[4] != "color"){
+                            consoleArray.push(`Error: Syntax error at line ${i+1}. (invalid argument(s))`)
+                            codeStateArray.push(`screen modification exit error: invalid argument(s)`)
                         } else {
-                            if(!colorCheck.includes(colorID)){
-                                consoleArray.push(`Error: Syntax error at line ${i+1}. (invalid colorID)`)
-                                codeStateArray.push(`screen modification exit error: invalid colorID`)
+                            let pixelIDArray = inputCodeLine[2].split(":")
+                            let colorIDArray = inputCodeLine[5].split(":")
+                            let pixelID;
+                            let colorID;
+                            if(pixelIDArray[0] == "v"){
+                                if(callstack.find(x => x.name == pixelIDArray[1])){
+                                    pixelID = callstack[callstack.findIndex(x => x.name == pixelIDArray[1])].value
+                                } else {
+                                    consoleArray.push(`Error: Variable error at line ${i+1}. (variable "${pixelIDArray[1]}" does not exist)`)
+                                    codeStateArray.push(`screen modification exit error: variable "${pixelIDArray[1]}" does not exist`)
+                                }
                             } else {
-                                document.getElementById(`cell${cellID}`).setAttribute("style", `background-color: ${colorIDObject[colorID]}`)
+                                pixelID = pixelIDArray[0]
+                            }
+                            if(colorIDArray[0] == "v"){
+                                if(callstack.find(x => x.name == colorIDArray[1])){
+                                    colorID = callstack[callstack.findIndex(x => x.name == colorIDArray[1])].value
+                                } else {
+                                    consoleArray.push(`Error: Variable error at line ${i+1}. (variable "${colorIDArray[1]}" does not exist)`)
+                                    codeStateArray.push(`screen modification exit error: variable "${colorIDArray[1]}" does not exist`)
+                                }
+                            } else {
+                                colorID = colorIDArray[0]
+                            }
+                            if(pixelID < 1 || pixelID > 2650){
+                                consoleArray.push(`Error: System error at line ${i+1}. (invalid pixelID; must be between 1 inclusive and 2650 inclusive)`)
+                                codeStateArray.push(`screen modification exit error: invalid pixelID`)
+                            } else {
+                                if(!colorCheck.includes(colorID)){
+                                    consoleArray.push(`Error: System error at line ${i+1}. (invalid colorID; must be between 1 inclusive and 14 inclusive)`)
+                                    codeStateArray.push(`screen modification exit error: invalid colorID`)
+                                } else {
+                                    document.getElementById(`pixel${pixelID}`).setAttribute("style", `background-color: ${colorIDObject[colorID]}`)
+                                }
                             }
                         }
                     }
