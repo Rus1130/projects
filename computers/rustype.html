@@ -30,12 +30,16 @@ let codeStateArray = []
 input.value = ""
 
 hotkeys('enter', () => {
-    compile()
+    compile(input.value, true)
 })
 
 let callstack = [] // touchable
 let heap = [] // untouchable
-const reserved_keywords = ["assign", "log", "pull", "push", "drop", "owrite", "eval","show"]
+const reserved_keywords = ["assign", "log", "pull", "push", "drop", "owrite", "eval", "show", "listener"]
+const allowed_keys = /[a-zA-Z0-9space]/
+
+
+
 
 function math(operation, num1, num2){
     switch(operation){
@@ -60,14 +64,18 @@ function math(operation, num1, num2){
     }
 }
 
-function compile(){
-    codeStateArray = [];
-    appConsole.innerHTML = ""
-    consoleArray = []
-    heap = [];
-    callstack = [];
-    inputCodeArray = input.value.split("\n")
-
+function compile(inputCode, resetValues){
+    if(resetValues == true){
+        heap = [];
+        callstack = [];
+        appConsole.innerHTML = "";
+        codeStateArray = [];
+        consoleArray = [];
+    }
+    try {
+        inputCodeArray = inputCode.split("\n")
+    }
+    catch(e){}
     for(let i = 0; i < inputCodeArray.length; i++){
         inputCodeLine = inputCodeArray[i].split(" ")
         if(!reserved_keywords.includes(inputCodeLine[0])){
@@ -133,9 +141,7 @@ function compile(){
                 }
             }
             if(inputCodeLine[0] == reserved_keywords[5]){
-                // check if the specified variable exists in the callstack, if so, overwrite its value with the new value
                 codeStateArray.push(`attempting to overwrite the variable ${inputCodeLine[1]}`)
-                // check if there is a colon
                 if(!inputCodeLine[2].includes("to")){
                     consoleArray.push(`Error: Syntax error at line ${i+1}. (missing assignment operator)`)
                     codeStateArray.push(`overwrite exit error: missing assignment operator`)
@@ -177,8 +183,36 @@ function compile(){
                     consoleArray.push("Variables in Heap:\n"+JSON.stringify(callstack))
                         break;
                     default:
-                        consoleArray.push(`Error: Invalid argument at line ${i+1}. (${inputCodeLine[0]} is not a valid argument)`)
-                        codeStateArray.push(`invalid argument error: ${inputCodeLine[0]} is not a valid argument`)
+                        consoleArray.push(`Error: Invalid argument at line ${i+1}. ("${inputCodeLine[0]}" is not a valid argument)`)
+                        codeStateArray.push(`invalid argument error: "${inputCodeLine[0]}" is not a valid argument`)
+                }
+            }
+            if(inputCodeLine[0] == reserved_keywords[8]){
+                codeStateArray.push(`attempting to edit listeners`)
+                if(!inputCodeLine.includes("=>") && inputCodeLine[1] != "remove"){
+                    consoleArray.push(`Error: Syntax error at line ${i+1}. (missing assignment operator)`)
+                    codeStateArray.push(`listener modification exit error: missing assignment operator`)
+                } else {
+                    if(!allowed_keys.test(inputCodeLine[2])){
+                        consoleArray.push(`Error: System error at line ${i+1}. (assignment to reserved or invalid key)`)
+                        codeStateArray.push(`listener modification exit error: assignment to reserved or invalid key`)
+                    } else {
+                        switch(inputCodeLine[1]){
+                            case "add":
+                                hotkeys(`${inputCodeLine[2]}`, () => {
+                                    let codeToRun = inputCodeLine.join(" ").split("=> ")[1]
+                                    compile(codeToRun, false)
+                                })
+                                break;
+                            case "remove":
+                                    hotkeys.unbind(`${inputCodeLine[2]}`)
+                                break;
+                            default:
+                                consoleArray.push(`Error: Listener handling error at line ${i+1}. (missing handler)`)
+                                codeStateArray.push(`listener modification exit error: missing handler`)
+                                break;
+                            }
+                    }
                 }
             }
         }

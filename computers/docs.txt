@@ -66,3 +66,16 @@ show:
 show callstack / heap
 
 Outputs the callstack or heap to the application console.
+
+-----
+
+listeners:
+
+listener add / remove key => raw code
+
+add: handler that binds the raw code to the key
+remove: handler that unbinds the raw code from the key
+
+example syntax:
+listener add a => log example_var
+listener remove a => log example_var
