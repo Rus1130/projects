@@ -200,8 +200,12 @@ function compile(inputCode, resetValues){
                         switch(inputCodeLine[1]){
                             case "add":
                                 hotkeys(`${inputCodeLine[2]}`, () => {
-                                    let codeToRun = inputCodeLine.join(" ").split("=> ")[1]
-                                    compile(codeToRun, false)
+                                    // create an array than joins the rest of the line until ;, then new array
+
+                                    let codeToRun = inputCodeLine.join(" ").split("=> ")[1].split("; ")
+                                    for(k = 0; k < codeToRun.length; k++){
+                                        compile(codeToRun[k], false)
+                                    }
                                 })
                                 break;
                             case "remove":

@@ -79,3 +79,7 @@ remove: handler that unbinds the raw code from the key
 example syntax:
 listener add a => log example_var
 listener remove a => log example_var
+
+listeners can have multiple instrunctions given, separation by a semicolon.
+example:
+listener add a => assign name to value; pull name; log name
