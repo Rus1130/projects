@@ -8,6 +8,19 @@
     textarea:focus {
         outline: none;
     }
+    .screen {
+        display: grid;
+        grid-template-columns: repeat(53, 15px);
+        grid-template-rows: repeat(50, 15px);
+    }
+    #ui-grid {
+        display: grid;
+        grid-template-rows: repeat(2, 360px);
+        grid-template-columns: repeat(2, 500px);
+        column-gap: 20px;
+        row-gap: 20px;
+    
+    }
 </style>
 <head>
     <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
@@ -16,29 +29,62 @@
     <a href="docs.txt" download="Rustype-docs">
         <button position="absolute;">Download Docs</button>
     </a><br><br>
-    <textarea id="input" rows="30" cols="80" autocomplete="off" spellcheck="false" title="code editor"></textarea>
-    <textarea id="console" rows="30" cols="80" readonly spellcheck="false" title="code output"></textarea>
+    <!--1 textarea row = 12px-->
+    <div id="ui-grid">
+        <textarea id="input" rows="30" cols="100" autocomplete="off" spellcheck="false" title="code editor" style="width: 500px"></textarea>
+        <span id="display-screen" class="screen" style="width: 500px"></span>
+        <textarea id="console" rows="30" cols="100" readonly spellcheck="false" title="code output" style="width: 500px"></textarea>
+    </div>
 </body>
 <script>
 
+const displayScreenWidth = 53;
+const displayScreenHeight = 50;
+
 const input = document.getElementById("input")
 const appConsole = document.getElementById("console")
+const displayScreen = document.getElementById("display-screen")
 let inputCodeArray;
 let inputCodeLine;
 let consoleArray = []
 let codeStateArray = []
 input.value = ""
 
+const colorIDObject = {
+    "0": 0xFFFFFF, // white
+    "1": 0x000000, // black
+    "2": 0xFF0000, // red
+    "3": 0x00FF00, // green
+    "4": 0x0000FF, // blue
+    "5": 0x00FFFF, // cyan
+    "6": 0xFF00FF, // magenta
+    "7": 0xFFFF00, // yellow
+    "8": 0xFFA500, // orange
+    "9": 0xA52A2A, // brown
+    "A": 0xFF69B4, // pink
+    "B": 0x800080, // purple
+    "C": 0x808080, // gray
+    "D": 0xC0C0C0, // light gray
+    "E": 0xA9A9A9 // dark gray
+}
+
+const colorCheck = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E"]
+
 hotkeys('enter', () => {
     compile(input.value, true)
 })
 
+for(i = 1; i <= displayScreenWidth * displayScreenHeight; i++){
+    let newCell = document.createElement("span")
+    newCell.style.outline = "0.1px solid black"
+    newCell.id = "cell" + i
+    displayScreen.appendChild(newCell)
+}
+
 let callstack = [] // touchable
 let heap = [] // untouchable
-const reserved_keywords = ["assign", "log", "pull", "push", "drop", "owrite", "eval", "show", "listener"]
+const reserved_keywords = ["assign", "log", "pull", "push", "drop", "owrite", "eval", "show", "listener", "screen"]
 const allowed_keys = /[a-zA-Z0-9space]/
-
-
 
 
 function math(operation, num1, num2){
@@ -64,6 +110,7 @@ function math(operation, num1, num2){
     }
 }
 
+
 function compile(inputCode, resetValues){
     if(resetValues == true){
         heap = [];
@@ -82,6 +129,7 @@ function compile(inputCode, resetValues){
             consoleArray.push(`Error: Keyword error at line ${i+1}. ("${inputCodeLine[0]}" is an unknown keyword)`)
             codeStateArray.push(`compile error: unknown keyword`)
         } else {
+            // variable
             if(inputCodeLine[0] == reserved_keywords[0]){
                 codeStateArray.push(`attempting to create variable`)
                 if(!inputCodeLine[2].includes("to")){
@@ -98,6 +146,7 @@ function compile(inputCode, resetValues){
                     }
                 }
             }
+            // logging
             if(inputCodeLine[0] == reserved_keywords[1]){
                 codeStateArray.push(`attempting to log the variable ${inputCodeLine[1]}`)
                 if(callstack[callstack.findIndex(x => x.name == inputCodeLine[1])] == undefined){
@@ -108,6 +157,7 @@ function compile(inputCode, resetValues){
                     codeStateArray.push(`log exit success: logged the value of "${inputCodeLine[1]}"`)
                 }
             }
+            // pulling from heap
             if(inputCodeLine[0] == reserved_keywords[2]){
                 codeStateArray.push(`attempting to pull the variable ${inputCodeLine[1]}`)
                 if(heap.find(x => x.name == inputCodeLine[1])){
@@ -119,6 +169,7 @@ function compile(inputCode, resetValues){
                     codeStateArray.push(`pull exit error: variable search error: variable "${inputCodeLine[1]}" does not exist in heap`)
                 }
             }
+            // pushing to heap
             if(inputCodeLine[0] == reserved_keywords[3]){
                 codeStateArray.push(`attempting to push the variable ${inputCodeLine[1]}`)
                 if(callstack.find(x => x.name == inputCodeLine[1])){
@@ -130,6 +181,7 @@ function compile(inputCode, resetValues){
                     codeStateArray.push(`push exit error: variable search error: variable "${inputCodeLine[1]}" does not exist in callstack`)
                 }
             }
+            // dropping from heap and callstack
             if(inputCodeLine[0] == reserved_keywords[4]){
                 codeStateArray.push(`attempting to drop the variable ${inputCodeLine[1]}`)
                 if(callstack.find(x => x.name == inputCodeLine[1])){
@@ -140,6 +192,7 @@ function compile(inputCode, resetValues){
                     codeStateArray.push(`drop exit error: variable "${inputCodeLine[1]}" does not exist`)
                 }
             }
+            // overwrite variable
             if(inputCodeLine[0] == reserved_keywords[5]){
                 codeStateArray.push(`attempting to overwrite the variable ${inputCodeLine[1]}`)
                 if(!inputCodeLine[2].includes("to")){
@@ -156,6 +209,7 @@ function compile(inputCode, resetValues){
                     }
                 }
             }
+            // evaluate math
             if(inputCodeLine[0] == reserved_keywords[6]){
                 codeStateArray.push(`attempting to evaluate expression`)
                 if(inputCodeLine[1] == undefined || inputCodeLine[2] == undefined || inputCodeLine[3] == undefined){
@@ -174,6 +228,7 @@ function compile(inputCode, resetValues){
                     }
                 }
             }
+            // show heap or callstack
             if(inputCodeLine[0] == reserved_keywords[7]){
                 switch(inputCodeLine[1]){
                     case "heap":
@@ -187,6 +242,7 @@ function compile(inputCode, resetValues){
                         codeStateArray.push(`invalid argument error: "${inputCodeLine[0]}" is not a valid argument`)
                 }
             }
+            // listeners
             if(inputCodeLine[0] == reserved_keywords[8]){
                 codeStateArray.push(`attempting to edit listeners`)
                 if(!inputCodeLine.includes("=>") && inputCodeLine[1] != "remove"){
@@ -200,9 +256,7 @@ function compile(inputCode, resetValues){
                         switch(inputCodeLine[1]){
                             case "add":
                                 hotkeys(`${inputCodeLine[2]}`, () => {
-                                    // create an array than joins the rest of the line until ;, then new array
-
-                                    let codeToRun = inputCodeLine.join(" ").split("=> ")[1].split("; ")
+                                    let codeToRun = inputCodeLine.join(" ").split("=> ")[1].split(";")
                                     for(k = 0; k < codeToRun.length; k++){
                                         compile(codeToRun[k], false)
                                     }
@@ -216,6 +270,33 @@ function compile(inputCode, resetValues){
                                 codeStateArray.push(`listener modification exit error: missing handler`)
                                 break;
                             }
+                    }
+                }
+            }
+            // screen color
+            if(inputCodeLine[0] == reserved_keywords[9]){
+                codeStateArray.push(`attempting to modify screen`)
+                if(inputCodeLine.length != 5){
+                    consoleArray.push(`Error: Syntax error at line ${i+1}. (missing arguments)`)
+                    codeStateArray.push(`screen modification exit error: missing arguments`)
+                } else {
+                    if(inputCodeLine[3] != "to"){
+                        consoleArray.push(`Error: Syntax error at line ${i+1}. (missing assignment operator)`)
+                        codeStateArray.push(`screen modification exit error: missing assignment operator`)
+                    } else {
+                        let cellID = inputCodeLine[2]
+                        let colorID = inputCodeLine[4]
+                        if(cellID < 1 || cellID > 2650){
+                            consoleArray.push(`Error: Syntax error at line ${i+1}. (invalid cellID)`)
+                            codeStateArray.push(`screen modification exit error: invalid cellID`)
+                        } else {
+                            if(!colorCheck.includes(colorID)){
+                                consoleArray.push(`Error: Syntax error at line ${i+1}. (invalid colorID)`)
+                                codeStateArray.push(`screen modification exit error: invalid colorID`)
+                            } else {
+                                document.getElementById(`cell${cellID}`).setAttribute("style", `background-color: ${colorIDObject[colorID]}`)
+                            }
+                        }
                     }
                 }
             }

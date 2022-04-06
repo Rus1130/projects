@@ -83,3 +83,28 @@ listener remove a => log example_var
 listeners can have multiple instrunctions given, separation by a semicolon.
 example:
 listener add a => assign name to value; pull name; log name
+
+-----
+
+display screen:
+The display screen is a grid of 53x50 pixels. Each pixel has an ID between 1 and 2650. It starts at the top left pixel, and ends at the bottom right.
+Cell example ID = 40
+
+changing the color of a pixel:
+screen color cellID to colorID
+list of color IDS:
+0: white
+1: black
+2: red
+3: green
+4: blue
+5: cyan
+6: magenta
+7: yellow
+8: orange
+9: brown
+A: pink
+B: purple
+C: gray
+D: light gray
+E: dark gray
