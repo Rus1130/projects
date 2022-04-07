@@ -92,6 +92,7 @@ const colorCheck = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14"
 const comparison_operators = ["=","!=",">","<",">=","<="]
 let callstack = []
 let heap = []
+let functions = {}
 let bound_keys = [];
 const allowed_keys = /[a-zA-Z0-9space]/
 const colorIDObject = {
@@ -119,7 +120,11 @@ function removeAllChildNodes(parent) {
     }
 }
 
-const reserved_keywords = ["//","vdef","pull","push"]
+function checkIfEnclosed(string, leftEncloser, rightEncloser){
+    return Boolean (string[0] == leftEncloser && string[string.length - 1] == rightEncloser)
+}
+
+const reserved_keywords = ["//","var","pull","push", "log", "func"]
 
 function compile(inputCode, resetValues){
     if(resetValues == true){
@@ -152,11 +157,12 @@ function compile(inputCode, resetValues){
             if(inputCodeLine[0] == reserved_keywords[1]){
                 let assignment_operator = inputCodeLine[2]
                 if(assignment_operator != "="){
-                    consoleArray.push(`Error: Missing assignment operator. (line ${i+1}`)
+                    consoleArray.push(`Error: Missing assignment operator. (line ${i+1})`)
                 } else {
                     let varName = inputCodeLine[1]
+                    // remove the first and last index of a string
                     providedValue = inputCodeLine.join(" ").split(`${assignment_operator} `)[1]
-                    if(providedValue[0] == '"' && providedValue[providedValue.length - 1] == '"'){
+                    if(checkIfEnclosed(providedValue,'"','"')){
                         let variableExists = false
                         for(let j = 0; j < heap.length; j++){
                             if(heap[j].name == varName){
@@ -171,17 +177,18 @@ function compile(inputCode, resetValues){
                         if(variableExists){
                             consoleArray.push(`Error: Variable "${varName}" is already defined. (line ${i+1})`)
                         } else {
-                            heap.push({name: varName, value: providedValue})
+                            heap.push({name: varName, value: providedValue.replaceAll('"',"")})
                         }
                     } else {
-                        compile(inputCodeLine.join(" "), false)
+                        let codeToRun = inputCodeLine.slice(3)
+                        compile(codeToRun.join(" "), false)
                     }
                 }
             }
             // variable movement (pull to callstack)
             if(inputCodeLine[0] == reserved_keywords[2]){
-                if(inputCodeLine.length != 2){
-                    consoleArray.push(`Error: Syntax error. (line ${i+1})`)
+                if(inputCodeLine[1] == "" || inputCodeLine.length != 2){
+                    consoleArray.push(`Syntax Error: Incomplete line. (line ${i+1})`)
                 } else {
                     let varName = inputCodeLine[1]
                     if(heap.find(x => x.name == varName)){
@@ -194,21 +201,76 @@ function compile(inputCode, resetValues){
             }
             // variable movement (push to heap)
             if(inputCodeLine[0] == reserved_keywords[3]){
-                if(inputCodeLine.length != 2){
-                    consoleArray.push(`Error: Syntax error. (line ${i+1})`)
+                if(inputCodeLine[1] == "" || inputCodeLine.length != 2){
+                    consoleArray.push(`Syntax Error: Incomplete line. (line ${i+1})`)
                 } else {
                     let varName = inputCodeLine[1]
-                    if(heap.find(x => x.name == varName)){
-                        callstack.push({name: varName, value: heap[heap.findIndex(x => x.name == varName)].value})
-                        heap.splice(heap.findIndex(x => x.name == varName), 1)
+                    if(callstack.find(x => x.name == varName)){
+                        heap.push({name: varName, value: callstack[callstack.findIndex(x => x.name == varName)].value})
+                        callstack.splice(callstack.findIndex(x => x.name == varName), 1)
                     } else {
-                        consoleArray.push(`Error: Variable "${inputCodeLine[1]}" does not exist in heap. (line ${i+1})`)
+                        consoleArray.push(`Error: Variable "${inputCodeLine[1]}" does not exist in callstack. (line ${i+1})`)
                     }
+                }
+            }
+
+            // variable logging
+            if(inputCodeLine[0] == reserved_keywords[4]){
+                let whatToLog = inputCodeLine.slice(1).join(" ")
+                if(checkIfEnclosed(whatToLog, '"','"')){
+                    consoleArray.push(whatToLog)
+                } else {
+                    if(inputCodeLine[1] == "" || inputCodeLine.length != 2){
+                        consoleArray.push(`Syntax Error: Incomplete line. (line ${i+1})`)
+                    } else {
+                        let varName = inputCodeLine[1]
+                        if(callstack.find(x => x.name == varName)){
+                            consoleArray.push(`${callstack[callstack.findIndex(x => x.name == varName)].value}`)
+                        } else {
+                            consoleArray.push(`Error: Variable "${varName}" does not exist in callstack. (line ${i+1})`)
+                        }
+                    }
+                }
+
+            }
+
+            // fuction creation
+            if(inputCodeLine[0] == reserved_keywords[5]){
+                switch(inputCodeLine[1]){
+                    case "create":
+                        if(inputCodeLine[2] == ""){
+                            consoleArray.push(`Error: Function identifier expected. (line ${i+1})`)
+                        } else {
+                            let functionBody = inputCodeLine.slice(3).join(" ")
+                            if(checkIfEnclosed(functionBody, '{','}')){
+                                let functionName = inputCodeLine[2]
+                                let functionCode = functionBody.replaceAll("{ ","").replaceAll(" }","").split(", ")
+                                functions[functionName] = functionCode
+                            } else {
+                                consoleArray.push(`Error: Function body expected. (line ${i+1})`)
+                            }
+                        }
+                    break;
+                    case "run":
+                        if(inputCodeLine[2] == "" || inputCodeLine.length != 3){
+                            consoleArray.push(`Syntax Error: Incomplete line. (line ${i+1})`)
+                        } else {
+                            let functionName = inputCodeLine[2]
+                            if(!functions.hasOwnProperty(functionName)){
+                                consoleArray.push(`Error: Function "${functionName}" does not exist. (line ${i+1})`)
+                            } else {
+                                let codeToRun = functions[functionName]
+                                for(j = 0; j < codeToRun.length; j++){
+                                    compile(codeToRun[j], false)
+                                }
+                            }
+                        }
+
+
                 }
             }
         }
     }
     appConsole.innerHTML = consoleArray.join("\n")
 }
-
 </script>

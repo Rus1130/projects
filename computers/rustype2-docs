@@ -8,7 +8,7 @@ Use "//" to define a comment.
 
 -----Creating Variables-----
 
-vdef variable_name = value
+var variable_name = value
 
 Variables are automatiaclly put into the heap where variables cannot be refrenced or modified. Move variables to the callstack to access them.
 Variable values that are enclosed in quotation marks ("value") are assumed to be strings. Variables values that are not enclosed in quotation marks will be ran as code, and that output will be used as the value.
@@ -20,5 +20,22 @@ push variable_name
 
 Variables can be freely moved between the callstack and the heap using the push and pull keywords. Use pull to move a variable from the heap to the callstack, and use push to move a variable from the callstack to the heap.
 
------Logging Variable Values-----
+-----Logging Values-----
 
+log variable_name
+log "Hello, world!"
+
+Log the variable's value to the console. Enclose the parameter in quotation marks to log it as a string.
+
+-----Creating Functions-----
+
+func create functionName { code }
+func create functionName2 { code1, code2, code3 }
+
+Functions can be created to run the same code multiple times. The function body must be enclosed by curly braces. The function body can have multiple lines of code, each separated by a comma.
+
+-----Running Functions-----
+
+func run functionName
+
+Use the keyword "run" to run the function.
