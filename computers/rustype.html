@@ -83,7 +83,8 @@ for(i = 1; i <= displayScreenWidth * displayScreenHeight; i++){
 
 let callstack = [] // touchable
 let heap = [] // untouchable
-const reserved_keywords = ["assign", "log", "pull", "push", "drop", "owrite", "eval", "show", /*"listener"*/, "screen"]
+const reserved_keywords = ["assign", "log", "pull", "push", "drop", "owrite", "eval", "show", "onkey", "screen"]
+let bound_keys = [];
 const allowed_keys = /[a-zA-Z0-9space]/
 
 
@@ -118,7 +119,9 @@ function compile(inputCode, resetValues){
         appConsole.innerHTML = "";
         codeStateArray = [];
         consoleArray = [];
-        hotkeys.unbind();
+        for(i = 0; i < bound_keys.length; i++){
+            hotkeys.unbind(bound_keys[i]);
+        }
     }
     try {
         inputCodeArray = inputCode.split("\n")
@@ -135,7 +138,7 @@ function compile(inputCode, resetValues){
                 codeStateArray.push(`attempting to create variable`)
                 if(!inputCodeLine[2].includes("to")){
                     consoleArray.push(`Error: Syntax error at line ${i+1}. (missing assignment operator "to")`)
-                    codeStateArray.push(`variable syntax error: missing assignment operator "to"`)
+                    codeStateArray.push(`variable exit error: missing assignment operator "to"`)
                 } else {
                     if(heap.find(x => x.name == inputCodeLine[1])){
                         consoleArray.push(`Error: Variable creation error at line ${i+1}. ("${inputCodeLine[1]}" already exists)`)
@@ -203,10 +206,10 @@ function compile(inputCode, resetValues){
                     if(callstack.find(x => x.name == inputCodeLine[1])){
                         let newValue = inputCodeLine.join(" ").split("to ")[1]
                         callstack[callstack.findIndex(x => x.name == inputCodeLine[1])].value = newValue
-                        codeStateArray.push(`owrite exit success: overwrote the value of "${inputCodeLine[1]}"`)
+                        codeStateArray.push(`overwrite exit success: overwrote the value of "${inputCodeLine[1]}"`)
                     } else {
                         consoleArray.push(`Error: Variable overwrite error at line ${i+1}. ("${inputCodeLine[1]}" does not exist)`)
-                        codeStateArray.push(`owrite exit error: variable "${inputCodeLine[1]}" does not exist`)
+                        codeStateArray.push(`overwrite exit error: variable "${inputCodeLine[1]}" does not exist`)
                     }
                 }
             }
@@ -234,49 +237,43 @@ function compile(inputCode, resetValues){
                 switch(inputCodeLine[1]){
                     case "heap":
                         consoleArray.push("Variables in Heap:\n"+JSON.stringify(heap))
+                        codeStateArray.push(`show exit success: showed the variables in heap`)
                         break;
                     case "callstack":
-                    consoleArray.push("Variables in Heap:\n"+JSON.stringify(callstack))
+                        consoleArray.push("Variables in Heap:\n"+JSON.stringify(callstack))
+                        codeStateArray.push(`show exit success: showed the variables in callstack`)
                         break;
                     default:
                         consoleArray.push(`Error: Invalid argument at line ${i+1}. ("${inputCodeLine[0]}" is not a valid argument)`)
-                        codeStateArray.push(`invalid argument error: "${inputCodeLine[0]}" is not a valid argument`)
+                        codeStateArray.push(`argument exit error: "${inputCodeLine[0]}" is not a valid argument`)
                 }
             }
-            // listeners
-            /*
+            // onkey
             if(inputCodeLine[0] == reserved_keywords[8]){
-                codeStateArray.push(`attempting to edit listeners`)
-                if(!inputCodeLine.includes("=>") && inputCodeLine[1] != "remove"){
-                    consoleArray.push(`Error: Syntax error at line ${i+1}. (missing assignment operator "=>")`)
-                    codeStateArray.push(`listener modification exit error: missing assignment operator "=>"`)
+                if(!allowed_keys.test(inputCodeLine[1])){
+                    consoleArray.push(`Error: System error at line ${i+1}. (${inputCodeLine[1]} is not a valid assignable key)`)
+                    codeStateArray.push(`key assignment exit error: is not a valid assignable key`)
                 } else {
-                    if(!allowed_keys.test(inputCodeLine[2])){
-                        consoleArray.push(`Error: System error at line ${i+1}. (assignment to reserved or invalid key)`)
-                        codeStateArray.push(`listener modification exit error: assignment to reserved or invalid key`)
+                    if(inputCodeLine[2] != "=>"){
+                        consoleArray.push(`Error: Syntax error at line ${i+1}. (missing assignment operator "=>")`)
+                        codeStateArray.push(`key assignment exit error: missing assignment operator "=>"`)
                     } else {
-                        switch(inputCodeLine[1]){
-                            case "add":
-                                hotkeys(`${inputCodeLine[2]}`, () => {
-                                    let codeToRun = inputCodeLine.join(" ").split(" => ")[1].split("; ")
-                                    console.log(codeToRun)
-                                    for(k = 0; k < codeToRun.length; k++){
-                                        compile(codeToRun[k], false)
-                                    }
-                                })
-                                break;
-                            case "remove":
-                                    hotkeys.unbind(`${inputCodeLine[2]}`)
-                                break;
-                            default:
-                                consoleArray.push(`Error: Listener syntax error at line ${i+1}. (missing handler)`)
-                                codeStateArray.push(`listener modification exit error: missing handler`)
-                                break;
-                            }
+                        if(inputCodeLine.length < 4){
+                            consoleArray.push(`Error: Syntax error at line ${i+1}. (missing assignment value)`)
+                            codeStateArray.push(`key assignment exit error: missing assignment value`)
+                        } else {
+                            let codeToRunArray = inputCodeLine.join(" ").split(" => ")[1].toString().split(", ")
+                            bound_keys.push(inputCodeLine[1])
+                            hotkeys(`${inputCodeLine[1]}`, () => {
+                                for(j = 0; j < codeToRunArray.length; j++){
+                                    compile(codeToRunArray[j], false)
+                                }
+                            })
+                        }
                     }
                 }
             }
-            */
+
             // screen color
             if(inputCodeLine[0] == reserved_keywords[9]){
                 codeStateArray.push(`attempting to modify screen`)
@@ -285,8 +282,8 @@ function compile(inputCode, resetValues){
                     codeStateArray.push(`screen modification exit error: missing arguments`)
                 } else {
                     if(inputCodeLine[3] != "to"){
-                        consoleArray.push(`Error: Syntax error at line ${i+1}. (missing assignment operator)`)
-                        codeStateArray.push(`screen modification exit error: missing assignment operator`)
+                        consoleArray.push(`Error: Syntax error at line ${i+1}. (missing assignment operator "to")`)
+                        codeStateArray.push(`screen modification exit error: missing assignment operator "to"`)
                     } else {
                         if(inputCodeLine[1] != "pixel" || inputCodeLine[4] != "color"){
                             consoleArray.push(`Error: Syntax error at line ${i+1}. (invalid argument(s))`)
@@ -325,6 +322,7 @@ function compile(inputCode, resetValues){
                                     codeStateArray.push(`screen modification exit error: invalid colorID`)
                                 } else {
                                     document.getElementById(`pixel${pixelID}`).setAttribute("style", `background-color: ${colorIDObject[colorID]}`)
+                                    codeStateArray.push(`screen modification exit success: modified screen`)
                                 }
                             }
                         }

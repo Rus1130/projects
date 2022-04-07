@@ -69,7 +69,13 @@ Outputs the callstack or heap to the application console.
 
 -----
 
-Listeners used to be here, but fuck them amirite ¯\_(ツ)_/¯
+onkey:
+
+The onkey keyword can be used to create keybinds.
+Many code lines can be used in the onkey event, separated by a comma.
+
+Example:
+onkey a => log example_var, screen pixel 40 to color v:pixel_color
 
 -----
 
@@ -98,7 +104,7 @@ list of color IDS:
 
 Variables can be used as pixelIDs and colorIDs by prefixing the variable with "v:".
 Example:
-screen pixel v:example_var to color v:example_var
+screen pixel v:example_var1 to color v:example_var2
 
-Listeners can be used to change the color of a pixel.
-Example: listener add a => screen pixel 40 to color 1
+The onkey keyword can be used to change the color of a pixel.
+Example: onkey a => screen pixel 40 to color 1
