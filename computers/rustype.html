@@ -51,24 +51,24 @@ let codeStateArray = []
 input.value = ""
 
 const colorIDObject = {
-    "0": 0xFFFFFF, // white
-    "1": 0x000000, // black
-    "2": 0xFF0000, // red
-    "3": 0x00FF00, // green
-    "4": 0x0000FF, // blue
-    "5": 0x00FFFF, // cyan
-    "6": 0xFF00FF, // magenta
-    "7": 0xFFFF00, // yellow
-    "8": 0xFFA500, // orange
-    "9": 0xA52A2A, // brown
-    "10": 0xFF69B4, // pink
-    "11": 0x800080, // purple
-    "12": 0x808080, // gray
-    "13": 0xC0C0C0, // light gray
-    "14": 0xA9A9A9 // dark gray
+    "1": "#FFFFFF", // white
+    "2": "#000000", // black
+    "3": "#FF0000", // red
+    "4": "#00FF00", // green
+    "5": "#0000FF", // blue
+    "6": "#00FFFF", // cyan
+    "7": "#FF00FF", // magenta
+    "8": "#FFFF00", // yellow
+    "9": "#FFA500", // orange
+    "10": "#A52A2A", // brown
+    "11": "#FF69B4", // pink
+    "12": "#800080", // purple
+    "13": "#808080", // gray
+    "14": "#C0C0C0", // light gray
+    "15": "#A9A9A9" // dark gray
 }
 
-const colorCheck = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14"]
+const colorCheck = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"]
 const comparison_operators = ["=","!=",">","<",">=","<="]
 
 hotkeys('enter', () => {
@@ -112,16 +112,28 @@ function math(operation, num1, num2){
     }
 }
 
+function removeAllChildNodes(parent) {
+    while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
+    }
+}
 
 function compile(inputCode, resetValues){
+    
     if(resetValues == true){
         heap = [];
         callstack = [];
-        appConsole.innerHTML = "";
         codeStateArray = [];
         consoleArray = [];
         for(i = 0; i < bound_keys.length; i++){
             hotkeys.unbind(bound_keys[i]);
+        }
+        removeAllChildNodes(displayScreen)
+        for(i = 1; i <= displayScreenWidth * displayScreenHeight; i++){
+            let pixel = document.createElement("span")
+            pixel.style.outline = "0.1px solid black"
+            pixel.id = "pixel" + i
+            displayScreen.appendChild(pixel)
         }
     }
     try {
@@ -147,7 +159,7 @@ function compile(inputCode, resetValues){
                     } else {
                         let valueToSet = inputCodeArray[i].toString().split("to ")[1]
                         heap.push({name: inputCodeLine[1], value: valueToSet})
-                        codeStateArray.push(`variable exit success: created variable with name of "${inputCodeLine[1]}" and value of ${inputCodeLine[2]}`)
+                        codeStateArray.push(`variable exit success: created variable with name of "${inputCodeLine[1]}" and value of ${inputCodeLine[3]}`)
                     }
                 }
             }
@@ -170,8 +182,8 @@ function compile(inputCode, resetValues){
                     heap.splice(heap.findIndex(x => x.name == inputCodeLine[1]), 1)
                     codeStateArray.push(`pull exit success: pulled the variable "${inputCodeLine[1]}" from heap to callstack`)
                 } else {
-                    consoleArray.push(`Error: Variable search error at line ${i+1}. ("${inputCodeLine[1]}" does not exist in heap)`)
-                    codeStateArray.push(`pull exit error: variable search error: variable "${inputCodeLine[1]}" does not exist in heap`)
+                    consoleArray.push(`Error: Heap search error at line ${i+1}. ("${inputCodeLine[1]}" does not exist in heap)`)
+                    codeStateArray.push(`pull exit error: variable "${inputCodeLine[1]}" does not exist in heap`)
                 }
             }
             // pushing to heap
@@ -182,8 +194,8 @@ function compile(inputCode, resetValues){
                     callstack.splice(callstack.findIndex(x => x.name == inputCodeLine[1]), 1)
                     codeStateArray.push(`push exit success: pushed the variable "${inputCodeLine[1]}" from callstack to heap`)
                 } else {
-                    consoleArray.push(`Error: Variable search error at line ${i+1}. ("${inputCodeLine[1]}" does not exist in callstack)`)
-                    codeStateArray.push(`push exit error: variable search error: variable "${inputCodeLine[1]}" does not exist in callstack`)
+                    consoleArray.push(`Error: Callstack search error at line ${i+1}. ("${inputCodeLine[1]}" does not exist in callstack)`)
+                    codeStateArray.push(`push exit error: variable "${inputCodeLine[1]}" does not exist in callstack`)
                 }
             }
             // dropping from heap and callstack
@@ -221,15 +233,43 @@ function compile(inputCode, resetValues){
                     consoleArray.push(`Error: Syntax error at line ${i+1}. (missing evaluation arguments)`)
                     codeStateArray.push(`evaluation exit error: missing evaluation arguments`)
                 } else {
-                    let number1 = inputCodeLine[1]
-                    let operation = inputCodeLine[2]
-                    let number2 = inputCodeLine[3]
-                    if(math(operation, number1, number2) == false){
-                        consoleArray.push(`Error: Evaluation error at line ${i+1}. (invalid evaluation operation)`)
-                        codeStateArray.push(`evaluation exit error: invalid evaluation operation`)
+                    let arg1Array = inputCodeLine[1].split(":")
+                    let arg2Array = inputCodeLine[3].split(":")
+                    let arg1;
+                    let arg2;
+                    let operator = inputCodeLine[2]
+
+                    if(arg1Array[0] == "v"){
+                        if(callstack.find(x => x.name == arg1Array[1])){
+                            arg1 = callstack[callstack.findIndex(x => x.name == arg1Array[1])].value
+                        } else {
+                            consoleArray.push(`Error: Callstack search error at line ${i+1}. (variable "${arg1Array[1]}" does not exist)`)
+                            codeStateArray.push(`evaluation exit error: variable "${arg1Array[1]}" does not exist`)
+                        }
                     } else {
-                        consoleArray.push(math(operation, number1, number2))
-                        codeStateArray.push(`evaluation exit success: evaluated expression`)
+                        arg1 = arg1Array[0]
+                    }
+                    if(arg2Array[0] == "v"){
+                        if(callstack.find(x => x.name == arg2Array[1])){
+                            arg2 = callstack[callstack.findIndex(x => x.name == arg2Array[1])].value
+                        } else {
+                            consoleArray.push(`Error: Callstack search error at line ${i+1}. (variable "${arg2Array[1]}" does not exist)`)
+                            codeStateArray.push(`evaluation exit error: variable "${arg2Array[1]}" does not exist`)
+                        }
+                    } else {
+                        arg2 = arg2Array[0]
+                    }
+                    if(math(operator, arg1, arg2) == false){
+                        consoleArray.push(`Error: Evaluation error at line ${i+1}. (invalid math operation)`)
+                        codeStateArray.push(`evaluation exit error: invalid math operation`)
+                    } else {
+                        if(isNaN(math(operator, arg1, arg2))){
+                            consoleArray.push(`Error: Evaluation error at line ${i+1}. (argument(s) cannot be evaluated)`)
+                            codeStateArray.push(`evaluation exit error: argument(s) cannot be evaluated`)
+                        } else {
+                            consoleArray.push(`${math(operator, arg1, arg2)}`)
+                            codeStateArray.push(`evaluation exit success: evaluated expression`)
+                        }
                     }
                 }
             }
@@ -298,7 +338,7 @@ function compile(inputCode, resetValues){
                                 if(callstack.find(x => x.name == pixelIDArray[1])){
                                     pixelID = callstack[callstack.findIndex(x => x.name == pixelIDArray[1])].value
                                 } else {
-                                    consoleArray.push(`Error: Variable error at line ${i+1}. (variable "${pixelIDArray[1]}" does not exist)`)
+                                    consoleArray.push(`Error: Callstack search error at line ${i+1}. (variable "${pixelIDArray[1]}" does not exist)`)
                                     codeStateArray.push(`screen modification exit error: variable "${pixelIDArray[1]}" does not exist`)
                                 }
                             } else {
@@ -308,7 +348,7 @@ function compile(inputCode, resetValues){
                                 if(callstack.find(x => x.name == colorIDArray[1])){
                                     colorID = callstack[callstack.findIndex(x => x.name == colorIDArray[1])].value
                                 } else {
-                                    consoleArray.push(`Error: Variable error at line ${i+1}. (variable "${colorIDArray[1]}" does not exist)`)
+                                    consoleArray.push(`Error: Callstack search error at line ${i+1}. (variable "${colorIDArray[1]}" does not exist)`)
                                     codeStateArray.push(`screen modification exit error: variable "${colorIDArray[1]}" does not exist`)
                                 }
                             } else {
@@ -319,10 +359,10 @@ function compile(inputCode, resetValues){
                                 codeStateArray.push(`screen modification exit error: invalid pixelID`)
                             } else {
                                 if(!colorCheck.includes(colorID)){
-                                    consoleArray.push(`Error: System error at line ${i+1}. (invalid colorID; must be between 1 inclusive and 14 inclusive)`)
+                                    consoleArray.push(`Error: System error at line ${i+1}. (invalid colorID; must be between 1 inclusive and ${colorCheck.length} inclusive)`)
                                     codeStateArray.push(`screen modification exit error: invalid colorID`)
                                 } else {
-                                    document.getElementById(`pixel${pixelID}`).setAttribute("style", `background-color: ${colorIDObject[colorID]}`)
+                                    document.getElementById(`pixel${pixelID}`).setAttribute("style", `background-color: ${colorIDObject[colorID]}; outline: 0.1px black solid`)
                                     codeStateArray.push(`screen modification exit success: modified screen`)
                                 }
                             }
@@ -332,7 +372,63 @@ function compile(inputCode, resetValues){
             }
             if(inputCodeLine[0] == reserved_keywords[10]){
                 let comparisonArray = inputCodeLine.join(" ").split(" ").slice(1)
-                console.log(comparisonArray)
+
+                let comparator1Array = comparisonArray[0].split(":")
+                let comparator2Array = comparisonArray[2].split(":")
+                let comparisonOperator = comparisonArray[1]
+                let comparator1;
+                let comparator2;
+                if(comparator1Array[0] == "v"){
+                    if(callstack.find(x => x.name == comparator1Array[1])){
+                        comparator1 = callstack[callstack.findIndex(x => x.name == comparator1Array[1])].value
+                    } else {
+                        consoleArray.push(`Error: Callstack search error at line ${i+1}. (variable "${comparator1Array[1]}" does not exist)`)
+                        codeStateArray.push(`comparison exit error: variable "${comparator1Array[1]}" does not exist`)
+                    }
+                } else {
+                    comparator1 = comparator1Array[0]
+                }
+                if(comparator2Array[0] == "v"){
+                    if(callstack.find(x => x.name == comparator2Array[1])){
+                        comparator2 = callstack[callstack.findIndex(x => x.name == comparator2Array[1])].value
+                    } else {
+                        consoleArray.push(`Error: Callstack search error at line ${i+1}. (variable "${comparator2Array[1]}" does not exist)`)
+                        codeStateArray.push(`comparison exit error: variable "${comparator2Array[1]}" does not exist`)
+                    }
+                } else {
+                    comparator2 = comparator2Array[0]
+                }
+                if(!comparison_operators.includes(comparisonOperator)){
+                    consoleArray.push(`Error: Syntax error at line ${i+1}. (invalid comparison operator)`)
+                    codeStateArray.push(`comparison exit error: invalid comparison operator`)
+                } else {
+                    switch(comparisonOperator){
+                        case "=":
+                            consoleArray.push(`Comparison result: ${comparator1 == comparator2}`)
+                            codeStateArray.push(`comparison exit succes: comparison completed`)
+                            break;
+                        case "!=":
+                            consoleArray.push(`Comparison result: ${comparator1 != comparator2}`)
+                            codeStateArray.push(`comparison exit succes: comparison completed`)
+                            break;
+                        case "<":
+                            consoleArray.push(`Comparison result: ${comparator1 < comparator2}`)
+                            codeStateArray.push(`comparison exit succes: comparison completed`)
+                            break;
+                        case "<=":
+                            consoleArray.push(`Comparison result: ${comparator1 <= comparator2}`)
+                            codeStateArray.push(`comparison exit succes: comparison completed`)
+                            break;
+                        case ">":
+                            consoleArray.push(`Comparison result: ${comparator1 > comparator2}`)
+                            codeStateArray.push(`comparison exit succes: comparison completed`)
+                            break;
+                        case ">=":
+                            consoleArray.push(`Comparison result: ${comparator1 >= comparator2}`)
+                            codeStateArray.push(`comparison exit succes: comparison completed`)
+                            break;
+                    }
+                }
             }
         }
     }

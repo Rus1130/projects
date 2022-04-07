@@ -86,28 +86,28 @@ Pixel example ID = 40
 changing the color of a pixel:
 screen pixel pixelID to color colorID
 list of color IDS:
-0: white
-1: black
-2: red
-3: green
-4: blue
-5: cyan
-6: magenta
-7: yellow
-8: orange
-9: brown
-10: pink
-11: purple
-12: gray
-13: light gray
-14: dark gray
+1: white
+2: black
+3: red
+4: green
+5: blue
+6: cyan
+7: magenta
+8: yellow
+9: orange
+10: brown
+11: pink
+12: purple
+13: gray
+14: light gray
+15: dark gray
 
 Variables can be used as pixelIDs and colorIDs by prefixing the variable with "v:".
 Example:
 screen pixel v:example_var1 to color v:example_var2
 
 The "onkey" keyword can be used to change the color of a pixel.
-Example: onkey a => screen pixel 40 to color 1
+Example: onkey a => screen pixel 40 to color 2
 
 -----
 
@@ -121,4 +121,6 @@ Comparison can be done on two strings with the "compare" keyword and the followi
 >= : greater than or equal to
 != : not equal to
 
-Each comparator can have any length.
+example: comparator1 comparison_operation v:example_var1
+
+Each comparator can only be one word in length.
