@@ -1,0 +1,214 @@
+<style>
+    html {
+        font-family: monospace;
+        user-select: none;
+    }
+    textarea {
+        resize: none;
+    }
+    textarea:focus {
+        outline: none;
+    }
+    .screen {
+        display: grid;
+        grid-template-columns: repeat(53, 15px);
+        grid-template-rows: repeat(50, 15px);
+    }
+    #ui-grid {
+        display: grid;
+        grid-template-rows: repeat(2, 360px);
+        grid-template-columns: repeat(2, 500px);
+        column-gap: 20px;
+        row-gap: 20px;
+    
+    }
+</style>
+<head>
+    <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
+</head>
+<body>
+    <a href="docs.txt" download="Rustype-docs">
+        <button position="absolute;">Download Docs</button>
+    </a><br><br>
+    <!--1 textarea row = 12px-->
+    <div id="ui-grid">
+        <textarea id="input" rows="30" cols="100" autocomplete="off" spellcheck="false" title="code editor" style="width: 500px; user-select: initial;"></textarea>
+        <span id="display-screen" class="screen" style="width: 500px"></span>
+        <textarea id="console" rows="30" cols="100" readonly spellcheck="false" title="code output" style="width: 500px; user-select: none;"></textarea>
+    </div>
+</body>
+<script>
+
+const displayScreenWidth = 53;
+const displayScreenHeight = 50;
+
+const input = document.getElementById("input")
+const appConsole = document.getElementById("console")
+const displayScreen = document.getElementById("display-screen")
+let inputCodeArray;
+let inputCodeLine;
+let consoleArray = []
+input.value = ""
+
+
+
+
+
+hotkeys('enter', () => {
+    compile(input.value, true)
+})
+
+for(i = 1; i <= displayScreenWidth * displayScreenHeight; i++){
+    let pixel = document.createElement("span")
+    pixel.style.outline = "0.1px solid black"
+    pixel.id = "pixel" + i
+    displayScreen.appendChild(pixel)
+}
+
+function math(operation, num1, num2){
+    switch(operation){
+        case "+": //add
+            return parseFloat((parseFloat(num1) + parseFloat(num2)).toPrecision(12));
+            break
+        case "-": //subtract
+            return parseFloat((parseFloat(num1) - parseFloat(num2)).toPrecision(12));
+            break;
+        case "*": //multiply
+            return parseFloat((parseFloat(num1) * parseFloat(num2)).toPrecision(12));
+            break;
+        case "/": //divide
+            return parseFloat((parseFloat(num1) / parseFloat(num2)).toPrecision(12));
+            break;
+        case "%": //modulus
+            return parseFloat((parseFloat(num1) % parseFloat(num2)).toPrecision(12));
+            break;
+        default:
+            return false;
+            break;
+    }
+}
+
+const colorCheck = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"]
+const comparison_operators = ["=","!=",">","<",">=","<="]
+let callstack = []
+let heap = []
+let bound_keys = [];
+const allowed_keys = /[a-zA-Z0-9space]/
+const colorIDObject = {
+    "1": "#FFFFFF", // white
+    "2": "#000000", // black
+    "3": "#FF0000", // red
+    "4": "#00FF00", // green
+    "5": "#0000FF", // blue
+    "6": "#00FFFF", // cyan
+    "7": "#FF00FF", // magenta
+    "8": "#FFFF00", // yellow
+    "9": "#FFA500", // orange
+    "10": "#A52A2A", // brown
+    "11": "#FF69B4", // pink
+    "12": "#800080", // purple
+    "13": "#808080", // gray
+    "14": "#C0C0C0", // light gray
+    "15": "#A9A9A9" // dark gray
+}
+
+
+function removeAllChildNodes(parent) {
+    while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
+    }
+}
+
+const reserved_keywords = ["//","vdef","pull","push"]
+
+function compile(inputCode, resetValues){
+    if(resetValues == true){
+        heap = [];
+        callstack = [];
+        consoleArray = [];
+        for(i = 0; i < bound_keys.length; i++){
+            hotkeys.unbind(bound_keys[i]);
+        }
+        removeAllChildNodes(displayScreen)
+        for(i = 1; i <= displayScreenWidth * displayScreenHeight; i++){
+            let pixel = document.createElement("span")
+            pixel.style.outline = "0.1px solid black"
+            pixel.id = "pixel" + i
+            displayScreen.appendChild(pixel)
+        }
+    }
+    try {
+        inputCodeArray = inputCode.split("\n")
+    }
+    catch(e){}
+    for(let i = 0; i < inputCodeArray.length; i++){
+        inputCodeLine = inputCodeArray[i].split(" ")
+        if(!reserved_keywords.includes(inputCodeLine[0]) && inputCodeLine[0] != "" && inputCodeLine[0] != "\n"){
+            consoleArray.push(`Error: "${inputCodeLine[0]}" is an unknown keyword. (line ${i+1})`)
+        } else {
+            // comment
+            if(inputCodeLine[0] == reserved_keywords[0]){}
+            // variable creation
+            if(inputCodeLine[0] == reserved_keywords[1]){
+                let assignment_operator = inputCodeLine[2]
+                if(assignment_operator != "="){
+                    consoleArray.push(`Error: Missing assignment operator. (line ${i+1}`)
+                } else {
+                    let varName = inputCodeLine[1]
+                    providedValue = inputCodeLine.join(" ").split(`${assignment_operator} `)[1]
+                    if(providedValue[0] == '"' && providedValue[providedValue.length - 1] == '"'){
+                        let variableExists = false
+                        for(let j = 0; j < heap.length; j++){
+                            if(heap[j].name == varName){
+                                variableExists = true
+                            }
+                        }
+                        for(let k = 0; k < callstack.length; k++){
+                            if(callstack[k].name == varName){
+                                variableExists = true
+                            }
+                        }
+                        if(variableExists){
+                            consoleArray.push(`Error: Variable "${varName}" is already defined. (line ${i+1})`)
+                        } else {
+                            heap.push({name: varName, value: providedValue})
+                        }
+                    } else {
+                        compile(inputCodeLine.join(" "), false)
+                    }
+                }
+            }
+            // variable movement (pull to callstack)
+            if(inputCodeLine[0] == reserved_keywords[2]){
+                if(inputCodeLine.length != 2){
+                    consoleArray.push(`Error: Syntax error. (line ${i+1})`)
+                } else {
+                    let varName = inputCodeLine[1]
+                    if(heap.find(x => x.name == varName)){
+                        callstack.push({name: varName, value: heap[heap.findIndex(x => x.name == varName)].value})
+                        heap.splice(heap.findIndex(x => x.name == varName), 1)
+                    } else {
+                        consoleArray.push(`Error: Variable "${inputCodeLine[1]}" does not exist in heap. (line ${i+1})`)
+                    }
+                }
+            }
+            // variable movement (push to heap)
+            if(inputCodeLine[0] == reserved_keywords[3]){
+                if(inputCodeLine.length != 2){
+                    consoleArray.push(`Error: Syntax error. (line ${i+1})`)
+                } else {
+                    let varName = inputCodeLine[1]
+                    if(heap.find(x => x.name == varName)){
+                        callstack.push({name: varName, value: heap[heap.findIndex(x => x.name == varName)].value})
+                        heap.splice(heap.findIndex(x => x.name == varName), 1)
+                    } else {
+                        consoleArray.push(`Error: Variable "${inputCodeLine[1]}" does not exist in heap. (line ${i+1})`)
+                    }
+                }
+            }
+        }
+    }
+    appConsole.innerHTML = consoleArray.join("\n")
+}
+
+</script>
