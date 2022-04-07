@@ -71,8 +71,8 @@ Outputs the callstack or heap to the application console.
 
 onkey:
 
-The onkey keyword can be used to create keybinds.
-Many code lines can be used in the onkey event, separated by a comma.
+The "onkey" keyword can be used to create keybinds.
+Many code lines can be used in the "onkey" event, separated by a comma.
 
 Example:
 onkey a => log example_var, screen pixel 40 to color v:pixel_color
@@ -106,5 +106,19 @@ Variables can be used as pixelIDs and colorIDs by prefixing the variable with "v
 Example:
 screen pixel v:example_var1 to color v:example_var2
 
-The onkey keyword can be used to change the color of a pixel.
+The "onkey" keyword can be used to change the color of a pixel.
 Example: onkey a => screen pixel 40 to color 1
+
+-----
+
+compare:
+
+Comparison can be done on two strings with the "compare" keyword and the following operators:
+< : less than
+> : greater than
+= : equal to
+<= : less than or equal to
+>= : greater than or equal to
+!= : not equal to
+
+Each comparator can have any length.

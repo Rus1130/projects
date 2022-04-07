@@ -69,6 +69,7 @@ const colorIDObject = {
 }
 
 const colorCheck = ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14"]
+const comparison_operators = ["=","!=",">","<",">=","<="]
 
 hotkeys('enter', () => {
     compile(input.value, true)
@@ -83,7 +84,7 @@ for(i = 1; i <= displayScreenWidth * displayScreenHeight; i++){
 
 let callstack = [] // touchable
 let heap = [] // untouchable
-const reserved_keywords = ["assign", "log", "pull", "push", "drop", "owrite", "eval", "show", "onkey", "screen"]
+const reserved_keywords = ["assign", "log", "pull", "push", "drop", "owrite", "eval", "show", "onkey", "screen", "compare"]
 let bound_keys = [];
 const allowed_keys = /[a-zA-Z0-9space]/
 
@@ -328,6 +329,10 @@ function compile(inputCode, resetValues){
                         }
                     }
                 }
+            }
+            if(inputCodeLine[0] == reserved_keywords[10]){
+                let comparisonArray = inputCodeLine.join(" ").split(" ").slice(1)
+                console.log(comparisonArray)
             }
         }
     }
