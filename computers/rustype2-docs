@@ -61,7 +61,10 @@ Color IDS:
     D: cyan
     E: grey
     F: white
+graphics set pixel 113 => 0
+graphics set pixel 610 => 0
 
+graphics set line 113 610 => 1
 ---Setting Single Pixels---
 
 graphics set pixel pixelID => colorID

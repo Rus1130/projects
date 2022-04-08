@@ -27,7 +27,7 @@
     <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
 </head>
 <body>
-    <a href="docs.txt" download="Rustype-docs">
+    <a href="rustype2-docs.txt" download="Rustype 2.0 docs">
         <button position="absolute;">Download Docs</button>
     </a><br><br>
     <!--1 textarea row = 12px-->
@@ -289,7 +289,7 @@ function compile(inputCode, resetValues){
             // graphics set pixel pixelID => colorID
             if(inputCodeLine[0] == reserved_keywords[6]){
                 if(inputCodeLine[1] != "set"){
-                    consoleArray(`Syntax Error: Incomplete line. (line ${i+1})`)
+                    consoleArray.push(`Syntax Error: Incomplete line. (line ${i+1})`)
                 } else {
                     switch(inputCodeLine[2]){
                         case "pixel":
@@ -329,7 +329,20 @@ function compile(inputCode, resetValues){
                                     if(!checkColorID(colorID)){
                                         consoleArray.push(`System Error: Color ID is not valid. (line ${i+1})`)
                                     } else {
-                                        // fix
+                                        if(pixelID1 > pixelID2){
+                                            consoleArray.push(`System Error: Pixel ID 1 must be less than Pixel ID 2. (line ${i+1})`)
+                                        } else {
+                                            let pixelID1_x = pixelID1 % 53 == 0 ? 53 : pixelID1 % 53;
+                                            let pixelID1_y = Math.ceil(pixelID1 / 53)
+
+                                            let pixelID2_x = pixelID2 % 53 == 0 ? 53 : pixelID2 % 53;
+                                            let pixelID2_y = Math.ceil(pixelID2 / 53)
+
+                                            let distance = Math.ceil(Math.sqrt(Math.pow(pixelID2_x - pixelID1_x, 2) + Math.pow(pixelID2_y - pixelID1_y, 2)))
+
+
+                                            console.log(`${distance}`)
+                                        }
                                     }
                                 }
 
