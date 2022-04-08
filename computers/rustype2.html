@@ -51,12 +51,22 @@ let consoleArray = []
 input.value = ""
 
 
-
-
-
 hotkeys('enter', () => {
     compile(input.value, true)
 })
+
+function drawLine(pixel1, pixel2, color){
+    pixel1_x = pixel1 % 53 == 0 ? 53 : pixel1 % 53
+    pixel2_x = pixel2 % 53 == 0 ? 53 : pixel2 % 53
+
+    pixel1_y = Math.ceil(pixel1 / 53)
+    pixel2_y = Math.ceil(pixel2 / 53)
+
+    let displacement = Math.ceil(Math.sqrt(Math.pow(pixel1_x - pixel2_x, 2) + Math.pow(pixel1_y - pixel2_y, 2)))
+    for(i = pixel1; i <= pixel2; i += 54){
+        document.getElementById(`pixel${i}`).style.backgroundColor = colorIDObject[color]
+    }
+}
 
 for(i = 1; i <= displayScreenWidth * displayScreenHeight; i++){
     let pixel = document.createElement("span")
@@ -88,28 +98,29 @@ function math(operation, num1, num2){
     }
 }
 
-const colorCheck = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"]
+const colorCheck = /[0-9A-F]/
 let callstack = []
 let heap = []
 let functions = {}
 let bound_keys = [];
 const allowed_keys = /[a-zA-Z0-9space]/
 const colorIDObject = {
-    "1": "#FFFFFF", // white
-    "2": "#000000", // black
-    "3": "#FF0000", // red
-    "4": "#00FF00", // green
-    "5": "#0000FF", // blue
-    "6": "#00FFFF", // cyan
-    "7": "#FF00FF", // magenta
-    "8": "#FFFF00", // yellow
-    "9": "#FFA500", // orange
-    "10": "#A52A2A", // brown
-    "11": "#FF69B4", // pink
-    "12": "#800080", // purple
-    "13": "#808080", // gray
-    "14": "#C0C0C0", // light gray
-    "15": "#A9A9A9" // dark gray
+    "0":"#000000", // black
+    "1":"#ff0000", // red
+    "2":"#ffa100", // orange
+    "3":"#ffa09f", // pink
+    "4":"#ffff00", // yellow
+    "5":"#a3a000", // olive
+    "6":"#00a100", // dark green
+    "7":"#00ff00", // green
+    "8":"#a0ff9d", // mint green
+    "9":"#00009b", // indigo
+    "A":"#0000ff", // blue
+    "B":"#a200ff", // purple
+    "C":"#ff00ff", // magenta
+    "D":"#00ffff", // cyan
+    "E":"#a2a19f", // grey
+    "F":"#ffffff" // white
 }
 
 
@@ -119,11 +130,19 @@ function removeAllChildNodes(parent) {
     }
 }
 
+function checkPixelID(pixelID){
+    return Boolean(pixelID >= 1 && pixelID <= displayScreenWidth * displayScreenHeight)
+}
+
+function checkColorID(colorID){
+    return colorCheck.test(colorID)
+}
+
 function checkIfEnclosed(string, leftEncloser, rightEncloser){
     return Boolean (string[0] == leftEncloser && string[string.length - 1] == rightEncloser)
 }
 
-const reserved_keywords = ["!!","var","pull","push", "log", "func"]
+const reserved_keywords = ["!!","var","pull","push", "log", "func", "graphics"]
 
 function compile(inputCode, resetValues){
     if(resetValues == true){
@@ -264,8 +283,61 @@ function compile(inputCode, resetValues){
                                 }
                             }
                         }
+                }
+            }
+            // graphics
+            // graphics set pixel pixelID => colorID
+            if(inputCodeLine[0] == reserved_keywords[6]){
+                if(inputCodeLine[1] != "set"){
+                    consoleArray(`Syntax Error: Incomplete line. (line ${i+1})`)
+                } else {
+                    switch(inputCodeLine[2]){
+                        case "pixel":
+                            if(inputCodeLine.length != 6){
+                                consoleArray.push(`Syntax Error: Incomplete line. (line ${i+1})`)
+                            } else {
+                                if(inputCodeLine[4] != "=>"){
+                                    consoleArray.push(`Syntax Error: "=>" expected. (line ${i+1})`)
+                                } else {
+                                    let pixelID = inputCodeLine[3]
+                                    let colorID = inputCodeLine[5]
+                                    if(!checkPixelID(pixelID)){
+                                        consoleArray.push(`System Error: Pixel ID is not valid. (line ${i+1})`)
+                                    } else {
+                                        if(!checkColorID(colorID)){
+                                            consoleArray.push(`System Error: Color ID is not valid. (line ${i+1})`)
+                                        } else {
+                                            document.getElementById(`pixel${pixelID}`).style.backgroundColor = colorIDObject[colorID]
+                                        }
+                                    }
+                                }
+                            }
+                        break;
+                        case "line":
+                        if(inputCodeLine.length != 7){
+                            consoleArray.push(`Syntax Error: Incomplete line. (line ${i+1})`)
+                        } else {
+                            if(inputCodeLine[5] != "=>"){
+                                consoleArray.push(`Syntax Error: "=>" expected. (line ${i+1})`)
+                            } else {
+                                let pixelID1 = inputCodeLine[3]
+                                let pixelID2 = inputCodeLine[4]
+                                let colorID = inputCodeLine[6]
+                                if(!checkPixelID(pixelID1) || !checkPixelID(pixelID2)){
+                                    consoleArray.push(`System Error: Invalid pixel ID(s). (line ${i+1})`)
+                                } else {
+                                    if(!checkColorID(colorID)){
+                                        consoleArray.push(`System Error: Color ID is not valid. (line ${i+1})`)
+                                    } else {
+                                        // fix
+                                    }
+                                }
 
+                            }
+                        }
+                        break;
 
+                    }
                 }
             }
         }
