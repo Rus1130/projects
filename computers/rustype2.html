@@ -9,7 +9,7 @@
     textarea:focus {
         outline: none;
     }
-    .screen {
+    .graphic {
         display: grid;
         grid-template-columns: repeat(53, 15px);
         grid-template-rows: repeat(50, 15px);
@@ -33,7 +33,7 @@
     <!--1 textarea row = 12px-->
     <div id="ui-grid">
         <textarea id="input" rows="30" cols="100" autocomplete="off" spellcheck="false" title="code editor" style="width: 500px; user-select: initial;"></textarea>
-        <span id="display-screen" class="screen" style="width: 500px"></span>
+        <span id="display-graphic" class="graphic" style="width: 500px"></span>
         <textarea id="console" rows="30" cols="100" readonly spellcheck="false" title="code output" style="width: 500px; user-select: none;"></textarea>
     </div>
 </body>
@@ -44,7 +44,7 @@ const displayScreenHeight = 50;
 
 const input = document.getElementById("input")
 const appConsole = document.getElementById("console")
-const displayScreen = document.getElementById("display-screen")
+const displayScreen = document.getElementById("display-graphic")
 let inputCodeArray;
 let inputCodeLine;
 let consoleArray = []
@@ -89,7 +89,6 @@ function math(operation, num1, num2){
 }
 
 const colorCheck = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15"]
-const comparison_operators = ["=","!=",">","<",">=","<="]
 let callstack = []
 let heap = []
 let functions = {}
@@ -124,7 +123,7 @@ function checkIfEnclosed(string, leftEncloser, rightEncloser){
     return Boolean (string[0] == leftEncloser && string[string.length - 1] == rightEncloser)
 }
 
-const reserved_keywords = ["//","var","pull","push", "log", "func"]
+const reserved_keywords = ["!!","var","pull","push", "log", "func"]
 
 function compile(inputCode, resetValues){
     if(resetValues == true){

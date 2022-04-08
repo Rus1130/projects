@@ -2,9 +2,9 @@ Rustype 2.0:
 
 -----Commenting-----
 
-// this is a comment.
+!! this is a comment.
 
-Use "//" to define a comment.
+Use "!!" to define a comment.
 
 -----Creating Variables-----
 
