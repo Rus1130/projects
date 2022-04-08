@@ -32,7 +32,7 @@ Log the variable's value to the console. Enclose the parameter in quotation mark
 func create functionName { code }
 func create functionName2 { code1, code2, code3 }
 
-Functions can be created to run the same code multiple times. The function body must be enclosed by curly braces. The function body can have multiple lines of code, each separated by a comma.
+Functions can be created to run the same code multiple times. The function body must be enclosed by curly braces. The function body can have multiple lines of code, each separated by a comma. If a function contains more than 1 "graphics set line" command, only the first instance of "graphics set line" will be executed.
 
 -----Running Functions-----
 
@@ -42,7 +42,7 @@ Use the keyword "run" to run the function.
 
 -----Graphics-----
 
-The "graphics" keyword can be used to color the pixels on the grid to the right of the code editor and the console. It is a 53x50 grid. Each pixel has an ID between 1 and 2650. There are 16 colors, each with a different ID between 0 and F.
+The "graphics" keyword can be used to color the pixels on the grid to the right of the code editor and the console. It is a 53x50 grid. Each pixel has an ID between 1 and 2650. There are 16 colors, each with a different ID between 0 and F. Pixel and color IDs can be prefixed with a "v:" to point to a variable's value.
 
 Color IDS:
     0: black
@@ -61,12 +61,21 @@ Color IDS:
     D: cyan
     E: grey
     F: white
-graphics set pixel 113 => 0
-graphics set pixel 610 => 0
 
-graphics set line 113 610 => 1
 ---Setting Single Pixels---
 
 graphics set pixel pixelID => colorID
 
-sets the specified pixel as the specified color.
+Sets the specified pixel as the specified color.
+
+---Setting Lines of Pixels---
+
+graphics set line startPixelID endPixelID => colorID
+
+Creates a line of pixels between the startPixel and endPixel.
+
+-----Binding Keys-----
+
+bind key => { code }
+
+Bind keys to the specified code. The code must be enclosed in curly braces. The code will be ran when the key is pressed.

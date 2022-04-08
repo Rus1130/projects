@@ -55,19 +55,6 @@ hotkeys('enter', () => {
     compile(input.value, true)
 })
 
-function drawLine(pixel1, pixel2, color){
-    pixel1_x = pixel1 % 53 == 0 ? 53 : pixel1 % 53
-    pixel2_x = pixel2 % 53 == 0 ? 53 : pixel2 % 53
-
-    pixel1_y = Math.ceil(pixel1 / 53)
-    pixel2_y = Math.ceil(pixel2 / 53)
-
-    let displacement = Math.ceil(Math.sqrt(Math.pow(pixel1_x - pixel2_x, 2) + Math.pow(pixel1_y - pixel2_y, 2)))
-    for(i = pixel1; i <= pixel2; i += 54){
-        document.getElementById(`pixel${i}`).style.backgroundColor = colorIDObject[color]
-    }
-}
-
 for(i = 1; i <= displayScreenWidth * displayScreenHeight; i++){
     let pixel = document.createElement("span")
     pixel.style.outline = "0.1px solid black"
@@ -103,7 +90,7 @@ let callstack = []
 let heap = []
 let functions = {}
 let bound_keys = [];
-const allowed_keys = /[a-zA-Z0-9space]/
+const allowed_keys = /[A-Z0-9space]/
 const colorIDObject = {
     "0":"#000000", // black
     "1":"#ff0000", // red
@@ -142,7 +129,11 @@ function checkIfEnclosed(string, leftEncloser, rightEncloser){
     return Boolean (string[0] == leftEncloser && string[string.length - 1] == rightEncloser)
 }
 
-const reserved_keywords = ["!!","var","pull","push", "log", "func", "graphics"]
+function unenclose(string){
+    return string.slice(1,-1)
+}
+
+const reserved_keywords = ["!!","var","pull","push", "log", "func", "graphics","owrite", "bind"]
 
 function compile(inputCode, resetValues){
     if(resetValues == true){
@@ -195,7 +186,7 @@ function compile(inputCode, resetValues){
                         if(variableExists){
                             consoleArray.push(`Error: Variable "${varName}" is already defined. (line ${i+1})`)
                         } else {
-                            heap.push({name: varName, value: providedValue.replaceAll('"',"")})
+                            heap.push({name: varName, value: unenclose(providedValue)})
                         }
                     } else {
                         let codeToRun = inputCodeLine.slice(3)
@@ -262,8 +253,9 @@ function compile(inputCode, resetValues){
                             let functionBody = inputCodeLine.slice(3).join(" ")
                             if(checkIfEnclosed(functionBody, '{','}')){
                                 let functionName = inputCodeLine[2]
-                                let functionCode = functionBody.replaceAll("{ ","").replaceAll(" }","").split(", ")
+                                let functionCode = unenclose(unenclose(functionBody)).split(", ")
                                 functions[functionName] = functionCode
+
                             } else {
                                 consoleArray.push(`Error: Function body expected. (line ${i+1})`)
                             }
@@ -283,6 +275,9 @@ function compile(inputCode, resetValues){
                                 }
                             }
                         }
+                    break;
+                    default:
+                        consoleArray.push(`Unknown keyword. (line ${i+1})`)
                 }
             }
             // graphics
@@ -299,13 +294,37 @@ function compile(inputCode, resetValues){
                                 if(inputCodeLine[4] != "=>"){
                                     consoleArray.push(`Syntax Error: "=>" expected. (line ${i+1})`)
                                 } else {
-                                    let pixelID = inputCodeLine[3]
-                                    let colorID = inputCodeLine[5]
+                                    let pixelIDArray = inputCodeLine[3].split(":")
+                                    let colorIDArray = inputCodeLine[5].split(":")
+                                    let pixelID;
+                                    let colorID;
+
+                                    if(pixelIDArray[0] == "v"){
+                                        if(callstack.find(x => x.name == pixelIDArray[1])){
+                                            pixelID = callstack[callstack.findIndex(x => x.name == pixelIDArray[1])].value
+                                        } else {
+                                            consoleArray.push(`Error: Variable "${pixelIDArray[1]}" does not exist in callstack. (line ${i+1})`)
+                                        }
+                                    } else {
+                                        pixelID = pixelIDArray[0]
+                                    }
+
+                                    if(colorIDArray[0] == "v"){
+                                        if(callstack.find(x => x.name == colorIDArray[1])){
+                                            colorID = callstack[callstack.findIndex(x => x.name == colorIDArray[1])].value
+                                        } else {
+                                            consoleArray.push(`Error: Variable "${colorIDArray[1]}" does not exist in callstack. (line ${i+1})`)
+                                        }
+                                    } else {
+                                        colorID = colorIDArray[0]
+                                    }
+   
+
                                     if(!checkPixelID(pixelID)){
-                                        consoleArray.push(`System Error: Pixel ID is not valid. (line ${i+1})`)
+                                        consoleArray.push(`Graphics Error: Pixel ID is not valid. (line ${i+1})`)
                                     } else {
                                         if(!checkColorID(colorID)){
-                                            consoleArray.push(`System Error: Color ID is not valid. (line ${i+1})`)
+                                            consoleArray.push(`Graphics Error: Color ID is not valid. (line ${i+1})`)
                                         } else {
                                             document.getElementById(`pixel${pixelID}`).style.backgroundColor = colorIDObject[colorID]
                                         }
@@ -314,41 +333,119 @@ function compile(inputCode, resetValues){
                             }
                         break;
                         case "line":
-                        if(inputCodeLine.length != 7){
-                            consoleArray.push(`Syntax Error: Incomplete line. (line ${i+1})`)
-                        } else {
-                            if(inputCodeLine[5] != "=>"){
+                        if(inputCodeLine[5] != "=>"){
                                 consoleArray.push(`Syntax Error: "=>" expected. (line ${i+1})`)
+                        } else {
+                            if(inputCodeLine.length != 7){
+                                consoleArray.push(`Syntax Error: Incomplete line. (line ${i+1})`)
                             } else {
-                                let pixelID1 = inputCodeLine[3]
-                                let pixelID2 = inputCodeLine[4]
-                                let colorID = inputCodeLine[6]
-                                if(!checkPixelID(pixelID1) || !checkPixelID(pixelID2)){
-                                    consoleArray.push(`System Error: Invalid pixel ID(s). (line ${i+1})`)
+                                let startPixelIDArray = inputCodeLine[3].split(":")
+                                let endPixelIDArray = inputCodeLine[4].split(":")
+                                let colorIDArray = inputCodeLine[6].split(":")
+
+                                let startPixelID
+                                let endPixelID
+                                let colorID
+
+                                if(startPixelIDArray[0] == "v"){
+                                    if(callstack.find(x => x.name == startPixelIDArray[1])){
+                                        startPixelID = callstack[callstack.findIndex(x => x.name == startPixelIDArray[1])].value
+                                    } else {
+                                        consoleArray.push(`Error: Variable "${startPixelIDArray[1]}" does not exist in callstack. (line ${i+1})`)
+                                    }
+                                } else {
+                                    startPixelID = startPixelIDArray[0]
+                                }
+
+                                if(endPixelIDArray[0] == "v"){
+                                    if(callstack.find(x => x.name == endPixelIDArray[1])){
+                                        endPixelID = callstack[callstack.findIndex(x => x.name == endPixelIDArray[1])].value
+                                    } else {
+                                        consoleArray.push(`Error: Variable "${endPixelIDArray[1]}" does not exist in callstack. (line ${i+1})`)
+                                    }
+                                } else {
+                                    endPixelID = endPixelIDArray[0]
+                                }
+
+                                if(colorIDArray[0] == "v"){
+                                    if(callstack.find(x => x.name == colorIDArray[1])){
+                                        colorID = callstack[callstack.findIndex(x => x.name == colorIDArray[1])].value
+                                    } else {
+                                        consoleArray.push(`Error: Variable "${colorIDArray[1]}" does not exist in callstack. (line ${i+1})`)
+                                    }
+                                } else {
+                                    colorID = colorIDArray[0]
+                                }
+
+
+                                if(!checkPixelID(startPixelID) || !checkPixelID(endPixelID)){
+                                    consoleArray.push(`Graphics Error: Invalid pixel ID(s). (line ${i+1})`)
                                 } else {
                                     if(!checkColorID(colorID)){
-                                        consoleArray.push(`System Error: Color ID is not valid. (line ${i+1})`)
+                                        consoleArray.push(`Graphics Error: Color ID is not valid. (line ${i+1})`)
                                     } else {
-                                        if(pixelID1 > pixelID2){
-                                            consoleArray.push(`System Error: Pixel ID 1 must be less than Pixel ID 2. (line ${i+1})`)
-                                        } else {
-                                            let pixelID1_x = pixelID1 % 53 == 0 ? 53 : pixelID1 % 53;
-                                            let pixelID1_y = Math.ceil(pixelID1 / 53)
+                                        if(startPixelID == endPixelID){
+                                            consoleArray.push(`Graphics Error: startPixelID cannot be the same as endPixelID. (line ${i+1})`)
+                                        }
+                                        let startPixelX = startPixelID % 53 == 0 ? 53 : startPixelID % 53
+                                        let endPixelX = endPixelID % 53 == 0 ? 53 : endPixelID % 53
 
-                                            let pixelID2_x = pixelID2 % 53 == 0 ? 53 : pixelID2 % 53;
-                                            let pixelID2_y = Math.ceil(pixelID2 / 53)
+                                        let startPixelY = Math.floor(startPixelID / 53)
+                                        let endPixelY = Math.floor(endPixelID / 53)
 
-                                            let distance = Math.ceil(Math.sqrt(Math.pow(pixelID2_x - pixelID1_x, 2) + Math.pow(pixelID2_y - pixelID1_y, 2)))
-
-
-                                            console.log(`${distance}`)
+                                        let displacement = Math.ceil(Math.sqrt(Math.pow(startPixelX - endPixelX, 2) + Math.pow(startPixelY - endPixelY, 2)))
+                                        for(j = 1; j <= displacement; j++){
+                                            let x = Math.floor(startPixelX + (endPixelX - startPixelX) * j / displacement)
+                                            let y = Math.floor(startPixelY + (endPixelY - startPixelY) * j / displacement)
+                                            document.getElementById(`pixel${53 * y + x}`).style.backgroundColor = colorIDObject[colorID]
                                         }
                                     }
                                 }
-
                             }
                         }
                         break;
+
+                    }
+                }
+            }
+            if(inputCodeLine[0] == reserved_keywords[7]){
+                let assignment_operator = inputCodeLine[2]
+                if(assignment_operator != "="){
+                    consoleArray.push(`Error: Missing assignment operator. (line ${i+1})`)
+                } else {
+                    let varName = inputCodeLine[1]
+                    providedValue = inputCodeLine.join(" ").split(`${assignment_operator} `)[1]
+                    if(checkIfEnclosed(providedValue,'"','"')){
+                        if(callstack.find(x => x.name == varName)){
+                            callstack[callstack.findIndex(x => x.name == varName)].value = unenclose(providedValue)
+                        } else {
+                            consoleArray.push(`Error: Variable "${varName}" does not exist in callstack. (line ${i+1})`)
+                        }
+                    } else {
+                        let codeToRun = inputCodeLine.slice(3)
+                        compile(codeToRun.join(" "), false)
+                    }
+                }
+            }
+            if(inputCodeLine[0] == reserved_keywords[8]){
+                if(!allowed_keys.test(inputCodeLine[0].toUpperCase())){
+                    consoleArray.push(`Error: Invalid key. (line ${i+1})`)
+                } else {
+                    if(inputCodeLine[2] != "=>"){
+                        consoleArray.push(`Syntax Error: "=>" expected. (line ${i+1})`)
+                    } else {
+                        if(!checkIfEnclosed(inputCodeLine.slice(3).join(" "), "{","}")){
+                            consoleArray.push(`Error: Missing curly braces. (line ${i+1}`)
+                        } else {
+                            let codeToRunArray = inputCodeLine.slice(3).join(" ").replaceAll("{ ","").replaceAll(" }","").split(", ")
+                            console.log(codeToRunArray)
+
+                            hotkeys(`${inputCodeLine[1].toUpperCase()}`, () => {
+                                for(j = 0; j < codeToRunArray.length; j++){
+                                    compile(codeToRunArray[j], false)
+                                }
+                            })
+                        }
 
                     }
                 }
