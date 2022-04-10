@@ -52,7 +52,7 @@ input.value = ""
 
 
 hotkeys('enter', () => {
-    compile(input.value, true)
+    run(input.value, true)
 })
 
 for(i = 1; i <= displayScreenWidth * displayScreenHeight; i++){
@@ -133,9 +133,9 @@ function unenclose(string){
     return string.slice(1,-1)
 }
 
-const reserved_keywords = ["!!","var","pull","push", "log", "func", "graphics","owrite", "bind"]
+const reserved_keywords = ["__","var","pull","push", "log", "func", "graphics","owrite", "bind"]
 
-function compile(inputCode, resetValues){
+function run(inputCode, resetValues){
     if(resetValues == true){
         heap = [];
         callstack = [];
@@ -193,7 +193,7 @@ function compile(inputCode, resetValues){
                         }
                     } else {
                         let codeToRun = inputCodeLine.slice(3)
-                        compile(codeToRun.join(" "), false)
+                        run(codeToRun.join(" "), false)
                     }
                 }
             }
@@ -274,7 +274,7 @@ function compile(inputCode, resetValues){
                             } else {
                                 let codeToRun = functions[functionName]
                                 for(j = 0; j < codeToRun.length; j++){
-                                    compile(codeToRun[j], false)
+                                    run(codeToRun[j], false)
                                 }
                             }
                         }
@@ -426,7 +426,7 @@ function compile(inputCode, resetValues){
                         }
                     } else {
                         let codeToRun = inputCodeLine.slice(3)
-                        compile(codeToRun.join(" "), false)
+                        run(codeToRun.join(" "), false)
                     }
                 }
             }
@@ -445,7 +445,7 @@ function compile(inputCode, resetValues){
 
                             hotkeys(`${inputCodeLine[1].toUpperCase()}`, () => {
                                 for(j = 0; j < codeToRunArray.length; j++){
-                                    compile(codeToRunArray[j], false)
+                                    run(codeToRunArray[j], false)
                                 }
                             })
                         }

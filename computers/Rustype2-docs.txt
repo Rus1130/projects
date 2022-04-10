@@ -1,10 +1,14 @@
 Rustype 2.0:
 
+-----How to Run the Code-----
+
+Press enter to run the code.
+
 -----Commenting-----
 
-!! this is a comment.
+__ this is a comment.
 
-Use "!!" to define a comment.
+Use the keyword "__" to define a comment.
 
 -----Creating Variables-----
 
