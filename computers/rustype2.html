@@ -32,7 +32,7 @@
     </a><br><br>
     <!--1 textarea row = 12px-->
     <div id="ui-grid">
-        <textarea id="input" rows="30" cols="100" autocomplete="off" spellcheck="false" title="code editor" style="width: 500px; user-select: initial;"></textarea>
+        <textarea id="input" rows="30" cols="100" autocomplete="off" spellcheck="false" title="code editor" style="width: 500px; user-select: initial;" placeholder="__ Start Coding!"></textarea>
         <span id="display-graphic" class="graphic" style="width: 500px"></span>
         <textarea id="console" rows="30" cols="100" readonly spellcheck="false" title="code output" style="width: 500px; user-select: none;"></textarea>
     </div>
@@ -284,9 +284,9 @@ function run(inputCode, resetValues){
                 }
             }
             // graphics
-            // graphics set pixel pixelID => colorID
+            // graphics draw pixel pixelID => colorID
             if(inputCodeLine[0] == reserved_keywords[6]){
-                if(inputCodeLine[1] != "set"){
+                if(inputCodeLine[1] != "draw"){
                     consoleArray.push(`Syntax Error: Incomplete line. (line ${i+1})`)
                 } else {
                     switch(inputCodeLine[2]){

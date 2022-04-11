@@ -68,13 +68,13 @@ Color IDS:
 
 ---Setting Single Pixels---
 
-graphics set pixel pixelID => colorID
+graphics draw pixel pixelID => colorID
 
 Sets the specified pixel as the specified color.
 
 ---Setting Lines of Pixels---
 
-graphics set line startPixelID endPixelID => colorID
+graphics draw line startPixelID endPixelID => colorID
 
 Creates a line of pixels between the startPixel and endPixel.
 
