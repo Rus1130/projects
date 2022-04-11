@@ -1,0 +1,73 @@
+<style>
+    html {
+        font-family: monospace;
+        user-select: none;
+    }
+    textarea {
+        resize: none;
+    }
+    textarea:focus {
+        outline: none;
+    }
+    .graphic {
+        display: grid;
+        grid-template-columns: repeat(53, 15px);
+        grid-template-rows: repeat(50, 15px);
+    }
+    #ui-grid {
+        display: grid;
+        grid-template-rows: repeat(2, 360px);
+        grid-template-columns: repeat(2, 500px);
+        column-gap: 20px;
+        row-gap: 20px;
+    
+    }
+</style>
+<head>
+    <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
+</head>
+<body>
+    <a href="Rustype2-docs.txt" download="Rustype2-docs">
+        <button position="absolute;">Download Docs</button>
+    </a><br><br>
+    <!--1 textarea row = 12px-->
+    <div id="ui-grid">
+        <textarea id="input" rows="30" cols="100" autocomplete="off" spellcheck="false" title="code editor" style="width: 500px; user-select: initial;" placeholder="__ Start Coding!"></textarea>
+        <textarea id="console" rows="30" cols="100" readonly spellcheck="false" title="code output" style="width: 500px; user-select: none;"></textarea>
+    </div>
+</body>
+<script>
+
+
+const input = document.getElementById("input")
+const HTMLconsole = document.getElementById("console")
+let codeArray;
+let codeline;
+let outputConsoleArray = []
+input.value = ""
+
+hotkeys('enter', () => {
+    run()
+})
+
+let callstack = []
+let heap = []
+let numberHeap = []
+let functions = {}
+let bound_keys = [];
+
+function run(){
+    heap = [];
+    callstack = [];
+    consoleArray = [];
+    try {
+        codeArray = inputCode.split("\n")
+    }
+    catch(e){}
+    for(let i = 0; i < codeArray.length; i++){
+        codeline = codeArray[i]
+    }
+            
+    HTMLconsole.innerHTML = outputConsoleArray.join("\n")
+}
+</script>
