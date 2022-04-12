@@ -134,7 +134,7 @@ function unenclose(string){
     return string.slice(1,-1)
 }
 
-const reserved_keywords = ["__","var","pull","push", "log", "func", "graphics", "bind","eval"]
+const reserved_keywords = ["__","string","pull","push", "log", "func", "graphics", "bind","int", "eval"]
 
 function run(inputCode, resetValues){
     if(resetValues == true){
@@ -191,7 +191,7 @@ function run(inputCode, resetValues){
                         if(variableExists){
                             consoleArray.push(`Error: Variable "${varName}" is already defined. (line ${i+1})`)
                         } else {
-                            heap.push({name: varName, value: unenclose(providedValue)})
+                            heap.push({name: varName, value: providedValue, type: "string"})
                         }
                     } else {
                         let codeToRun = inputCodeLine.slice(3)
@@ -206,7 +206,7 @@ function run(inputCode, resetValues){
                 } else {
                     let varName = inputCodeLine[1]
                     if(heap.find(x => x.name == varName)){
-                        callstack.push({name: varName, value: heap[heap.findIndex(x => x.name == varName)].value})
+                        callstack.push({name: varName, value: heap[heap.findIndex(x => x.name == varName)].value, type: heap[heap.findIndex(x => x.name == varName)].type})
                         heap.splice(heap.findIndex(x => x.name == varName), 1)
                     } else {
                         consoleArray.push(`Error: Variable "${inputCodeLine[1]}" does not exist in heap. (line ${i+1})`)
@@ -220,7 +220,7 @@ function run(inputCode, resetValues){
                 } else {
                     let varName = inputCodeLine[1]
                     if(callstack.find(x => x.name == varName)){
-                        heap.push({name: varName, value: callstack[callstack.findIndex(x => x.name == varName)].value})
+                        heap.push({name: varName, value: callstack[callstack.findIndex(x => x.name == varName)].value, type: callstack[callstack.findIndex(x => x.name == varName)].type})
                         callstack.splice(callstack.findIndex(x => x.name == varName), 1)
                     } else {
                         consoleArray.push(`Error: Variable "${inputCodeLine[1]}" does not exist in callstack. (line ${i+1})`)
@@ -435,7 +435,37 @@ function run(inputCode, resetValues){
                     }
                 }
             }
-            // math
+            // int
+            if(inputCodeLine[0] == reserved_keywords[8]){
+                let assignment_operator = inputCodeLine[2]
+                if(assignment_operator != "="){
+                    consoleArray.push(`Error: Missing assignment operator. (line ${i+1})`)
+                } else {
+                    let varName = inputCodeLine[1]
+                    providedValue = parseInt(inputCodeLine[3])
+                    if(typeof providedValue === 'number'){
+                        let variableExists = false
+                        for(let j = 0; j < heap.length; j++){
+                            if(heap[j].name == varName){
+                                variableExists = true
+                            }
+                        }
+                        for(let k = 0; k < callstack.length; k++){
+                            if(callstack[k].name == varName){
+                                variableExists = true
+                            }
+                        }
+                        if(variableExists){
+                            consoleArray.push(`Error: Variable "${varName}" is already defined. (line ${i+1})`)
+                        } else {
+                            heap.push({name: varName, value: providedValue, type: "int"})
+                        }
+                    } else {
+                        let codeToRun = inputCodeLine.slice(3)
+                        run(codeToRun.join(" "), false)
+                    }
+                }
+            }
         }
     }
     appConsole.innerHTML = consoleArray.join("\n")
