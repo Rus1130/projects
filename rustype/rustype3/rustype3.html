@@ -1,0 +1,147 @@
+<style>
+    html {
+        font-family: monospace;
+        user-select: none;
+    }
+    textarea {
+        resize: none;
+    }
+    textarea:focus {
+        outline: none;
+    }
+    .graphic {
+        display: grid;
+        grid-template-columns: repeat(53, 15px);
+        grid-template-rows: repeat(50, 15px);
+    }
+    #ui-grid {
+        display: grid;
+        grid-template-rows: repeat(2, 360px);
+        grid-template-columns: repeat(2, 500px);
+        column-gap: 20px;
+        row-gap: 20px;
+    
+    }
+</style>
+<head>
+    <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
+</head>
+<body>
+    <a href="Rustype2-docs.txt" download="Rustype2-docs">
+        <button position="absolute;">Download Docs</button>
+    </a><br><br>
+    <!--1 textarea row = 12px-->
+    <div id="ui-grid">
+        <textarea id="input" rows="30" cols="100" autocomplete="off" spellcheck="false" title="code editor" style="width: 500px; user-select: initial;" placeholder="__ Start Coding!"></textarea>
+        <span id="display-graphic" class="graphic" style="width: 500px"></span>
+        <textarea id="console" rows="30" cols="100" readonly spellcheck="false" title="code output" style="width: 500px; user-select: none;"></textarea>
+    </div>
+</body>
+<script>
+
+const displayScreenWidth = 53;
+const displayScreenHeight = 50;
+
+const input = document.getElementById("input")
+const appConsole = document.getElementById("console")
+const displayScreen = document.getElementById("display-graphic")
+let inputCodeArray;
+const isLetter = (input) => /[a-zA-Z]/.test(input)
+const isNumber = (input) => /[0-9]/.test(input)
+const isOpenParen = (input) => input === '('
+const isClosedParen = (input) => input === ')'
+const isOpenBracket = (input) => input === '['
+const isClosedBracket = (input) => input === ']'
+const isOpenBrace = (input) => input === '{'
+const isClosedBrace = (input) => input === '}'
+const isQuote = (input) => input === '"'
+const isWhitespace = (input) => input === /\s/.test(input)
+const isComparator = (input) => /[=<>!]/.test(input)
+const isOperator = (input) => input === "+" || input === "-" || input === "*" || input === "/" || input === "%"
+const isWordOperator = (input) => input === "sum" || input === "sub" || input === "mult" || input === "div" || input === "mod"
+const isPropertyBreak = (input) => /,/.test(input)
+
+const getType = (input) => {
+    if (isLetter(input)) {
+        return 'letter'
+    } else if (isNumber(input)) {
+        return 'number'
+    } else if (isOpenParen(input)) {
+        return 'openParen'
+    } else if (isClosedParen(input)) {
+        return 'closedParen'
+    } else if (isOpenBracket(input)) {
+        return 'openBracket'
+    } else if (isClosedBracket(input)) {
+        return 'closedBracket'
+    } else if (isOpenBrace(input)) {
+        return 'openBrace'
+    } else if (isClosedBrace(input)) {
+        return 'closedBrace'
+    } else if (isQuote(input)) {
+        return 'quote'
+    } else if (isComparator(input)) {
+        return 'comparator'
+    } else if (isOperator(input)) {
+        return 'operator'
+    } else if (isWordOperator(input)) {
+        return 'wordOperator'
+    } else if (isPropertyBreak(input)) {
+        return 'propertyBreak'
+    } else {
+        return 'unknown'
+    }
+}
+
+const createSyntaxTree = (input) => {
+    let code = input.trim().split("");
+    let syntaxTree = {};
+    let tokenTypeArray = []
+    let actionName = '';
+    for(i = 0; i < code.length; i++){
+        tokenTypeArray.push(Lex.getType(code[i]))
+    }
+    if(tokenTypeArray[0] === 'quote' && tokenTypeArray[tokenTypeArray.length - 1] === 'quote'){
+        syntaxTree.details = {type: "string"}
+    } else {
+        syntaxTree.details = {type: "program"}
+        for(j = 0, k = 0; j < tokenTypeArray.length && k == 0; j++){
+            if(tokenTypeArray[j] === 'letter'){
+                actionName += code[j]
+            } else {
+                k++
+                syntaxTree.body = {
+                    name: actionName,
+                    args: [{
+                        type: Lex.getType(actionName)
+                    }]
+                }
+                switch(actionName){}
+            }
+        }
+    }
+    return syntaxTree
+}
+
+const Lex = {
+    isLetter,
+    isNumber,
+    isOpenParen,
+    isClosedParen,
+    isOpenBracket,
+    isClosedBracket,
+    isOpenBrace,
+    isClosedBrace,
+    isQuote,
+    isWhitespace,
+    isComparator,
+    isOperator,
+    isPropertyBreak,
+    getType,
+    createSyntaxTree
+}
+
+
+
+
+</script>
