@@ -46,6 +46,9 @@ const input = document.getElementById("input")
 const appConsole = document.getElementById("console")
 const displayScreen = document.getElementById("display-graphic")
 let inputCodeArray;
+const reserved_keywords = ["log"]
+let syntaxTree = {};
+
 const isLetter = (input) => /[a-zA-Z]/.test(input)
 const isNumber = (input) => /[0-9]/.test(input)
 const isOpenParen = (input) => input === '('
@@ -54,11 +57,9 @@ const isOpenBracket = (input) => input === '['
 const isClosedBracket = (input) => input === ']'
 const isOpenBrace = (input) => input === '{'
 const isClosedBrace = (input) => input === '}'
-const isQuote = (input) => input === '"'
-const isWhitespace = (input) => input === /\s/.test(input)
+const isWhitespace = (input) => input === " " || input === ""
 const isComparator = (input) => /[=<>!]/.test(input)
 const isOperator = (input) => input === "+" || input === "-" || input === "*" || input === "/" || input === "%"
-const isWordOperator = (input) => input === "sum" || input === "sub" || input === "mult" || input === "div" || input === "mod"
 const isPropertyBreak = (input) => /,/.test(input)
 
 const getType = (input) => {
@@ -84,43 +85,35 @@ const getType = (input) => {
         return 'comparator'
     } else if (isOperator(input)) {
         return 'operator'
-    } else if (isWordOperator(input)) {
-        return 'wordOperator'
     } else if (isPropertyBreak(input)) {
         return 'propertyBreak'
+    } else if (isWhitespace(input)) {
+        return 'whitespace'
     } else {
         return 'unknown'
     }
 }
-
+// example log syntax: log string (hello, world!)
 const createSyntaxTree = (input) => {
-    let code = input.trim().split("");
-    let syntaxTree = {};
+    let code = input.trim().replaceAll("(", " ( ").replaceAll(",", " ,").replaceAll(")", " )").split(" ");
+    syntaxTree = {};
     let tokenTypeArray = []
-    let actionName = '';
-    for(i = 0; i < code.length; i++){
-        tokenTypeArray.push(Lex.getType(code[i]))
-    }
-    if(tokenTypeArray[0] === 'quote' && tokenTypeArray[tokenTypeArray.length - 1] === 'quote'){
-        syntaxTree.details = {type: "string"}
-    } else {
-        syntaxTree.details = {type: "program"}
-        for(j = 0, k = 0; j < tokenTypeArray.length && k == 0; j++){
-            if(tokenTypeArray[j] === 'letter'){
-                actionName += code[j]
-            } else {
-                k++
-                syntaxTree.body = {
-                    name: actionName,
-                    args: [{
-                        type: Lex.getType(actionName)
-                    }]
-                }
-                switch(actionName){}
-            }
+    let keyword = code[0];
+    let keyword_mod = code[1]
+
+    if(keyword == reserved_keywords[0]){
+        switch(keyword_mod){
+            case "string":
+                syntaxTree.words = {keyword : code[0], keyword_mod : code[1]}
+                let leftEncloserIndex = code.indexOf(code[2])
+                let rightEncloserIndex = code.indexOf(code[code.length - 1])
+                let line = code.splice(leftEncloserIndex + 1, rightEncloserIndex - leftEncloserIndex - 1)
+                syntaxTree.value = line.join(" ").replaceAll(" ,", ",")
+                return syntaxTree
+            break;
+            default: return console.error("Error: Syntax error.")
         }
     }
-    return syntaxTree
 }
 
 const Lex = {
@@ -132,7 +125,6 @@ const Lex = {
     isClosedBracket,
     isOpenBrace,
     isClosedBrace,
-    isQuote,
     isWhitespace,
     isComparator,
     isOperator,
