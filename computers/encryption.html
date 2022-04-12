@@ -1,0 +1,62 @@
+<style>
+    html {
+        font-family: monospace;
+        user-select: none;
+    }
+    textarea {
+        resize: none;
+        font-family: monospace;
+    }
+    textarea:focus {
+        outline: none;
+        font-family: monospace;
+    }
+</style>
+<head>
+
+</head>
+<body>
+
+</body>
+<script>
+    const Crypt = {
+        randomDigit(min, max) { // 192 687
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min + 1) + min);
+        },
+        includedKeyEncryption: (message) => {
+            let encryptedMessage = '';
+            let encryptedMessageKey = '';
+
+            let delimEncryptedKey = '';
+            let delimEncrypted = '';
+
+            if(typeof message !== 'string') return console.error("message must be string")
+
+            for(i = 0; i < message.length; i++){
+                salt = Crypt.randomDigit(192,687)
+                encryptedMessageKey += String.fromCharCode(salt)
+                encryptedMessage += String.fromCharCode(message.charCodeAt(i) + salt)
+            }
+            for(i = 1; i < 4; i++){
+
+                delim = "˃˄ˇˡ"
+                salt = Crypt.randomDigit(192,687)
+
+                delimEncryptedKey += String.fromCharCode(salt)
+                delimEncrypted += String.fromCharCode(delim.charCodeAt(i) + salt)
+            }
+            let result = delimEncryptedKey + encryptedMessage + delimEncrypted + encryptedMessageKey
+            return result
+        },
+        includedKeyDecryption: (message) => {
+            let encryptedDelimKey = message[0] + message[1] + message[2] + message[3]
+            let delimEncryptedKey = message.slice(0, 4)
+            let restOfMessage = message.slice(4, message.length)
+            console.log(restOfMessage)
+            return delimEncryptedKey
+            
+        }
+    }
+</script>
