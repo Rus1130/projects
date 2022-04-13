@@ -24,6 +24,9 @@
         generateSalt() {
             return Math.floor(Math.random() * (687 - 192 + 1) + 192);
         },
+        generateDelimiter() {
+            return Math.floor(Math.random() * (191 - 161 + 1) + 161);
+        },
         encrypt(textInUnicode){
             keyArray = [];
             let textArray = textInUnicode.split("")
@@ -33,11 +36,17 @@
                 keyArray.push(String.fromCharCode(keyPoint))
                 resultArray.push(String.fromCharCode(textArray[i].charCodeAt(0) + keyPoint))
             }
-            let startDelim = String.fromCharCode(RusCrypto.generateSalt()) + String.fromCharCode(RusCrypto.generateSalt()) + String.fromCharCode(RusCrypto.generateSalt()) + String.fromCharCode(RusCrypto.generateSalt())
-            let midDelim = String.fromCharCode(RusCrypto.generateSalt()) + String.fromCharCode(RusCrypto.generateSalt()) + String.fromCharCode(RusCrypto.generateSalt()) + String.fromCharCode(RusCrypto.generateSalt())
-            let endDelim = String.fromCharCode(RusCrypto.generateSalt()) + String.fromCharCode(RusCrypto.generateSalt()) + String.fromCharCode(RusCrypto.generateSalt()) + String.fromCharCode(RusCrypto.generateSalt())
+            let startDelim = String.fromCharCode(RusCrypto.generateDelimiter()) + String.fromCharCode(RusCrypto.generateDelimiter()) + String.fromCharCode(RusCrypto.generateDelimiter()) + String.fromCharCode(RusCrypto.generateDelimiter())
+            let midDelim = String.fromCharCode(RusCrypto.generateDelimiter()) + String.fromCharCode(RusCrypto.generateDelimiter()) + String.fromCharCode(RusCrypto.generateDelimiter()) + String.fromCharCode(RusCrypto.generateDelimiter())
+            let endDelim = String.fromCharCode(RusCrypto.generateDelimiter()) + String.fromCharCode(RusCrypto.generateDelimiter()) + String.fromCharCode(RusCrypto.generateDelimiter()) + String.fromCharCode(RusCrypto.generateDelimiter())
 
-            return startDelim + resultArray.join("") + midDelim + keyArray.join("") + endDelim
+            let result = startDelim + resultArray.join("") + midDelim + keyArray.join("") + endDelim
+            return result
+        },
+        decrypt(encryptedString){
+            let result = [];
+            let encryptedStringArray = encryptedString.substr(4,encryptedString.length / 2 - 4)
+            return encryptedStringArray
         }
     }
 </script>
