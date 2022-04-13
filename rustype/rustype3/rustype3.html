@@ -22,7 +22,7 @@
     <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
 </head>
 <body>
-    <a href="Rustype2-docs.txt" download="Rustype2-docs">
+    <a href="Rustype3-docs.txt" download="Rustype3-docs">
         <button position="absolute;">Download Docs</button>
     </a><br><br>
     <!--1 textarea row = 12px-->
@@ -36,6 +36,17 @@ const input = document.getElementById("input")
 const appConsole = document.getElementById("console")
 
 const system = {
+    getType(tester) {
+        if(checkIfEnclosed(tester,'"','"')){
+            return "string"
+        } else if (!isNaN(tester) && tester.indexOf(".") == -1){
+            return "int"
+        } else if(system.variables.find(x => x.name == tester)){
+            return "ref"
+        } else {
+            return undefined
+        }
+    },
     console: {
         log: function(message) {
             appConsole.value += message + "\n"
@@ -44,18 +55,16 @@ const system = {
             appConsole.value = ''
         }
     },
-    keywords: ["def"],
-    pool: {
-        variables: []
-    },
+    keywords: ["def", "log", "func"],
+    variables: [],
     call: function(variableName) {
-        if(system.pool.variables.find(x => x.name == variableName)){
-            return system.pool.variables.find(x => x.name == variableName).value
+        if(system.variables.find(x => x.name == variableName)){
+            return system.variables.find(x => x.name == variableName).value
         } else {
             return undefined
         }
     },
-    types: ["string", "int", "variable_ref", "float"]
+    types: ["string", "int", "variable_ref"]
     
 }
 
@@ -78,53 +87,78 @@ hotkeys.filter = function(event){
 
 hotkeys('ctrl+r', function(event, handler) {
   event.preventDefault();
-  run(input.value)
+  run(input.value, false)
 });
 
-function run(code) {
-    system.console.clear()
-    system.pool.variables = []
+function run(code, runWithFunction) {
+    if(runWithFunction == false){
+        system.console.clear()
+        system.variables = []
+    }
+    
     let codeBlock = code.split("\n")
     for(i = 0; i < codeBlock.length; i++){
         let line = codeBlock[i].trim().split(" ")
-        let providedKeyword = line[0]
+        let providedKeyword = line[0].trim()
         if(!system.keywords.includes(providedKeyword)){
             system.console.log(`Syntax Error: Unknown keyword (line ${i+1})`)
         } else {
             if(providedKeyword == system.keywords[0]){
                 let varName = line[1]
                 let assignment_operator = line[line.indexOf("=")]
-                let isTypeDefined = line.indexOf("::") == -1 ? false : true
                 let varType;
                 let varValue;
-
-                if(isTypeDefined){
-                    varValue = line.join(" ").split(`${assignment_operator} `)[1].split(" :: ")[0]
-                    let preVarType = line.join(" ").split(`${assignment_operator} `)[1].split(" :: ")[1]
-                    if(!system.types.includes(preVarType)){
-                        system.console.log(`Syntax Error: Unknown type (line ${i+1})`)
-                    } else {
-                        varType = preVarType
-                    }
+                varValue = line.join(" ").split(`${assignment_operator} `)[1]
+                if(checkIfEnclosed(varValue,'"','"')){
+                    varType = "string"
+                } else if (!isNaN(varValue) && varValue.indexOf(".") == -1){
+                    varType = "int"
                 } else {
-                    varValue = line.join(" ").split(`${assignment_operator} `)[1]
-                    if(checkIfEnclosed(varValue,'"','"')){
-                        varType = "string"
-                    } else if (!isNaN(varValue) && varValue.indexOf(".") == -1){
-                        varType = "int"
-                    }else if (!isNaN(varValue) && varValue.indexOf(".") != -1){
-                        varType = "float"
+                    if(system.variables.find(x => x.name == varValue) == undefined){
+                        system.console.log(`Syntax Error: Variable "${varValue}" is not defined (line ${i+1})`)
                     } else {
-                        if(system.pool.variables.find(x => x.name == varValue) == undefined){
-                            system.console.log(`Syntax Error: Variable "${varValue}" is not defined (line ${i+1})`)
-                        } else {
-                            varType = system.pool.variables.find(x => x.name == varValue).type
-                            varValue = system.pool.variables.find(x => x.name == varValue).value
+                        varType = system.variables.find(x => x.name == varValue).type
+                        varValue = system.variables.find(x => x.name == varValue).value
+                    }
+                }
+                system.variables.push({name: varName, type: varType, value: varValue})
+            }
+            if(providedKeyword == system.keywords[1]){
+                if(line.length != 2){
+                    system.console.log(`Syntax Error: Incomplete line (line ${i+1})`)
+                } else {
+                    let providedArgument = line[1]
+                    switch(system.getType(providedArgument)){
+                        case "int":
+                            system.console.log(providedArgument)
+                        break
+                        case "string":
+                            system.console.log(providedArgument)
+                        break
+                        case "ref":
+                            if(system.variables.find(x => x.name == providedArgument) == undefined){
+                                system.console.log(`Syntax Error: Variable "${providedArgument}" is not defined (line ${i+1})`)
+                            } else {
+                                system.console.log(system.variables.find(x => x.name == providedArgument).value)
+                            }
+                        break;
+                    }
+                }
+            }
+            if(providedKeyword == system.keywords[2]){
+                let appFunction = [line[1], line.slice(2).join(" ")]
+                if(appFunction.length != 2){
+                    system.console.log(`Syntax Error: Incomplete line (line ${i+1})`)
+                } else {
+                    if(!checkIfEnclosed(appFunction[1],"{","}")){
+                        system.console.log(`Syntax Error: Incomplete function body (line ${i+1})`)
+                    } else {
+                        let functionBody = appFunction[1].replaceAll("{ ","").replaceAll(" }","").split(", ")
+                        for(j = 0; j < functionBody.length - 1; j++){
+                            run(functionBody[j], true)
                         }
                     }
-                    
                 }
-                system.pool.variables.push({name: varName, type: varType, value: varValue})
             }
         }
     }

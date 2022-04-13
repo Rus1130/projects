@@ -27,9 +27,9 @@
         generateDelimiter() {
             return Math.floor(Math.random() * (191 - 161 + 1) + 161);
         },
-        encrypt(textInUnicode){
+        encrypt(string){
             keyArray = [];
-            let textArray = textInUnicode.split("")
+            let textArray = string.split("")
             let resultArray = [];
             for (i = 0; i < textArray.length; i++) {
                 keyPoint = RusCrypto.generateSalt()
@@ -43,10 +43,10 @@
             let result = startDelim + resultArray.join("") + midDelim + keyArray.join("") + endDelim
             return result
         },
-        decrypt(encryptedString){
+        decrypt(string){
             let result = [];
-            let encryptedStringArray = encryptedString.substr(4,encryptedString.length / 2 - 4)
-            return encryptedStringArray
+            let encryptedMessage = string.substr(4,string.length / 2 - 4)
+            return encryptedString
         }
     }
 </script>
