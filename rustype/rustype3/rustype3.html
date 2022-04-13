@@ -1,0 +1,133 @@
+<style>
+    html {
+        font-family: monospace;
+        user-select: none;
+    }
+    textarea {
+        resize: none;
+    }
+    textarea:focus {
+        outline: none;
+    }
+    #ui-grid {
+        display: grid;
+        grid-template-rows: repeat(2, 360px);
+        grid-template-columns: repeat(1, 98vw);
+        column-gap: 20px;
+        row-gap: 20px;
+    
+    }
+</style>
+<head>
+    <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
+</head>
+<body>
+    <a href="Rustype2-docs.txt" download="Rustype2-docs">
+        <button position="absolute;">Download Docs</button>
+    </a><br><br>
+    <!--1 textarea row = 12px-->
+    <div id="ui-grid">
+        <textarea id="input" rows="30" cols="100" autocomplete="off" spellcheck="false" title="code editor" style="width: 98vw; user-select: initial;" contentEditable="true"></textarea>
+        <textarea id="console" rows="30" cols="100" readonly spellcheck="false" title="code output" style="width: 98vw; user-select: none;"></textarea>
+    </div>
+</body>
+<script>
+const input = document.getElementById("input")
+const appConsole = document.getElementById("console")
+
+const system = {
+    console: {
+        log: function(message) {
+            appConsole.value += message + "\n"
+        },
+        clear: function() {
+            appConsole.value = ''
+        }
+    },
+    keywords: ["def"],
+    pool: {
+        variables: []
+    },
+    call: function(variableName) {
+        if(system.pool.variables.find(x => x.name == variableName)){
+            return system.pool.variables.find(x => x.name == variableName).value
+        } else {
+            return undefined
+        }
+    },
+    types: ["string", "int", "variable_ref", "float"]
+    
+}
+
+
+function checkIfEnclosed(string, leftEncloser, rightEncloser){
+    return Boolean (string[0] == leftEncloser && string[string.length - 1] == rightEncloser)
+}
+
+hotkeys.filter = function(event) {
+  var target = event.target || event.srcElement;
+  var tagName = target.tagName;
+  return !(target.isContentEditable || tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
+}
+
+hotkeys.filter = function(event){
+  var tagName = (event.target || event.srcElement).tagName;
+  hotkeys.setScope(/^(INPUT|TEXTAREA|SELECT)$/.test(tagName) ? 'input' : 'other');
+  return true;
+}
+
+hotkeys('ctrl+r', function(event, handler) {
+  event.preventDefault();
+  run(input.value)
+});
+
+function run(code) {
+    system.console.clear()
+    system.pool.variables = []
+    let codeBlock = code.split("\n")
+    for(i = 0; i < codeBlock.length; i++){
+        let line = codeBlock[i].trim().split(" ")
+        let providedKeyword = line[0]
+        if(!system.keywords.includes(providedKeyword)){
+            system.console.log(`Syntax Error: Unknown keyword (line ${i+1})`)
+        } else {
+            if(providedKeyword == system.keywords[0]){
+                let varName = line[1]
+                let assignment_operator = line[line.indexOf("=")]
+                let isTypeDefined = line.indexOf("::") == -1 ? false : true
+                let varType;
+                let varValue;
+
+                if(isTypeDefined){
+                    varValue = line.join(" ").split(`${assignment_operator} `)[1].split(" :: ")[0]
+                    let preVarType = line.join(" ").split(`${assignment_operator} `)[1].split(" :: ")[1]
+                    if(!system.types.includes(preVarType)){
+                        system.console.log(`Syntax Error: Unknown type (line ${i+1})`)
+                    } else {
+                        varType = preVarType
+                    }
+                } else {
+                    varValue = line.join(" ").split(`${assignment_operator} `)[1]
+                    if(checkIfEnclosed(varValue,'"','"')){
+                        varType = "string"
+                    } else if (!isNaN(varValue) && varValue.indexOf(".") == -1){
+                        varType = "int"
+                    }else if (!isNaN(varValue) && varValue.indexOf(".") != -1){
+                        varType = "float"
+                    } else {
+                        if(system.pool.variables.find(x => x.name == varValue) == undefined){
+                            system.console.log(`Syntax Error: Variable "${varValue}" is not defined (line ${i+1})`)
+                        } else {
+                            varType = system.pool.variables.find(x => x.name == varValue).type
+                            varValue = system.pool.variables.find(x => x.name == varValue).value
+                        }
+                    }
+                    
+                }
+                system.pool.variables.push({name: varName, type: varType, value: varValue})
+            }
+        }
+    }
+}
+
+</script>

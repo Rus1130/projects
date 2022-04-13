@@ -1,0 +1,2 @@
+question marks denote optional arguments.
+defining a variable: def var_name = value ?:: ?type
