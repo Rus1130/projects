@@ -19,44 +19,25 @@
 
 </body>
 <script>
-    const Crypt = {
-        randomDigit(min, max) { // 192 687
-            min = Math.ceil(min);
-            max = Math.floor(max);
-            return Math.floor(Math.random() * (max - min + 1) + min);
+    const RusCrypto = {
+        keyArray : [],
+        generateSalt() {
+            return Math.floor(Math.random() * (687 - 192 + 1) + 192);
         },
-        includedKeyEncryption: (message) => {
-            let encryptedMessage = '';
-            let encryptedMessageKey = '';
-
-            let delimEncryptedKey = '';
-            let delimEncrypted = '';
-
-            if(typeof message !== 'string') return console.error("message must be string")
-
-            for(i = 0; i < message.length; i++){
-                salt = Crypt.randomDigit(192,687)
-                encryptedMessageKey += String.fromCharCode(salt)
-                encryptedMessage += String.fromCharCode(message.charCodeAt(i) + salt)
+        encrypt(textInUnicode){
+            keyArray = [];
+            let textArray = textInUnicode.split("")
+            let resultArray = [];
+            for (i = 0; i < textArray.length; i++) {
+                keyPoint = RusCrypto.generateSalt()
+                keyArray.push(String.fromCharCode(keyPoint))
+                resultArray.push(String.fromCharCode(textArray[i].charCodeAt(0) + keyPoint))
             }
-            for(i = 1; i < 4; i++){
+            let startDelim = String.fromCharCode(RusCrypto.generateSalt()) + String.fromCharCode(RusCrypto.generateSalt()) + String.fromCharCode(RusCrypto.generateSalt()) + String.fromCharCode(RusCrypto.generateSalt())
+            let midDelim = String.fromCharCode(RusCrypto.generateSalt()) + String.fromCharCode(RusCrypto.generateSalt()) + String.fromCharCode(RusCrypto.generateSalt()) + String.fromCharCode(RusCrypto.generateSalt())
+            let endDelim = String.fromCharCode(RusCrypto.generateSalt()) + String.fromCharCode(RusCrypto.generateSalt()) + String.fromCharCode(RusCrypto.generateSalt()) + String.fromCharCode(RusCrypto.generateSalt())
 
-                delim = "˃˄ˇˡ"
-                salt = Crypt.randomDigit(192,687)
-
-                delimEncryptedKey += String.fromCharCode(salt)
-                delimEncrypted += String.fromCharCode(delim.charCodeAt(i) + salt)
-            }
-            let result = delimEncryptedKey + encryptedMessage + delimEncrypted + encryptedMessageKey
-            return result
-        },
-        includedKeyDecryption: (message) => {
-            let encryptedDelimKey = message[0] + message[1] + message[2] + message[3]
-            let delimEncryptedKey = message.slice(0, 4)
-            let restOfMessage = message.slice(4, message.length)
-            console.log(restOfMessage)
-            return delimEncryptedKey
-            
+            return startDelim + resultArray.join("") + midDelim + keyArray.join("") + endDelim
         }
     }
 </script>
