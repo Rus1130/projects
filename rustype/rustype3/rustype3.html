@@ -55,9 +55,9 @@ const system = {
             appConsole.value = ''
         }
     },
-    keywords: ["set", "log", "def"],
+    keywords: ["var", "log", "def", "run"],
     variables: [],
-    functionsArray: [],
+    functions: [],
     call: function(variableName) {
         if(system.variables.find(x => x.name == variableName)){
             return system.variables.find(x => x.name == variableName).value
@@ -96,6 +96,7 @@ function run(code, runWithFunction) {
     if(runWithFunction == false){
         system.console.clear()
         system.variables = []
+        system.functions = []
     }
 
     codeBlock = code.split("\n")
@@ -148,7 +149,8 @@ function run(code, runWithFunction) {
                 }
             }
             if(providedKeyword == system.keywords[2]){
-                let appFunction = [line[1], line.slice(2).join(" ")]
+                let functionName = line[1]
+                let appFunction = [functionName, line.slice(2).join(" ")]
                 if(appFunction.length != 2){
                     system.console.log(`Syntax Error: Incomplete line (line ${i+1})`)
                 } else {
@@ -156,12 +158,13 @@ function run(code, runWithFunction) {
                         system.console.log(`Syntax Error: Incomplete line (line ${i+1})`)
                     } else {
                         let functionBody = appFunction[1].replaceAll("{ ", "").replaceAll(" }", "").split(", ")
-                        for(j = 0; j < functionBody.length; j++){
-                            system.functionsArray.push()
-                            run(functionBody[j], true)
-                        }
+                        system.functions.push({functionName : functionBody})
                     }
                 }
+            }
+            if(providedKeyword == system.keywords[3]){
+                let functionName = line[1]
+                console.log(system.functions.indexOf(functionName))
             }
         }
     }
