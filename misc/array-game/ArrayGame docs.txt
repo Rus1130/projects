@@ -1,13 +1,29 @@
-Gameboard coordinates begin at the top left corner.
+Gameboard coordinates begin at the top left corner with (0, 0).
 
-ArrayGame.gameboard: returns the current gameboard.
-ArrayGame.system.entities: returns an object of the current entities.
-ArrayGame.system.entities.sprites: returns an object of the current sprites.
-ArrayGame.system.entities.player: returns player info.
-ArrayGame.system.entities.enemies: returns the enemy array.
-ArrayGame.system.entities.bullets: returns the bullet array.
+-----Settings-----
 
-ArrayGame.display.create.screen(elementID): create a new screen and append it to the element with id of elementID.
-ArrayGame.display.create.board(gameboard_x, gameboard_y): create a new gameboard; gameboard_x and gameboard_y are the dimensions of the gameboard (max of 64x64).
-ArrayGame.display.destroy.board(): destroys the gameboard.
-ArrayGame.display.update(): updates the board.
+ArrayGame.settings.consoleWarns:
+    If true, console warnings will be printed every time there is a change to the gameboard. (default)
+    If false, no warnings will be printed.
+
+ArrayGame.settings.bkgd: Change the background (default "&nbsp;"; may be "#" for testing purposes).
+    Warning: do not change the background once you have created the gameboard, as the entire board will not change to the new background.
+
+-----Info-----
+
+ArrayGame.gameboard: Returns the current gameboard.
+ArrayGame.system.entities: Returns an object of the current entities.
+ArrayGame.system.entities.player: Returns player info.
+ArrayGame.system.entities.enemies: Returns the enemy array.
+ArrayGame.system.entities.bullets: Returns the bullet array.
+
+-----Screen and Board-----
+
+ArrayGame.display.create.screen(screenID): Creates a new screen and append it to the element with id of screenID.
+ArrayGame.display.create.board(gameboard_x, gameboard_y): Creates a new gameboard; gameboard_x and gameboard_y are the dimensions of the gameboard (max of 64x64).
+ArrayGame.display.setup(): Initial setup of the board.
+ArrayGame.display.update(): Updates the board.
+ArrayGame.presetBoard(screenID, gameboard_x, gameboard_y): Creates a preset board.
+    create a new screen and append it to the element with id of screenID.
+    gameboard_x and gameboard_y are the dimensions of the gameboard (max of 64x64).
+
