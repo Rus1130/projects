@@ -26,4 +26,3 @@ ArrayGame.display.update(): Updates the board.
 ArrayGame.presetBoard(screenID, gameboard_x, gameboard_y): Creates a preset board.
     create a new screen and append it to the element with id of screenID.
     gameboard_x and gameboard_y are the dimensions of the gameboard (max of 64x64).
-
