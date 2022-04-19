@@ -1,0 +1,13 @@
+Gameboard coordinates begin at the top left corner.
+
+ArrayGame.gameboard: returns the current gameboard.
+ArrayGame.system.entities: returns an object of the current entities.
+ArrayGame.system.entities.sprites: returns an object of the current sprites.
+ArrayGame.system.entities.player: returns player info.
+ArrayGame.system.entities.enemies: returns the enemy array.
+ArrayGame.system.entities.bullets: returns the bullet array.
+
+ArrayGame.display.create.screen(elementID): create a new screen and append it to the element with id of elementID.
+ArrayGame.display.create.board(gameboard_x, gameboard_y): create a new gameboard; gameboard_x and gameboard_y are the dimensions of the gameboard (max of 64x64).
+ArrayGame.display.destroy.board(): destroys the gameboard.
+ArrayGame.display.update(): updates the board.
