@@ -53,7 +53,7 @@ function analyze(gloss, returnType){
                 glossToAnalyze.push(grammar[totalGloss[i]][returnType])
             } else if (dictionary[totalGloss[i]]){
                 if(dictionary[totalGloss[i]].intermed_n){
-                    glossToAnalyze.push(dictionary[totalGloss[i]][returnType] + "--")
+                    glossToAnalyze.push(dictionary[totalGloss[i]][returnType] + "--") // do not delete
                 } else {
                     glossToAnalyze.push(dictionary[totalGloss[i]][returnType])
                 }
@@ -96,48 +96,58 @@ function print_output(input, returnType){
 
 const grammar = {
     "|": {
+        intermed_n: false,
         Romanization: ",",
         IPA: "|",
         Script: "᱿"
     },
     "||": {
+        intermed_n: false,
         Romanization: ".",
         IPA: "||",
         Script: "᱾"
     },
     PST: {
+        intermed_n: true,
         Romanization: "++ia",
         IPA: "++iɑ̯",
         Script: "++᱑᱒"
     },
     PRS: {
+        intermed_n: false,
         Romanization: "++",
         IPA: "++",
         Script: "++"
     },
     FUT: {
+        intermed_n: true,
         Romanization: "++iśi",
         IPA: "++içi",
         Script: "++᱑ᱴ᱑"
     },
     HYPO_PST: {
+        intermed_n: true,
         Romanization: "++ást",
         IPA: "++ɔst",
         Script: "++᱗ᱤᱜ"
+    },
+    HYPO_PRS: {
+        intermed_n: false,
+        Romanization: "++mhi",
+        IPA: "++m̥i",
+        Script: "++ᱬ᱑"
     }
 
 }
 
 const dictionary = {
     test: {
-        intermed_n: false,
         partOfSpeech: "verb",
         Romanization: "wít",
         IPA: "wɨt",
         Script: "ᱩᱽᱜ"
     },
     book: {
-        intermed_n: true,
         partOfSpeech: "noun",
         Romanization: "ana",
         IPA: "ɑnɑ",
