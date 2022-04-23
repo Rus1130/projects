@@ -1,4 +1,4 @@
-/*words model:
+/*dictionary model:
 
 english-word : {
     partOfSpeech: "",
@@ -44,17 +44,18 @@ function analyze(gloss, returnType){
     if (returnType != "IPA" && returnType != "Romanization" && returnType != "Script") {
         return console.error("invalid returnType")
     } else {
+        if(gloss.trim() == "") return document.getElementById('output').value = `Input cannot be empty`
         let totalGloss = gloss.replaceAll(".","_").trim().split(/-| /)
         let output = ""
         let glossToAnalyze = []
         for(i = 0; i < totalGloss.length; i++){
             if(grammar[totalGloss[i]]){
                 glossToAnalyze.push(grammar[totalGloss[i]][returnType])
-            } else if (words[totalGloss[i]]){
-                if(words[totalGloss[i]].intermed_n){
-                    glossToAnalyze.push( words[totalGloss[i]][returnType] + "--")
+            } else if (dictionary[totalGloss[i]]){
+                if(dictionary[totalGloss[i]].intermed_n){
+                    glossToAnalyze.push(dictionary[totalGloss[i]][returnType] + "--")
                 } else {
-                    glossToAnalyze.push(words[totalGloss[i]][returnType])
+                    glossToAnalyze.push(dictionary[totalGloss[i]][returnType])
                 }
             } else {
                 invalidLexemeError = true
@@ -64,17 +65,17 @@ function analyze(gloss, returnType){
             invalid_lexemes = [...new Set(invalid_lexemes)]
         }
         if(invalidLexemeError){
-            return alert(`Invalid lexeme(s): ${invalid_lexemes.join(", ")}`)
+            return document.getElementById('output').value = `Invalid lexeme(s): ${invalid_lexemes.join(", ")}`
         }
 
         let rawTranslatedText = glossToAnalyze.join(" ").replaceAll("-- ++",intermed_n[returnType]).replaceAll(/ \+\+|\+\+| --|--/g,"")
 
-        if(returnType == 'Romanization'){
-            let translatedText = rawTranslatedText.split(". ").map(function(word){
+        if(returnType == 'Romanization' || returnType == 'Script' ){
+            let translatedText = rawTranslatedText.split(`${grammar["||"][returnType]} `).map(function(word){
                 return word.charAt(0).toUpperCase() + word.slice(1)
-            }).join(". ") + "."
+            }).join(`${grammar["||"][returnType]} `) + grammar["||"][returnType]
         
-            output = translatedText.replaceAll(' .', ".").replaceAll(" ,",",")
+            output = translatedText.replaceAll(` ${grammar["||"][returnType]}`, grammar["||"][returnType]).replaceAll(" ,",",")
         } else {
             output = rawTranslatedText
         }
@@ -87,10 +88,26 @@ function analyze(gloss, returnType){
     }
 }
 
+function print_output(input, returnType){
+    document.getElementById('output').value = analyze(input, returnType)
+}
+
+// WORDS && GRAMMAR ===========================================================================================================================
+
 const grammar = {
+    "|": {
+        Romanization: ",",
+        IPA: "|",
+        Script: "᱿"
+    },
+    "||": {
+        Romanization: ".",
+        IPA: "||",
+        Script: "᱾"
+    },
     PST: {
         Romanization: "++ia",
-        IPA: "++iɑ",
+        IPA: "++iɑ̯",
         Script: "++᱑᱒"
     },
     PRS: {
@@ -111,21 +128,7 @@ const grammar = {
 
 }
 
-const words = {
-    "|": {
-        intermed_n: false,
-        partOfSpeech: "punctuation",
-        Romanization: ",",
-        IPA: "|",
-        Script: "᱿"
-    },
-    "||": {
-        intermed_n: false,
-        partOfSpeech: "punctuation",
-        Romanization: ".",
-        IPA: "||",
-        Script: "᱾"
-    },
+const dictionary = {
     test: {
         intermed_n: false,
         partOfSpeech: "verb",

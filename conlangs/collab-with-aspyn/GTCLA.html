@@ -1,0 +1,53 @@
+<style>
+    html {
+        font-family: monospace;
+        user-select: none;
+    }
+    textarea {
+        resize: none;
+    }
+    textarea:focus {
+        outline: none;
+    }
+    select:focus {
+        outline: none;
+    }
+    .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: monospace;
+        border: 1px black solid;
+        border-radius: 2px;
+        font-size: 15px;
+        background-color: beige;
+        width: 100px;
+    }
+    .btn:hover {
+        background-color: #f0f0f0;
+    }
+
+</style>
+<head>
+    <script src="GTCLA.js"></script>
+</head>
+<body>
+    To-Do:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;Add auto syllable breaks in IPA output
+    <br>
+    <br>
+    <textarea style="width: 600px; height: 75px" id="input" placeholder="Input gloss here" title="Input"></textarea>
+    <br>
+    <br>
+    <select id="type-selection" style="font-family: monospace;" title="Change output type">
+        <option value="Romanization" selected>Romanization</option>
+        <option value="Script">Script</option>
+        <option value="IPA">IPA</option>
+    </select>
+    <br>
+    <br>
+    <textarea style="width: 600px; height: 75px;" id="output" readonly placeholder="Output" title="Output"></textarea>
+    <br>
+    <br>
+    <div class="btn" onclick="print_output(document.getElementById('input').value, document.getElementById('type-selection').value)" title="Convert input to output of specified type">Convert!</div>
+</body>
