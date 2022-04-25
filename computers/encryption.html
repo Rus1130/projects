@@ -19,34 +19,34 @@
 
 </body>
 <script>
-    const RusCrypto = {
-        keyArray : [],
-        generateSalt() {
+    const PCrypt = {
+        generateSalt(){
             return Math.floor(Math.random() * (687 - 192 + 1) + 192);
         },
-        generateDelimiter() {
+        generateDelimiter(){
             return Math.floor(Math.random() * (191 - 161 + 1) + 161);
         },
         encrypt(string){
-            keyArray = [];
-            let textArray = string.split("")
-            let resultArray = [];
-            for (i = 0; i < textArray.length; i++) {
-                keyPoint = RusCrypto.generateSalt()
-                keyArray.push(String.fromCharCode(keyPoint))
-                resultArray.push(String.fromCharCode(textArray[i].charCodeAt(0) + keyPoint))
-            }
-            let startDelim = String.fromCharCode(RusCrypto.generateDelimiter()) + String.fromCharCode(RusCrypto.generateDelimiter()) + String.fromCharCode(RusCrypto.generateDelimiter()) + String.fromCharCode(RusCrypto.generateDelimiter())
-            let midDelim = String.fromCharCode(RusCrypto.generateDelimiter()) + String.fromCharCode(RusCrypto.generateDelimiter()) + String.fromCharCode(RusCrypto.generateDelimiter()) + String.fromCharCode(RusCrypto.generateDelimiter())
-            let endDelim = String.fromCharCode(RusCrypto.generateDelimiter()) + String.fromCharCode(RusCrypto.generateDelimiter()) + String.fromCharCode(RusCrypto.generateDelimiter()) + String.fromCharCode(RusCrypto.generateDelimiter())
+            if(string.length > 35) return console.error("String too long (max 36 chars)");
+            let encryptedMessageArray = [];
+            let encryptedKeyArray = [];
+            let delimiter = String.fromCharCode(PCrypt.generateDelimiter()) + String.fromCharCode(PCrypt.generateDelimiter()) + String.fromCharCode(PCrypt.generateDelimiter())
 
-            let result = startDelim + resultArray.join("") + midDelim + keyArray.join("") + endDelim
-            return result
-        },
-        decrypt(string){
-            let result = [];
-            let encryptedMessage = string.substr(4,string.length / 2 - 4)
-            return encryptedString
+            let slkey = PCrypt.generateSalt()
+            let stringLength = String.fromCharCode(string.length.toString(36).charCodeAt(0) + slkey);
+            let stringLengthKey = String.fromCharCode(slkey)
+
+
+            for(i = 0; i < string.length; i++){
+                let keypoint = PCrypt.generateSalt()
+                encryptedMessageArray.push(String.fromCharCode(string.charCodeAt(i) + keypoint));
+                encryptedKeyArray.push(String.fromCharCode(keypoint))
+            }
+
+            let encryptedMessage = encryptedMessageArray.join("")
+            let encryptedKey = encryptedKeyArray.join("")
+
+            return stringLength + encryptedMessage + encryptedKey + stringLengthKey
         }
     }
 </script>
