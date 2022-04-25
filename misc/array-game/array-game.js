@@ -3,10 +3,8 @@ const ArrayGame = {
         bkgd: "#",
         consoleWarns: true
     },
-    gameboardX: 0,
-    gameboardY: 0,
     setup: true,
-    do_not_edit: {
+    DNE: {
         random(min, max) {
             min = Math.ceil(min);
             max = Math.floor(max);
@@ -26,6 +24,8 @@ const ArrayGame = {
             probability: 0.25
         
         }],
+        gameboardX: 0,
+        gameboardY: 0,
         randomizer: (values) => {
             let i, pickedValue, 
             randomNr = Math.random(),
@@ -70,8 +70,8 @@ const ArrayGame = {
                     return console.error("Gameboard size is too large (maximum is 64x64)")
                 } else {
                     ArrayGame.gameboard = []
-                    ArrayGame.gameboardX = gameboard_x;
-                    ArrayGame.gameboardY = gameboard_y;
+                    ArrayGame.DNE.gameboardX = gameboard_x;
+                    ArrayGame.DNE.gameboardY = gameboard_y;
                     for (i = 0; i < parseInt(gameboard_y); i++) {
                         ArrayGame.gameboard.push([]);
                         for (j = 0; j < parseInt(gameboard_x); j++) {
@@ -88,8 +88,8 @@ const ArrayGame = {
             ArrayGame.entities.player.state = playerSetupState
             ArrayGame.entities.player.sprite = ArrayGame.entities.player.states[playerSetupState]
 
-            let newPlayerX = ArrayGame.do_not_edit.random(0, ArrayGame.gameboardX - 1)
-            let newPlayerY = ArrayGame.do_not_edit.random(0, ArrayGame.gameboardY - 1)
+            let newPlayerX = ArrayGame.do_not_edit.random(0, ArrayGame.DNE.gameboardX - 1)
+            let newPlayerY = ArrayGame.do_not_edit.random(0, ArrayGame.DNE.gameboardY - 1)
 
             ArrayGame.entities.player.x = newPlayerX
             ArrayGame.entities.player.y = newPlayerY
