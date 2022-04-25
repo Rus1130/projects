@@ -5,16 +5,39 @@ const ArrayGame = {
             y: 0,
             sprite: "",
             state: "",
-        },
-        bullet: {
-            state: "",
-            sprite: "",
+            move: {
+                up: function(cellAmount){
+                    ArrayGame.entities.player.state = "up"
+                    if(ArrayGame.entities.player.y > 0 && ArrayGame.entities.player.y + 1 - cellAmount > 0){
+                        ArrayGame.entities.player.y -= cellAmount
+                    }
+                },
+                down: function(cellAmount){
+                    ArrayGame.entities.player.state = "down"
+                    if(ArrayGame.entities.player.y < ArrayGame.gameboard.length - 1 && ArrayGame.entities.player.y + cellAmount < ArrayGame.gameboard.length){
+                        ArrayGame.entities.player.y += cellAmount
+                    }
+                },
+                left: function(cellAmount){
+                    ArrayGame.entities.player.state = "left"
+                    if(ArrayGame.entities.player.x > 0 && ArrayGame.entities.player.x + 1 - cellAmount > 0){
+                        ArrayGame.entities.player.x -= cellAmount
+                    }
+    
+                },
+                right: function(cellAmount){
+                    ArrayGame.entities.player.state = "right"
+                    if(ArrayGame.entities.player.x <  ArrayGame.gameboard[0].length - 1 && ArrayGame.entities.player.x + cellAmount < ArrayGame.gameboard[0].length){
+                        ArrayGame.entities.player.x += cellAmount
+                    }
+                }
+            },
         },
         enemies: [],
         bullets: [],
     },
     settings: {
-        bkgd: "#",
+        bkgd: "&nbsp;",
         consoleWarns: true,
         game_state: 'start-up'
     },
@@ -83,38 +106,12 @@ const ArrayGame = {
         ArrayGame.display.create.screen(screenID);
         ArrayGame.display.create.board(gameboard_x, gameboard_y);
         ArrayGame.display.setup()
+        ArrayGame.display.update()
         if(ArrayGame.settings.consoleWarns) console.warn("Preset Board Created")
         return ArrayGame.gameboard;
 
     },
     display: {
-        movePlayer: {
-            up: function(cellAmount){
-                ArrayGame.entities.player.state = "up"
-                if(ArrayGame.entities.player.y > 0){
-                    ArrayGame.entities.player.y -= cellAmount
-                }
-            },
-            down: function(cellAmount){
-                ArrayGame.entities.player.state = "down"
-                if(ArrayGame.entities.player.y < ArrayGame.gameboard.length - 1){
-                    ArrayGame.entities.player.y += cellAmount
-                }
-            },
-            left: function(cellAmount){
-                ArrayGame.entities.player.state = "left"
-                if(ArrayGame.entities.player.x > 0){
-                    ArrayGame.entities.player.x -= cellAmount
-                }
-
-            },
-            right: function(cellAmount){
-                ArrayGame.entities.player.state = "right"
-                if(ArrayGame.entities.player.x <  ArrayGame.gameboard[0].length - 1){
-                    ArrayGame.entities.player.x += cellAmount
-                }
-            }
-        },
         create : {
             screen: function(screenID) {
                 ArrayGame.settings.game_state = "screen_created"

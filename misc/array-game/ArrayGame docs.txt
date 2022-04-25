@@ -1,4 +1,4 @@
-Gameboard coordinates begin at the top left corner with (0, 0).
+Used best with hotkeys.js
 
 -----Settings-----
 
@@ -9,13 +9,14 @@ ArrayGame.settings.consoleWarns:
 ArrayGame.settings.bkgd: Change the background (default "&nbsp;"; may be "#" for testing purposes).
     Warning: do not change the background once you have created the gameboard, as the entire board will not change to the new background.
 
+ArrayGame.settings.game_state: State of the game. Best if left untouched.
+
 -----Info-----
 
 ArrayGame.gameboard: Returns the current gameboard.
-ArrayGame.system.entities: Returns an object of the current entities.
-ArrayGame.system.entities.player: Returns player info.
-ArrayGame.system.entities.enemies: Returns the enemy array.
-ArrayGame.system.entities.bullets: Returns the bullet array.
+ArrayGame.entities.player: Returns player info.
+ArrayGame.entities.enemies: Returns the enemy array.
+ArrayGame.entities.bullets: Returns the bullet array.
 
 -----Screen and Board-----
 
@@ -26,3 +27,10 @@ ArrayGame.display.update(): Updates the board.
 ArrayGame.presetBoard(screenID, gameboard_x, gameboard_y): Creates a preset board.
     create a new screen and append it to the element with id of screenID.
     gameboard_x and gameboard_y are the dimensions of the gameboard (max of 64x64).
+
+-----Player-----
+
+ArrayGame.entities.player.move.up(cellAmount): Moves the player up by cellAmount cells.
+ArrayGame.entities.player.move.down(cellAmount): Moves the player down by cellAmount cells.
+ArrayGame.entities.player.move.left(cellAmount): Moves the player left by cellAmount cells.
+ArrayGame.entities.player.move.right(cellAmount): Moves the player right by cellAmount cells.

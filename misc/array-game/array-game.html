@@ -1,5 +1,6 @@
 <head>
     <script src="array-game.js"></script>
+    <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
 </head>
 <body>
     <div id="s"></div>
@@ -8,4 +9,16 @@
     setInterval(() => {
         if(ArrayGame.settings.game_state === "ready") ArrayGame.display.update()
     }, 16.66)
+    hotkeys('w,a,s,d', function (event, handler){
+        switch (handler.key) {
+            case 'w': ArrayGame.entities.player.move.up(1)
+                break;
+            case 'a': ArrayGame.entities.player.move.left(1)
+                break;
+            case 's': ArrayGame.entities.player.move.down(1)
+                break;
+            case 'd': ArrayGame.entities.player.move.right(1)
+                break;
+  }
+});
 </script>
