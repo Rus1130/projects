@@ -26,6 +26,9 @@ const ArrayGame = {
         }],
         gameboardX: 0,
         gameboardY: 0,
+        invert: function(base, inverter) {
+            return base - inverter;
+        },
         randomizer: (values) => {
             let i, pickedValue, 
             randomNr = Math.random(),
@@ -45,6 +48,7 @@ const ArrayGame = {
             }
             return pickedValue;
         },
+        straightFrame: []
     },
     gameboard: [],
     presetBoard: function(screenID, gameboard_x, gameboard_y){
@@ -77,6 +81,7 @@ const ArrayGame = {
                         for (j = 0; j < parseInt(gameboard_x); j++) {
                             ArrayGame.gameboard[i].push(ArrayGame.settings.bkgd);
                         }
+            
                     }
                     if(ArrayGame.settings.consoleWarns) console.warn("Gameboard Created")
                     return ArrayGame.gameboard
@@ -84,26 +89,32 @@ const ArrayGame = {
             },
         },
         setup: function () {
-            let playerSetupState = ArrayGame.do_not_edit.randomizer(ArrayGame.do_not_edit.randomPlayerState)
+            let playerSetupState = ArrayGame.DNE.randomizer(ArrayGame.DNE.randomPlayerState)
             ArrayGame.entities.player.state = playerSetupState
             ArrayGame.entities.player.sprite = ArrayGame.entities.player.states[playerSetupState]
 
-            let newPlayerX = ArrayGame.do_not_edit.random(0, ArrayGame.DNE.gameboardX - 1)
-            let newPlayerY = ArrayGame.do_not_edit.random(0, ArrayGame.DNE.gameboardY - 1)
+            let newPlayerX = ArrayGame.DNE.random(0, ArrayGame.DNE.gameboardX - 1)
+            let newPlayerY = ArrayGame.DNE.invert(ArrayGame.DNE.gameboardY, ArrayGame.DNE.random(0, ArrayGame.DNE.gameboardY - 1))
 
             ArrayGame.entities.player.x = newPlayerX
             ArrayGame.entities.player.y = newPlayerY
 
             ArrayGame.gameboard[newPlayerY][newPlayerX] = ArrayGame.entities.player.sprite
-
-            document.getElementById("screen").innerHTML = JSON.stringify(ArrayGame.gameboard).replaceAll("],[","<br>").replace("[[","").replace("]]","").replaceAll('"',"").replaceAll(",","")
+            for(k = 0; k < ArrayGame.gameboard[0].length; k++){
+                ArrayGame.DNE.straightFrame.push("═")
+            }
+            let topFrame = "╔" + ArrayGame.DNE.straightFrame.join("") + "╗"
+            let bottomFrame = "╚" + ArrayGame.DNE.straightFrame.join("") + "╝"
+            document.getElementById("screen").innerHTML = topFrame + "<br>" + JSON.stringify(ArrayGame.gameboard).replaceAll("],[","║<br>║").replace("[[","║").replace("]]","║").replaceAll('"',"").replaceAll(",","") + "<br>" + bottomFrame
             if(ArrayGame.settings.consoleWarns) return console.warn("Board Setup Completed")
             
         },
         update: function () {
-            document.getElementById("screen").innerHTML = JSON.stringify(ArrayGame.gameboard).replaceAll("],[","<br>").replace("[[","").replace("]]","").replaceAll('"',"").replaceAll(",","")
+            let topFrame = "╔" + ArrayGame.DNE.straightFrame.join("") + "╗"
+            let bottomFrame = "╚" + ArrayGame.DNE.straightFrame.join("") + "╝"
+
+            document.getElementById("screen").innerHTML = topFrame + "<br>" + JSON.stringify(ArrayGame.gameboard).replaceAll("],[","║<br>║").replace("[[","║").replace("]]","║").replaceAll('"',"").replaceAll(",","")  + "<br>" + bottomFrame
             if(ArrayGame.settings.consoleWarns) return console.warn("Board Updated")
-            
         }
     },
     entities: {
