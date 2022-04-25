@@ -5,8 +5,7 @@
     <div id="s"></div>
 </body>
 <script>
-    let gamePlaying = false;
     setInterval(() => {
-        if(gamePlaying) ArrayGame.display.update()
+        if(ArrayGame.settings.game_state === "ready") ArrayGame.display.update()
     }, 16.66)
 </script>
