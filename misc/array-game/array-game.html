@@ -7,7 +7,7 @@
 </body>
 <script>
     setInterval(() => {
-        if(ArrayGame.settings.game_state === "ready") ArrayGame.display.update()
+        if(ArrayGame.settings.game_state === "ready") ArrayGame.display_update()
     }, 16.66)
     hotkeys('w,a,s,d', function (event, handler){
         switch (handler.key) {

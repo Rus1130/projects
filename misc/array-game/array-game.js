@@ -103,16 +103,24 @@ const ArrayGame = {
     },
     gameboard: [],
     presetBoard: function(screenID, gameboard_x, gameboard_y){
-        ArrayGame.display.create.screen(screenID);
-        ArrayGame.display.create.board(gameboard_x, gameboard_y);
-        ArrayGame.display.setup()
-        ArrayGame.display.update()
+        ArrayGame.create.display.screen(screenID);
+        ArrayGame.create.display.board(gameboard_x, gameboard_y);
+        ArrayGame.display_setup()
+        ArrayGame.display_update()
         if(ArrayGame.settings.consoleWarns) console.warn("Preset Board Created")
         return ArrayGame.gameboard;
 
     },
-    display: {
-        create : {
+    create : {
+        entity: {
+            bullet: {
+
+            },
+            enemy: {
+
+            }
+        },
+        display: {
             screen: function(screenID) {
                 ArrayGame.settings.game_state = "screen_created"
                 let newGameboardDisplay = document.createElement("div");
@@ -122,7 +130,7 @@ const ArrayGame = {
                 document.getElementById(screenID).appendChild(newGameboardDisplay);
                 if(ArrayGame.settings.consoleWarns) return console.warn("Screen Created")
             },
-            board: function (gameboard_x, gameboard_y) {
+            board: function (gameboard_x, gameboard_y, enemy_amount) {
                 if(gameboard_x > 64 || gameboard_y > 64) {
                     return console.error("Gameboard size is too large (maximum is 64x64)")
                 } else {
@@ -141,47 +149,47 @@ const ArrayGame = {
                     return ArrayGame.gameboard
                 };
             },
-        },
-        setup: function () {
-            if(ArrayGame.settings.game_state !== "board_created") return console.error("Gameboard has not been created yet")
-            let playerSetupState = ArrayGame.DNE.randomizer(ArrayGame.DNE.randomPlayerState)
-            ArrayGame.entities.player.state = playerSetupState
-            ArrayGame.entities.player.sprite = ArrayGame.DNE.stateTypes.player[playerSetupState]
-
-            let playerX = ArrayGame.DNE.random(0, ArrayGame.DNE.gameboardX - 1)
-            let playerY = ArrayGame.DNE.invert(ArrayGame.DNE.gameboardY, ArrayGame.DNE.random(0, ArrayGame.DNE.gameboardY - 1))
-
-            ArrayGame.entities.player.x = playerX
-            ArrayGame.entities.player.y = playerY
-
-            ArrayGame.gameboard[playerY][playerX] = ArrayGame.entities.player.sprite
-
-            for(k = 0; k < ArrayGame.gameboard[0].length; k++){
-                ArrayGame.DNE.straightFrame.push("═")
-            }
-            let topFrame = "╔" + ArrayGame.DNE.straightFrame.join("") + "╗"
-            let bottomFrame = "╚" + ArrayGame.DNE.straightFrame.join("") + "╝"
-
-            document.getElementById("screen").innerHTML = topFrame + "<br>" + JSON.stringify(ArrayGame.gameboard).replaceAll("],[","║<br>║").replace("[[","║").replace("]]","║").replaceAll('"',"").replaceAll(",","") + "<br>" + bottomFrame
-            ArrayGame.settings.game_state = "ready"
-            if(ArrayGame.settings.consoleWarns) return console.warn("Board Setup Completed")
-            
-        },
-        update: function () {
-            if(ArrayGame.settings.game_state !== "ready") return console.error("Game is not ready to update")
-            let topFrame = "╔" + ArrayGame.DNE.straightFrame.join("") + "╗"
-            let bottomFrame = "╚" + ArrayGame.DNE.straightFrame.join("") + "╝"
-        
-            for (i = 0; i < ArrayGame.gameboard.length; i++) {
-                for (j = 0; j < ArrayGame.gameboard[i].length; j++) {
-                    ArrayGame.gameboard[i][j] = ArrayGame.settings.bkgd;
-                }
-            }
-
-            ArrayGame.entities.player.sprite = ArrayGame.DNE.stateTypes.player[ArrayGame.entities.player.state]
-            ArrayGame.gameboard[ArrayGame.entities.player.y][ArrayGame.entities.player.x] = ArrayGame.entities.player.sprite
-
-            document.getElementById("screen").innerHTML = topFrame + "<br>" + JSON.stringify(ArrayGame.gameboard).replaceAll("],[","║<br>║").replace("[[","║").replace("]]","║").replaceAll('"',"").replaceAll(",","")  + "<br>" + bottomFrame
         }
+    },
+    display_setup: function () {
+        if(ArrayGame.settings.game_state !== "board_created") return console.error("Gameboard has not been created yet")
+        let playerSetupState = ArrayGame.DNE.randomizer(ArrayGame.DNE.randomPlayerState)
+        ArrayGame.entities.player.state = playerSetupState
+        ArrayGame.entities.player.sprite = ArrayGame.DNE.stateTypes.player[playerSetupState]
+
+        let playerX = ArrayGame.DNE.random(0, ArrayGame.DNE.gameboardX - 1)
+        let playerY = ArrayGame.DNE.invert(ArrayGame.DNE.gameboardY, ArrayGame.DNE.random(0, ArrayGame.DNE.gameboardY - 1))
+
+        ArrayGame.entities.player.x = playerX
+        ArrayGame.entities.player.y = playerY
+
+        ArrayGame.gameboard[playerY][playerX] = ArrayGame.entities.player.sprite
+
+        for(k = 0; k < ArrayGame.gameboard[0].length; k++){
+            ArrayGame.DNE.straightFrame.push("═")
+        }
+        let topFrame = "╔" + ArrayGame.DNE.straightFrame.join("") + "╗"
+        let bottomFrame = "╚" + ArrayGame.DNE.straightFrame.join("") + "╝"
+
+        document.getElementById("screen").innerHTML = topFrame + "<br>" + JSON.stringify(ArrayGame.gameboard).replaceAll("],[","║<br>║").replace("[[","║").replace("]]","║").replaceAll('"',"").replaceAll(",","") + "<br>" + bottomFrame
+        ArrayGame.settings.game_state = "ready"
+        if(ArrayGame.settings.consoleWarns) return console.warn("Board Setup Completed")
+        
+    },
+    display_update: function () {
+        if(ArrayGame.settings.game_state !== "ready") return console.error("Game is not ready to update")
+        let topFrame = "╔" + ArrayGame.DNE.straightFrame.join("") + "╗"
+        let bottomFrame = "╚" + ArrayGame.DNE.straightFrame.join("") + "╝"
+    
+        for (i = 0; i < ArrayGame.gameboard.length; i++) {
+            for (j = 0; j < ArrayGame.gameboard[i].length; j++) {
+                ArrayGame.gameboard[i][j] = ArrayGame.settings.bkgd;
+            }
+        }
+        console.log(ArrayGame.entities.player.state)
+        ArrayGame.entities.player.sprite = ArrayGame.DNE.stateTypes.player[ArrayGame.entities.player.state]
+        ArrayGame.gameboard[ArrayGame.entities.player.y][ArrayGame.entities.player.x] = ArrayGame.entities.player.sprite
+
+        document.getElementById("screen").innerHTML = topFrame + "<br>" + JSON.stringify(ArrayGame.gameboard).replaceAll("],[","║<br>║").replace("[[","║").replace("]]","║").replaceAll('"',"").replaceAll(",","")  + "<br>" + bottomFrame
     }
 }
