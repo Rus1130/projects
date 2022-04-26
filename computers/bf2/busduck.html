@@ -1,0 +1,161 @@
+<style>
+    html {
+        font-family: monospace;
+        user-select: none;
+        font-size: 20px;
+    }
+    textarea {
+        resize: none;
+        font-family: monospace;
+        outline: 0px;
+    }
+    #grid {
+        border: 1px black solid;
+        display: grid;
+        grid-template-columns: repeat(10, 60px);
+        grid-template-rows: repeat(2, 60px);
+        width: 600px;
+    }
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px black solid;
+    }
+    .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: monospace;
+        border: 1px black solid;
+        border-radius: 2px;
+        font-size: 15px;
+        background-color: beige;
+        width: 600px;
+        height: 50px;
+        font-size: 20px;
+    }
+</style>
+<head>
+</head>
+<body>
+    <div id="grid">
+        <div class="container" id="c0">0</div>
+        <div class="container" id="c1">0</div>
+        <div class="container" id="c2">0</div>
+        <div class="container" id="c3">0</div>
+        <div class="container" id="c4">0</div>
+        <div class="container" id="c5">0</div>
+        <div class="container" id="c6">0</div>
+        <div class="container" id="c7">0</div>
+        <div class="container" id="c8">0</div>
+        <div class="container" id="c9">0</div>
+        <div class="container" id="p0">^</div>
+        <div class="container" id="p1"></div>
+        <div class="container" id="p2"></div>
+        <div class="container" id="p3"></div>
+        <div class="container" id="p4"></div>
+        <div class="container" id="p5"></div>
+        <div class="container" id="p6"></div>
+        <div class="container" id="p7"></div>
+        <div class="container" id="p8"></div>
+        <div class="container" id="p9"></div>
+
+    </div>
+    <br>
+    <span style="font-size: 19px">Input:<br></span>
+    <textarea cols="77" rows="3" id="input"></textarea>
+    <br>
+    <br>
+    <span style="font-size: 19px">Output:<br></span>
+    <textarea cols="77" rows="25" id="output" readonly></textarea>
+    <br>
+    <br>
+    <div class="btn" id="btn" onclick="run(input.value, false)">Run!</div>
+</body>
+<script>
+
+const input = document.getElementById('input');
+const output = document.getElementById('output');
+let running = false;
+
+let pointer = 0;
+let cellValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+const keywords = [">","<","+","-",".","@","_"]
+
+let outputArray = [];
+let pointerSpeed = 1000
+
+
+function validCell(cellNumber){
+    return cellNumber >= 0 && cellNumber <= 9;
+}
+
+const cellAmount = 10;
+
+function updateCells(){
+
+    for(let i = 0; i < cellAmount; i++){
+        document.getElementById("c"+i).innerHTML = cellValues[i];
+        if(i == pointer){
+            document.getElementById("p" + i).innerHTML = "^";
+        } else {
+            document.getElementById("p" + i).innerHTML = "";
+        }
+    }
+}
+
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+async function run(instructions, loopMode){
+
+    if(running == false){
+        running = true;
+        if(loopMode == false){
+            pointer = 0;
+            cellValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            updateCells()
+            outputArray = []
+            pointerSpeed = 1000
+        }
+
+        let inputArray = instructions.split("");
+
+        for(i = -1; i < inputArray.length; i++){
+            if(keywords.includes(inputArray[i])){
+                if(inputArray[i] === ">"){
+                    if(!validCell(i + 1)){
+                        pointer = 9
+                        outputArray.push("ERROR: Pointer went out of bounds");
+                    } else {
+                        pointer++
+                    }
+                } else if(inputArray[i] === "<"){
+                    if(!validCell(i - 1)){
+                        pointer = 0
+                        outputArray.push("ERROR: Pointer went out of bounds");
+                    } else {
+                        pointer--
+                    }
+                } else if(inputArray[i] === "+"){
+                    cellValues[pointer]++
+                } else if(inputArray[i] === "-"){
+                    cellValues[pointer]--
+                } else if(inputArray[i] === "."){
+                    outputArray.push(cellValues[pointer])
+                } else if(inputArray[i] === "@"){
+                    pointerSpeed /= 2
+                } else if(inputArray[i] === "_"){
+                    pointerSpeed *= 2
+                }
+            }
+            updateCells()
+            output.value = outputArray.join("\n")
+            await this.timeout(pointerSpeed)
+        }
+        running = false;
+    } else {}
+}
+</script>

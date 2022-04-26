@@ -1,0 +1,10 @@
+> shift right
+< shift left
++ incrememnt cell value
+- decrement cell value
+. output cell value
+@ speed up pointer movement
+_ slow down pointer movement
+
+LOOPS:
+first cell controls the loops, when it is zero the loop is finished
