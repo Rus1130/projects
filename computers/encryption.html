@@ -48,29 +48,6 @@
                 let encryptedKey = encryptedKeyArray.join("")
 
                 return stringLength + encryptedMessage + String.fromCharCode(RCrypt.generateSalt()) + encryptedKey + stringLengthKey
-            },
-            MXE(string){ // Mix-in Encryption
-                const length = string.length.toString(36);
-                let encryptedMessagePrefix = length + ":";
-
-                let encryptedMessageArray = [];
-                let encryptedKeyArray = [];
-
-                let result = '';
-
-                for(i = 0; i < string.length; i++){
-                    let keypoint = RCrypt.generateSalt()
-                    encryptedMessageArray.push(String.fromCharCode(string.charCodeAt(i) + keypoint));
-                    encryptedKeyArray.push(String.fromCharCode(keypoint))
-                }
-
-                for(i = 0; i < encryptedMessageArray.length; i++){
-                    result += encryptedMessageArray[i]
-                    result += encryptedKeyArray[i]
-                }
-                result = encryptedMessagePrefix + result
-
-                return result;
             }
         },
         decrypt: {
