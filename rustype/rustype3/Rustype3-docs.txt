@@ -1,4 +1,0 @@
-question marks denote optional arguments.
-defining a variable: set var_name = value
-
-outputting to console: log value
