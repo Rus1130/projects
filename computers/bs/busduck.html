@@ -66,6 +66,7 @@ let pointerspeed = 1000
 let cellValues = [];
 
 const keywords = [">","<","+","-","@","_","."];
+let returnErrorCheck = [];
 
 let outputArray = [];
 
@@ -127,9 +128,6 @@ async function run(instructions, returnMode){
         updateCells()
         for(i = -1; i < instructions.length; i++){
             let char = instructions[i]
-            if(findingCharsToLoop == true && char != ']'){
-                codeToLoop.push(char)
-            }
             if(char === ">"){
                 pointer++;
                 if(!validCell(pointer)){
@@ -153,8 +151,10 @@ async function run(instructions, returnMode){
             } else if(char === "."){
                 outputArray.push(cellValues[pointer - 1]);
             } else if(char === "#"){
-                
-            }else {}
+                returnErrorCheck.push("#" + i)
+            } else if(char === "$"){
+                returnErrorCheck.push("$" + i)
+            } else {}
 
             output.value = outputArray.join("\n")
             updateCells()

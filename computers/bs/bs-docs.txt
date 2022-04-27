@@ -9,5 +9,4 @@ _ slow pointer speed (default)
 . output cell value
 
 # return point
-
 $ goto return point
