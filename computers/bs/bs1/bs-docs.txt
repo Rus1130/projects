@@ -1,0 +1,27 @@
+> shift right
+< shift left
+
+@ fast pointer speed
+_ slow pointer speed (default)
+
++ incrememnt cell value
+- decrement cell value
+= output cell value
+
+s copy cell value
+l paste cell value
+
+& wait for 100ms
+
+[ jump to cell if value is 0 .
+] jump to cell if value is not 0 .
+
+:number to compare,jump to cell if value is equal to number,jump to cell if value is not equal to number.
+    ex. :5,6,2.
+
+
+use typesets to change the character set
+    tD - Decimal
+    tB - Binary
+    tO - Octal
+    tX - Hexadecimal
