@@ -8,5 +8,7 @@ _ slow pointer speed (default)
 - decrement cell value
 . output cell value
 
-# return point
-$ goto return point
+: copy cell value
+; paste cell value
+
+% toggle unicode mode

@@ -63,12 +63,16 @@ let running = false;
 let pointer = 1;
 let pointerspeed = 1000
 
+let memory = '';
+
 let cellValues = [];
-
-const keywords = [">","<","+","-","@","_","."];
-let returnErrorCheck = [];
-
 let outputArray = [];
+
+let unicodeMode = false;
+
+function checkUnicodeSafeCell(unicode){
+    Boolean(unicode >= 0 && unicode <= 31 || unicode >= 127 && unicode <= 159)
+}
 
 const cellAmount = 12;
 
@@ -120,25 +124,27 @@ function timeout(ms) {
 }
 
 async function run(instructions, returnMode){
-    if(running == false){
-        running = true;
-        if(returnMode == false){
-            resetCells()
-        }
-        updateCells()
-        for(i = -1; i < instructions.length; i++){
+    running = true;
+    if(returnMode == false){
+        resetCells()
+    }
+    updateCells()
+    for(i = -1; i < instructions.length; i++){
+        if(running == true){
             let char = instructions[i]
             if(char === ">"){
                 pointer++;
                 if(!validCell(pointer)){
                     pointer = cellAmount;
-                    outputArray.push("ERROR: pointer cannot go out of bounds");
+                    outputArray.push(`ERROR: pointer cannot go out of bounds (char ${i+1})`);
+                    running = false;
                 }
             } else if(char === "<"){
                 pointer--;
                 if(!validCell(pointer)){
                     pointer = 1;
-                    outputArray.push("ERROR: pointer cannot go out of bounds");
+                    outputArray.push(`ERROR: pointer cannot go out of bounds (char ${i+1})`);
+                    running = false;
                 }
             } else if(char === "@"){
                 pointerspeed = 50
@@ -150,17 +156,23 @@ async function run(instructions, returnMode){
                 cellValues[pointer - 1]--;
             } else if(char === "."){
                 outputArray.push(cellValues[pointer - 1]);
-            } else if(char === "#"){
-                returnErrorCheck.push("#" + i)
-            } else if(char === "$"){
-                returnErrorCheck.push("$" + i)
+            } else if(char === ":"){
+                memory = cellValues[pointer - 1] 
+            } else if(char === ";"){
+                if(memory == ''){
+                    outputArray.push(`ERROR: cannot set an empty value (char ${i+1})`);
+                } else {
+                    cellValues[pointer - 1] = memory;
+                }
+            } else if(char === "%"){
+                unicodeMode = true;
             } else {}
-
             output.value = outputArray.join("\n")
             updateCells()
             await this.timeout(pointerspeed)
-        }
-        running = false;
-    } else {}
+        
+        } else {}
+    }
+    running = false;
 }
 </script>
