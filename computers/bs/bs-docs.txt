@@ -8,7 +8,19 @@ _ slow pointer speed (default)
 - decrement cell value
 . output cell value
 
-: copy cell value
-; paste cell value
+c copy cell value
+v paste cell value
 
-% toggle unicode mode
+& wait for 100ms
+
+[if cell value is zero, jump to cellValue]
+]if cell value is not zero, jump to cellValue[
+
+{if cell value % 2 = 0; jump to cellValue}
+}if cell value % 2 != 0; jump to cellValue{
+
+use shebangs to change the character set
+    #!D| - Decimal
+    #!B| - Binary
+    #!O| - Octal
+    #!X| - Hexadecimal
