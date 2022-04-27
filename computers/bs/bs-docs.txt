@@ -16,8 +16,8 @@ v paste cell value
 [if cell value is zero, jump to cellValue]
 ]if cell value is not zero, jump to cellValue[
 
-{if cell value % 2 = 0; jump to cellValue}
-}if cell value % 2 != 0; jump to cellValue{
+{if cell value is even; jump to cellValue}
+}if cell value is odd; jump to cellValue{
 
 use shebangs to change the character set
     #!D| - Decimal

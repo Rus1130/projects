@@ -132,119 +132,119 @@ function timeout(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-async function run(instructions, returnMode){
+async function parse(instructions){
+    for(i = -1; i < instructions.length; i++){
+        let char = instructions[i]
+        if(char === ">"){
+            pointer++;
+            if(!validCell(pointer)){
+                pointer = cellAmount;
+                outputArray.push(`ERROR: pointer cannot go out of bounds (char ${i+1})`);
+                running = false;
+            }
+        } else if(char === "<"){
+            pointer--;
+            if(!validCell(pointer)){
+                pointer = 1;
+                outputArray.push(`ERROR: pointer cannot go out of bounds (char ${i+1})`);
+                running = false;
+            }
+        } else if(char === "@"){
+            pointerspeed = 50
+        } else if(char === "_"){
+            pointerspeed = 1000
+        } else if(char === "+"){
+            cellValues[pointer - 1]++;
+        } else if(char === "-"){
+            cellValues[pointer - 1]--;
+        } else if(char === "."){
+            outputArray.push((cellValues[pointer - 1]).toString(numberShebangs[shebangs.indexOf(currentShebang)]));
+        } else if(char === "("){
+            memory = cellValues[pointer - 1] 
+        } else if(char === ")"){
+            if(memory == ''){
+                outputArray.push(`ERROR: cannot set an empty value (char ${i+1})`);
+                running = false;
+            } else {
+                cellValues[pointer - 1] = memory;
+            }
+        } else if(char === "#"){
+            shebang = instructions.substring(i, i + 4);
+            if(!checkShebang(shebang)){
+                outputArray.push(`ERROR: invalid shebang (char ${i+1})`);
+                running = false;
+            } else {
+                currentShebang = shebang;
+                i += 3;
+            }
+        } else if(char === "&"){
+            await this.timeout(100)
+        } else if(char === "["){ // jump if 0
+            let matchingBracket = instructions.substring(i, instructions.length).indexOf(']') + i;
+            if(matchingBracket == -1){
+                outputArray.push(`ERROR: no matching bracket (char ${i+1})`);
+                running = false;
+            } else {
+                let jumpCell = instructions.substring(i + 1, matchingBracket);
+                let cellValue = cellValues[pointer - 1];
+                if(cellValue == 0){
+                    pointer = jumpCell;
+                }
+            }
+
+        } else if(char === "]"){ // jump if not 0
+            let matchingBracket = instructions.substring(i, instructions.length).indexOf('[') + i;
+            if(matchingBracket == -1){
+                outputArray.push(`ERROR: no matching reverse bracket (char ${i+1})`);
+                running = false;
+            } else {
+                let jumpCell = instructions.substring(i + 1, matchingBracket);
+                let cellValue = cellValues[pointer - 1];
+                if(cellValue != 0){
+                    pointer = jumpCell;
+                }
+            }
+            
+        } else if(char === "{"){ // jump if % 2 = 0
+            let matchingBracket = instructions.substring(i, instructions.length).indexOf('}') + i;
+            if(matchingBracket == -1){
+                outputArray.push(`ERROR: no matching bracket (char ${i+1})`);
+                running = false;
+            } else {
+                let jumpCell = instructions.substring(i + 1, matchingBracket);
+                let cellValue = cellValues[pointer - 1];
+                if(cellValue % 2 == 0){
+                    pointer = jumpCell;
+                }
+            }
+
+        } else if(char === "}"){ // jump if not 0
+            let matchingBracket = instructions.substring(i, instructions.length).indexOf('{') + i;
+            if(matchingBracket == -1){
+                outputArray.push(`ERROR: no matching reverse bracket (char ${i+1})`);
+                running = false;
+            } else {
+                let jumpCell = instructions.substring(i + 1, matchingBracket);
+                let cellValue = cellValues[pointer - 1];
+                if(cellValue % 2 != 0){
+                    pointer = jumpCell;
+                }
+            }
+        } else {}
+        updateCells()
+        output.value = outputArray.join("\n")
+        await this.timeout(pointerspeed)
+    }
+}
+
+function run(struct, returnMode){
     running = true;
     if(returnMode == false){
         resetCells()
     }
+    parse(struct)
     updateCells()
-    for(i = -1; i < instructions.length; i++){
-        if(running == true){
-            let char = instructions[i]
-            if(char === ">"){
-                pointer++;
-                if(!validCell(pointer)){
-                    pointer = cellAmount;
-                    outputArray.push(`ERROR: pointer cannot go out of bounds (char ${i+1})`);
-                    running = false;
-                }
-            } else if(char === "<"){
-                pointer--;
-                if(!validCell(pointer)){
-                    pointer = 1;
-                    outputArray.push(`ERROR: pointer cannot go out of bounds (char ${i+1})`);
-                    running = false;
-                }
-            } else if(char === "@"){
-                pointerspeed = 50
-            } else if(char === "_"){
-                pointerspeed = 1000
-            } else if(char === "+"){
-                cellValues[pointer - 1]++;
-            } else if(char === "-"){
-                cellValues[pointer - 1]--;
-            } else if(char === "."){
-                outputArray.push((cellValues[pointer - 1]).toString(numberShebangs[shebangs.indexOf(currentShebang)]));
-            } else if(char === "("){
-                memory = cellValues[pointer - 1] 
-            } else if(char === ")"){
-                if(memory == ''){
-                    outputArray.push(`ERROR: cannot set an empty value (char ${i+1})`);
-                    running = false;
-                } else {
-                    cellValues[pointer - 1] = memory;
-                }
-            } else if(char === "#"){
-                shebang = instructions.substring(i, i + 4);
-                if(!checkShebang(shebang)){
-                    outputArray.push(`ERROR: invalid shebang (char ${i+1})`);
-                    running = false;
-                } else {
-                    currentShebang = shebang;
-                    i += 3;
-                }
-            } else if(char === "&"){
-                await this.timeout(100)
-            } else if(char === "["){ // jump if 0
-                let matchingBracket = instructions.substring(i, instructions.length).indexOf(']') + i;
-                if(matchingBracket == -1){
-                    outputArray.push(`ERROR: no matching bracket (char ${i+1})`);
-                    running = false;
-                } else {
-                    let jumpCell = instructions.substring(i + 1, matchingBracket);
-                    let cellValue = cellValues[pointer - 1];
-                    if(cellValue == 0){
-                        pointer = jumpCell;
-                    }
-                }
 
-            } else if(char === "]"){ // jump if not 0
-                let matchingBracket = instructions.substring(i, instructions.length).indexOf('[') + i;
-                if(matchingBracket == -1){
-                    outputArray.push(`ERROR: no matching reverse bracket (char ${i+1})`);
-                    running = false;
-                } else {
-                    let jumpCell = instructions.substring(i + 1, matchingBracket);
-                    let cellValue = cellValues[pointer - 1];
-                    if(cellValue != 0){
-                        pointer = jumpCell;
-                    }
-                }
-                
-            } else if(char === "{"){ // jump if % 2 = 0
-                let matchingBracket = instructions.substring(i, instructions.length).indexOf('}') + i;
-                if(matchingBracket == -1){
-                    outputArray.push(`ERROR: no matching bracket (char ${i+1})`);
-                    running = false;
-                } else {
-                    let jumpCell = instructions.substring(i + 1, matchingBracket);
-                    let cellValue = cellValues[pointer - 1];
-                    if(cellValue % 2 == 0){
-                        pointer = jumpCell;
-                    }
-                }
-
-            } else if(char === "}"){ // jump if not 0
-                let matchingBracket = instructions.substring(i, instructions.length).indexOf('{') + i;
-                if(matchingBracket == -1){
-                    outputArray.push(`ERROR: no matching reverse bracket (char ${i+1})`);
-                    running = false;
-                } else {
-                    let jumpCell = instructions.substring(i + 1, matchingBracket);
-                    let cellValue = cellValues[pointer - 1];
-                    if(cellValue % 2 != 0){
-                        pointer = jumpCell;
-                    }
-                }
-            } else {}
-            output.value = outputArray.join("\n")
-            updateCells()
-            await this.timeout(pointerspeed)
-        
-        } else {
-            running = false;
-        }
-    }
     running = false;
 }
 </script>
