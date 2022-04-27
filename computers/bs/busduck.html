@@ -12,9 +12,9 @@
     #grid {
         border: 1px black solid;
         display: grid;
-        grid-template-columns: repeat(10, 60px);
+        grid-template-columns: repeat(12, 60px);
         grid-template-rows: repeat(2, 60px);
-        width: 600px;
+        width: 720px;
     }
     .container {
         display: flex;
@@ -50,6 +50,8 @@
         <div class="container" id="c7">0</div>
         <div class="container" id="c8">0</div>
         <div class="container" id="c9">0</div>
+        <div class="container" id="c10">0</div>
+        <div class="container" id="c11">0</div>
         <div class="container" id="p0">^</div>
         <div class="container" id="p1"></div>
         <div class="container" id="p2"></div>
@@ -60,6 +62,8 @@
         <div class="container" id="p7"></div>
         <div class="container" id="p8"></div>
         <div class="container" id="p9"></div>
+        <div class="container" id="p10"></div>
+        <div class="container" id="p11"></div>
 
     </div>
     <br>
@@ -80,18 +84,19 @@ const output = document.getElementById('output');
 let running = false;
 
 let pointer = 0;
-let cellValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-const keywords = [">","<","+","-",".","@","_"]
+let cellValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+let codeToLoop = [];
+let findingLoop = false;
+const keywords = [">","<","+","-",".","[","]"]
 
 let outputArray = [];
-let pointerSpeed = 1000
 
 
 function validCell(cellNumber){
-    return cellNumber >= 0 && cellNumber <= 9;
+    return cellNumber >= 0 && cellNumber <= 12;
 }
 
-const cellAmount = 10;
+const cellAmount = 12;
 
 function updateCells(){
 
@@ -110,50 +115,50 @@ function timeout(ms) {
 }
 
 async function run(instructions, loopMode){
-
     if(running == false){
         running = true;
         if(loopMode == false){
             pointer = 0;
-            cellValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            cellValues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             updateCells()
             outputArray = []
-            pointerSpeed = 1000
         }
 
         let inputArray = instructions.split("");
 
+        // NEEDS FIXING
         for(i = -1; i < inputArray.length; i++){
+            console.log(pointer)
             if(keywords.includes(inputArray[i])){
+                if(findingLoop){
+                    codeToLoop.push(inputArray[i].replaceAll("[",""))
+                }
                 if(inputArray[i] === ">"){
-                    if(!validCell(i + 1)){
-                        pointer = 9
+                    if(!validCell(i + 2)){
                         outputArray.push("ERROR: Pointer went out of bounds");
+                        running = false;
                     } else {
                         pointer++
                     }
-                } else if(inputArray[i] === "<"){
-                    if(!validCell(i - 1)){
-                        pointer = 0
+                }
+                if(inputArray[i] === "<"){
+                    if(!validCell(i - 2)){
                         outputArray.push("ERROR: Pointer went out of bounds");
+                        running = false;
                     } else {
                         pointer--
                     }
-                } else if(inputArray[i] === "+"){
+                }
+                if(inputArray[i] === "+"){
                     cellValues[pointer]++
-                } else if(inputArray[i] === "-"){
+                }
+                if(inputArray[i] === "-"){
                     cellValues[pointer]--
-                } else if(inputArray[i] === "."){
-                    outputArray.push(cellValues[pointer])
-                } else if(inputArray[i] === "@"){
-                    pointerSpeed /= 2
-                } else if(inputArray[i] === "_"){
-                    pointerSpeed *= 2
                 }
             }
             updateCells()
             output.value = outputArray.join("\n")
-            await this.timeout(pointerSpeed)
+            await this.timeout(600)
         }
         running = false;
     } else {}
