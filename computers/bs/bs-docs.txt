@@ -6,10 +6,10 @@ _ slow pointer speed (default)
 
 + incrememnt cell value
 - decrement cell value
-. output cell value
+= output cell value
 
-c copy cell value
-v paste cell value
+( copy cell value
+) paste cell value
 
 & wait for 100ms
 
