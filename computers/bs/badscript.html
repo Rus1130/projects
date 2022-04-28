@@ -44,7 +44,7 @@
     </div>
     <br>
     <span style="font-size: 19px">Input:<br></span>
-    <textarea cols="77" rows="3" id="input"></textarea>
+    <textarea cols="77" rows="6" id="input"></textarea>
     <br>
     <br>
     <span style="font-size: 19px">Output:<br></span>
@@ -86,6 +86,14 @@ grid.style.setProperty('--cell-amount', cellAmount)
 
 function validCell(cellNumber){
     return cellNumber >= 1 && cellNumber <= cellAmount;
+}
+
+function repeat(value, times){
+    let result = '';
+    for(let i = 0; i < times; i++){
+        result += value;
+    }
+    return result;
 }
 
 function loadCells(){
@@ -148,6 +156,8 @@ async function parse(instructions){
                 if(!validCell(pointer)){
                     pointer = cellAmount;
                     outputArray.push(`ERROR: Pointer out of bounds. (char ${i+1})`);
+                    outputArray.push(instructions)
+                    outputArray.push(repeat(" ", i) + "^");
                     i = instructions.length;
                 }
             }
@@ -156,6 +166,8 @@ async function parse(instructions){
                 if(!validCell(pointer)){
                     pointer = 1;
                     outputArray.push(`ERROR: Pointer out of bounds. (char ${i+1})`);
+                    outputArray.push(instructions)
+                    outputArray.push(repeat(" ", i) + "^");
                     i = instructions.length;
                 }
             }
@@ -174,6 +186,8 @@ async function parse(instructions){
             if(char === "_"){
                 if(memory == ''){
                     outputArray.push(`ERROR: cannot set cell as empty. (char ${i+1})`);
+                    outputArray.push(instructions)
+                    outputArray.push(repeat(" ", i) + "^");
                     i = instructions.length;
                 } else {
                     cellValues[pointer - 1] = memory;
@@ -182,7 +196,9 @@ async function parse(instructions){
             if(char === "t"){
                 let typeset = "t" + instructions[i + 1];
                 if(!checkTypeset(typeset)){
-                    outputArray.push(`ERROR: Invalid typeset. (char ${i+1})`);
+                    outputArray.push(`ERROR: Invalid typeset. (char ${i+2})`);
+                    outputArray.push(instructions)
+                    outputArray.push(repeat(" ", i + 1) + "^");
                     i = instructions.length;
                 } else {
                     currentTypeset = typeset;
@@ -193,22 +209,30 @@ async function parse(instructions){
                 await this.timeout(100)
             }
             if(char === "["){
-                let temp_i = i;
-                let ignore = 0;
+                // get index of matching ]
+                let matchingIndex = instructions.indexOf("]", i);
+                if(matchingIndex == -1){
+                    outputArray.push(`ERROR: Matching closed bracket expected. (char ${i+1})`);
+                    outputArray.push(instructions)
+                    outputArray.push(repeat(" ", i) + "^");
+                } else {
+                    let temp_i = i;
+                    let ignore = 0;
 
-                while(1) {
-                    temp_i++;
-                    if(!validCell(temp_i)){}else{
-                        if(instructions[temp_i] === "[") ignore++;
-                        if(instructions[temp_i] === "]") {
-                            if(ignore === 0) {
-                                if(cellValues[pointer - 1] === 0) {
-                                    i = temp_i
-                                } else {
-                                    loops[temp_i] = i
-                                }
-                                break;
-                            } else ignore--;
+                    while(1) {
+                        temp_i++;
+                        if(!validCell(temp_i)){}else{
+                            if(instructions[temp_i] === "[") ignore++;
+                            if(instructions[temp_i] === "]") {
+                                if(ignore === 0) {
+                                    if(cellValues[pointer - 1] === 0) {
+                                        i = temp_i
+                                    } else {
+                                        loops[temp_i] = i
+                                    }
+                                    break;
+                                } else ignore--;
+                            }
                         }
                     }
                 }
@@ -221,7 +245,7 @@ async function parse(instructions){
                 };
             }
             updateCells()
-            output.value = outputArray.join("\n")
+            output.value = outputArray.join("\n");;
             await this.timeout(300)
         }
     }

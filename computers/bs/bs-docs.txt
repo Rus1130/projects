@@ -13,7 +13,7 @@ _ - paste cell value
 
 & - wait for 100ms
 
-[ loop ] - loop code
+[ loop ] - if cell value at pointer is not 0, loop
     common loop +++[>+++++<-]
 
 {value} - go to specified cell if cellValue is 0
