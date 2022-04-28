@@ -4,8 +4,7 @@
 + - incrememnt cell value
 - - decrement cell value
 
-:value, - set cell value
-
+, - set cell value
 . - output cell value
 
 @ - copy cell value
@@ -16,9 +15,10 @@ _ - paste cell value
 [ loop ] - if cell value at pointer is not 0, loop
     common loop +++[>+++++<-]
 
-{value} - go to specified cell if cellValue is 0
-}value{ - go to specified cell if cellValue is not 0
+{cell' - goto cell if cellValue is 0
+}cell' - goto cell if cellValue is not 0
 
+(value'ifTrue'ifFalse) - if cellValue = value goto ifTrue, else goto ifFalse
 
 
 use typesets to change the character set
