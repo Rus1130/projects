@@ -1,23 +1,23 @@
-> : shift pointer right
-< : shift pointer left
+> - shift pointer right
+< - shift pointer left
 
-+ : incrememnt cell value
-- : decrement cell value
++ - incrememnt cell value
+- - decrement cell value
 
-:value, : set cell value
+:value, - set cell value
 
-. : output cell value
+. - output cell value
 
-s : copy cell value
-l : paste cell value
+@ - copy cell value
+_ - paste cell value
 
-& : wait for 100ms
+& - wait for 100ms
 
-[ loop ] : loop code
+[ loop ] - loop code
     common loop +++[>+++++<-]
 
-{value} : go to specified cell if cellValue is 0
-}value{ : go to specified cell if cellValue is not 0
+{value} - go to specified cell if cellValue is 0
+}value{ - go to specified cell if cellValue is not 0
 
 
 

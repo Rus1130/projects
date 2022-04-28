@@ -168,10 +168,10 @@ async function parse(instructions){
             if(char === "."){
                 outputArray.push((cellValues[pointer - 1]).toString(numberTypesets[typesets.indexOf(currentTypeset)]));
             }
-            if(char === "s"){
+            if(char === "@"){
                 memory = cellValues[pointer - 1] 
             }
-            if(char === "l"){
+            if(char === "_"){
                 if(memory == ''){
                     outputArray.push(`ERROR: cannot set cell as empty. (char ${i+1})`);
                     i = instructions.length;
