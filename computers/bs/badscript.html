@@ -13,7 +13,7 @@
         border: 1px black solid;
         display: grid;
         grid-template-columns: repeat(22, 60px);
-        grid-template-rows: repeat(3, 60px);
+        grid-template-rows: repeat(4, 60px);
         width: calc(22 * 60px);
     }
     .container {
@@ -45,10 +45,10 @@
     <br>
     <span style="font-size: 19px">Input:<br></span>
     <textarea cols="77" rows="6" id="input"></textarea>
-    <br>
+    &nbsp;
     <br>
     <span style="font-size: 19px">Output:<br></span>
-    <textarea cols="77" rows="20" id="output" readonly></textarea>
+    <textarea cols="77" rows="17" id="output" readonly></textarea>
     <br>
     <br>
     <div class="btn" id="btn" onclick="run(input.value)">Run!</div>
@@ -81,7 +81,7 @@ function changeToSaveUnicode(unicode){
     Boolean(unicode >= 0 && unicode <= 31 || unicode >= 127 && unicode <= 159)
 }
 
-const cellAmount = 66;
+const cellAmount = 88;
 grid.style.setProperty('--cell-amount', cellAmount)
 
 function validCell(cellNumber){
@@ -238,11 +238,19 @@ async function parse(instructions){
                 }
             }
             if(char === "]"){
-                if(cellValues[pointer - 1] !== 0) {
-                    i = loops[i]
+
+                let matchingIndex = instructions.lastIndexOf("[", i);
+                if(matchingIndex == -1){
+                    outputArray.push(`ERROR: Matching open bracket expected. (char ${i+1})`);
+                    outputArray.push(instructions)
+                    outputArray.push(repeat(" ", i) + "^");
                 } else {
-                    loops[i]
-                };
+                    if(cellValues[pointer - 1] !== 0) {
+                        i = loops[i]
+                    } else {
+                        loops[i]
+                    };
+                }
             }
             updateCells()
             output.value = outputArray.join("\n");;
