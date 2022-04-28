@@ -28,3 +28,5 @@ use typesets to change the character set
     tX - Hexadecimal
 
 reminder: look up how to highlight the error character
+
+syntax highlighting: <span id="color: color">char</span>character
