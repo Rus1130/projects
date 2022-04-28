@@ -1,0 +1,30 @@
+> : shift pointer right
+< : shift pointer left
+
++ : incrememnt cell value
+- : decrement cell value
+
+:value, : set cell value
+
+. : output cell value
+
+s : copy cell value
+l : paste cell value
+
+& : wait for 100ms
+
+[ loop ] : loop code
+    common loop +++[>+++++<-]
+
+{value} : go to specified cell if cellValue is 0
+}value{ : go to specified cell if cellValue is not 0
+
+
+
+use typesets to change the character set
+    tD - Decimal
+    tB - Binary
+    tO - Octal
+    tX - Hexadecimal
+
+reminder: look up how to highlight the error character

@@ -1,2 +1,0 @@
-> shift right
-< right left

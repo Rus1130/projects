@@ -1,0 +1,236 @@
+<style>
+    html {
+        font-family: monospace;
+        user-select: none;
+        font-size: 20px;
+    }
+    textarea {
+        resize: none;
+        font-family: monospace;
+        outline: 0px;
+    }
+    .grid {
+        border: 1px black solid;
+        display: grid;
+        grid-template-columns: repeat(22, 60px);
+        grid-template-rows: repeat(2, 60px);
+        width: calc(22 * 60px);
+    }
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px black solid;
+    }
+    .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: monospace;
+        border: 1px black solid;
+        border-radius: 2px;
+        font-size: 15px;
+        background-color: beige;
+        width: 600px;
+        height: 50px;
+        font-size: 20px;
+    }
+</style>
+<head>
+</head>
+<body>
+    <div id="grid" class="grid">
+
+    </div>
+    <br>
+    <span style="font-size: 19px">Input:<br></span>
+    <textarea cols="77" rows="3" id="input"></textarea>
+    <br>
+    <br>
+    <span style="font-size: 19px">Output:<br></span>
+    <textarea cols="77" rows="25" id="output" readonly></textarea>
+    <br>
+    <br>
+    <div class="btn" id="btn" onclick="run(input.value)">Run!</div>
+</body>
+<script>
+
+const display = document.getElementById('grid');
+const input = document.getElementById('input');
+const output = document.getElementById('output');
+
+let pointer = 1;
+
+let memory = '';
+
+let cellValues = [];
+let outputArray = [];
+let errorsArray = [];
+let loops = []
+
+const typesets = ["tD","tB", "tO", "tX"]; // decimal, binary, octal, hexadecimal
+const numberTypesets = [10,2,8,16]
+
+let currentTypeset = "tD";
+
+function checkTypeset(typeset){
+    return typesets.includes(typeset)
+}
+
+function checkUnicodeSafeCell(unicode){
+    Boolean(unicode >= 0 && unicode <= 31 || unicode >= 127 && unicode <= 159)
+}
+
+const cellAmount = 44;
+grid.style.setProperty('--cell-amount', cellAmount)
+
+function validCell(cellNumber){
+    return cellNumber >= 1 && cellNumber <= cellAmount;
+}
+
+function loadCells(){
+    for(let i = 1; i <= cellAmount; i++){
+        let newValueCell = document.createElement('div');
+        newValueCell.className = 'container';
+        newValueCell.id = 'c' + i;
+        if(i == 1){
+            newValueCell.style.backgroundColor = 'beige'
+        }
+        newValueCell.innerHTML = '0';
+        cellValues.push(0);
+        display.appendChild(newValueCell);
+    }
+    pointer = 1;
+}
+
+function resetCells(){
+    cellValues = [];
+    outputArray = [];
+    loops = []
+    for(let i = 1; i <= cellAmount; i++){
+        cellValues.push(0);
+        document.getElementById('c' + i).innerHTML = 0;
+        document.getElementById("c" + i).style.backgroundColor = "beige";
+        if(i != pointer){
+            document.getElementById("c" + i).style.backgroundColor = "white";
+        }
+    }
+    pointer = 1;
+}
+
+function updateCells(){
+    errorsArray = []
+    for(let i = 1; i <= cellAmount; i++){
+        let cellValue = cellValues[i - 1];
+        document.getElementById('c' + i).innerHTML = String((cellValues[i - 1]).toString(numberTypesets[typesets.indexOf(currentTypeset)])).toUpperCase();
+        document.getElementById("c" + i).style.backgroundColor = "beige";
+        if(i != pointer){
+            document.getElementById("c" + i).style.backgroundColor = "white";
+        }
+    }
+}
+
+loadCells();
+
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+let running = false;
+
+async function parse(instructions){
+    if(running == false){
+        running = true;
+        for(i = -1; i < instructions.length; i++){
+            let char = instructions[i]
+            if(char === ">"){
+                pointer++;
+                if(!validCell(pointer)){
+                    pointer = cellAmount;
+                    outputArray.push(`ERROR: Pointer out of bounds. (char ${i+1})`);
+                    i = instructions.length;
+                }
+            }
+            if(char === "<"){
+                pointer--;
+                if(!validCell(pointer)){
+                    pointer = 1;
+                    outputArray.push(`ERROR: Pointer out of bounds. (char ${i+1})`);
+                    i = instructions.length;
+                }
+            }
+            if(char === "+"){
+                cellValues[pointer - 1]++;
+            }
+            if(char === "-"){
+                cellValues[pointer - 1]--;
+            }
+            if(char === "."){
+                outputArray.push((cellValues[pointer - 1]).toString(numberTypesets[typesets.indexOf(currentTypeset)]));
+            }
+            if(char === "s"){
+                memory = cellValues[pointer - 1] 
+            }
+            if(char === "l"){
+                if(memory == ''){
+                    outputArray.push(`ERROR: cannot set cell as empty. (char ${i+1})`);
+                    i = instructions.length;
+                } else {
+                    cellValues[pointer - 1] = memory;
+                }
+            }
+            if(char === "t"){
+                let typeset = "t" + instructions[i + 1];
+                if(!checkTypeset(typeset)){
+                    outputArray.push(`ERROR: Invalid typeset. (char ${i+1})`);
+                    i = instructions.length;
+                } else {
+                    currentTypeset = typeset;
+                    i++;
+                }
+            }
+            if(char === "&"){
+                await this.timeout(100)
+            }
+            if(char === "["){
+                let temp_i = i;
+                let ignore = 0;
+
+                while(1) {
+                    temp_i++;
+                    if(!validCell(temp_i)){}else{
+                        if(instructions[temp_i] === "[") ignore++;
+                        if(instructions[temp_i] === "]") {
+                            if(ignore === 0) {
+                                if(cellValues[pointer - 1] === 0) {
+                                    i = temp_i
+                                } else {
+                                    loops[temp_i] = i
+                                }
+                                break;
+                            } else ignore--;
+                        }
+                    }
+                }
+            }
+            if(char === "]"){
+                if(cellValues[pointer - 1] !== 0) {
+                    i = loops[i]
+                } else {
+                    loops[i]
+                };
+            }
+            updateCells()
+            output.value = outputArray.join("\n")
+            await this.timeout(300)
+        }
+    }
+    running = false;
+}
+
+function run(struct){
+    resetCells()
+    parse(struct)
+    updateCells()
+}
+</script>
