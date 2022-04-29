@@ -4,11 +4,15 @@
         user-select: none;
         font-size: 20px;
     }
+    textarea::-webkit-scrollbar {
+        display: none;
+    }
     textarea {
         resize: none;
         font-family: monospace;
         outline: 0px;
         color: black;
+        background-color: transparent;
     }
 
     .grid {
@@ -37,31 +41,32 @@
         height: 50px;
         font-size: 20px;
     }
-
-    .HL-red {
-        color: #D73737;
+    #syntax-highlighter {
+        font-size: 10pt;
+        padding-left: 3px;
+        padding-top: 3px;
+        color: black;
     }
-    .color_display {
-    color: #20201D;
-    color: #292824;
-    color: #6E6B5E;
-    color: #7D7A68;
-    color: #999580;
-    color: #A6A28C;
-    color: #E8E4CF;
-    color: #FEFBEC;
-    color: #D73737;
-    color: #B65611;
-    color: #AE9513;
-    color: #60AC39;
-    color: #1FAD83;
-    color: #6684E1;
-    color: #B854D4;
-    color: #D43552;
-}
+
+    .orange {
+        color: #FF9500;
+    }
+
+    .syntax-colors {
+        color: #FF9500;
+        color: #F53501;
+        color: #E00700;
+        color: #FA0082;
+        color: #FF00F5;
+        color: #9800E0;
+        color: #5101F5;
+        color: #0002E0;
+        color: #0056FA;
+    }
 
 </style>
 <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 <body>
     <div id="grid" class="grid">
@@ -69,11 +74,13 @@
     </div>
     <br>
     <span style="font-size: 19px">Input:<br></span>
-    <textarea cols="77" rows="6" id="input"></textarea>
-    &nbsp;
-    <br>
+    <div>
+        <textarea cols="77" rows="6" id="input" style="width: 600px; position: absolute; background-color: transparent;"></textarea>
+        <div id="syntax-highlighter" style="position: absolute; width: 600px;"></div>
+    </div>
+    <br><br><br>&nbsp;<br><br>
     <span style="font-size: 19px">Output:<br></span>
-    <textarea cols="77" rows="17" id="output" readonly></textarea>
+    <textarea cols="77" rows="17" id="output" readonly style="width: 600px"></textarea>
     <br>
     <br>
     <div class="btn" id="btn" onclick="run(input.value)">Run!</div>
@@ -83,6 +90,7 @@
 const display = document.getElementById('grid');
 const input = document.getElementById('input');
 const output = document.getElementById('output');
+const syntaxHighlighter = document.getElementById("syntax-highlighter")
 
 let pointer = 1;
 
@@ -339,4 +347,32 @@ function run(struct){
     parse(struct)
     updateCells()
 }
+
+let highlights = []
+
+function hl(char, color) {
+    var repl = '<span class="' + color + '">' + char + '</span>';
+    highlights.push(repl)
+}
+
+$("textarea").keydown(function(e){
+    // Enter pressed
+    if (e.keyCode == 13)
+    {
+        //method to prevent from default behaviour
+        e.preventDefault();
+    }
+});
+
+setInterval(() => {
+    syntaxHighlighter.innerHTML = input.value
+    // highlight syntax
+    for(let i = 0; i < highlights.length; i++){
+
+    }
+    highlights = []
+}, 1)
+    
+
+
 </script>

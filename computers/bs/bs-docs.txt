@@ -29,4 +29,4 @@ use typesets to change the character set
 
 reminder: look up how to highlight the error character
 
-syntax highlighting: <span id="color: color">char</span>character
+syntax highlighting: <span id="color: color">char</span>
