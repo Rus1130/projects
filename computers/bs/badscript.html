@@ -11,7 +11,7 @@
         resize: none;
         font-family: monospace;
         outline: 0px;
-        color: black;
+        color: white;
         background-color: transparent;
     }
 
@@ -59,8 +59,8 @@
     <br>
     <span style="font-size: 19px">Input:<br></span>
     <div>
-        <textarea cols="77" rows="6" spellcheck="false" id="input" style="width: 600px; position: absolute; background-color: transparent;"></textarea>
-        <div id="syntax-highlighter" style="position: absolute; width: 600px;"></div>
+        <textarea cols="77" rows="6" maxlength="462" spellcheck="false" id="input" style="width: 600px; position: absolute; background-color: transparent;"></textarea>
+        <div id="syntax-highlighter" style="position: absolute; width: 600px; height: 100px;"></div>
     </div>
     <br><br><br>&nbsp;<br><br>
     <span style="font-size: 19px">Output:<br></span>
@@ -343,15 +343,9 @@ $("textarea").keydown(function(e){
 });
 </script>
 <style>
-    .orange {
-        color: #F7A869
-    }
-    .light-purple {
-        color: #EE96D7;
-    }
     .syntax-colors {
+        color:#EE96D7;
         color: #F7A869;
-        color: #EE96D7;
     }
 </style>
 <script>
@@ -361,31 +355,25 @@ const highlightable_characters = [">","<","+","-"]
 
 const highlightable_digits = ["0","1","2","3","4","5","6","7","8","9"]
 
-let charsToHighlight = []
+let charsToHighlight = [...input.value]
 let highlighter = []
 
-function hl(character, color){
+setInterval(() => {
+    highlighter = []
     charsToHighlight = [...input.value]
-    for(i = 0; i < charsToHighlight.length; i++){
-        if(charsToHighlight[i] === character){
-            highlighter.push(`<span class="${color}">${character}</span>`)
+
+    for(j = 0; j < charsToHighlight.length; j++){
+        let char = charsToHighlight[j];
+        if(char === ">" || char === "<" || char === "-" || char === "+"){
+            highlighter.push(`<span class="orange">${char}</span>`)
+        } else if (highlightable_digits.includes(char)){
+            highlighter.push(`<span class="light-purple">${char}</span>`)
+        } else {
+            highlighter.push(char)
         }
     }
 
-
-}
-
-setInterval(() => {
-    charsToHighlight = [...input.value]
-
-    hl(">","orange")
-    hl("<","orange")
-    hl("+","orange")
-    hl("-","orange")
-
     syntaxHighlighter.innerHTML = highlighter.join("")
-    highlighter = []
-
 
 }, 1)
     
