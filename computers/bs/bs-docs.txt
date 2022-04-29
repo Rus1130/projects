@@ -26,6 +26,5 @@ use typesets to change the character set
     tO - Octal
     tX - Hexadecimal
 
-reminder: look up how to highlight the error character
 
 https://github.com/saeed-nazari/vsc-theme-adonis/blob/main/themes/Adonis%20Theme%20Gunmetal-color-theme.json#L509

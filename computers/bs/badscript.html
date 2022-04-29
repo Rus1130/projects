@@ -348,8 +348,10 @@ $("textarea").keydown(function(e){
     .integer {
         color:#EE96D7;
     }
-    .syntax-colors {
+    .loop {
         color: #F7A869;
+    }
+    .syntax-colors {
         color: #AEBBCC;
         color: #84ACFC; 
         color: #e2bad6;     ;
@@ -375,6 +377,8 @@ setInterval(() => {
             highlighter.push(`<span class="pointer-shift">${char}</span>`)
         } else if (highlightable_digits.includes(char)){
             highlighter.push(`<span class="integer">${char}</span>`)
+        } else if(char === "[" || char === "]"){
+            highlighter.push(`<span class="loop">${char}</span>`)
         } else {
             highlighter.push(char)
         }
