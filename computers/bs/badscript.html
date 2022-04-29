@@ -48,22 +48,6 @@
         color: black;
     }
 
-    .orange {
-        color: #FF9500;
-    }
-
-    .syntax-colors {
-        color: #FF9500;
-        color: #F53501;
-        color: #E00700;
-        color: #FA0082;
-        color: #FF00F5;
-        color: #9800E0;
-        color: #5101F5;
-        color: #0002E0;
-        color: #0056FA;
-    }
-
 </style>
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -75,7 +59,7 @@
     <br>
     <span style="font-size: 19px">Input:<br></span>
     <div>
-        <textarea cols="77" rows="6" id="input" style="width: 600px; position: absolute; background-color: transparent;"></textarea>
+        <textarea cols="77" rows="6" spellcheck="false" id="input" style="width: 600px; position: absolute; background-color: transparent;"></textarea>
         <div id="syntax-highlighter" style="position: absolute; width: 600px;"></div>
     </div>
     <br><br><br>&nbsp;<br><br>
@@ -348,12 +332,6 @@ function run(struct){
     updateCells()
 }
 
-let highlights = []
-
-function hl(char, color) {
-    var repl = '<span class="' + color + '">' + char + '</span>';
-    highlights.push(repl)
-}
 
 $("textarea").keydown(function(e){
     // Enter pressed
@@ -363,14 +341,52 @@ $("textarea").keydown(function(e){
         e.preventDefault();
     }
 });
+</script>
+<style>
+    .orange {
+        color: #F7A869
+    }
+    .light-purple {
+        color: #EE96D7;
+    }
+    .syntax-colors {
+        color: #F7A869;
+        color: #EE96D7;
+    }
+</style>
+<script>
+
+const highlightable_characters = [">","<","+","-"]
+// [".",",","@","_","&","[","]","{","}","(",")","'","t"]
+
+const highlightable_digits = ["0","1","2","3","4","5","6","7","8","9"]
+
+let charsToHighlight = []
+let highlighter = []
+
+function hl(character, color){
+    charsToHighlight = [...input.value]
+    for(i = 0; i < charsToHighlight.length; i++){
+        if(charsToHighlight[i] === character){
+            highlighter.push(`<span class="${color}">${character}</span>`)
+        }
+    }
+
+
+}
 
 setInterval(() => {
-    syntaxHighlighter.innerHTML = input.value
-    // highlight syntax
-    for(let i = 0; i < highlights.length; i++){
+    charsToHighlight = [...input.value]
 
-    }
-    highlights = []
+    hl(">","orange")
+    hl("<","orange")
+    hl("+","orange")
+    hl("-","orange")
+
+    syntaxHighlighter.innerHTML = highlighter.join("")
+    highlighter = []
+
+
 }, 1)
     
 

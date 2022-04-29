@@ -20,7 +20,6 @@ _ - paste cell value
 
 (value'ifTrue'ifFalse) - if cellValue = value goto ifTrue, else goto ifFalse
 
-
 use typesets to change the character set
     tD - Decimal
     tB - Binary
