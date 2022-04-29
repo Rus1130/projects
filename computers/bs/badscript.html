@@ -11,7 +11,6 @@
         resize: none;
         font-family: monospace;
         outline: 0px;
-        color: white;
         background-color: transparent;
     }
 
@@ -59,8 +58,8 @@
     <br>
     <span style="font-size: 19px">Input:<br></span>
     <div>
-        <textarea cols="77" rows="6" maxlength="462" spellcheck="false" id="input" style="width: 600px; position: absolute; background-color: transparent;"></textarea>
-        <div id="syntax-highlighter" style="position: absolute; width: 600px; height: 100px;"></div>
+        <textarea cols="77" rows="6" maxlength="462" spellcheck="false" id="input" style="width: 600px; position: absolute; background-color: transparent; color: transparent; caret-color: black;"></textarea>
+        <div id="syntax-highlighter" style="position: absolute; width: 600px; height: 100px; z-index: -1"></div>
     </div>
     <br><br><br>&nbsp;<br><br>
     <span style="font-size: 19px">Output:<br></span>
@@ -343,9 +342,17 @@ $("textarea").keydown(function(e){
 });
 </script>
 <style>
-    .syntax-colors {
+    .pointer-shift {
+        color:#84ACFC;
+    }
+    .integer {
         color:#EE96D7;
+    }
+    .syntax-colors {
         color: #F7A869;
+        color: #AEBBCC;
+        color: #84ACFC; 
+        color: #e2bad6;     ;
     }
 </style>
 <script>
@@ -365,9 +372,9 @@ setInterval(() => {
     for(j = 0; j < charsToHighlight.length; j++){
         let char = charsToHighlight[j];
         if(char === ">" || char === "<" || char === "-" || char === "+"){
-            highlighter.push(`<span class="orange">${char}</span>`)
+            highlighter.push(`<span class="pointer-shift">${char}</span>`)
         } else if (highlightable_digits.includes(char)){
-            highlighter.push(`<span class="light-purple">${char}</span>`)
+            highlighter.push(`<span class="integer">${char}</span>`)
         } else {
             highlighter.push(char)
         }
