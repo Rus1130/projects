@@ -351,16 +351,29 @@ $("textarea").keydown(function(e){
     .loop {
         color: #F7A869;
     }
-    .syntax-colors {
+    .comment {
         color: #AEBBCC;
-        color: #84ACFC; 
-        color: #e2bad6;     ;
+    }
+    .endchar {
+        color: #CCCCCC;
+    }
+    .typeset {
+        color: #a4d676;
+    }
+    .parens {
+        color: #ff839c;
+    }
+    .io {
+        color: #C3A6FE;
+    }
+    .syntax-colors {
+        color: #d16969;
     }
 </style>
 <script>
 
-const highlightable_characters = [">","<","+","-"]
-// [".",",","@","_","&","[","]","{","}","(",")","'","t"]
+const highlightable_characters = [">","<","+","-","[","]","'","(",")","D","B","O","X","t",",","."]
+// [".",",","@","_","&","{","}"]
 
 const highlightable_digits = ["0","1","2","3","4","5","6","7","8","9"]
 
@@ -370,17 +383,34 @@ let highlighter = []
 setInterval(() => {
     highlighter = []
     charsToHighlight = [...input.value]
-
     for(j = 0; j < charsToHighlight.length; j++){
         let char = charsToHighlight[j];
         if(char === ">" || char === "<" || char === "-" || char === "+"){
             highlighter.push(`<span class="pointer-shift">${char}</span>`)
+
         } else if (highlightable_digits.includes(char)){
             highlighter.push(`<span class="integer">${char}</span>`)
+
         } else if(char === "[" || char === "]"){
             highlighter.push(`<span class="loop">${char}</span>`)
-        } else {
-            highlighter.push(char)
+
+        } else if(char === 't' && charsToHighlight[j + 1] == "D" || charsToHighlight[j + 1] == "B" || charsToHighlight[j + 1] == "O" || charsToHighlight[j + 1] == "X"){
+            highlighter.push(`<span class="typeset">${char}</span>`)
+
+        } else if(charsToHighlight[j - 1] == "t" && char == "D" || char == "B" || char == "O" || char == "X"){
+            highlighter.push(`<span class="typeset">${char}</span>`)
+
+        } else if(char === "'"){
+            highlighter.push(`<span class="endchar">${char}</span>`)
+
+        } else if(char === "(" || char === ')'){
+            highlighter.push(`<span class="parens">${char}</span>`)
+
+        } else if(char === "." || char === ","){
+            highlighter.push(`<span class="io">${char}</span>`)
+
+        }else {
+            highlighter.push(`<span class="comment">${char}</span>`)
         }
     }
 
