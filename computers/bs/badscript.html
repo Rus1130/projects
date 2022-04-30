@@ -101,7 +101,7 @@ const cellAmount = 88;
 grid.style.setProperty('--cell-amount', cellAmount)
 
 function validCell(cellNumber){
-    return cellNumber >= 1 && cellNumber <= cellAmount;
+    return parseInt(cellNumber) >= 1 && parseInt(cellNumber) <= cellAmount;
 }
 
 function repeat(value, times){
@@ -267,44 +267,64 @@ async function parse(instructions){
                     };
                 }
             }
+            // fix =====
             if(char === "{"){
-                let matchingIndex = instructions.indexOf("'", i);
-                if(matchingIndex == -1){
-                    outputArray.push(`ERROR: Matching apostrophe expected. (char ${i+1})`);
-                    outputArray.push(instructions)
-                    outputArray.push(repeat(" ", i) + "^");
-                } else {
-                    let cellJump = instructions.substring(i + 1, matchingIndex);
-                    if(!validCell(cellJump)){
-                        outputArray.push(`ERROR: Invalid cell jump. (char ${i+2})`);
-                        outputArray.push(instructions)
-                        outputArray.push(repeat(" ", i + 1) + "^");
+                let cellJump = '';
+                for(j = instructions.indexOf("{", i); j < instructions.length; j++){
+                    if(!isNaN(parseInt(instructions[j]))){
+                        cellJump += instructions[j];
                     } else {
-                        if(cellValues[pointer - 1] === 0) {
-                            pointer = cellJump;
-                        }
+                        j = instructions.length;
+                    }
+                }
+                if(!validCell(cellJump)){
+                    outputArray.push(`ERROR: Invalid cell jump. (char ${i+2})`);
+                    outputArray.push(instructions)
+                    outputArray.push(repeat(" ", i + 1) + "^");
+                } else {
+                    if(cellValues[pointer - 1] === 0) {
+                        pointer = cellJump;
                     }
                 }
             }
             if(char === "}"){
-                let matchingIndex = instructions.indexOf("'", i);
-                if(matchingIndex == -1){
-                    outputArray.push(`ERROR: Matching apostrophe expected. (char ${i+1})`);
-                    outputArray.push(instructions)
-                    outputArray.push(repeat(" ", i) + "^");
-                } else {
-                    let cellJump = instructions.substring(i + 1, matchingIndex);
-                    if(!validCell(cellJump)){
-                        outputArray.push(`ERROR: Invalid cell jump. (char ${i+2})`);
-                        outputArray.push(instructions)
-                        outputArray.push(repeat(" ", i + 1) + "^");
+                let cellJump = '';
+                for(j = instructions.indexOf("}", i); j < instructions.length; j++){
+                    if(!isNaN(parseInt(instructions[j]))){
+                        cellJump += instructions[j];
                     } else {
-                        if(cellValues[pointer - 1] !== 0) {
-                            pointer = cellJump;
-                        }
+                        j = instructions.length;
+                    }
+                }
+                if(!validCell(cellJump)){
+                    outputArray.push(`ERROR: Invalid cell jump. (char ${i+2})`);
+                    outputArray.push(instructions)
+                    outputArray.push(repeat(" ", i + 1) + "^");
+                } else {
+                    if(cellValues[pointer - 1] !== 0) {
+                        pointer = cellJump;
                     }
                 }
             }
+            if(char === "G"){
+                let cellJump = '';
+                for(j = instructions.indexOf("}", i + 1); j < instructions.length; j++){
+                    if(!isNaN(parseInt(instructions[j]))){
+                        cellJump += instructions[j];
+                    } else {
+                        j = instructions.length;
+                    }
+                }
+                console.log(cellJump)
+                if(!validCell(cellJump)){
+                    outputArray.push(`ERROR: Invalid cell jump. (char ${i+2})`);
+                    outputArray.push(instructions)
+                    outputArray.push(repeat(" ", i + 1) + "^");
+                } else {
+                    pointer = cellJump;
+                }
+            }
+            // end of fix block ===
             if(char === "("){
                 let matchingIndex = instructions.indexOf(")", i);
                 // isolate the string between the parentheses
@@ -379,6 +399,9 @@ const highlightable_digits = ["0","1","2","3","4","5","6","7","8","9"]
 
 let charsToHighlight = [...input.value]
 let highlighter = []
+
+const pointerShiftRegex = />|<|\+|-/g
+const integerRegex = /\d/g
 
 setInterval(() => {
     highlighter = []
