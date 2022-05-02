@@ -52,6 +52,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 <body>
+    <a href="bs-docs.txt" download="bs-docs">
+        <button position="absolute;">Download BadScript Docs</button>
+    </a><br><br>
     <div id="grid" class="grid">
 
     </div>
@@ -63,7 +66,7 @@
     </div>
     <br><br><br>&nbsp;<br><br>
     <span style="font-size: 19px">Output:<br></span>
-    <textarea cols="77" rows="17" id="output" readonly style="width: 600px"></textarea>
+    <textarea cols="77" rows="14" id="output" readonly style="width: 600px"></textarea>
     <br>
     <br>
     <div class="btn" id="btn" onclick="run(input.value)">Run!</div>
@@ -84,7 +87,7 @@ let outputArray = [];
 let errorsArray = [];
 let loops = []
 
-const typesets = ["tD","tB", "tO", "tX"]; // decimal, binary, octal, hexadecimal
+const typesets = ["tD","tB", "tO", "tX","tU"]; // decimal, binary, octal, hexadecimal
 const numberTypesets = [10,2,8,16]
 
 let currentTypeset = "tD";
@@ -93,8 +96,12 @@ function checkTypeset(typeset){
     return typesets.includes(typeset)
 }
 
-function changeToSaveUnicode(unicode){
-    Boolean(unicode >= 0 && unicode <= 31 || unicode >= 127 && unicode <= 159)
+function convertUni(unicode){
+    if(unicode >= 0 && unicode <= 31 || unicode >= 127 && unicode <= 159){
+        return unicode
+    } else {
+        return String.fromCharCode(unicode)
+    }
 }
 
 const cellAmount = 88;
@@ -102,6 +109,10 @@ grid.style.setProperty('--cell-amount', cellAmount)
 
 function validCell(cellNumber){
     return parseInt(cellNumber) >= 1 && parseInt(cellNumber) <= cellAmount;
+}
+
+function validCellValue(value){
+    return value >= 0 && value <= 65536;
 }
 
 function repeat(value, times){
@@ -143,10 +154,13 @@ function resetCells(){
 }
 
 function updateCells(){
-    errorsArray = []
     for(let i = 1; i <= cellAmount; i++){
         let cellValue = cellValues[i - 1];
-        document.getElementById('c' + i).innerHTML = String((cellValues[i - 1]).toString(numberTypesets[typesets.indexOf(currentTypeset)])).toUpperCase();
+        if(currentTypeset == "tU"){
+            document.getElementById('c' + i).innerHTML = convertUni(parseInt(cellValue))
+        } else {
+            document.getElementById('c' + i).innerHTML = String((cellValues[i - 1]).toString(numberTypesets[typesets.indexOf(currentTypeset)])).toUpperCase();
+        }
         document.getElementById("c" + i).style.backgroundColor = "beige";
         if(i != pointer){
             document.getElementById("c" + i).style.backgroundColor = "white";
@@ -171,9 +185,9 @@ async function parse(instructions){
                 pointer++;
                 if(!validCell(pointer)){
                     pointer = cellAmount;
-                    outputArray.push(`ERROR: Pointer out of bounds. (char ${i+1})`);
-                    outputArray.push(instructions)
-                    outputArray.push(repeat(" ", i) + "^");
+                    outputArray.push(`\nERROR: Pointer out of bounds. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i)}^`);
                     i = instructions.length;
                 }
             }
@@ -181,56 +195,55 @@ async function parse(instructions){
                 pointer--;
                 if(!validCell(pointer)){
                     pointer = 1;
-                    outputArray.push(`ERROR: Pointer out of bounds. (char ${i+1})`);
-                    outputArray.push(instructions)
-                    outputArray.push(repeat(" ", i) + "^");
+                    outputArray.push(`\nERROR: Pointer out of bounds. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i)}^`);
                     i = instructions.length;
                 }
             }
             if(char === "+"){
-                cellValues[pointer - 1]++;
+                if(!validCellValue(cellValues[pointer + 2])){
+                    outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    cellValues[pointer - 1]++;
+                }
             }
             if(char === "-"){
-                cellValues[pointer - 1]--;
+                if(!validCellValue(cellValues[pointer - 2])){
+                    outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    cellValues[pointer - 1]--;
+                }
             }
             if(char === "."){
                 outputArray.push((cellValues[pointer - 1]).toString(numberTypesets[typesets.indexOf(currentTypeset)]));
             }
-            if(char === "@"){
-                memory = cellValues[pointer - 1] 
-            }
-            if(char === "_"){
-                if(memory == ''){
-                    outputArray.push(`ERROR: cannot set cell as empty. (char ${i+1})`);
-                    outputArray.push(instructions)
-                    outputArray.push(repeat(" ", i) + "^");
-                    i = instructions.length;
-                } else {
-                    cellValues[pointer - 1] = memory;
-                }
-            }
             if(char === "t"){
                 let typeset = "t" + instructions[i + 1];
                 if(!checkTypeset(typeset)){
-                    outputArray.push(`ERROR: Invalid typeset. (char ${i+2})`);
-                    outputArray.push(instructions)
-                    outputArray.push(repeat(" ", i + 1) + "^");
+                    outputArray.push(`\nERROR: Invalid typeset. (char ${i+2})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
                     i = instructions.length;
                 } else {
                     currentTypeset = typeset;
                     i++;
                 }
             }
-            if(char === "&"){
-                await this.timeout(100)
-            }
             if(char === "["){
                 // get index of matching ]
                 let matchingIndex = instructions.indexOf("]", i);
                 if(matchingIndex == -1){
-                    outputArray.push(`ERROR: Matching closed bracket expected. (char ${i+1})`);
-                    outputArray.push(instructions)
-                    outputArray.push(repeat(" ", i) + "^");
+                    outputArray.push(`\nERROR: Matching closed bracket expected. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
+                    i = instructions.length;
                 } else {
                     let temp_i = i;
                     let ignore = 0;
@@ -238,11 +251,16 @@ async function parse(instructions){
                     while(1) {
                         temp_i++;
                         if(!validCell(temp_i)){}else{
-                            if(instructions[temp_i] === "[") ignore++;
+                            if(instructions[temp_i] === "[") {
+                                ignore++ 
+                            }
                             if(instructions[temp_i] === "]") {
                                 if(ignore === 0) {
                                     if(cellValues[pointer - 1] === 0) {
-                                        i = temp_i
+                                        outputArray.push(`\nERROR: Loop cannot be empty. (char ${i+2})`);
+                                        outputArray.push(`\n${instructions}`)
+                                        outputArray.push(`\n${repeat(" ", i + 1)}^`);
+                                        i = instructions.length;
                                     } else {
                                         loops[temp_i] = i
                                     }
@@ -256,9 +274,10 @@ async function parse(instructions){
             if(char === "]"){
                 let matchingIndex = instructions.lastIndexOf("[", i);
                 if(matchingIndex == -1){
-                    outputArray.push(`ERROR: Matching open bracket expected. (char ${i+1})`);
-                    outputArray.push(instructions)
-                    outputArray.push(repeat(" ", i) + "^");
+                    outputArray.push(`\nERROR: Matching open bracket expected. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
+                    i = instructions.length;
                 } else {
                     if(cellValues[pointer - 1] !== 0) {
                         i = loops[i]
@@ -267,10 +286,9 @@ async function parse(instructions){
                     };
                 }
             }
-            // fix =====
             if(char === "{"){
                 let cellJump = '';
-                for(j = instructions.indexOf("{", i); j < instructions.length; j++){
+                for(j = instructions.indexOf("{", i) + 1; j < instructions.length; j++){
                     if(!isNaN(parseInt(instructions[j]))){
                         cellJump += instructions[j];
                     } else {
@@ -278,9 +296,10 @@ async function parse(instructions){
                     }
                 }
                 if(!validCell(cellJump)){
-                    outputArray.push(`ERROR: Invalid cell jump. (char ${i+2})`);
-                    outputArray.push(instructions)
-                    outputArray.push(repeat(" ", i + 1) + "^");
+                    outputArray.push(`\nERROR: Invalid cell jump. (char ${i+2})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
+                    i = instructions.length;
                 } else {
                     if(cellValues[pointer - 1] === 0) {
                         pointer = cellJump;
@@ -289,7 +308,7 @@ async function parse(instructions){
             }
             if(char === "}"){
                 let cellJump = '';
-                for(j = instructions.indexOf("}", i); j < instructions.length; j++){
+                for(j = instructions.indexOf("}", i) + 1; j < instructions.length; j++){
                     if(!isNaN(parseInt(instructions[j]))){
                         cellJump += instructions[j];
                     } else {
@@ -297,18 +316,19 @@ async function parse(instructions){
                     }
                 }
                 if(!validCell(cellJump)){
-                    outputArray.push(`ERROR: Invalid cell jump. (char ${i+2})`);
-                    outputArray.push(instructions)
-                    outputArray.push(repeat(" ", i + 1) + "^");
+                    outputArray.push(`\nERROR: Invalid cell jump. (char ${i+2})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
+                    i = instructions.length;
                 } else {
                     if(cellValues[pointer - 1] !== 0) {
                         pointer = cellJump;
                     }
                 }
             }
-            if(char === "G"){
+            if(char === "="){
                 let cellJump = '';
-                for(j = instructions.indexOf("}", i + 1); j < instructions.length; j++){
+                for(j = instructions.indexOf("}", i + 1) + 1; j < instructions.length; j++){
                     if(!isNaN(parseInt(instructions[j]))){
                         cellJump += instructions[j];
                     } else {
@@ -317,28 +337,47 @@ async function parse(instructions){
                 }
                 console.log(cellJump)
                 if(!validCell(cellJump)){
-                    outputArray.push(`ERROR: Invalid cell jump. (char ${i+2})`);
-                    outputArray.push(instructions)
-                    outputArray.push(repeat(" ", i + 1) + "^");
+                    outputArray.push(`\nERROR: Invalid cell jump. (char ${i+2})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
+                    i = instructions.length;
                 } else {
                     pointer = cellJump;
                 }
             }
-            // end of fix block ===
             if(char === "("){
                 let matchingIndex = instructions.indexOf(")", i);
                 // isolate the string between the parentheses
                 let conditionStatement = instructions.substring(i + 1, matchingIndex).split("'");
                 if(conditionStatement.length != 3){
-                    outputArray.push(`ERROR: Missing arguments. (char ${i+1})`);
-                    outputArray.push(instructions)
-                    outputArray.push(repeat(" ", i) + "^");
+                    outputArray.push(`\nERROR: Missing arguments. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
+                    i = instructions.length;
+                }
+            }
+            if(char === ","){
+                let value = '';
+                for(j = instructions.indexOf(",", i) + 1; j < instructions.length; j++){
+                    if(!isNaN(parseInt(instructions[j]))){
+                        value += instructions[j];
+                    } else {
+                        j = instructions.length;
+                    }
+                }
+                if(!validCellValue(value)){
+                    outputArray.push(`\nERROR: Invalid cell jump. (char ${i+2})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i + 5)}^`);
+                    i = instructions.length;
+                } else {
+                    cellValues[pointer - 1] = value;
                 }
             }
 
 
             updateCells()
-            output.value = outputArray.join("\n");;
+            output.value = outputArray.join("").trim();
             await this.timeout(300)
         }
     }
@@ -372,10 +411,10 @@ $("textarea").keydown(function(e){
         color: #F7A869;
     }
     .comment {
-        color: #AEBBCC;
+        color: #CCCCCC;
     }
     .endchar {
-        color: #CCCCCC;
+        color: #AEBBCC;
     }
     .typeset {
         color: #a4d676;
@@ -384,10 +423,21 @@ $("textarea").keydown(function(e){
         color: #ff839c;
     }
     .io {
-        color: #C3A6FE;
+        color: #72CCE8;
     }
+    .jumps {
+        color: #33C89F;
+    }
+
+
     .syntax-colors {
         color: #d16969;
+        color: #C3A6FE;
+        color: #fdcf78;
+        color: #e2bad6;
+        color: #9bbad4;
+        color: #95C7C8;
+        color: #80CBC4;
     }
 </style>
 <script>
@@ -408,6 +458,7 @@ setInterval(() => {
     charsToHighlight = [...input.value]
     for(j = 0; j < charsToHighlight.length; j++){
         let char = charsToHighlight[j];
+
         if(char === ">" || char === "<" || char === "-" || char === "+"){
             highlighter.push(`<span class="pointer-shift">${char}</span>`)
 
@@ -417,10 +468,10 @@ setInterval(() => {
         } else if(char === "[" || char === "]"){
             highlighter.push(`<span class="loop">${char}</span>`)
 
-        } else if(char === 't' && charsToHighlight[j + 1] == "D" || charsToHighlight[j + 1] == "B" || charsToHighlight[j + 1] == "O" || charsToHighlight[j + 1] == "X"){
+        } else if(char === 't' && charsToHighlight[j + 1] == "D" || charsToHighlight[j + 1] == "B" || charsToHighlight[j + 1] == "O" || charsToHighlight[j + 1] == "X" || charsToHighlight[j + 1] == "U"){
             highlighter.push(`<span class="typeset">${char}</span>`)
 
-        } else if(charsToHighlight[j - 1] == "t" && char == "D" || char == "B" || char == "O" || char == "X"){
+        } else if(charsToHighlight[j - 1] == "t" && char == "D" || char == "B" || char == "O" || char == "X" || char == "U"){
             highlighter.push(`<span class="typeset">${char}</span>`)
 
         } else if(char === "'"){
@@ -432,12 +483,14 @@ setInterval(() => {
         } else if(char === "." || char === ","){
             highlighter.push(`<span class="io">${char}</span>`)
 
-        }else {
+        } else if(char === "{" || char === "}" || char === "="){
+            highlighter.push(`<span class="jumps">${char}</span>`)
+        } else {
             highlighter.push(`<span class="comment">${char}</span>`)
         }
     }
 
-    syntaxHighlighter.innerHTML = highlighter.join("")
+    syntaxHighlighter.innerHTML = highlighter.join("").trim()
 
 }, 1)
     
