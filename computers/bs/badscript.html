@@ -12,6 +12,7 @@
         font-family: monospace;
         outline: 0px;
         background-color: transparent;
+        color: #CCCCCC;
     }
 
     .grid {
@@ -63,18 +64,16 @@
     <span style="font-size: 19px">Input:<br></span>
     <div>
         <textarea cols="77" rows="6" maxlength="462" spellcheck="false" id="input" style="width: 600px; position: absolute; background-color: transparent; color: transparent; caret-color: black;"></textarea>
-        <code id="syntax-highlighter" style="position: absolute; width: 600px; height: 100px; z-index: -1"></code>
+        <pre><code id="syntax-highlighter" style="position: absolute; width: 600px; height: 100px; z-index: -1;"></code></pre>
     </div>
     <br><br><br>&nbsp;<br><br>
     <span style="font-size: 19px">Output:<br></span>
-    <textarea cols="77" rows="14" id="output" readonly style="width: 600px"></textarea>
+    <textarea cols="77" rows="14" id="output" readonly style="width: 600px; color: black;"></textarea>
     <br>
     <br>
     <div class="btn" id="btn" onclick="run(input.value)">Run!</div>
 </body>
 <script>
-
-var highlight = window.csHighlight;
 
 const display = document.getElementById('grid');
 const input = document.getElementById('input');
@@ -334,17 +333,6 @@ async function parse(instructions){
                     }
                 }
             }
-            if(char === "("){
-                let matchingIndex = instructions.indexOf(")", i);
-                // isolate the string between the parentheses
-                let conditionStatement = instructions.substring(i + 1, matchingIndex).split("'");
-                if(conditionStatement.length != 3){
-                    outputArray.push(`\nERROR: Missing arguments. (char ${i+1})`);
-                    outputArray.push(`\n${instructions}`)
-                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
-                    i = instructions.length;
-                }
-            }
 
 
             updateCells()
@@ -381,88 +369,69 @@ $("textarea").keydown(function(e){
     .loop {
         color: #F7A869;
     }
-    .comment {
-        color: #CCCCCC;
-    }
     .endchar {
         color: #AEBBCC;
     }
     .typeset {
         color: #a4d676;
     }
-    .parens {
-        color: #ff839c;
-    }
     .out {
-        color: #72CCE8;
+        color: #306c9d;
     }
-    .jumps {
-        color: #33C89F;
+    .manage {
+        color: #d16969;
+    }
+    .error {
+        color: #FF0000;
     }
 
 
     .syntax-colors {
-        color: #d16969;
         color: #C3A6FE;
         color: #fdcf78;
         color: #e2bad6;
-        color: #9bbad4;
         color: #95C7C8;
         color: #80CBC4;
+        color: #33C89F;
     }
 </style>
 <script>
 
-const highlightable_characters = [">","<","+","-","[","]","'","(",")","D","B","O","X","t",",","."]
-// [".",",","@","_","&","{","}"]
+var highlight = window.csHighlight;
 
-const highlightable_digits = ["0","1","2","3","4","5","6","7","8","9"]
 
-let charsToHighlight = input.value
-let highlighter = []
-
-const pointerShiftRegex = />|<|\+|-/g
-const integerRegex = /\d/g
 
 setInterval(() => {
-    highlighter = []
-    charsToHighlight = [...input.value]
-    for(j = 0; j < charsToHighlight.length; j++){
-        let char = charsToHighlight[j];
 
-        if(char === ">" || char === "<" || char === "-" || char === "+"){
-            highlighter.push(`<span class="shift">${char}</span>`)
+    syntaxHighlighter.innerHTML = input.value;
 
-        } else if (highlightable_digits.includes(char)){
-            highlighter.push(`<span class="int">${char}</span>`)
 
-        } else if(char === "[" || char === "]"){
-            highlighter.push(`<span class="loop">${char}</span>`)
 
-        } else if(char === 't' && charsToHighlight[j + 1] == "D" || charsToHighlight[j + 1] == "B" || charsToHighlight[j + 1] == "O" || charsToHighlight[j + 1] == "X" || charsToHighlight[j + 1] == "U"){
-            highlighter.push(`<span class="typeset">${char}</span>`)
-
-        } else if(charsToHighlight[j - 1] == "t" && char == "D" || char == "B" || char == "O" || char == "X" || char == "U"){
-            highlighter.push(`<span class="typeset">${char}</span>`)
-
-        } else if(char === "'"){
-            highlighter.push(`<span class="endchar">${char}</span>`)
-
-        } else if(char === "(" || char === ')'){
-            highlighter.push(`<span class="parens">${char}</span>`)
-
-        } else if(char === "."){
-            highlighter.push(`<span class="out">${char}</span>`)
-
-        } else if(char === ":" || char === ";"){
-            highlighter.push(`<span class="jumps">${char}</span>`)
-        } else {
-            highlighter.push(`<span class="comment">${char}</span>`)
-        }
+    highlight({patterns: [{
+        name: 'shift',
+        match: /^(<|>)/
+    },
+    {
+        name: "int",
+        match: /^(\d)/
+    },
+    {
+        name: "typeset",
+        match: /^(t[DBXOU])/
+    },
+    {
+        name: "loop",
+        match: /^(\[|\])/
+    },
+    {
+        name: "out",
+        match: /^(\.)/
+    },
+    {
+        name: "manage",
+        match: /^(\+|-)/
     }
-
-    syntaxHighlighter.innerHTML = highlighter.join("").trim()
-
+    ]})
 }, 1)
     
 

@@ -12,8 +12,6 @@
 :cell - goto cell if cellValue is 0
 ;cell - goto cell if cellValue is not 0
 
-(value'ifTrue'ifFalse) - if cellValue = value goto ifTrue, else goto ifFalse
-
 use typesets to change the character set
     tD - Decimal
     tB - Binary
