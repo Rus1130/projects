@@ -50,6 +50,7 @@
 </style>
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/custom-syntax-highlighter@latest/bin/index.js"></script>
 </head>
 <body>
     <a href="bs-docs.txt" download="bs-docs">
@@ -62,7 +63,7 @@
     <span style="font-size: 19px">Input:<br></span>
     <div>
         <textarea cols="77" rows="6" maxlength="462" spellcheck="false" id="input" style="width: 600px; position: absolute; background-color: transparent; color: transparent; caret-color: black;"></textarea>
-        <div id="syntax-highlighter" style="position: absolute; width: 600px; height: 100px; z-index: -1"></div>
+        <code id="syntax-highlighter" style="position: absolute; width: 600px; height: 100px; z-index: -1"></code>
     </div>
     <br><br><br>&nbsp;<br><br>
     <span style="font-size: 19px">Output:<br></span>
@@ -72,6 +73,8 @@
     <div class="btn" id="btn" onclick="run(input.value)">Run!</div>
 </body>
 <script>
+
+var highlight = window.csHighlight;
 
 const display = document.getElementById('grid');
 const input = document.getElementById('input');
@@ -141,6 +144,7 @@ function loadCells(){
 function resetCells(){
     cellValues = [];
     outputArray = [];
+    currentTypeset = "tD";
     loops = []
     for(let i = 1; i <= cellAmount; i++){
         cellValues.push(0);
@@ -202,7 +206,7 @@ async function parse(instructions){
                 }
             }
             if(char === "+"){
-                if(!validCellValue(cellValues[pointer + 2])){
+                if(!validCellValue(cellValues[pointer - 1])){
                     outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
                     outputArray.push(`\n${instructions}`)
                     outputArray.push(`\n${repeat(" ", i)}^`);
@@ -212,7 +216,7 @@ async function parse(instructions){
                 }
             }
             if(char === "-"){
-                if(!validCellValue(cellValues[pointer - 2])){
+                if(!validCellValue(cellValues[pointer - 1])){
                     outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
                     outputArray.push(`\n${instructions}`)
                     outputArray.push(`\n${repeat(" ", i)}^`);
@@ -222,7 +226,11 @@ async function parse(instructions){
                 }
             }
             if(char === "."){
-                outputArray.push((cellValues[pointer - 1]).toString(numberTypesets[typesets.indexOf(currentTypeset)]));
+                if(currentTypeset == "tU"){
+                    outputArray.push(convertUni(cellValues[pointer - 1]))
+                } else {
+                    outputArray.push((cellValues[pointer - 1]).toString(numberTypesets[typesets.indexOf(currentTypeset)]));
+                }
             }
             if(char === "t"){
                 let typeset = "t" + instructions[i + 1];
@@ -286,7 +294,7 @@ async function parse(instructions){
                     };
                 }
             }
-            if(char === "{"){
+            if(char === ":"){
                 let cellJump = '';
                 for(j = instructions.indexOf("{", i) + 1; j < instructions.length; j++){
                     if(!isNaN(parseInt(instructions[j]))){
@@ -306,7 +314,7 @@ async function parse(instructions){
                     }
                 }
             }
-            if(char === "}"){
+            if(char === ";"){
                 let cellJump = '';
                 for(j = instructions.indexOf("}", i) + 1; j < instructions.length; j++){
                     if(!isNaN(parseInt(instructions[j]))){
@@ -326,25 +334,6 @@ async function parse(instructions){
                     }
                 }
             }
-            if(char === "="){
-                let cellJump = '';
-                for(j = instructions.indexOf("}", i + 1) + 1; j < instructions.length; j++){
-                    if(!isNaN(parseInt(instructions[j]))){
-                        cellJump += instructions[j];
-                    } else {
-                        j = instructions.length;
-                    }
-                }
-                console.log(cellJump)
-                if(!validCell(cellJump)){
-                    outputArray.push(`\nERROR: Invalid cell jump. (char ${i+2})`);
-                    outputArray.push(`\n${instructions}`)
-                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
-                    i = instructions.length;
-                } else {
-                    pointer = cellJump;
-                }
-            }
             if(char === "("){
                 let matchingIndex = instructions.indexOf(")", i);
                 // isolate the string between the parentheses
@@ -356,29 +345,11 @@ async function parse(instructions){
                     i = instructions.length;
                 }
             }
-            if(char === ","){
-                let value = '';
-                for(j = instructions.indexOf(",", i) + 1; j < instructions.length; j++){
-                    if(!isNaN(parseInt(instructions[j]))){
-                        value += instructions[j];
-                    } else {
-                        j = instructions.length;
-                    }
-                }
-                if(!validCellValue(value)){
-                    outputArray.push(`\nERROR: Invalid cell jump. (char ${i+2})`);
-                    outputArray.push(`\n${instructions}`)
-                    outputArray.push(`\n${repeat(" ", i + 5)}^`);
-                    i = instructions.length;
-                } else {
-                    cellValues[pointer - 1] = value;
-                }
-            }
 
 
             updateCells()
             output.value = outputArray.join("").trim();
-            await this.timeout(300)
+            await this.timeout(1)
         }
     }
     running = false;
@@ -401,10 +372,10 @@ $("textarea").keydown(function(e){
 });
 </script>
 <style>
-    .pointer-shift {
+    .shift {
         color:#84ACFC;
     }
-    .integer {
+    .int {
         color:#EE96D7;
     }
     .loop {
@@ -422,7 +393,7 @@ $("textarea").keydown(function(e){
     .parens {
         color: #ff839c;
     }
-    .io {
+    .out {
         color: #72CCE8;
     }
     .jumps {
@@ -447,7 +418,7 @@ const highlightable_characters = [">","<","+","-","[","]","'","(",")","D","B","O
 
 const highlightable_digits = ["0","1","2","3","4","5","6","7","8","9"]
 
-let charsToHighlight = [...input.value]
+let charsToHighlight = input.value
 let highlighter = []
 
 const pointerShiftRegex = />|<|\+|-/g
@@ -460,10 +431,10 @@ setInterval(() => {
         let char = charsToHighlight[j];
 
         if(char === ">" || char === "<" || char === "-" || char === "+"){
-            highlighter.push(`<span class="pointer-shift">${char}</span>`)
+            highlighter.push(`<span class="shift">${char}</span>`)
 
         } else if (highlightable_digits.includes(char)){
-            highlighter.push(`<span class="integer">${char}</span>`)
+            highlighter.push(`<span class="int">${char}</span>`)
 
         } else if(char === "[" || char === "]"){
             highlighter.push(`<span class="loop">${char}</span>`)
@@ -480,10 +451,10 @@ setInterval(() => {
         } else if(char === "(" || char === ')'){
             highlighter.push(`<span class="parens">${char}</span>`)
 
-        } else if(char === "." || char === ","){
-            highlighter.push(`<span class="io">${char}</span>`)
+        } else if(char === "."){
+            highlighter.push(`<span class="out">${char}</span>`)
 
-        } else if(char === "{" || char === "}" || char === "="){
+        } else if(char === ":" || char === ";"){
             highlighter.push(`<span class="jumps">${char}</span>`)
         } else {
             highlighter.push(`<span class="comment">${char}</span>`)

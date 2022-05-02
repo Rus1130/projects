@@ -4,15 +4,13 @@
 + - incrememnt cell value
 - - decrement cell value
 
-, - set cell value
 . - output cell value
 
 [ loop ] - if cell value at pointer is not 0, loop
     common loop +++[>+++++<-]
 
-{cell - goto cell if cellValue is 0
-}cell - goto cell if cellValue is not 0
-=cell - goto cell
+:cell - goto cell if cellValue is 0
+;cell - goto cell if cellValue is not 0
 
 (value'ifTrue'ifFalse) - if cellValue = value goto ifTrue, else goto ifFalse
 
