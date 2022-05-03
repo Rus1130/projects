@@ -13,6 +13,7 @@
         outline: 0px;
         background-color: transparent;
         color: #CCCCCC;
+        word-break: break-word;
     }
 
     .grid {
@@ -60,10 +61,9 @@
     <div id="grid" class="grid">
 
     </div>
-    <br>
-    <span style="font-size: 19px">Input:<br></span>
+    <span style="font-size: 19px">Input:</span>
     <div>
-        <textarea cols="77" rows="6" maxlength="462" spellcheck="false" id="input" style="width: 600px; position: absolute; background-color: transparent; color: transparent; caret-color: black;"></textarea>
+        <textarea cols="77" oninput="sync_" rows="6" maxlength="486" spellcheck="false" id="input" style="width: 600px; position: absolute; background-color: transparent; color: transparent; caret-color: black;"></textarea>
         <pre><code id="syntax-highlighter" style="position: absolute; width: 600px; height: 100px; z-index: -1;"></code></pre>
     </div>
     <br><br><br>&nbsp;<br><br>
@@ -183,7 +183,10 @@ async function parse(instructions){
     if(running == false){
         running = true;
         for(i = -1; i < instructions.length; i++){
-            let char = instructions[i]
+            let char = instructions[i];
+            if(char === "\n"){
+                 continue
+            }
             if(char === ">"){
                 pointer++;
                 if(!validCell(pointer)){
@@ -264,10 +267,7 @@ async function parse(instructions){
                             if(instructions[temp_i] === "]") {
                                 if(ignore === 0) {
                                     if(cellValues[pointer - 1] === 0) {
-                                        outputArray.push(`\nERROR: Loop cannot be empty. (char ${i+2})`);
-                                        outputArray.push(`\n${instructions}`)
-                                        outputArray.push(`\n${repeat(" ", i + 1)}^`);
-                                        i = instructions.length;
+                                        i = temp_i
                                     } else {
                                         loops[temp_i] = i
                                     }
@@ -360,7 +360,7 @@ $("textarea").keydown(function(e){
 });
 </script>
 <style>
-    .shift {
+    .manage {
         color:#84ACFC;
     }
     .int {
@@ -373,12 +373,12 @@ $("textarea").keydown(function(e){
         color: #AEBBCC;
     }
     .typeset {
-        color: #a4d676;
+        color: #33C89F;
     }
     .out {
         color: #306c9d;
     }
-    .manage {
+    .shift {
         color: #d16969;
     }
     .error {
@@ -399,39 +399,51 @@ $("textarea").keydown(function(e){
 
 var highlight = window.csHighlight;
 
+function sync_scroll(element) {
+    /* Scroll result to scroll coords of event - sync with textarea */
+    let result_element = document.querySelector("#syntax-highlighter");
+    // Get and set x and y
+    result_element.scrollTop = element.scrollTop;
+    result_element.scrollLeft = element.scrollLeft;
+}
 
+
+let highlighterArray = []
 
 setInterval(() => {
 
     syntaxHighlighter.innerHTML = input.value;
 
 
-
-    highlight({patterns: [{
-        name: 'shift',
-        match: /^(<|>)/
-    },
-    {
-        name: "int",
-        match: /^(\d)/
-    },
-    {
-        name: "typeset",
-        match: /^(t[DBXOU])/
-    },
-    {
-        name: "loop",
-        match: /^(\[|\])/
-    },
-    {
-        name: "out",
-        match: /^(\.)/
-    },
-    {
-        name: "manage",
-        match: /^(\+|-)/
-    }
-    ]})
+    highlight({
+        patterns:
+        [
+            {
+                name: 'shift',
+                match: /^(<|>)/
+            },
+            {
+                name: "int",
+                match: /^(\d)/
+            },
+            {
+                name: "typeset",
+                match: /^(t[DBXOU])/
+            },
+            {
+                name: "loop",
+                match: /^(\[|\])/
+            },
+            {
+                name: "out",
+                match: /^(\.)/
+            },
+            {
+                name: "manage",
+                match: /^(\+|-)/
+            }
+        ]
+    })
 }, 1)
     
 
