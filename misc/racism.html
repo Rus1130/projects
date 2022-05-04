@@ -25,22 +25,36 @@
         height: 50px;
         font-size: 20px;
     }
+    #container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        margin: 0px;
+    }
 </style>
 <head>
 
 </head>
 <body>
-<h1>Racism Detector</h1>
-<textarea rows="10" cols="50"></textarea>
-<br><br>
-<button>Detect Racism</button>
-
+    <div id="container">
+        <pre><h1>Racism Detector</h1></pre>
+        <textarea id="input" rows="15" cols="50" placeholder="input"></textarea>
+        <br>
+        <button onclick="detectRacism(input.value)">Detect Racism</button>
+        <br>
+        <textarea id="output" rows="15" cols="50" readonly placeholder="output"></textarea>
+    </div>
 </body>
 <script>
     // make a function that checks if the number is between two numbers
     function isBetween(num, min, max) {
         return num >= min && num <= max;
     }
+
+    // this is for testing purposes only, im not racist i swear
 
     const zeroToTen = "\n\nWow, you're not racist! Shocker! 😲😲😲";
     const tenToTwenty = "\n\nYou're a little bit racist, but not too bad. 😐😐😐";
@@ -53,16 +67,23 @@
     const eightyToNinety = "\n\nYou're KKK level racist. 😱😱😱"
     const ninetyToOneHundred = "\n\nYou're Jax level racist!! Congrats! 🥵🥵🥵"
 
-    const main = /(hate.*)?(black(s)?|nigger(s)?|nigga(s)?|jew(s)?|chink(s)?).*bad/g
+    const main = /(those.*)?(nigger(s)?|nigga(s)?)/g
+    const nword = /(hate.*)?(black(s)?|nigger(s)?|nigga(s)?|jew(s)?|chink(s)?)(.*bad)?/g
     const hate = /hate(.*black(s)?.*people)?/g
     const africa = /(go.*back.*africa)|(go.*africa)/g
     const africans = /african(s)?.*(bad|shit|retard|dumb)/g
     const planty = /on.*plantation(.*cotton)?/g
     const supremeacy = /white.*m(a|e)n((')?s)?.*(land|only)/g
 
+    const input = document.getElementById("input")
+    const output = document.getElementById("output")
+
     const rpoint = "--RACISM--"
 
     const fillerCheck = /(.)\1\1/g
+
+    let averageRacistReport = 0
+    let averageRacistReportCount = 0
 
     function detectRacism(string){
         if(fillerCheck.test(string)) return console.log("You retard, you think I wouldn't notice? Shut up with your dumbass fillers.")
@@ -70,6 +91,7 @@
         let detectedString = 
         string.toLocaleLowerCase()
             .replaceAll(main, rpoint)
+            .replaceAll(nword, rpoint)
             .replaceAll(hate, rpoint)
             .replaceAll(africans, rpoint)
             .replaceAll(africa, rpoint)
@@ -83,7 +105,10 @@
         let stringLength = string.length
         let filteredStringLength = detectedStringNoRPoint.length
 
-        let rawRacistPercent = (((stringLength - filteredStringLength) / stringLength) * 100).toFixed(2)
+        let rawRacistPercent = +(((stringLength - filteredStringLength) / stringLength) * 100).toFixed(2)
+
+        averageRacistReport += rawRacistPercent
+        averageRacistReportCount++
 
         let potentiallyRacistPhrases = `Potentially Racist Phrases: ${detectedString.split(rpoint).length - 1}\n`
         let racistPercentage = `Potentally Racist Content Percentage: ${rawRacistPercent}%\n`
@@ -110,8 +135,11 @@
             racistReport = ninetyToOneHundred
         }
 
-        let result = potentiallyRacistPhrases + racistPercentage + racistReport
-        alert(result)
+        let averageRacistPrcnt = `\nAverage Racist Content Percentage: ${(averageRacistReport / averageRacistReportCount).toFixed(2)}%\n`
+
+        let result = potentiallyRacistPhrases + racistPercentage + racistReport + averageRacistPrcnt
+        console.log(detectedString)
+        output.value = result
     }
 
 
