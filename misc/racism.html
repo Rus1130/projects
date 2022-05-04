@@ -1,10 +1,39 @@
 <style>
 
+    html {
+        font-family: monospace;
+        user-select: none;
+    }
+    textarea {
+        outline: none;
+        font-family: monospace;
+        resize: none;
+    }
+    textarea:focus {
+        outline: none;
+    }
+    button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: monospace;
+        border: 1px black solid;
+        border-radius: 2px;
+        font-size: 15px;
+        background-color: beige;
+        width: 400px;
+        height: 50px;
+        font-size: 20px;
+    }
 </style>
 <head>
 
 </head>
 <body>
+<h1>Racism Detector</h1>
+<textarea rows="10" cols="50"></textarea>
+<br><br>
+<button>Detect Racism</button>
 
 </body>
 <script>
@@ -24,30 +53,26 @@
     const eightyToNinety = "\n\nYou're KKK level racist. 😱😱😱"
     const ninetyToOneHundred = "\n\nYou're Jax level racist!! Congrats! 🥵🥵🥵"
 
-    const main = /nigger(s)?|nigga(s)?|black(s)?|jew(s)?|chink(s)?(.*bad?)/g
-    const blackbad = /(black(s)?|nigger(s)?|nigga(s)?|jew(s)?|chink(s)?).*bad/g
+    const main = /(hate.*)?(black(s)?|nigger(s)?|nigga(s)?|jew(s)?|chink(s)?).*bad/g
     const hate = /hate(.*black(s)?.*people)?/g
     const africa = /(go.*back.*africa)|(go.*africa)/g
     const africans = /african(s)?.*(bad|shit|retard|dumb)/g
-    const bad = /(black(s)?|nigger(s)?|nigga(s)?|jew(s)?|chink(s)?).*bad/g
     const planty = /on.*plantation(.*cotton)?/g
-    const supremeacy = /white.*m(a|e)n(s)?.*(land|only)?/g
+    const supremeacy = /white.*m(a|e)n((')?s)?.*(land|only)/g
 
-    const rpoint = "--RACHISTM--"
+    const rpoint = "--RACISM--"
 
-    const fillerCheck = /(.)\1\1|(.)\2/g
+    const fillerCheck = /(.)\1\1/g
 
     function detectRacism(string){
         if(fillerCheck.test(string)) return console.log("You retard, you think I wouldn't notice? Shut up with your dumbass fillers.")
         
         let detectedString = 
         string.toLocaleLowerCase()
-            .replaceAll(blackbad, rpoint)
             .replaceAll(main, rpoint)
             .replaceAll(hate, rpoint)
             .replaceAll(africans, rpoint)
             .replaceAll(africa, rpoint)
-            .replaceAll(bad, rpoint)
             .replaceAll(planty, rpoint)
             .replaceAll(supremeacy, rpoint)
 
@@ -86,8 +111,7 @@
         }
 
         let result = potentiallyRacistPhrases + racistPercentage + racistReport
-        console.log(result)
-        return detectedString
+        alert(result)
     }
 
 
