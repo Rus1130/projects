@@ -1,0 +1,94 @@
+<style>
+
+</style>
+<head>
+
+</head>
+<body>
+
+</body>
+<script>
+    // make a function that checks if the number is between two numbers
+    function isBetween(num, min, max) {
+        return num >= min && num <= max;
+    }
+
+    const zeroToTen = "\n\nWow, you're not racist! Shocker! 😲😲😲";
+    const tenToTwenty = "\n\nYou're a little bit racist, but not too bad. 😐😐😐";
+    const twentyToThirty = "\n\nYou're pretty racist. 😠😠😠";
+    const thirtyToForty = "\n\nYou're really racist. 😡😡😡";
+    const fortyToFifty = "\n\nYou're really really racist. 😤😤😤";
+    const fiftyToSixty = "\n\nYou like to dog on black people daily. 😥😥😥";
+    const sixtyToSeventy = "\n\nYou're mad racist. 😧😧😧";
+    const seventyToEighty = "\n\nYou're america level racist. 😨😨😨";
+    const eightyToNinety = "\n\nYou're KKK level racist. 😱😱😱"
+    const ninetyToOneHundred = "\n\nYou're Carson level racist!! Congrats! 🥵🥵🥵"
+
+    const main = /nigger(s)?|nigga(s)?|black(s)?|jew(s)?|chink(s)?(.*bad?)/g
+    const blackbad = /(black(s)?|nigger(s)?|nigga(s)?|jew(s)?|chink(s)?).*bad/g
+    const hate = /hate(.*black(s)?.*people)?/g
+    const africa = /(go.*back.*africa)|(go.*africa)/g
+    const africans = /african(s)?.*(bad|shit|retard|dumb)/g
+    const bad = /(black(s)?|nigger(s)?|nigga(s)?|jew(s)?|chink(s)?).*bad/g
+    const planty = /on.*plantation(.*cotton)?/g
+    const supremeacy = /white.*m(a|e)n(s)?.*(land|only)?/g
+
+    const rpoint = "--RACHISTM--"
+
+    const fillerCheck = /(.)\1\1|(.)\2/g
+
+    function detectRacism(string){
+        if(fillerCheck.test(string)) return console.log("You retard, you think I wouldn't notice? Shut up with your dumbass fillers.")
+        
+        let detectedString = 
+        string.toLocaleLowerCase()
+            .replaceAll(blackbad, rpoint)
+            .replaceAll(main, rpoint)
+            .replaceAll(hate, rpoint)
+            .replaceAll(africans, rpoint)
+            .replaceAll(africa, rpoint)
+            .replaceAll(bad, rpoint)
+            .replaceAll(planty, rpoint)
+            .replaceAll(supremeacy, rpoint)
+
+        let detectedStringNoRPoint = detectedString.replaceAll(rpoint, "")
+
+        let racistReport = ''
+
+        let stringLength = string.length
+        let filteredStringLength = detectedStringNoRPoint.length
+
+        let rawRacistPercent = (((stringLength - filteredStringLength) / stringLength) * 100).toFixed(2)
+
+        let potentiallyRacistPhrases = `Potentially Racist Phrases: ${detectedString.split(rpoint).length - 1}\n`
+        let racistPercentage = `Potentally Racist Content Percentage: ${rawRacistPercent}%\n`
+
+        if(isBetween(rawRacistPercent, 0, 10)){
+            racistReport = zeroToTen
+        } else if(isBetween(rawRacistPercent, 10, 20)){
+            racistReport = tenToTwenty
+        } else if(isBetween(rawRacistPercent, 20, 30)){
+            racistReport = twentyToThirty
+        } else if(isBetween(rawRacistPercent, 30, 40)){
+            racistReport = thirtyToForty
+        } else if(isBetween(rawRacistPercent, 40, 50)){
+            racistReport = fortyToFifty
+        } else if(isBetween(rawRacistPercent, 50, 60)){
+            racistReport = fiftyToSixty
+        } else if(isBetween(rawRacistPercent, 60, 70)){
+            racistReport = sixtyToSeventy
+        } else if(isBetween(rawRacistPercent, 70, 80)){
+            racistReport = seventyToEighty
+        } else if(isBetween(rawRacistPercent, 80, 90)){
+            racistReport =  eightyToNinety
+        } else if(isBetween(rawRacistPercent, 90, 100)){
+            racistReport = ninetyToOneHundred
+        }
+
+        let result = potentiallyRacistPhrases + racistPercentage + racistReport
+        console.log(result)
+        return detectedString
+    }
+
+
+</script>
