@@ -370,7 +370,7 @@ $("textarea").keydown(function(e){
         color: #FF0000;
     }
     .other {
-        color: black;
+        color: #95C7C8;
     }
 
 
@@ -378,7 +378,6 @@ $("textarea").keydown(function(e){
         color: #C3A6FE;
         color: #fdcf78;
         color: #e2bad6;
-        color: #95C7C8;
         color: #80CBC4;
         color: #33C89F;
     }
@@ -425,11 +424,12 @@ setInterval(() => {
             {
                 name: "manage",
                 match: /^(\+|-)/
+            },
+            {
+                name: "other",
+                match: /^([^\d\+\-\[\]\;\:\.tDBXOU])/
             }
         ],
-        // postProcess: string => {
-        //     return string.replace(captureNotRecognizedChars, '<span class="comma">,</span>')
-        // }
     })
 }, 1)
     
