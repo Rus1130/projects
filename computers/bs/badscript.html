@@ -13,7 +13,6 @@
         outline: 0px;
         background-color: transparent;
         color: #CCCCCC;
-        word-break: break-word;
     }
 
     .grid {
@@ -64,7 +63,7 @@
     <span style="font-size: 19px">Input:</span>
     <div>
         <textarea cols="77" rows="6" maxlength="486" spellcheck="false" id="input" style="width: 600px; position: absolute; background-color: transparent; color: transparent; caret-color: black;"></textarea>
-        <pre><code id="syntax-highlighter" style="position: absolute; width: 600px; height: 100px; z-index: -1; white-space: pre-wrap;"></code></pre>
+        <pre><code id="syntax-highlighter" style="font-family: monospace; position: absolute; width: 600px; height: 100px; z-index: -1;"></code></pre>
     </div>
     <br><br><br>&nbsp;<br><br>
     <span style="font-size: 19px">Output:<br></span>
@@ -293,27 +292,7 @@ async function parse(instructions){
                     };
                 }
             }
-            if(char === ":"){
-                let cellJump = '';
-                for(j = instructions.indexOf("{", i) + 1; j < instructions.length; j++){
-                    if(!isNaN(parseInt(instructions[j]))){
-                        cellJump += instructions[j];
-                    } else {
-                        j = instructions.length;
-                    }
-                }
-                if(!validCell(cellJump)){
-                    outputArray.push(`\nERROR: Invalid cell jump. (char ${i+2})`);
-                    outputArray.push(`\n${instructions}`)
-                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
-                    i = instructions.length;
-                } else {
-                    if(cellValues[pointer - 1] === 0) {
-                        pointer = cellJump;
-                    }
-                }
-            }
-            if(char === ";"){
+            if(char === ";" || char === ":"){
                 let cellJump = '';
                 for(j = instructions.indexOf("}", i) + 1; j < instructions.length; j++){
                     if(!isNaN(parseInt(instructions[j]))){
@@ -328,8 +307,14 @@ async function parse(instructions){
                     outputArray.push(`\n${repeat(" ", i + 1)}^`);
                     i = instructions.length;
                 } else {
-                    if(cellValues[pointer - 1] !== 0) {
-                        pointer = cellJump;
+                    if(char === ';'){
+                        if(cellValues[pointer - 1] !== 0) {
+                            pointer = cellJump;
+                        }
+                    } else if(char === ':'){
+                        if(cellValues[pointer - 1] === 0) {
+                            pointer = cellJump;
+                        }
                     }
                 }
             }
@@ -404,12 +389,12 @@ var highlight = window.csHighlight;
 
 // 81, 486
 
-
-let highlighterArray = []
+let syntaxHighlighterArray;
 
 setInterval(() => {
 
-    syntaxHighlighter.innerHTML = input.value;
+    syntaxHighlighterArray = input.value.match(/.{0,81}/g)
+    syntaxHighlighter.innerText = syntaxHighlighterArray.join("&NewLine;").trim();
 
 
     highlight({
