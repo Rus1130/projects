@@ -369,7 +369,7 @@ $("textarea").keydown(function(e){
     .error {
         color: #FF0000;
     }
-    .black {
+    .other {
         color: black;
     }
 
@@ -391,10 +391,12 @@ var highlight = window.csHighlight;
 
 let syntaxHighlighterArray;
 
+let captureNotRecognizedChars = /<>/
+
 setInterval(() => {
 
-    syntaxHighlighterArray = input.value.match(/.{0,81}/g)
-    syntaxHighlighter.innerText = syntaxHighlighterArray.join("&NewLine;").trim();
+    syntaxHighlighter.innerHTML = input.value.replace(/.{81}/g, "$&" + "<br>")
+
 
 
     highlight({
@@ -424,7 +426,10 @@ setInterval(() => {
                 name: "manage",
                 match: /^(\+|-)/
             }
-        ]
+        ],
+        // postProcess: string => {
+        //     return string.replace(captureNotRecognizedChars, '<span class="comma">,</span>')
+        // }
     })
 }, 1)
     
