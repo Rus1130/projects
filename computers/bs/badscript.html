@@ -62,7 +62,7 @@
     </div>
     <span style="font-size: 19px">Input:</span>
     <div>
-        <textarea cols="77" rows="6" maxlength="486" spellcheck="false" id="input" style="width: 565px; position: absolute; background-color: transparent; color: transparent; caret-color: black;"></textarea>
+        <textarea cols="77" rows="6" maxlength="456" spellcheck="false" id="input" style="width: 565px; position: absolute; background-color: transparent; color: transparent; caret-color: black;"></textarea>
         <pre><code id="syntax-highlighter" style="font-family: monospace; position: absolute; width: 565px; height: 100px; z-index: -1;"></code></pre>
     </div>
     <br><br><br>&nbsp;<br><br>
@@ -184,20 +184,18 @@ async function parse(instructions){
         running = true;
         for(i = -1; i < instructions.length; i++){
             let char = instructions[i];
-            if(char === "\n"){
-                 continue
-            }
-            let conditionalValue = ''
+
+            let comparisonValue = ''
 
             for(j = i + 1; j < instructions.length; j++){
                 if(/\d/.test(instructions[j])){
-                    conditionalValue += instructions[j]
+                    comparisonValue += instructions[j]
                 } else if(instructions[j] === "?"){
                     j = instructions.length
                 }
             }
             if(char === ">"){
-                if(cellValues[pointer - 1] == parseInt(conditionalValue) || conditionalValue == ''){
+                if(cellValues[pointer - 1] == parseInt(comparisonValue) || comparisonValue == ''){
                     pointer++;
                     if(!validCell(pointer)){
                         pointer = cellAmount;
@@ -209,7 +207,7 @@ async function parse(instructions){
                 }
             }
             if(char === "<"){
-                if(cellValues[pointer - 1] == parseInt(conditionalValue) || conditionalValue == ''){
+                if(cellValues[pointer - 1] == parseInt(comparisonValue) || comparisonValue == ''){
                     pointer--;
                     if(!validCell(pointer)){
                         pointer = 1;
@@ -306,6 +304,14 @@ async function parse(instructions){
                     };
                 }
             }
+            if(char === "?"){
+                if(!/[0-9]/g.test(instructions[i-1])){
+                    outputArray.push(`\nERROR: Unexpected comparison operator. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
+                    i = instructions.length;
+                }
+            }
 
 
             updateCells()
@@ -333,7 +339,7 @@ $("textarea").keydown(function(e){
 });
 </script>
 <style>
-    .manage {
+    .value {
         color:#84ACFC;
     }
     .int {
@@ -359,6 +365,9 @@ $("textarea").keydown(function(e){
     }
     .other {
         color: #95C7C8;
+    }
+    .comparison {
+        color: #fdcf78;;
     }
 
 
@@ -407,8 +416,8 @@ setInterval(() => {
                 match: /^(\.)/
             },
             {
-                name: "manage",
-                match: /^(\+|-|\?)/
+                name: "value",
+                match: /^(\+|-)/
             },
             {
                 name: "error",
@@ -417,6 +426,10 @@ setInterval(() => {
             {
                 name: "error",
                 match: /^([^t][DBXOU])/
+            },
+            {
+                name: "comparison",
+                match: /^(\?)/
             }
         ],
     })
