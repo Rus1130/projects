@@ -9,8 +9,8 @@
 [ loop ] - if cell value at pointer is not 0, loop
     common loop +++[>+++++<-]
 
-:cell - goto cell if cellValue is 0
-;cell - goto cell if cellValue is not 0
+)value - shift pointer right if cellValue equals value
+(value - shift pointer left if cellValue equals value
 
 use typesets to change the character set
     tD - Decimal

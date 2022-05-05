@@ -292,37 +292,61 @@ async function parse(instructions){
                     };
                 }
             }
-            if(char === ";" || char === ":"){
-                let cellJump = '';
-                for(j = instructions.indexOf("}", i) + 1; j < instructions.length; j++){
-                    if(!isNaN(parseInt(instructions[j]))){
-                        cellJump += instructions[j];
+            if(char === "(" || char === ")"){
+
+                let value = ''
+
+                for(j = i + 1; j < instructions.length; j++){
+                    if(/\d/g.test(instructions[j])){
+                        value += instructions[j]
+                    }
+                }
+
+                if(char === "("){
+                    if(!validCellValue(parseInt(value))){
+                        outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
+                        outputArray.push(`\n${instructions}`)
+                        outputArray.push(`\n${repeat(" ", i + 1)}^`);
+                        i = instructions.length;
                     } else {
-                        j = instructions.length;
-                    }
-                }
-                if(!validCell(cellJump)){
-                    outputArray.push(`\nERROR: Invalid cell jump. (char ${i+2})`);
-                    outputArray.push(`\n${instructions}`)
-                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
-                    i = instructions.length;
-                } else {
-                    if(char === ';'){
-                        if(cellValues[pointer - 1] !== 0) {
-                            pointer = cellJump;
-                        }
-                    } else if(char === ':'){
-                        if(cellValues[pointer - 1] === 0) {
-                            pointer = cellJump;
+                        if(parseInt(value) == cellValues[pointer - 1]){
+                            pointer--;
+                            if(!validCell(pointer)){
+                                pointer = 1;
+                                outputArray.push(`\nERROR: Pointer out of bounds. (char ${i+1})`);
+                                outputArray.push(`\n${instructions}`)
+                                outputArray.push(`\n${repeat(" ", i)}^`);
+                                i = instructions.length;
+                            }
                         }
                     }
                 }
+                if(char === ")"){
+                    if(!validCellValue(parseInt(value))){
+                        outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
+                        outputArray.push(`\n${instructions}`)
+                        outputArray.push(`\n${repeat(" ", i + 1)}^`);
+                        i = instructions.length;
+                    } else {
+                        if(parseInt(value) == cellValues[pointer - 1]){
+                            pointer++;
+                            if(!validCell(pointer)){
+                                pointer = cellAmount;
+                                outputArray.push(`\nERROR: Pointer out of bounds. (char ${i+1})`);
+                                outputArray.push(`\n${instructions}`)
+                                outputArray.push(`\n${repeat(" ", i)}^`);
+                                i = instructions.length;
+                            }
+                        }
+                    }
+                }
+
             }
 
 
             updateCells()
             output.value = outputArray.join("").trim();
-            await this.timeout(1)
+            await this.timeout(10)
         }
     }
     running = false;
@@ -390,8 +414,6 @@ var highlight = window.csHighlight;
 
 let syntaxHighlighterArray;
 
-let captureNotRecognizedChars = /<>/
-
 setInterval(() => {
 
     syntaxHighlighter.innerHTML = input.value.replace(/.{81}/g, "$&" + "<br>")
@@ -403,7 +425,7 @@ setInterval(() => {
         [
             {
                 name: 'shift',
-                match: /^(<|>)/
+                match: /^(<|>|\(|\))/
             },
             {
                 name: "int",
@@ -427,7 +449,7 @@ setInterval(() => {
             },
             {
                 name: "other",
-                match: /^([^\d\+\-\[\]\;\:\.tDBXOU])/
+                match: /^([^\d\+\-\[\]\;\:\.\(\)tDBXOU])/
             }
         ],
     })
