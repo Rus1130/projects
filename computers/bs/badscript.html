@@ -62,7 +62,7 @@
     </div>
     <span style="font-size: 19px">Input:</span>
     <div>
-        <textarea cols="77" rows="6" maxlength="440" spellcheck="false" id="input" style="width: 565px; position: absolute; background-color: transparent; color: transparent; caret-color: black;"></textarea>
+        <textarea cols="77" rows="6" maxlength="486" spellcheck="false" id="input" style="width: 565px; position: absolute; background-color: transparent; color: transparent; caret-color: black;"></textarea>
         <pre><code id="syntax-highlighter" style="font-family: monospace; position: absolute; width: 565px; height: 100px; z-index: -1;"></code></pre>
     </div>
     <br><br><br>&nbsp;<br><br>
@@ -187,24 +187,37 @@ async function parse(instructions){
             if(char === "\n"){
                  continue
             }
+            let conditionalValue = ''
+
+            for(j = i + 1; j < instructions.length; j++){
+                if(/\d/.test(instructions[j])){
+                    conditionalValue += instructions[j]
+                } else if(instructions[j] === "?"){
+                    j = instructions.length
+                }
+            }
             if(char === ">"){
-                pointer++;
-                if(!validCell(pointer)){
-                    pointer = cellAmount;
-                    outputArray.push(`\nERROR: Pointer out of bounds. (char ${i+1})`);
-                    outputArray.push(`\n${instructions}`)
-                    outputArray.push(`\n${repeat(" ", i)}^`);
-                    i = instructions.length;
+                if(cellValues[pointer - 1] == parseInt(conditionalValue) || conditionalValue == ''){
+                    pointer++;
+                    if(!validCell(pointer)){
+                        pointer = cellAmount;
+                        outputArray.push(`\nERROR: Pointer out of bounds. (char ${i+1})`);
+                        outputArray.push(`\n${instructions}`)
+                        outputArray.push(`\n${repeat(" ", i)}^`);
+                        i = instructions.length;
+                    }
                 }
             }
             if(char === "<"){
-                pointer--;
-                if(!validCell(pointer)){
-                    pointer = 1;
-                    outputArray.push(`\nERROR: Pointer out of bounds. (char ${i+1})`);
-                    outputArray.push(`\n${instructions}`)
-                    outputArray.push(`\n${repeat(" ", i)}^`);
-                    i = instructions.length;
+                if(cellValues[pointer - 1] == parseInt(conditionalValue) || conditionalValue == ''){
+                    pointer--;
+                    if(!validCell(pointer)){
+                        pointer = 1;
+                        outputArray.push(`\nERROR: Pointer out of bounds. (char ${i+1})`);
+                        outputArray.push(`\n${instructions}`)
+                        outputArray.push(`\n${repeat(" ", i)}^`);
+                        i = instructions.length;
+                    }
                 }
             }
             if(char === "+"){
@@ -293,56 +306,6 @@ async function parse(instructions){
                     };
                 }
             }
-            if(char === "(" || char === ")"){
-
-                let value = ''
-
-                for(j = i + 1; j < instructions.length; j++){
-                    if(/\d/g.test(instructions[j])){
-                        value += instructions[j]
-                    }
-                }
-
-                if(char === "("){
-                    if(!validCellValue(parseInt(value))){
-                        outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
-                        outputArray.push(`\n${instructions}`)
-                        outputArray.push(`\n${repeat(" ", i + 1)}^`);
-                        i = instructions.length;
-                    } else {
-                        if(parseInt(value) == cellValues[pointer - 1]){
-                            pointer--;
-                            if(!validCell(pointer)){
-                                pointer = 1;
-                                outputArray.push(`\nERROR: Pointer out of bounds. (char ${i+1})`);
-                                outputArray.push(`\n${instructions}`)
-                                outputArray.push(`\n${repeat(" ", i)}^`);
-                                i = instructions.length;
-                            }
-                        }
-                    }
-                }
-                if(char === ")"){
-                    if(!validCellValue(parseInt(value))){
-                        outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
-                        outputArray.push(`\n${instructions}`)
-                        outputArray.push(`\n${repeat(" ", i + 1)}^`);
-                        i = instructions.length;
-                    } else {
-                        if(parseInt(value) == cellValues[pointer - 1]){
-                            pointer++;
-                            if(!validCell(pointer)){
-                                pointer = cellAmount;
-                                outputArray.push(`\nERROR: Pointer out of bounds. (char ${i+1})`);
-                                outputArray.push(`\n${instructions}`)
-                                outputArray.push(`\n${repeat(" ", i)}^`);
-                                i = instructions.length;
-                            }
-                        }
-                    }
-                }
-
-            }
 
 
             updateCells()
@@ -386,7 +349,7 @@ $("textarea").keydown(function(e){
         color: #33C89F;
     }
     .out {
-        color: #306c9d;
+        color: #84ACFC;
     }
     .shift {
         color: #d16969;
@@ -404,7 +367,7 @@ $("textarea").keydown(function(e){
         color: #fdcf78;
         color: #e2bad6;
         color: #80CBC4;
-        color: #33C89F;
+        color: #FF839C;
     }
 </style>
 <script>
@@ -424,8 +387,8 @@ setInterval(() => {
         patterns:
         [
             {
-                name: 'shift',
-                match: /^(<|>|\(|\))/
+                name: "shift",
+                match: /^(<|>)/
             },
             {
                 name: "int",
@@ -445,14 +408,14 @@ setInterval(() => {
             },
             {
                 name: "manage",
-                match: /^(\+|-)/
+                match: /^(\+|-|\?)/
             },
             {
-                name: "other",
-                match: /^([^\d\+\-\[\]\;\:\.\(\)])/
+                name: "error",
+                match: /^([^\d\+\-\[\]\;\:\.<>\?])/
             },
             {
-                name: "other",
+                name: "error",
                 match: /^([^t][DBXOU])/
             }
         ],
