@@ -62,7 +62,7 @@
     </div>
     <span style="font-size: 19px">Input:</span>
     <div>
-        <textarea cols="77" rows="6" maxlength="456" spellcheck="false" id="input" style="width: 565px; position: absolute; background-color: transparent; color: transparent; caret-color: black;"></textarea>
+        <textarea rows="6" maxlength="456" spellcheck="false" id="input" style="width: 565px; position: absolute; background-color: transparent; color: transparent; caret-color: black;"></textarea>
         <pre><code id="syntax-highlighter" style="font-family: monospace; position: absolute; width: 565px; height: 100px; z-index: -1;"></code></pre>
     </div>
     <br><br><br>&nbsp;<br><br>
@@ -219,23 +219,27 @@ async function parse(instructions){
                 }
             }
             if(char === "+"){
-                if(!validCellValue(cellValues[pointer - 1])){
-                    outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
-                    outputArray.push(`\n${instructions}`)
-                    outputArray.push(`\n${repeat(" ", i)}^`);
-                    i = instructions.length;
-                } else {
-                    cellValues[pointer - 1]++;
+                if(cellValues[pointer - 1] == parseInt(comparisonValue) || comparisonValue == ''){
+                    if(!validCellValue(cellValues[pointer - 1])){
+                        outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
+                        outputArray.push(`\n${instructions}`)
+                        outputArray.push(`\n${repeat(" ", i)}^`);
+                        i = instructions.length;
+                    } else {
+                        cellValues[pointer - 1]++;
+                    }
                 }
             }
             if(char === "-"){
-                if(!validCellValue(cellValues[pointer - 1])){
-                    outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
-                    outputArray.push(`\n${instructions}`)
-                    outputArray.push(`\n${repeat(" ", i)}^`);
-                    i = instructions.length;
-                } else {
-                    cellValues[pointer - 1]--;
+                if(cellValues[pointer - 1] == parseInt(comparisonValue) || comparisonValue == ''){
+                    if(!validCellValue(cellValues[pointer - 1])){
+                        outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
+                        outputArray.push(`\n${instructions}`)
+                        outputArray.push(`\n${repeat(" ", i)}^`);
+                        i = instructions.length;
+                    } else {
+                        cellValues[pointer - 1]--;
+                    }
                 }
             }
             if(char === "."){
@@ -308,7 +312,7 @@ async function parse(instructions){
                 if(!/[0-9]/g.test(instructions[i-1])){
                     outputArray.push(`\nERROR: Unexpected comparison operator. (char ${i+1})`);
                     outputArray.push(`\n${instructions}`)
-                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
+                    outputArray.push(`\n${repeat(" ", i)}^`);
                     i = instructions.length;
                 }
             }
@@ -435,6 +439,22 @@ setInterval(() => {
     })
 }, 1)
     
+
+// ++++++++++
+//     [
+//         >+++++<-
+//     ]
+// >
+//     [
+//         [
+//             >+<-
+//         ]
+//     >
+//         [
+//             >+<-
+//         ]
+//     >
+//     ]
 
 
 </script>
