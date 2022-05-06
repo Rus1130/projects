@@ -1,0 +1,108 @@
+<style>
+    div:focus {
+        outline: none;
+    }
+    #input {
+        position: absolute;
+        border: 1px solid black;
+        height: 200px;
+        width: 600px;
+        background-color: transparent;
+        color: transparent;
+        font-family: monospace;
+        caret-color: black;
+    }
+    #highlight {
+        position: absolute;
+        border: 1px solid black;
+        height: 200px;
+        width: 600px;
+        z-index: -1;
+        font-family: monospace;
+        color: red;
+    }
+    .value {
+        color:#84ACFC;
+    }
+    .int {
+        color:#EE96D7;
+    }
+    .loop {
+        color: #F7A869;
+    }
+    .endchar {
+        color: #AEBBCC;
+    }
+    .typeset {
+        color: #33C89F;
+    }
+    .out {
+        color: #84ACFC;
+    }
+    .shift {
+        color: #d16969;
+    }
+    .error {
+        color: #FF0000;
+    }
+    .other {
+        color: #95C7C8;
+    }
+    .comparison {
+        color: #fdcf78;;
+    }
+</style>
+<head>
+    <script src="https://unpkg.com/custom-syntax-highlighter@latest/bin/index.js"></script>
+</head>
+<body>
+    <div id="input" contenteditable="true" spellcheck="false"></div>
+    <span><div id="highlight" spellcheck="false"></div></span>
+</body>
+<script>
+
+    const input = document.getElementById('input');
+    const highlight = document.getElementById('highlight');
+
+    var hl = window.csHighlight;
+
+    setInterval(() => {
+        highlight.innerHTML = input.innerText.replace(/.{83}/g, "$&" + "<br>");
+
+        hl({
+            patterns:
+            [
+                {
+                    name: "shift",
+                    match: /^(<|>)/
+                },
+                {
+                    name: "int",
+                    match: /^(\d)/
+                },
+                {
+                    name: "typeset",
+                    match: /^(t[DBXOU])/
+                },
+                {
+                    name: "loop",
+                    match: /^(\[|\])/
+                },
+                {
+                    name: "out",
+                    match: /^(\.)/
+                },
+                {
+                    name: "value",
+                    match: /^(\+|-)/
+                },
+                {
+                    name: "comparison",
+                    match: /^(\?)/
+                }
+            ],
+            selector: "span div",
+        })
+    }, 1)
+    
+</script>
