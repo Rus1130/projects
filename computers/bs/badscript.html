@@ -62,7 +62,7 @@
     </div>
     <span style="font-size: 19px">Input:</span>
     <div>
-        <textarea rows="6" maxlength="456" spellcheck="false" id="input" style="width: 565px; position: absolute; background-color: transparent; color: transparent; caret-color: black;"></textarea>
+        <textarea cols="80" rows="6" maxlength="456" spellcheck="false" id="input" style="width: 565px; position: absolute; background-color: transparent; color: transparent; caret-color: black;"></textarea>
         <pre><code id="syntax-highlighter" style="font-family: monospace; position: absolute; width: 565px; height: 100px; z-index: -1;"></code></pre>
     </div>
     <br><br><br>&nbsp;<br><br>
@@ -392,7 +392,7 @@ let syntaxHighlighterArray;
 
 setInterval(() => {
 
-    syntaxHighlighter.innerText = input.value.replace(/.{76}/g, "$&" + "\n")
+       syntaxHighlighter.innerHTML = input.value.replace(/.{80}/g, "$&" + "<br>")
 
 
 
