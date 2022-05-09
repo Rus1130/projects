@@ -1,0 +1,34 @@
+<style>
+
+</style>
+<head>
+
+</head>
+<body>
+
+</body>
+<script>
+    const stringy = {
+        compress : function(str, searchSize, storeSize) {
+            let searchArray = [];
+            let storeArray = []
+
+            for(i = 0; i < str.length; i++) {
+                if(storeArray.length === storeSize){
+                    storeArray.shift()
+                }
+                if(searchArray.length === searchSize) {
+                    storeArray.push(str[i]);
+                    searchArray.shift()
+                    searchArray.push(str[i])
+                } else {
+                    storeArray.push(str[i]);
+                    searchArray.push(str[i])
+                }
+                console.log(`Search: ${searchArray.join("")}`)
+                console.log(`Store: ${storeArray.join("")}`)
+            }
+
+        }
+    }
+</script>
