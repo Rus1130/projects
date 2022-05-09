@@ -1,34 +1,25 @@
 <style>
-
+    div {
+        font-family: monospace;
+        font-size: 20pt;
+    }
 </style>
 <head>
 
 </head>
 <body>
-
+<div id="root" style="border: 1px black solid;"></div>
 </body>
 <script>
+    const root = document.getElementById('root');
+
+
     const stringy = {
-        compress : function(str, searchSize, storeSize) {
-            let searchArray = [];
-            let storeArray = []
-
-            for(i = 0; i < str.length; i++) {
-                if(storeArray.length === storeSize){
-                    storeArray.shift()
-                }
-                if(searchArray.length === searchSize) {
-                    storeArray.push(str[i]);
-                    searchArray.shift()
-                    searchArray.push(str[i])
-                } else {
-                    storeArray.push(str[i]);
-                    searchArray.push(str[i])
-                }
-                console.log(`Search: ${searchArray.join("")}`)
-                console.log(`Store: ${storeArray.join("")}`)
+        compress : function(str, parts) {
+            let uncompressed = str.match(RegExp(`.{1,${parts}}`,"g"))
+            for(i = 0; i < uncompressed.length; i++){
+                console.log(uncompressed[i])
             }
-
         }
     }
 </script>
