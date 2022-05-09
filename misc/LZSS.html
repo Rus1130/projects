@@ -10,16 +10,16 @@
 <script>
 
     const lzss = {
-        encode : function(search_buffer_length, lookahead_buffer_length, input) {
+        encode : function(searchSize, bankSize, message) {
+            let windowBuffer = [];
+            let searchBufferLength = searchSize
+            let bankBufferLength = bankSize
+            let inputBuffer = [...message].join("")
 
-            let window = [];
-            let searchBuffer = [];
-            let lookaheadBuffer = [];
+            for(i = 0; i < searchSize + bankSize; i++) {
+                windowBuffer.push("");
+            }
 
-            const lookaheadBufferLength = lookahead_buffer_length;
-            const searchBufferLength = search_buffer_length
-
-            return slidingWindow
 
         },
         decode : function(input) {
