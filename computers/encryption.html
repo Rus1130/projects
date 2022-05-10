@@ -25,7 +25,7 @@
     function repeatLog(num, base, times) {
         return Math.log(num) / Math.log(base) * times
     }
-    const stringy = {
+    const Crypt = {
         generateSalt(){
             return Math.floor(Math.random() * (687 - 192 + 1) + 192);
         },
@@ -33,34 +33,19 @@
             return Math.floor(Math.random() * (191 - 161 + 1) + 161);
         },
         encrypt: {
-            CBE(string){ // Character Bomb Encryption
-                if(/\d\d\d/.test(string.split(' '))){
-                    return console.error("max char code is 999")
-                } else {
-                    let inputNumber = string.split('').map(char => char.charCodeAt(0).toString().padStart(3, '0')).join("");
-                    let resultArray = []
-                    
-                    let result = inputNumber.match(/.{1,50}/g);
-
-                    // divide each index by 16777216
-
-                    return resultArray
-                }
-                
-            },
             LIE(string){ // Length Integrated Encryption
                 if(string.length > 35) return console.error("String too long (max 36 chars)");
                 let encryptedMessageArray = [];
                 let encryptedKeyArray = [];
-                let delimiter = String.fromCharCode(stringy.generateDelimiter()) + String.fromCharCode(stringy.generateDelimiter()) + String.fromCharCode(stringy.generateDelimiter())
+                let delimiter = String.fromCharCode(Crypt.generateDelimiter()) + String.fromCharCode(Crypt.generateDelimiter()) + String.fromCharCode(Crypt.generateDelimiter())
 
-                let slkey = stringy.generateSalt()
+                let slkey = Crypt.generateSalt()
                 let stringLength = String.fromCharCode(string.length.toString(36).charCodeAt(0) + slkey);
                 let stringLengthKey = String.fromCharCode(slkey)
 
 
                 for(i = 0; i < string.length; i++){
-                    let keypoint = stringy.generateSalt()
+                    let keypoint = Crypt.generateSalt()
                     encryptedMessageArray.push(String.fromCharCode(string.charCodeAt(i) + keypoint));
                     encryptedKeyArray.push(String.fromCharCode(keypoint))
                 }
@@ -68,18 +53,10 @@
                 let encryptedMessage = encryptedMessageArray.join("")
                 let encryptedKey = encryptedKeyArray.join("")
 
-                return stringLength + encryptedMessage + String.fromCharCode(stringy.generateSalt()) + encryptedKey + stringLengthKey
+                return stringLength + encryptedMessage + String.fromCharCode(Crypt.generateSalt()) + encryptedKey + stringLengthKey
             }
         },
         decrypt: {
-            CBE(number){
-                let charCodeArray = number.match(/.{1,3}/g)
-                let result = ''
-                for(i = 0; i < charCodeArray.length; i++){
-                    result += String.fromCharCode(parseInt(charCodeArray[i]))
-                }
-                return result
-            },
             LIE(string){
                 let encryptedLength = string[0].charCodeAt(0)
                 let encryptedLengthKey = string[string.length - 1].charCodeAt(0)
