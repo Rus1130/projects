@@ -27,15 +27,40 @@
         checkUnicode(unicode){
             return unicode >= 0 && unicode <= 31 && unicode >= 127 && unicode <= 159
         },
-        compress(string){ // Character Bomb Encryption
-            let regexp = RegExp(`.{1,${string.length / 3}}`,"g")
-            return string.match(regexp)
+        compress(string){
+            // create array of unicode values with map
+            if(string.indexOf("e+") !== -1){
+                return console.error("cannot contain +e")
+            } else {
+                let unicodeArray = string.split('').map(char => char.charCodeAt(0))
+                unicodeArray = unicodeArray.map(index => (index += 200).toString())
+                let uncompressed = unicodeArray.join("").match(/.{1,308}/g)
+                // me+n == m * Math.pow(10, n)
+                uncompressed = uncompressed.map(index => parseInt(index).toString());
+
+                for(i = 0; i < uncompressed.length; i++){
+                    uncompressed[i] = uncompressed[i].replaceAll(".","246").replaceAll("e+","301243") + "000"
+
+                }
+
+                return uncompressed.join("")
+            }
         },
-        decompress(number){
-            let charCodeArray = number.match(/.{1,3}/g)
+        decompress(numberInString){
+            // '200176311314301309260023070032001300311308311314300260003'
+            let compressed = numberInString.replaceAll("246",".").replaceAll("301243","e+").split("000")
+            // remove the last element
+            compressed.pop()
+
+            for(i = 0; i < compressed.length; i++){
+                compressed[i] = BigInt(Number(compressed[i]))
+
+            }
+            compressed = compressed.join("").match(/.{1,3}/g)
             let result = ''
-            for(i = 0; i < charCodeArray.length; i++){
-                result += String.fromCharCode(parseInt(charCodeArray[i]))
+            for(i = 0; i < compressed.length; i++){
+                result += String.fromCharCode((compressed[i]) - 200)
+
             }
             return result
         }
