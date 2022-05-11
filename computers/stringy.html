@@ -26,7 +26,8 @@
         compress(uncompressedString){
             if(uncompressedString.length < 10) return "Length must be at least 10 characters";
             let raw = [...uncompressedString]
-            raw = raw.map(char => char.charCodeAt(0)).join("")
+            raw = raw.map(char => char.charCodeAt(0) + 200).join("")
+            console.log(raw)
             raw = raw.match(/.{1,255}/g)
             raw = raw.map(string => Number(string).toString())
             raw = raw.map(string => string.replaceAll(".",""))
@@ -37,7 +38,29 @@
 
         },
         decompress(compressedString){
+            // '7k2f2jitsrw!72!87pcyrvwt34!35'
+            let raw = compressedString.split("!")
+            raw = raw.map(string => Number(parseInt(string, 36)).toString())
 
+            let longnums = []
+            let ecodes = []
+            for(i = 0; i < raw.length; i++){
+                if(i % 2 == 0){
+                    longnums.push(raw[i])
+                }else{
+                    ecodes.push(raw[i])
+                }
+            }
+            
+            result = [];
+            for(i = 0; i < longnums.length; i++){
+                result.push(longnums[i] + "e+" + ecodes[i])
+            }
+            result = result.map(string => string.replaceAll("undefined","0"))
+            result = result.map(string => BigInt(Number(string)))
+            result = result.join("").match(/.{1,3}/g)
+            result = result.map(string => Number(string))
+            return result;
         }
     }
 </script>
