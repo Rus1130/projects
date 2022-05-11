@@ -27,26 +27,21 @@
         checkUnicode(unicode){
             return unicode >= 0 && unicode <= 31 && unicode >= 127 && unicode <= 159
         },
-        compress(string){
-            let raw = [...string]
-            raw = raw.map(char => char.charCodeAt(0) + 300).join("")
+        compress(uncompressedString){
+            // '1smnjuuwx8a!143k1k9b2r6'
+            let raw = [...uncompressedString]
+            raw = raw.map(char => char.charCodeAt(0)).join("")
             raw = raw.match(/.{1,308}/g)
-            raw = raw.map(string => Number(string))
-
-            let result = []
-            for(i = 0; i < raw.length; i++){
-                result.push(Math.log(Math.log(raw[i])))
-            }
-
-            result = result.map(number => Number(number.toString().replaceAll(".","")).toString(36)).join("!")
+            let result = raw.map(string => Number(Math.log(Math.log(Number(string))).toString().replaceAll(".", "")).toString(36)).join("!")
             return result
 
         },
-        decompress(numberInString){
-            // '6gmoqifsg6!1cl7bmt1a1v'
-            let raw = numberInString.split("!")
-            raw = raw.map(string => parseInt(string, 36))
-            return raw
+        decompress(compressedString){
+            let raw = compressedString.split("!")
+            raw = raw.map(string => Number(parseInt(string, 36)).toString())
+            raw = raw.map(string => string.slice(0,1) + "." + string.slice(1))
+            return raw;
+
         }
     }
 </script>
