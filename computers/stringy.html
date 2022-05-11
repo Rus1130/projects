@@ -23,24 +23,20 @@
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
     */
     const stringy = {
-        decimalPositions: {1: 66, 2: 67, 3: 68, 4: 69, 5: 70, 6: 71, 7: 72, 8: 73, 9: 74, 10: 75, 11: 76, 12: 77, 13: 78, 14: 79, 15: 80, 16: 81, 17: 82, 18: 83, 19: 84, 20: 85, 21: 86, 22: 87, 23: 88},
-        checkUnicode(unicode){
-            return unicode >= 0 && unicode <= 31 && unicode >= 127 && unicode <= 159
-        },
         compress(uncompressedString){
-            // '1smnjuuwx8a!143k1k9b2r6'
+            if(uncompressedString.length < 10) return "Length must be at least 10 characters";
             let raw = [...uncompressedString]
             raw = raw.map(char => char.charCodeAt(0)).join("")
-            raw = raw.match(/.{1,308}/g)
-            let result = raw.map(string => Number(Math.log(Math.log(Number(string))).toString().replaceAll(".", "")).toString(36)).join("!")
-            return result
+            raw = raw.match(/.{1,255}/g)
+            raw = raw.map(string => Number(string).toString())
+            raw = raw.map(string => string.replaceAll(".",""))
+            raw = raw.join("!").split(/e\+|!/g)
+            raw = raw.map(string => Number(string).toString(36)).join("!")
+
+            return raw;
 
         },
         decompress(compressedString){
-            let raw = compressedString.split("!")
-            raw = raw.map(string => Number(parseInt(string, 36)).toString())
-            raw = raw.map(string => string.slice(0,1) + "." + string.slice(1))
-            return raw;
 
         }
     }
