@@ -26,12 +26,14 @@
         compress(uncompressedString){
             let raw = [...uncompressedString]
             raw = raw.map(s => s.charCodeAt(0) + 200)
-            raw = raw.join("08080")
+            raw = raw.join("191")
+            console.log(raw)
             raw = raw.match(/.{1,308}/g)
             raw = raw.map(n => parseInt(n).toString())
             raw = raw.join("e+").split("e+")
-            raw = raw.map(s => Number(s).toString(36).replaceAll(".","").replaceAll("8j","%"))
-            return raw
+            raw = raw.map(s => Number(s).toString(36).replaceAll(".","").replaceAll("8j","$"))
+            let result = raw.join("!")
+            return result
 
         },
         decompress(compressedString){
