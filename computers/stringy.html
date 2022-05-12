@@ -26,17 +26,30 @@
         compress(uncompressedString){
             let raw = [...uncompressedString]
             raw = raw.map(s => s.charCodeAt(0) + 200)
-            raw = raw.join("191")
-            console.log(raw)
-            raw = raw.match(/.{1,308}/g)
-            raw = raw.map(n => parseInt(n).toString())
-            raw = raw.join("e+").split("e+")
-            raw = raw.map(s => Number(s).toString(36).replaceAll(".","").replaceAll("8j","$"))
-            let result = raw.join("!")
+            raw = raw.join("").match(/.{1,243}/g)
+            raw = raw.map(s => Number(s).toString().replaceAll(".",""))
+            
+            let result = raw.map(s => s.replaceAll("e+"," ")).join(" ").split(" ")
+            console.log(result)
+            result = result.map(s => Number(s).toString(36))
+            result = result.map(s => {
+                if(result.indexOf(s) % 2 == 0){
+                    return s + ':'
+                } else {
+                    if(result.indexOf(s) != result.length - 1){
+                        return s + '!'
+                    } else {
+                        return s
+                    }
+                }
+            }).join("")
+
             return result
 
         },
         decompress(compressedString){
+            // '4ti5zfdo0uq:6q!jm4g20rh5u:3h'
+
 
         }
     }
