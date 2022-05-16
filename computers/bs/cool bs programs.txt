@@ -2,4 +2,6 @@ Crawler:
 
 ++++++++++[>+++++<-]>[[>+<-]>[>+<-]>]
 
-Crawler with Debris:
+Truth-Machine (WIP)
+
+```,>>+++++++[<+++++++>-]<<

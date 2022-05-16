@@ -348,10 +348,10 @@ async function parse(instructions){
             }
 
             // program speed
-            if(char === "`"){
+            if(char === "~"){
                 speed += 50;
             }
-            if(char === "~"){
+            if(char === "`"){
                 if(speed < 0){
                     outputArray.push(`\nERROR: Speed cannot be less than 0. (char ${i+1})`);
                     outputArray.push(`\n${instructions}`)
