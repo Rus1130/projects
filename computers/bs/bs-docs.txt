@@ -7,6 +7,7 @@
 . - output cell
 , - input cell (one character only)
 
+
 @ - speed up program time 
 _ - slow down program time
 
@@ -16,10 +17,10 @@ _ - slow down program time
 = … $ - if cell is 0, run …
 ! … $ - if cell is not 0, run …
 
-(value) … $ - if cell is value, run …
-{value} … $ - if cell is not value, run …
+=value? … $ - if cell is value, run …
+!value? … $ - if cell is not value, run …
 
-\0-3 - runs a bullshit program
+\0-4 - runs a bullshit program
 
 W - controls pointer wrapping
 

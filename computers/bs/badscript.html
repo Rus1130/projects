@@ -171,7 +171,8 @@ const premadeBSPrograms = {
     "0" : "@@@@W++++[>++++<-]>[[>+<-]>[>+<-]>]", // Crawler
     "1" : "@@@@,>>+++++++[<+++++++>-]<<[->-<]>=+[.]$!>.$", // Truth-Machine
     "2" : "@@@@tU++[>+++++[>+++++++<-]<-]>>++.<<++++++++++[>+++<-]>[<+>>+<-]>-.+++++++..+++.<<++++++++++++++.------------.>>++++++++.--------.+++.------.--------.<<+.", // Hello, world!
-    "3" : "@@@@tU+++++[>+++<-]>[>++++>++<<-]>+++++++>+++>++++++++++[<<.>.-.+>-]" // C!
+    "3" : "@@@@tU+++++[>+++<-]>[>++++>++<<-]>+++++++>+++>++++++++++[<<.>.-.+>-]", // C!
+    "4" : "@@@@,=49?>+[.]$>." // Faster Truth-Machine
 }
 
 async function parse(instructions){
@@ -182,73 +183,55 @@ async function parse(instructions){
         for(i = -1; i < instructions.length; i++){
             let char = instructions[i];
 
-            let comparisonValue = ''
-
-            for(j = i + 1; j < instructions.length; j++){
-                if(/\d/.test(instructions[j])){
-                    comparisonValue += instructions[j]
-                } else if(instructions[j] === "?"){
-                    j = instructions.length
-                }
-            }
-
             // pointer movement
             if(char === ">"){
-                if(cellValues[pointer - 1] == parseInt(comparisonValue) || comparisonValue == ''){
-                    pointer++;
-                    if(!validCell(pointer)){
-                        if(pointerWrap == false){
-                            pointer = cellAmount;
-                            outputArray.push(`\nERROR: Pointer out of bounds. (char ${i+1})`);
-                            outputArray.push(`\n${instructions}`)
-                            outputArray.push(`\n${repeat(" ", i)}^`);
-                            i = instructions.length;
-                        } else {
-                            pointer = 1;
-                        }
+                pointer++;
+                if(!validCell(pointer)){
+                    if(pointerWrap == false){
+                        pointer = cellAmount;
+                        outputArray.push(`\nERROR: Pointer out of bounds. (char ${i+1})`);
+                        outputArray.push(`\n${instructions}`)
+                        outputArray.push(`\n${repeat(" ", i)}^`);
+                        i = instructions.length;
+                    } else {
+                        pointer = 1;
                     }
                 }
             }
             if(char === "<"){
-                if(cellValues[pointer - 1] == parseInt(comparisonValue) || comparisonValue == ''){
-                    pointer--;
-                    if(!validCell(pointer)){
-                        if(pointerWrap == false){
-                            pointer = 1;
-                            outputArray.push(`\nERROR: Pointer out of bounds. (char ${i+1})`);
-                            outputArray.push(`\n${instructions}`)
-                            outputArray.push(`\n${repeat(" ", i)}^`);
-                            i = instructions.length;
-                        } else {
-                            pointer = cellAmount;
-                        }
+                pointer--;
+                if(!validCell(pointer)){
+                    if(pointerWrap == false){
+                        pointer = 1;
+                        outputArray.push(`\nERROR: Pointer out of bounds. (char ${i+1})`);
+                        outputArray.push(`\n${instructions}`)
+                        outputArray.push(`\n${repeat(" ", i)}^`);
+                        i = instructions.length;
+                    } else {
+                        pointer = cellAmount;
                     }
                 }
             }
 
             // incrementing and decrementing
             if(char === "+"){
-                if(cellValues[pointer - 1] == parseInt(comparisonValue) || comparisonValue == ''){
-                    if(!validCellValue(cellValues[pointer - 1])){
-                        outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
-                        outputArray.push(`\n${instructions}`)
-                        outputArray.push(`\n${repeat(" ", i)}^`);
-                        i = instructions.length;
-                    } else {
-                        cellValues[pointer - 1]++;
-                    }
+                if(!validCellValue(cellValues[pointer - 1])){
+                    outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    cellValues[pointer - 1]++;
                 }
             }
             if(char === "-"){
-                if(cellValues[pointer - 1] == parseInt(comparisonValue) || comparisonValue == ''){
-                    if(!validCellValue(cellValues[pointer - 1])){
-                        outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
-                        outputArray.push(`\n${instructions}`)
-                        outputArray.push(`\n${repeat(" ", i)}^`);
-                        i = instructions.length;
-                    } else {
-                        cellValues[pointer - 1]--;
-                    }
+                if(!validCellValue(cellValues[pointer - 1])){
+                    outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    cellValues[pointer - 1]--;
                 }
             }
             // io
@@ -349,25 +332,42 @@ async function parse(instructions){
             }
 
             // conditionals
-            if(char === "=" || char === "!" || char === "(" || char === "{"){
-                let condStop = instructions.indexOf("$", i)
-                if(condStop == -1){
+            if(char === "=" || char === "!"){
+                let conditionalEnd = instructions.indexOf("$", i)
+                if(conditionalEnd == -1){
                     outputArray.push(`\nERROR: Matching '$' expected. (char ${i+1})`);
                     outputArray.push(`\n${instructions}`)
                     outputArray.push(`\n${repeat(" ", i)}^`);
                     i = instructions.length;
                 } else {
-                    switch(char){
-                        case "=":
-                            if(cellValues[pointer - 1] !== 0){
-                                i = condStop
-                            }
-                        break;
-                        case "!":
-                            if(cellValues[pointer - 1] === 0){
-                                i = condStop
-                            }
-                        break;
+                    let questionMark = instructions.indexOf("?", i)
+                    let optionalValue = instructions.substring(i + 1, questionMark)
+                    if(questionMark === -1){
+                        switch(char){
+                            case "=":
+                                if(cellValues[pointer - 1] !== 0){
+                                    i = conditionalEnd
+                                }
+                            break;
+                            case "!":
+                                if(cellValues[pointer - 1] === 0){
+                                    i = conditionalEnd
+                                }
+                            break;
+                        }
+                    } else {
+                        switch(char){
+                            case "=":
+                                if(cellValues[pointer - 1] !== parseInt(optionalValue)){
+                                    i = conditionalEnd
+                                }
+                            break;
+                            case "!":
+                                if(cellValues[pointer - 1] === parseInt(optionalValue)){
+                                    i = conditionalEnd
+                                }
+                            break;
+                        }
                     }
                 }
             }
