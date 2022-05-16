@@ -171,7 +171,7 @@ function timeout(ms) {
 let running = false;
 const premadeBSPrograms = {
     "0" : "@@@@W++++[>++++<-]>[[>+<-]>[>+<-]>] Program##sp##Name:##sp##Crawler",
-    "1" : ";[.]. Program##sp##Name:##sp##Truth-Machine",
+    "1" : ";|[.]. Program##sp##Name:##sp##Truth-Machine",
     "2" : "@@@@tU++[>+++++[>+++++++<-]<-]>>++.<<++++++++++[>+++<-]>[<+>>+<-]>-.+++++++..+++.<<++++++++++++++.------------.>>++++++++.--------.+++.------.--------.<<+. Program##sp##Name:##sp##Hello,##sp##world!",
     "3" : "@@@@tU+++++[>+++<-]>[>++++>++<<-]>+++++++>+++>++++++++++[<<.>.-.+>-] Program##sp##Name:##sp##C!",
     "4" : "@@@@;>;>,=43?<<a.$=45?<<s.$=42?<<m.$=47?<<d.$=37?<<r.$ Program##sp##Name:##sp##Integer##sp##Calculator##nl##Order:##sp##Num1##sp##Num2##sp##Operator##sp##(+,-,*,/,%)"
@@ -419,7 +419,7 @@ async function parse(instructions){
             }
             // ==========================================================
 
-            // negative check command ===================================
+            // modified absolute value command ==========================
             if(char === "|"){
                 if(cellValues[pointer - 1] <= 0){
                     cellValues[pointer - 1] = 0;
