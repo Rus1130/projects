@@ -21,7 +21,7 @@ conditional statements
 = … $ - if cell is 0, run …
 ! … $ - if cell is not 0, run …
 
-\0-1 - runs a bullshit program
+\0-2 - runs a bullshit program
 
 use typesets to change the character set
     tD - Decimal
@@ -29,34 +29,3 @@ use typesets to change the character set
     tO - Octal
     tX - Hexadecimal
     tU - Unicode
-
-
-
-
-===================== EXAMPLES =====================
-
-
-
-
-
-
-{symbol} = type (>, <, <+, etc.)
-
-one product:
-
-factor1{+}[>factor2{+}<-]
-+++[>+++++<-]
-
-= 3 * 5
-
-cells needed: 2
-
-array of products:
-
-arrayLength+1{>}factor1{+}[<factor2{+}>-]<[arrayLength{<+}arrayLength{>}-]
->>>>>+++[<+++++>-]<[<+<+<+<+>>>>-]
-
-OR
-
-factor1{+}[>factor2{+}<-]>[arrayLength{>+}arrayLength{<}-]
-+++[>+++++<-]>[>+>+>+>+<<<<-]
