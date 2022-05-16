@@ -11,8 +11,7 @@
         resize: none;
         font-family: monospace;
         outline: 0px;
-        background-color: transparent;
-        color: #CCCCCC;
+        color: black;
     }
 
     .grid {
@@ -41,12 +40,6 @@
         height: 50px;
         font-size: 20px;
     }
-    #syntax-highlighter {
-        font-size: 10pt;
-        padding-left: 3px;
-        padding-top: 3px;
-        color: black;
-    }
 
 </style>
 <head>
@@ -60,12 +53,11 @@
     <div id="grid" class="grid">
 
     </div>
-    <span style="font-size: 19px">Input:</span>
+    <span style="font-size: 19px">Code:</span>
     <div>
-        <textarea cols="80" rows="6" maxlength="456" spellcheck="false" id="input" style="width: 565px; position: absolute; background-color: transparent; color: transparent; caret-color: black;"></textarea>
-        <pre><code id="syntax-highlighter" style="font-family: monospace; position: absolute; width: 565px; height: 100px; z-index: -1;"></code></pre>
+        <textarea cols="77" rows="6" spellcheck="false" id="input" style="width: 565px;"></textarea>
     </div>
-    <br><br><br>&nbsp;<br><br>
+    <br>
     <span style="font-size: 19px">Output:<br></span>
     <textarea cols="77" rows="14" id="output" readonly style="width: 565px; color: black;"></textarea>
     <br>
@@ -77,7 +69,6 @@
 const display = document.getElementById('grid');
 const input = document.getElementById('input');
 const output = document.getElementById('output');
-const syntaxHighlighter = document.getElementById("syntax-highlighter")
 
 let pointer = 1;
 
@@ -113,7 +104,7 @@ function validCell(cellNumber){
 }
 
 function validCellValue(value){
-    return value >= 0 && value <= 65536;
+    return value >= -65536 && value <= 65536;
 }
 
 function repeat(value, times){
@@ -180,8 +171,9 @@ function timeout(ms) {
 let running = false;
 
 async function parse(instructions){
-    if(running == false){
-        running = true;
+    let speed = 100;
+    running = true;
+    if(running == true){
         for(i = -1; i < instructions.length; i++){
             let char = instructions[i];
 
@@ -194,6 +186,8 @@ async function parse(instructions){
                     j = instructions.length
                 }
             }
+
+            // pointer movement
             if(char === ">"){
                 if(cellValues[pointer - 1] == parseInt(comparisonValue) || comparisonValue == ''){
                     pointer++;
@@ -218,6 +212,8 @@ async function parse(instructions){
                     }
                 }
             }
+
+            // incrementing and decrementing
             if(char === "+"){
                 if(cellValues[pointer - 1] == parseInt(comparisonValue) || comparisonValue == ''){
                     if(!validCellValue(cellValues[pointer - 1])){
@@ -227,6 +223,20 @@ async function parse(instructions){
                         i = instructions.length;
                     } else {
                         cellValues[pointer - 1]++;
+                    }
+                }
+            }
+            if(char === ":"){
+                if(cellValues[pointer - 1] == parseInt(comparisonValue) || comparisonValue == ''){
+                    if(cellValues[pointer - 1] == 0){
+                        if(!validCellValue(cellValues[pointer - 1])){
+                            outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
+                            outputArray.push(`\n${instructions}`)
+                            outputArray.push(`\n${repeat(" ", i)}^`);
+                            i = instructions.length;
+                        } else {
+                            cellValues[pointer - 1]++;
+                        }
                     }
                 }
             }
@@ -242,11 +252,38 @@ async function parse(instructions){
                     }
                 }
             }
+            if(char === "_"){
+                if(cellValues[pointer - 1] == parseInt(comparisonValue) || comparisonValue == ''){
+                    if(cellValues[pointer - 1] == 0){
+                        if(!validCellValue(cellValues[pointer - 1])){
+                            outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
+                            outputArray.push(`\n${instructions}`)
+                            outputArray.push(`\n${repeat(" ", i)}^`);
+                            i = instructions.length;
+                        } else {
+                            cellValues[pointer - 1]--;
+                        }
+                    }
+                }
+            }
+            // io
             if(char === "."){
                 if(currentTypeset == "tU"){
                     outputArray.push(convertUni(cellValues[pointer - 1]))
                 } else {
                     outputArray.push((cellValues[pointer - 1]).toString(numberTypesets[typesets.indexOf(currentTypeset)]));
+                }
+            }
+            if(char === ","){
+                let inputChar = prompt("Enter a character: ");
+                // check if input is valid
+                if(inputChar.length > 1){
+                    outputArray.push(`\nERROR: Invalid input. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
+                    i = instructions.length;
+                } else {
+                    cellValues[pointer - 1] = inputChar.charCodeAt(0);
                 }
             }
             if(char === "t"){
@@ -261,8 +298,9 @@ async function parse(instructions){
                     i++;
                 }
             }
+
+            // loops
             if(char === "["){
-                
                 let matchingIndex = instructions.indexOf("]", i);
                 if(matchingIndex == -1){
                     outputArray.push(`\nERROR: Matching closed bracket expected. (char ${i+1})`);
@@ -308,22 +346,32 @@ async function parse(instructions){
                     };
                 }
             }
-            if(char === "?"){
-                if(!/[0-9]/g.test(instructions[i-1])){
-                    outputArray.push(`\nERROR: Unexpected comparison operator. (char ${i+1})`);
+
+            // program speed
+            if(char === "`"){
+                speed += 50;
+            }
+            if(char === "~"){
+                if(speed < 0){
+                    outputArray.push(`\nERROR: Speed cannot be less than 0. (char ${i+1})`);
                     outputArray.push(`\n${instructions}`)
                     outputArray.push(`\n${repeat(" ", i)}^`);
                     i = instructions.length;
+                } else {
+                    speed -= 50;
                 }
             }
 
-
             updateCells()
             output.value = outputArray.join("").trim();
-            await this.timeout(10)
+
+            if( i == instructions.length - 1){
+                running = false;
+            }
+
+            await this.timeout(speed)
         }
     }
-    running = false;
 }
 
 function run(struct){
@@ -331,130 +379,5 @@ function run(struct){
     parse(struct)
     updateCells()
 }
-
-
-$("textarea").keydown(function(e){
-    // Enter pressed
-    if (e.keyCode == 13)
-    {
-        //method to prevent from default behaviour
-        e.preventDefault();
-    }
-});
-</script>
-<style>
-    .value {
-        color:#84ACFC;
-    }
-    .int {
-        color:#EE96D7;
-    }
-    .loop {
-        color: #F7A869;
-    }
-    .endchar {
-        color: #AEBBCC;
-    }
-    .typeset {
-        color: #33C89F;
-    }
-    .out {
-        color: #84ACFC;
-    }
-    .shift {
-        color: #d16969;
-    }
-    .error {
-        color: #FF0000;
-    }
-    .other {
-        color: #95C7C8;
-    }
-    .comparison {
-        color: #fdcf78;;
-    }
-
-
-    .syntax-colors {
-        color: #C3A6FE;
-        color: #fdcf78;
-        color: #e2bad6;
-        color: #80CBC4;
-        color: #FF839C;
-    }
-</style>
-<script>
-
-var highlight = window.csHighlight;
-
-// 81, 486
-let syntaxHighlighterArray;
-
-setInterval(() => {
-
-       syntaxHighlighter.innerHTML = input.value.replace(/.{80}/g, "$&" + "<br>")
-
-
-
-    highlight({
-        patterns:
-        [
-            {
-                name: "shift",
-                match: /^(<|>)/
-            },
-            {
-                name: "int",
-                match: /^(\d)/
-            },
-            {
-                name: "typeset",
-                match: /^(t[DBXOU])/
-            },
-            {
-                name: "loop",
-                match: /^(\[|\])/
-            },
-            {
-                name: "out",
-                match: /^(\.)/
-            },
-            {
-                name: "value",
-                match: /^(\+|-)/
-            },
-            {
-                name: "error",
-                match: /^([^\d\+\-\[\]\;\:\.<>\?])/
-            },
-            {
-                name: "error",
-                match: /^([^t][DBXOU])/
-            },
-            {
-                name: "comparison",
-                match: /^(\?)/
-            }
-        ],
-    })
-}, 1)
-    
-
-// ++++++++++
-//     [
-//         >+++++<-
-//     ]
-// >
-//     [
-//         [
-//             >+<-
-//         ]
-//     >
-//         [
-//             >+<-
-//         ]
-//     >
-//     ]
-
 
 </script>

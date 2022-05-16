@@ -2,15 +2,21 @@
 < - shift pointer left
 
 + - incrememnt cell value
+: - increment if cell is zero
+
 - - decrement cell value
+_ = decrement if cell is zero
 
 . - output cell value
+, - input cell value (one character only)
+
+` - speed up program time 
+~ - slow down program time
 
 [ loop ] - if cell value at pointer is not 0, loop
     common loop +++[>+++++<-]
 
-)value - shift pointer right if cellValue equals value
-(value - shift pointer left if cellValue equals value
+
 
 use typesets to change the character set
     tD - Decimal
@@ -20,25 +26,10 @@ use typesets to change the character set
     tU - Unicode
 
 
-HOW TO INDENT BS
-
-++++++++
-    [
-        >++<-
-    ]
->+>+
-    [
-        >+++++<-+>+++
-        [
-            >++++<--->>>
-            [
-                >+<-
-            ]
-        ]
-    ]
 
 
-    69 120 97 109 112 109 101 46
+===================== EXAMPLES =====================
+
 
 
 
@@ -49,10 +40,7 @@ MULTIPLICATION
 one product:
 
 factor1{+}[>factor2{+}<-]
-+++
-    [
-        >+++++<-
-    ]
++++[>+++++<-]
 
 = 3 * 5
 
@@ -61,27 +49,9 @@ cells needed: 2
 array of products:
 
 arrayLength+1{>}factor1{+}[<factor2{+}>-]<[arrayLength{<+}arrayLength{>}-]
->>>>>+++
-    [
-        <+++++>-
-    ]
-<
-    [
-        <+<+<+<+>>>>-
-    ]
+>>>>>+++[<+++++>-]<[<+<+<+<+>>>>-]
 
 OR
 
 factor1{+}[>factor2{+}<-]>[arrayLength{>+}arrayLength{<}-]
-+++
-    [
-        >+++++<-
-    ]
->
-    [
-        >+>+>+>+<<<<-
-    ]
-
-
-
-https://github.com/saeed-nazari/vsc-theme-adonis/blob/main/themes/Adonis%20Theme%20Gunmetal-color-theme.json#L509
++++[>+++++<-]>[>+>+>+>+<<<<-]
