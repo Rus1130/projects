@@ -16,7 +16,10 @@ _ = decrement if cell is zero
 [ loop ] - if cell value at pointer is not 0, loop
     common loop +++[>+++++<-]
 
+conditionals
 
+{ - if cell is 0, goto next }
+( - if cell is not 0, goto next )
 
 use typesets to change the character set
     tD - Decimal

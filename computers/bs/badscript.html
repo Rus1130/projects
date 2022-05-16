@@ -171,7 +171,7 @@ function timeout(ms) {
 let running = false;
 
 async function parse(instructions){
-    let speed = 100;
+    let speed = 150;
     running = true;
     if(running == true){
         for(i = -1; i < instructions.length; i++){
@@ -277,10 +277,11 @@ async function parse(instructions){
             if(char === ","){
                 let inputChar = prompt("Enter a character: ");
                 // check if input is valid
-                if(inputChar.length > 1){
+                console.log(inputChar)
+                if(!inputChar){
                     outputArray.push(`\nERROR: Invalid input. (char ${i+1})`);
                     outputArray.push(`\n${instructions}`)
-                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
+                    outputArray.push(`\n${repeat(" ", i)}^`);
                     i = instructions.length;
                 } else {
                     cellValues[pointer - 1] = inputChar.charCodeAt(0);
@@ -359,6 +360,21 @@ async function parse(instructions){
                     i = instructions.length;
                 } else {
                     speed -= 50;
+                }
+            }
+
+            // portals
+            if(char === "("){
+                let portalStop = instructions.indexOf(")", i)
+                if(portalStop == -1){
+                    outputArray.push(`\nERROR: Matching Closing Parenthesis expected. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    if(cellValues[pointer - 1] === 0) {
+                        i = portalStop;
+                    }
                 }
             }
 
