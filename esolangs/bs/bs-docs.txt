@@ -20,6 +20,8 @@ _ - slow down program time
 =value? … $ - if cell is value, run …
 !value? … $ - if cell is not value, run …
 
+B - rocket ship!
+
 | - if value positive, change to 1, if 0 or negative change to 0
 
 Arithmatic
