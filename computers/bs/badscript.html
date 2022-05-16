@@ -174,8 +174,9 @@ const premadeBSPrograms = {
     "1" : "@@@@,>>+++++++[<+++++++>-]<<[->-<]>=+[.]$!>.$ Program##sp##Name:##sp##Truth-Machine",
     "2" : "@@@@tU++[>+++++[>+++++++<-]<-]>>++.<<++++++++++[>+++<-]>[<+>>+<-]>-.+++++++..+++.<<++++++++++++++.------------.>>++++++++.--------.+++.------.--------.<<+. Program##sp##Name:##sp##Hello,##sp##world!",
     "3" : "@@@@tU+++++[>+++<-]>[>++++>++<<-]>+++++++>+++>++++++++++[<<.>.-.+>-] Program##sp##Name:##sp##C!",
-    "4" : "@@@@,=49?>+[.]$>. Program##sp##Name:##sp##Faster##sp##Truth-Machine",
-    "5" : "@@@@;>;>;=1?<<a.$=2?<<s.$=3?<<m.$=4?<<d.$=5?<<r.$ Program##sp##Name:##sp##Integer##sp##Calculator##nl##Order:##sp##Num1##sp##Num2##sp##Operator##sp##(1=+,2=-,3=*,4=/,5=%)"
+    "4" : "@@@@,=49?>+[.]$>. Program##sp##Name:##sp##Shorter##sp##Truth-Machine",
+    "5" : "@@@@;>;>;=1?<<a.$=2?<<s.$=3?<<m.$=4?<<d.$=5?<<r.$ Program##sp##Name:##sp##Integer##sp##Calculator##nl##Order:##sp##Num1##sp##Num2##sp##Operator##sp##(1=+,2=-,3=*,4=/,5=%)",
+    "6" : ";=1?[.]$>. Program##sp##Name:##sp##Code-Golfed##sp##Truth-Machine"
 }
 
 async function parse(instructions){
@@ -261,7 +262,7 @@ async function parse(instructions){
             }
             if(char === ";"){
                 let inputVal = parseInt(prompt("Enter a value: "));
-                if(!inputVal){
+                if(!inputVal && inputVal != 0){
                     outputArray.push(`\nERROR: Invalid input. (char ${i+1})`);
                     outputArray.push(`\n${instructions}`)
                     outputArray.push(`\n${repeat(" ", i)}^`);

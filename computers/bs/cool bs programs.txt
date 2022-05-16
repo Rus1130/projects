@@ -10,8 +10,11 @@ Hello, world!:
 C!:
 @@@@tU+++++[>+++<-]>[>++++>++<<-]>+++++++>+++>++++++++++[<<.>.-.+>-]
 
-Faster Truth-Machine:
+Shorter Truth-Machine:
 @@@@,=49?>+[.]$>.
+
+Code-Golfed Truth-Machine:
+;=1?[.]$>.
 
 Integer Calculator:
 @@@@;>;>;=1?<<a.$=2?<<s.$=3?<<m.$=4?<<d.$=5?<<r.$

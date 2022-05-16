@@ -23,7 +23,7 @@ _ - slow down program time
 Arithmatic
 current cell (operator) right of current cell = outputs to current cell
 
-\0-5 - runs a bullshit program
+\0-6 - runs a bullshit program
 
 W - controls pointer wrapping
 
