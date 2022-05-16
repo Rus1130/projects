@@ -169,6 +169,11 @@ function timeout(ms) {
 }
 
 let running = false;
+const premadeBSPrograms = {
+    "0" : "````++++[>++++<-]>[[>+<-]>[>+<-]>]",
+    "1" : "````,>>+++++++[<+++++++>-]<<[->-<]>=+[.]$!-.$",
+    "2" : "````tU++[>+++++[>+++++++<-]<-]>>++.<<++++++++++[>+++<-]>[<+>>+<-]>-.+++++++..+++.<<++++++++++++++.------------.>>++++++++.--------.+++.------.--------.<<+."
+}
 
 async function parse(instructions){
     let speed = 150;
@@ -275,16 +280,16 @@ async function parse(instructions){
                 }
             }
             if(char === ","){
-                let inputChar = prompt("Enter a character: ");
+                let inputVal = prompt("Enter a value: ");
                 // check if input is valid
-                console.log(inputChar)
-                if(!inputChar){
+                console.log(inputVal)
+                if(!inputVal){
                     outputArray.push(`\nERROR: Invalid input. (char ${i+1})`);
                     outputArray.push(`\n${instructions}`)
                     outputArray.push(`\n${repeat(" ", i)}^`);
                     i = instructions.length;
                 } else {
-                    cellValues[pointer - 1] = inputChar.charCodeAt(0);
+                    cellValues[pointer - 1] = inputVal.charCodeAt(0);
                 }
             }
             if(char === "t"){
@@ -304,7 +309,7 @@ async function parse(instructions){
             if(char === "["){
                 let matchingIndex = instructions.indexOf("]", i);
                 if(matchingIndex == -1){
-                    outputArray.push(`\nERROR: Matching closed bracket expected. (char ${i+1})`);
+                    outputArray.push(`\nERROR: Matching ']' expected. (char ${i+1})`);
                     outputArray.push(`\n${instructions}`)
                     outputArray.push(`\n${repeat(" ", i + 1)}^`);
                     i = instructions.length;
@@ -335,7 +340,7 @@ async function parse(instructions){
             if(char === "]"){
                 let matchingIndex = instructions.lastIndexOf("[", i);
                 if(matchingIndex == -1){
-                    outputArray.push(`\nERROR: Matching open bracket expected. (char ${i+1})`);
+                    outputArray.push(`\nERROR: Matching '[' expected. (char ${i+1})`);
                     outputArray.push(`\n${instructions}`)
                     outputArray.push(`\n${repeat(" ", i + 1)}^`);
                     i = instructions.length;
@@ -363,18 +368,40 @@ async function parse(instructions){
                 }
             }
 
-            // portals
-            if(char === "("){
-                let portalStop = instructions.indexOf(")", i)
-                if(portalStop == -1){
-                    outputArray.push(`\nERROR: Matching Closing Parenthesis expected. (char ${i+1})`);
+            // conditionals
+            if(char === "=" || char === "!"){
+                let condStop = instructions.indexOf("$", i)
+                if(condStop == -1){
+                    outputArray.push(`\nERROR: Matching '$' expected. (char ${i+1})`);
                     outputArray.push(`\n${instructions}`)
                     outputArray.push(`\n${repeat(" ", i)}^`);
                     i = instructions.length;
                 } else {
-                    if(cellValues[pointer - 1] === 0) {
-                        i = portalStop;
+                    switch(char){
+                        case "=":
+                            if(cellValues[pointer - 1] !== 0){
+                                i = condStop
+                            }
+                            break;
+                        case "!":
+                            if(cellValues[pointer - 1] === 0){
+                                i = condStop
+                            }
+                            break;
                     }
+                }
+            }
+
+            // premade programs
+            if(char == "\\"){
+                let programID = instructions[i + 1]
+                if(!premadeBSPrograms[programID]){
+                    outputArray.push(`\nERROR: Invalid program ID. (char ${i+2})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
+                    i = instructions.length;
+                } else {
+                    input.value = premadeBSPrograms[programID];
                 }
             }
 

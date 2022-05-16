@@ -1,25 +1,27 @@
 > - shift pointer right
 < - shift pointer left
 
-+ - incrememnt cell value
++ - incrememnt cell
 : - increment if cell is zero
 
-- - decrement cell value
+- - decrement cell
 _ = decrement if cell is zero
 
-. - output cell value
-, - input cell value (one character only)
+. - output cell
+, - input cell (one character only)
 
 ` - speed up program time 
 ~ - slow down program time
 
-[ loop ] - if cell value at pointer is not 0, loop
+[ … ] - if cell at pointer is not 0, run … until cell is 0
     common loop +++[>+++++<-]
 
-conditionals
+conditional statements
 
-{ - if cell is 0, goto next }
-( - if cell is not 0, goto next )
+= … $ - if cell is 0, run …
+! … $ - if cell is not 0, run …
+
+\0-1 - runs a bullshit program
 
 use typesets to change the character set
     tD - Decimal
@@ -36,7 +38,7 @@ use typesets to change the character set
 
 
 
-MULTIPLICATION
+
 
 {symbol} = type (>, <, <+, etc.)
 
