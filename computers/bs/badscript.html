@@ -66,6 +66,7 @@
 const display = document.getElementById('grid');
 const input = document.getElementById('input');
 const output = document.getElementById('output');
+const runButton = document.getElementById('btn');
 
 let pointer = 1;
 
@@ -167,10 +168,10 @@ function timeout(ms) {
 
 let running = false;
 const premadeBSPrograms = {
-    "0" : "````W++++[>++++<-]>[[>+<-]>[>+<-]>]", // Crawler
-    "1" : "````,>>+++++++[<+++++++>-]<<[->-<]>=+[.]$!>.$", // Truth-Machine
-    "2" : "````tU++[>+++++[>+++++++<-]<-]>>++.<<++++++++++[>+++<-]>[<+>>+<-]>-.+++++++..+++.<<++++++++++++++.------------.>>++++++++.--------.+++.------.--------.<<+.", // Hello, world!
-    "3" : "````tU+++++[>+++<-]>[>++++>++<<-]>+++++++>+++>++++++++++[<<.>.-.+>-]" // C!
+    "0" : "@@@@W++++[>++++<-]>[[>+<-]>[>+<-]>]", // Crawler
+    "1" : "@@@@,>>+++++++[<+++++++>-]<<[->-<]>=+[.]$!>.$", // Truth-Machine
+    "2" : "@@@@tU++[>+++++[>+++++++<-]<-]>>++.<<++++++++++[>+++<-]>[<+>>+<-]>-.+++++++..+++.<<++++++++++++++.------------.>>++++++++.--------.+++.------.--------.<<+.", // Hello, world!
+    "3" : "@@@@tU+++++[>+++<-]>[>++++>++<<-]>+++++++>+++>++++++++++[<<.>.-.+>-]" // C!
 }
 
 async function parse(instructions){
@@ -238,20 +239,6 @@ async function parse(instructions){
                     }
                 }
             }
-            if(char === ":"){
-                if(cellValues[pointer - 1] == parseInt(comparisonValue) || comparisonValue == ''){
-                    if(cellValues[pointer - 1] == 0){
-                        if(!validCellValue(cellValues[pointer - 1])){
-                            outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
-                            outputArray.push(`\n${instructions}`)
-                            outputArray.push(`\n${repeat(" ", i)}^`);
-                            i = instructions.length;
-                        } else {
-                            cellValues[pointer - 1]++;
-                        }
-                    }
-                }
-            }
             if(char === "-"){
                 if(cellValues[pointer - 1] == parseInt(comparisonValue) || comparisonValue == ''){
                     if(!validCellValue(cellValues[pointer - 1])){
@@ -261,20 +248,6 @@ async function parse(instructions){
                         i = instructions.length;
                     } else {
                         cellValues[pointer - 1]--;
-                    }
-                }
-            }
-            if(char === "_"){
-                if(cellValues[pointer - 1] == parseInt(comparisonValue) || comparisonValue == ''){
-                    if(cellValues[pointer - 1] == 0){
-                        if(!validCellValue(cellValues[pointer - 1])){
-                            outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
-                            outputArray.push(`\n${instructions}`)
-                            outputArray.push(`\n${repeat(" ", i)}^`);
-                            i = instructions.length;
-                        } else {
-                            cellValues[pointer - 1]--;
-                        }
                     }
                 }
             }
@@ -288,15 +261,15 @@ async function parse(instructions){
             }
             if(char === ","){
                 let inputVal = prompt("Enter a value: ");
-                // check if input is valid
-                console.log(inputVal)
-                if(!inputVal){
-                    outputArray.push(`\nERROR: Invalid input. (char ${i+1})`);
-                    outputArray.push(`\n${instructions}`)
-                    outputArray.push(`\n${repeat(" ", i)}^`);
-                    i = instructions.length;
-                } else {
-                    cellValues[pointer - 1] = inputVal.charCodeAt(0);
+                if(inputVal !== "qq"){
+                    if(!inputVal){
+                        outputArray.push(`\nERROR: Invalid input. (char ${i+1})`);
+                        outputArray.push(`\n${instructions}`)
+                        outputArray.push(`\n${repeat(" ", i)}^`);
+                        i = instructions.length;
+                    } else {
+                        cellValues[pointer - 1] = inputVal.charCodeAt(0);
+                    }
                 }
             }
             if(char === "t"){
@@ -361,10 +334,10 @@ async function parse(instructions){
             }
 
             // program speed
-            if(char === "~"){
+            if(char === "_"){
                 speed += 50;
             }
-            if(char === "`"){
+            if(char === "@"){
                 if(speed < 0){
                     outputArray.push(`\nERROR: Speed cannot be less than 0. (char ${i+1})`);
                     outputArray.push(`\n${instructions}`)
@@ -376,7 +349,7 @@ async function parse(instructions){
             }
 
             // conditionals
-            if(char === "=" || char === "!"){
+            if(char === "=" || char === "!" || char === "(" || char === "{"){
                 let condStop = instructions.indexOf("$", i)
                 if(condStop == -1){
                     outputArray.push(`\nERROR: Matching '$' expected. (char ${i+1})`);
@@ -389,12 +362,12 @@ async function parse(instructions){
                             if(cellValues[pointer - 1] !== 0){
                                 i = condStop
                             }
-                            break;
+                        break;
                         case "!":
                             if(cellValues[pointer - 1] === 0){
                                 i = condStop
                             }
-                            break;
+                        break;
                     }
                 }
             }

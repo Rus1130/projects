@@ -2,22 +2,22 @@
 < - shift pointer left
 
 + - incrememnt cell
-: - increment if cell is zero
-
 - - decrement cell
-_ = decrement if cell is zero
 
 . - output cell
 , - input cell (one character only)
 
-` - speed up program time 
-~ - slow down program time
+@ - speed up program time 
+_ - slow down program time
 
 [ … ] - if cell at pointer is not 0, run … until cell is 0
     common loop +++[>+++++<-]
 
 = … $ - if cell is 0, run …
 ! … $ - if cell is not 0, run …
+
+(value) … $ - if cell is value, run …
+{value} … $ - if cell is not value, run …
 
 \0-3 - runs a bullshit program
 
