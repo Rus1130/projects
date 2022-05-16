@@ -176,6 +176,7 @@ const premadeBSPrograms = {
 async function parse(instructions){
     let speed = 150;
     running = true;
+    let pointerWrap = false;
     if(running == true){
         for(i = -1; i < instructions.length; i++){
             let char = instructions[i];
@@ -195,11 +196,15 @@ async function parse(instructions){
                 if(cellValues[pointer - 1] == parseInt(comparisonValue) || comparisonValue == ''){
                     pointer++;
                     if(!validCell(pointer)){
-                        pointer = cellAmount;
-                        outputArray.push(`\nERROR: Pointer out of bounds. (char ${i+1})`);
-                        outputArray.push(`\n${instructions}`)
-                        outputArray.push(`\n${repeat(" ", i)}^`);
-                        i = instructions.length;
+                        if(pointerWrap == false){
+                            pointer = cellAmount;
+                            outputArray.push(`\nERROR: Pointer out of bounds. (char ${i+1})`);
+                            outputArray.push(`\n${instructions}`)
+                            outputArray.push(`\n${repeat(" ", i)}^`);
+                            i = instructions.length;
+                        } else {
+                            pointer = 1;
+                        }
                     }
                 }
             }
@@ -207,11 +212,15 @@ async function parse(instructions){
                 if(cellValues[pointer - 1] == parseInt(comparisonValue) || comparisonValue == ''){
                     pointer--;
                     if(!validCell(pointer)){
-                        pointer = 1;
-                        outputArray.push(`\nERROR: Pointer out of bounds. (char ${i+1})`);
-                        outputArray.push(`\n${instructions}`)
-                        outputArray.push(`\n${repeat(" ", i)}^`);
-                        i = instructions.length;
+                        if(pointerWrap == false){
+                            pointer = 1;
+                            outputArray.push(`\nERROR: Pointer out of bounds. (char ${i+1})`);
+                            outputArray.push(`\n${instructions}`)
+                            outputArray.push(`\n${repeat(" ", i)}^`);
+                            i = instructions.length;
+                        } else {
+                            pointer = cellAmount;
+                        }
                     }
                 }
             }
@@ -401,6 +410,11 @@ async function parse(instructions){
                 } else {
                     input.value = premadeBSPrograms[programID];
                 }
+            }
+
+            // pointer wrap control
+            if(char == "W"){
+                pointerWrap = !pointerWrap;
             }
 
             updateCells()

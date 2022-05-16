@@ -16,12 +16,12 @@ _ = decrement if cell is zero
 [ … ] - if cell at pointer is not 0, run … until cell is 0
     common loop +++[>+++++<-]
 
-conditional statements
-
 = … $ - if cell is 0, run …
 ! … $ - if cell is not 0, run …
 
-\0-2 - runs a bullshit program
+\0-3 - runs a bullshit program
+
+W - controls pointer wrapping
 
 use typesets to change the character set
     tD - Decimal
