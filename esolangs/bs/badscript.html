@@ -70,8 +70,6 @@ const runButton = document.getElementById('btn');
 
 let pointer = 1;
 
-let memory = '';
-
 let cellValues = [];
 let outputArray = [];
 let errorsArray = [];
@@ -240,11 +238,17 @@ async function parse(instructions){
             // ==========================================================
 
             // io =======================================================
-            if(char === "."){
-                if(currentTypeset == "tU"){
-                    outputArray.push(convertUni(cellValues[pointer - 1]))
+            if(char === "." || char === 'p'){
+                let spaceControl = ''
+                if(char === "p"){
+                    spaceControl = " "
                 } else {
-                    outputArray.push((cellValues[pointer - 1]).toString(numberTypesets[typesets.indexOf(currentTypeset)]));
+                    spaceControl = ''
+                }
+                if(currentTypeset == "tU"){
+                    outputArray.push(convertUni(cellValues[pointer - 1]) + spaceControl)
+                } else {
+                    outputArray.push((cellValues[pointer - 1]).toString(numberTypesets[typesets.indexOf(currentTypeset)]) + spaceControl);
                 }
             }
             if(char === ","){
@@ -453,6 +457,10 @@ async function parse(instructions){
             // Rocketship! ==============================================
             if(char === "B"){
                 alert("Rocketship!")
+            }
+            // Fix ======================================================
+            if(char === "f"){
+                cellValues = cellValues.map(x => parseInt(x))
             }
             // ==========================================================
 
