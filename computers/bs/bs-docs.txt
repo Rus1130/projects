@@ -20,8 +20,17 @@ _ - slow down program time
 =value? … $ - if cell is value, run …
 !value? … $ - if cell is not value, run …
 
+| - if value positive, change to 1, if 0 or negative change to 0
+
 Arithmatic
 current cell (operator) right of current cell = outputs to current cell
+a = addition
+s = subtraction
+m = multiplication
+d = division
+r = modulus
+
+capitalize to switch to left of current cell
 
 \0-4 - runs a bullshit program
 

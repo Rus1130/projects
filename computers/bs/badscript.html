@@ -419,6 +419,14 @@ async function parse(instructions){
             }
             // ==========================================================
 
+            // negative check command ===================================
+            if(char === "|"){
+                if(cellValues[pointer - 1] <= 0){
+                    cellValues[pointer - 1] = 0;
+                } else {
+                    cellValues[pointer - 1] = 1;
+                }
+            }
             // pointer wrap control =====================================
             if(char == "W"){
                 pointerWrap = !pointerWrap;
