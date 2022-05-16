@@ -4,9 +4,9 @@
 + - incrememnt cell
 - - decrement cell
 
-. - output cell
-, - input cell (one character only)
-
+. - read to cell
+, - write to cell (one character only)
+; - literal write (number only) (an inputted 5 will write 5 to the cell)
 
 @ - speed up program time 
 _ - slow down program time
@@ -20,7 +20,10 @@ _ - slow down program time
 =value? … $ - if cell is value, run …
 !value? … $ - if cell is not value, run …
 
-\0-4 - runs a bullshit program
+Arithmatic
+current cell (operator) right of current cell = outputs to current cell
+
+\0-5 - runs a bullshit program
 
 W - controls pointer wrapping
 
