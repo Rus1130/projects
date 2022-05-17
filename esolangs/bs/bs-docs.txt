@@ -1,47 +1,54 @@
-> - shift pointer right
-< - shift pointer left
+========== TAPE COMMANDS ==========
 
-+ - incrememnt cell
-- - decrement cell
+Pointer Movement
+    > - shift pointer right
+    < - shift pointer left
 
-. - read cell
-p - read cell, but add spaces
-, - write to cell (one character only)
-; - literal write (number only) (an inputted 5 will write 5 to the cell)
+Value Handling
+    + - incrememnt cell
+    - - decrement cell
+    | - if value positive, change to 1, if 0 or negative change to 0
 
-@ - speed up program time 
-_ - slow down program time
+I/O
+    . - read cell output cell
+    f - read cell and output, but add spaces
+    , - write to current cell (one character only)
+    ; - literal write to current cell (number only) (an inputted 5 will write 5 to the cell)
 
-[ … ] - if cell at pointer is not 0, run … until cell is 0
-    common loop +++[>+++++<-]
+Program Speed
+    @ - speed up program time 
+    _ - slow down program time
 
-= … $ - if cell is 0, run …
-! … $ - if cell is not 0, run …
+Loop
+    [ … ] - if cell at pointer is not 0, run … until cell is 0
 
-=value? … $ - if cell is value, run …
-!value? … $ - if cell is not value, run …
+Conditionals
+    = … $ - if cell is 0, run …
+    ! … $ - if cell is not 0, run …
+    =value? … $ - if cell is value, run …
+    !value? … $ - if cell is not value, run …
 
-| - if value positive, change to 1, if 0 or negative change to 0
+Arithmatic (current cell (operator) right of current cell = outputs to current cell)
+    a = addition
+    s = subtraction
+    m = multiplication
+    d = division
+    r = modulus
 
-Arithmatic
-current cell (operator) right of current cell = outputs to current cell
-a = addition
-s = subtraction
-m = multiplication
-d = division
-r = modulus
-
-\0-4 - runs a bs program
-
-X - terminates program
-
-B - rocket ship!
-f - fixes any illegal values (like 1.5)
-W - controls pointer wrapping
-
-use typesets to change the character set
+Typesets
     tD - Decimal
     tB - Binary
     tO - Octal
     tX - Hexadecimal
     tU - Unicode
+
+Misc
+    µ - rocket ship!
+    F - fixes any illegal values (like 1.5)
+    W - controls pointer wrapping
+    \0-4 - runs a bs program
+    X - terminates program
+
+========== STACK COMMANDS ==========
+
+    dupe top - datastack.push(datastack[datastack.length - 1])

@@ -41,6 +41,16 @@
     .btn:hover {
         background-color: #f0f0f0;
     }
+    #stack {
+        width: 200px;
+        height: 400px;
+        border: 1px black solid;
+        position: absolute;
+        left: 816px;
+        top: 334px;
+        display: grid;
+        grid-template-rows: repeat(25, 16px);
+    }
 
 </style>
 <head>
@@ -61,6 +71,7 @@
     <br>
     <span style="font-size: 19px">Output:<br></span>
     <textarea cols="77" id="output" readonly style="width: 565px; color: black; height: 180px"></textarea>
+    <div id="stack"></div>
     <br>
     <br>
     <div class="btn" id="btn" onclick="run(input.value)">Run!</div>
@@ -71,6 +82,7 @@ const display = document.getElementById('grid');
 const input = document.getElementById('input');
 const output = document.getElementById('output');
 const runButton = document.getElementById('btn');
+const stack = document.getElementById('stack');
 
 let pointer = 1;
 
@@ -117,6 +129,8 @@ function repeat(value, times){
 
 const validMathOperatorLower = /a|s|m|d|r/g
 
+let datastack = []
+
 function loadCells(){
     for(let i = 1; i <= cellAmount; i++){
         let newValueCell = document.createElement('div');
@@ -129,15 +143,23 @@ function loadCells(){
         cellValues.push(0);
         display.appendChild(newValueCell);
     }
+    for(i = 0; i < 25; i++){
+        let newValueCell = document.createElement('div');
+        newValueCell.className = 'container';
+        newValueCell.style.fontSize = '12pt'
+        newValueCell.id = 's' + ((25 - i) - 1);
+        stack.appendChild(newValueCell);
+    }
     pointer = 1;
 }
 
 function resetCells(){
     cellValues = [];
     outputArray = [];
+    datastack = []
     currentTypeset = "tD";
     loops = []
-    for(let i = 1; i <= cellAmount; i++){
+    for(i = 1; i <= cellAmount; i++){
         cellValues.push(0);
         document.getElementById('c' + i).innerHTML = 0;
         document.getElementById("c" + i).style.backgroundColor = "beige";
@@ -145,11 +167,13 @@ function resetCells(){
             document.getElementById("c" + i).style.backgroundColor = "white";
         }
     }
+    for(i = 0; i < 25; i++){
+        document.getElementById('s' + ((25 - i) - 1)).innerHTML = '';
+    }
     pointer = 1;
 }
 
 function updateCells(){
-
     for(let i = 1; i <= cellAmount; i++){
         let cellValue = cellValues[i - 1];
         if(currentTypeset == "tU"){
@@ -162,14 +186,17 @@ function updateCells(){
             document.getElementById("c" + i).style.backgroundColor = "white";
         }
     }
+    for(j = 0; j < 25; j++){
+        document.getElementById("s" + j).innerHTML = datastack[j]
+        document.getElementById("s" + j).innerHTML = document.getElementById("s" + j).innerHTML.replaceAll("undefined","")
+    }
 }
-
 loadCells();
 
 function timeout(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
-
+datastack.un
 let running = false;
 const premadeBSPrograms = {
     "0" : "@@@@W++++[>++++<-]>[[>+<-]>[>+<-]>] Program##sp##Name:##sp##Crawler",
@@ -187,7 +214,9 @@ async function parse(instructions){
         for(i = -1; i < instructions.length; i++){
             let char = instructions[i];
 
-            // pointer movement =========================================
+            // ===================== TAPE COMMANDS ======================
+            
+            // Pointer Movement =========================================
             if(char === ">"){
                 pointer++;
                 if(!validCell(pointer)){
@@ -216,9 +245,8 @@ async function parse(instructions){
                     }
                 }
             }
-            // ==========================================================
 
-            // incrementing and decrementing ============================
+            // Value Handling ===========================================
             if(char === "+"){
                 if(!validCellValue(cellValues[pointer - 1])){
                     outputArray.push(`\nERROR: Invalid cell value. (char ${i+1})`);
@@ -239,10 +267,16 @@ async function parse(instructions){
                     cellValues[pointer - 1]--;
                 }
             }
-            // ==========================================================
+            if(char === "|"){
+                if(cellValues[pointer - 1] <= 0){
+                    cellValues[pointer - 1] = 0;
+                } else {
+                    cellValues[pointer - 1] = 1;
+                }
+            }
 
-            // io =======================================================
-            if(char === "." || char === 'p'){
+            // I/0 ======================================================
+            if(char === "." || char === 'f'){
                 let spaceControl = ''
                 if(char === "p"){
                     spaceControl = " "
@@ -277,24 +311,23 @@ async function parse(instructions){
                     cellValues[pointer - 1] = inputVal;
                 }
             }
-            // ==========================================================
 
-            // typesets =================================================
-            if(char === "t"){
-                let typeset = "t" + instructions[i + 1];
-                if(!checkTypeset(typeset)){
-                    outputArray.push(`\nERROR: Invalid typeset. (char ${i+2})`);
+            // Program Speed ============================================
+            if(char === "_"){
+                speed += 50;
+            }
+            if(char === "@"){
+                if(speed < 0){
+                    outputArray.push(`\nERROR: Speed cannot be less than 0. (char ${i+1})`);
                     outputArray.push(`\n${instructions}`)
-                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
+                    outputArray.push(`\n${repeat(" ", i)}^`);
                     i = instructions.length;
                 } else {
-                    currentTypeset = typeset;
-                    i++;
+                    speed -= 50;
                 }
             }
-            // ==========================================================
 
-            // loops=====================================================
+            // Loop =====================================================
             if(char === "["){
                 let matchingIndex = instructions.indexOf("]", i);
                 if(matchingIndex == -1){
@@ -305,7 +338,6 @@ async function parse(instructions){
                 } else {
                     let temp_i = i;
                     let ignore = 0;
-
                     while(1) {
                         temp_i++;
                         if(!validCell(temp_i)){}else{
@@ -341,25 +373,8 @@ async function parse(instructions){
                     };
                 }
             }
-            // ==========================================================
 
-            // program speed ============================================
-            if(char === "_"){
-                speed += 50;
-            }
-            if(char === "@"){
-                if(speed < 0){
-                    outputArray.push(`\nERROR: Speed cannot be less than 0. (char ${i+1})`);
-                    outputArray.push(`\n${instructions}`)
-                    outputArray.push(`\n${repeat(" ", i)}^`);
-                    i = instructions.length;
-                } else {
-                    speed -= 50;
-                }
-            }
-            // ==========================================================
-
-            // conditionals =============================================
+            // Conditionals =============================================
             if(char === "=" || char === "!"){
                 let conditionalEnd = instructions.indexOf("$", i)
                 if(conditionalEnd == -1){
@@ -399,9 +414,8 @@ async function parse(instructions){
                     }
                 }
             }
-            // ==========================================================
 
-            // math operations ==========================================
+            // Arithmatic ===============================================
             if(char === "a" || char === "s" || char === "m" || char === "d" || char === "r"){
                 let num1 = cellValues[pointer - 1];
                 let num2 = cellValues[pointer];
@@ -425,23 +439,31 @@ async function parse(instructions){
                 }
                 cellValues[pointer - 1] = result;
             }
-            // ==========================================================
 
-            // modified absolute value command ==========================
-            if(char === "|"){
-                if(cellValues[pointer - 1] <= 0){
-                    cellValues[pointer - 1] = 0;
+            // Typesets =================================================
+            if(char === "t"){
+                let typeset = "t" + instructions[i + 1];
+                if(!checkTypeset(typeset)){
+                    outputArray.push(`\nERROR: Invalid typeset. (char ${i+2})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
+                    i = instructions.length;
                 } else {
-                    cellValues[pointer - 1] = 1;
+                    currentTypeset = typeset;
+                    i++;
                 }
             }
-            // pointer wrap control =====================================
+
+            // Misc =====================================================
+            if(char === "µ"){
+                alert("Rocketship!")
+            }
+            if(char === "F"){
+                cellValues = cellValues.map(x => parseInt(x))
+            }
             if(char == "W"){
                 pointerWrap = !pointerWrap;
             }
-            // ==========================================================
-
-            // premade programs =========================================
             if(char == "\\"){
                 let programID = instructions[i + 1]
                 if(!premadeBSPrograms[programID]){
@@ -456,21 +478,11 @@ async function parse(instructions){
                     outputArray.push(programName.replaceAll("##sp##"," ").replaceAll("##nl##","\n"));
                 }
             }
-            // Program termination ======================================
             if(char === "X"){
                 i = instructions.length
             }
             // ==========================================================
 
-            // Rocketship! ==============================================
-            if(char === "B"){
-                alert("Rocketship!")
-            }
-            // Fix ======================================================
-            if(char === "f"){
-                cellValues = cellValues.map(x => parseInt(x))
-            }
-            // ==========================================================
 
             updateCells()
             output.value = outputArray.join("").trim();
