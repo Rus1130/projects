@@ -21,6 +21,7 @@ Loop
 Conditionals
     = … $ - if cell is 0, run …
     ! … $ - if cell is not 0, run …
+
     =value? … $ - if cell is value, run …
     !value? … $ - if cell is not value, run …
 
@@ -44,11 +45,15 @@ Misc
     W - controls pointer wrapping
     \0-4 - runs a bs program
     E - terminates program
+    l - set current cell to length of stack
 
 ========== STACK COMMANDS ==========
 
 Stack Manipulation
     v - push cell value to top
-    ^ - set current cell to top value and pop
+    : - set current cell to top value and pop
+    * - duplicate top value
+    @ - reverse stack order
 
-    dupe top - datastack.push(datastack[datastack.length - 1])
+Conditionals
+    # … $ - if cell equals top of stack, run …

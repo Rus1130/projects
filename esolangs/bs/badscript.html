@@ -42,11 +42,11 @@
         background-color: #f0f0f0;
     }
     #stack {
-        width: 200px;
+        width: 100px;
         height: 465px;
         border: 1px black solid;
         position: absolute;
-        left: 618px;
+        left: 868px;
         top: 318px;
         display: grid;
         grid-template-rows: repeat(31, 15px);
@@ -186,6 +186,7 @@ function updateCells(){
             document.getElementById("c" + i).style.backgroundColor = "white";
         }
     }
+    
     for(j = 0; j < stackLength; j++){
         document.getElementById("s" + j).innerHTML = datastack[j]
         document.getElementById("s" + j).innerHTML = document.getElementById("s" + j).innerHTML.replaceAll("undefined","")
@@ -318,7 +319,7 @@ async function parse(instructions){
                 if(matchingIndex == -1){
                     outputArray.push(`\nERROR: Matching ']' expected. (char ${i+1})`);
                     outputArray.push(`\n${instructions}`)
-                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
+                    outputArray.push(`\n${repeat(" ", i)}^`);
                     i = instructions.length;
                 } else {
                     let temp_i = i;
@@ -348,7 +349,7 @@ async function parse(instructions){
                 if(matchingIndex == -1){
                     outputArray.push(`\nERROR: Matching '[' expected. (char ${i+1})`);
                     outputArray.push(`\n${instructions}`)
-                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
+                    outputArray.push(`\n${repeat(" ", i)}^`);
                     i = instructions.length;
                 } else {
                     if(cellValues[pointer - 1] !== 0) {
@@ -360,13 +361,9 @@ async function parse(instructions){
             }
 
             // Conditionals =============================================
-            if(char === "=" || char === "!"){
+            if(char === "=" || char === "!" || char === "#"){
                 let conditionalEnd = instructions.indexOf("$", i)
                 if(conditionalEnd == -1){
-                    outputArray.push(`\nERROR: Matching '$' expected. (char ${i+1})`);
-                    outputArray.push(`\n${instructions}`)
-                    outputArray.push(`\n${repeat(" ", i)}^`);
-                    i = instructions.length;
                 } else {
                     let questionMark = instructions.indexOf("?", i)
                     let optionalValue = instructions.substring(i + 1, questionMark)
@@ -380,6 +377,18 @@ async function parse(instructions){
                             case "!":
                                 if(cellValues[pointer - 1] === 0){
                                     i = conditionalEnd
+                                }
+                            break;
+                            case "#":
+                                if(datastack.length === 0){
+                                    outputArray.push(`\nERROR: Stack is empty. (char ${i+1})`);
+                                    outputArray.push(`\n${instructions}`)
+                                    outputArray.push(`\n${repeat(" ", i)}^`);
+                                    i = instructions.length;
+                                } else {
+                                    if(cellValues[pointer - 1] !== datastack[datastack.length - 1]){
+                                        i = conditionalEnd
+                                    }
                                 }
                             break;
                         }
@@ -471,19 +480,45 @@ async function parse(instructions){
 
             // Stack Manipulation =======================================
             if(char === "v"){
-                datastack.push(cellValues[pointer - 1])
+                if(datastack.length > stackLength){
+                    outputArray.push(`\nERROR: Stack Overflow!. (char ${i-1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    datastack.push(cellValues[pointer - 1])
+                }
             }
-            if(char === "%"){
+            if(char === ":"){
                 if(datastack.length === 0){
                     outputArray.push(`\nERROR: Stack is empty. (char ${i+1})`);
                     outputArray.push(`\n${instructions}`)
-                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
+                    outputArray.push(`\n${repeat(" ", i)}^`);
                     i = instructions.length;
                 } else {
                     cellValues[pointer - 1] = datastack.pop()
                 }
             }
-
+            if(char === "*"){
+                if(datastack.length === 0){
+                    outputArray.push(`\nERROR: Stack is empty. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    datastack.push(datastack[datastack.length - 1])
+                }
+            }
+            if(char === "@"){
+                if(datastack.length === 0){
+                    outputArray.push(`\nERROR: Stack is empty. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    datastack = datastack.reverse()
+                }
+            }
             // ==========================================================
 
             updateCells()
