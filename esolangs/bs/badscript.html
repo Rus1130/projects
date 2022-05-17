@@ -215,7 +215,7 @@ async function parse(instructions){
             let char = instructions[i];
 
             // ===================== TAPE COMMANDS ======================
-            
+
             // Pointer Movement =========================================
             if(char === ">"){
                 pointer++;
@@ -276,9 +276,9 @@ async function parse(instructions){
             }
 
             // I/0 ======================================================
-            if(char === "." || char === 'f'){
+            if(char === "." || char === 'q'){
                 let spaceControl = ''
-                if(char === "p"){
+                if(char === "q"){
                     spaceControl = " "
                 } else {
                     spaceControl = ''
@@ -458,7 +458,7 @@ async function parse(instructions){
             if(char === "µ"){
                 alert("Rocketship!")
             }
-            if(char === "F"){
+            if(char === "x"){
                 cellValues = cellValues.map(x => parseInt(x))
             }
             if(char == "W"){
@@ -478,7 +478,7 @@ async function parse(instructions){
                     outputArray.push(programName.replaceAll("##sp##"," ").replaceAll("##nl##","\n"));
                 }
             }
-            if(char === "X"){
+            if(char === "E"){
                 i = instructions.length
             }
             // ==========================================================

@@ -11,7 +11,7 @@ Value Handling
 
 I/O
     . - read cell output cell
-    f - read cell and output, but add spaces
+    q - read cell and output, but add spaces
     , - write to current cell (one character only)
     ; - literal write to current cell (number only) (an inputted 5 will write 5 to the cell)
 
@@ -44,10 +44,10 @@ Typesets
 
 Misc
     µ - rocket ship!
-    F - fixes any illegal values (like 1.5)
+    x - fixes any illegal values (like 1.5)
     W - controls pointer wrapping
     \0-4 - runs a bs program
-    X - terminates program
+    E - terminates program
 
 ========== STACK COMMANDS ==========
 
