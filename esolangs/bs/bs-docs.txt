@@ -21,8 +21,6 @@ _ - slow down program time
 =value? … $ - if cell is value, run …
 !value? … $ - if cell is not value, run …
 
-B - rocket ship!
-
 | - if value positive, change to 1, if 0 or negative change to 0
 
 Arithmatic
@@ -33,12 +31,12 @@ m = multiplication
 d = division
 r = modulus
 
-capitalize to switch to left of current cell
+\0-4 - runs a bs program
 
-\0-4 - runs a bullshit program
+X - terminates program
 
+B - rocket ship!
 f - fixes any illegal values (like 1.5)
-
 W - controls pointer wrapping
 
 use typesets to change the character set

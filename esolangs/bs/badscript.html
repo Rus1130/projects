@@ -36,6 +36,10 @@
         width: 565px;
         height: 50px;
         font-size: 20px;
+        transition: ease 0.3s;
+    }
+    .btn:hover {
+        background-color: #f0f0f0;
     }
 
 </style>
@@ -451,6 +455,10 @@ async function parse(instructions){
                     input.value = program;
                     outputArray.push(programName.replaceAll("##sp##"," ").replaceAll("##nl##","\n"));
                 }
+            }
+            // Program termination ======================================
+            if(char === "X"){
+                i = instructions.length
             }
             // ==========================================================
 
