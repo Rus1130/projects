@@ -15,10 +15,6 @@ I/O
     , - write to current cell (one character only)
     ; - literal write to current cell (number only) (an inputted 5 will write 5 to the cell)
 
-Program Speed
-    @ - speed up program time 
-    _ - slow down program time
-
 Loop
     [ … ] - if cell at pointer is not 0, run … until cell is 0
 
@@ -50,5 +46,9 @@ Misc
     E - terminates program
 
 ========== STACK COMMANDS ==========
+
+Stack Manipulation
+    v - push cell value to top
+    ^ - set current cell to top value and pop
 
     dupe top - datastack.push(datastack[datastack.length - 1])

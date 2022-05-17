@@ -43,13 +43,13 @@
     }
     #stack {
         width: 200px;
-        height: 400px;
+        height: 465px;
         border: 1px black solid;
         position: absolute;
-        left: 816px;
-        top: 334px;
+        left: 618px;
+        top: 318px;
         display: grid;
-        grid-template-rows: repeat(25, 16px);
+        grid-template-rows: repeat(31, 15px);
     }
 
 </style>
@@ -109,7 +109,7 @@ function convertUni(unicode){
 }
 
 const cellAmount = 88;
-grid.style.setProperty('--cell-amount', cellAmount)
+const stackLength = 31;
 
 function validCell(cellNumber){
     return parseInt(cellNumber) >= 1 && parseInt(cellNumber) <= cellAmount;
@@ -143,11 +143,11 @@ function loadCells(){
         cellValues.push(0);
         display.appendChild(newValueCell);
     }
-    for(i = 0; i < 25; i++){
+    for(i = 0; i < stackLength; i++){
         let newValueCell = document.createElement('div');
         newValueCell.className = 'container';
         newValueCell.style.fontSize = '12pt'
-        newValueCell.id = 's' + ((25 - i) - 1);
+        newValueCell.id = 's' + ((stackLength - i) - 1);
         stack.appendChild(newValueCell);
     }
     pointer = 1;
@@ -167,8 +167,8 @@ function resetCells(){
             document.getElementById("c" + i).style.backgroundColor = "white";
         }
     }
-    for(i = 0; i < 25; i++){
-        document.getElementById('s' + ((25 - i) - 1)).innerHTML = '';
+    for(i = 0; i < stackLength; i++){
+        document.getElementById('s' + ((stackLength - i) - 1)).innerHTML = '';
     }
     pointer = 1;
 }
@@ -186,7 +186,7 @@ function updateCells(){
             document.getElementById("c" + i).style.backgroundColor = "white";
         }
     }
-    for(j = 0; j < 25; j++){
+    for(j = 0; j < stackLength; j++){
         document.getElementById("s" + j).innerHTML = datastack[j]
         document.getElementById("s" + j).innerHTML = document.getElementById("s" + j).innerHTML.replaceAll("undefined","")
     }
@@ -199,15 +199,15 @@ function timeout(ms) {
 datastack.un
 let running = false;
 const premadeBSPrograms = {
-    "0" : "@@@@W++++[>++++<-]>[[>+<-]>[>+<-]>] Program##sp##Name:##sp##Crawler",
+    "0" : "W++++[>++++<-]>[[>+<-]>[>+<-]>] Program##sp##Name:##sp##Crawler",
     "1" : ";|[.]. Program##sp##Name:##sp##Truth-Machine",
-    "2" : "@@@@tU++[>+++++[>+++++++<-]<-]>>++.<<++++++++++[>+++<-]>[<+>>+<-]>-.+++++++..+++.<<++++++++++++++.------------.>>++++++++.--------.+++.------.--------.<<+. Program##sp##Name:##sp##Hello,##sp##world!",
-    "3" : "@@@@tU+++++[>+++<-]>[>++++>++<<-]>+++++++>+++>++++++++++[<<.>.-.+>-] Program##sp##Name:##sp##C!",
-    "4" : "@@@@;>;>,=43?<<a.$=45?<<s.$=42?<<m.$=47?<<d.$=37?<<r.$ Program##sp##Name:##sp##Integer##sp##Calculator##nl##Order:##sp##Num1##sp##Num2##sp##Operator##sp##(+,-,*,/,%)"
+    "2" : "tU++[>+++++[>+++++++<-]<-]>>++.<<++++++++++[>+++<-]>[<+>>+<-]>-.+++++++..+++.<<++++++++++++++.------------.>>++++++++.--------.+++.------.--------.<<+. Program##sp##Name:##sp##Hello,##sp##world!",
+    "3" : "tU+++++[>+++<-]>[>++++>++<<-]>+++++++>+++>++++++++++[<<.>.-.+>-] Program##sp##Name:##sp##C!",
+    "4" : ";>;>,=43?<<a.$=45?<<s.$=42?<<m.$=47?<<d.$=37?<<r.$ Program##sp##Name:##sp##Integer##sp##Calculator##nl##Order:##sp##Num1##sp##Num2##sp##Operator##sp##(+,-,*,/,%)"
 }
 
 async function parse(instructions){
-    let speed = 150;
+    let speed = 15;
     running = true;
     let pointerWrap = false;
     if(running == true){
@@ -309,21 +309,6 @@ async function parse(instructions){
                     i = instructions.length;
                 } else {
                     cellValues[pointer - 1] = inputVal;
-                }
-            }
-
-            // Program Speed ============================================
-            if(char === "_"){
-                speed += 50;
-            }
-            if(char === "@"){
-                if(speed < 0){
-                    outputArray.push(`\nERROR: Speed cannot be less than 0. (char ${i+1})`);
-                    outputArray.push(`\n${instructions}`)
-                    outputArray.push(`\n${repeat(" ", i)}^`);
-                    i = instructions.length;
-                } else {
-                    speed -= 50;
                 }
             }
 
@@ -481,7 +466,26 @@ async function parse(instructions){
             if(char === "E"){
                 i = instructions.length
             }
+
+            // ==================== STACK COMMANDS ======================
+
+            // Stack Manipulation =======================================
+            if(char === "v"){
+                datastack.push(cellValues[pointer - 1])
+            }
+            if(char === "%"){
+                if(datastack.length === 0){
+                    outputArray.push(`\nERROR: Stack is empty. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i + 1)}^`);
+                    i = instructions.length;
+                } else {
+                    cellValues[pointer - 1] = datastack.pop()
+                }
+            }
+
             // ==========================================================
+
 
 
             updateCells()
