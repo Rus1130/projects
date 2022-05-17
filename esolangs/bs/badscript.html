@@ -204,7 +204,8 @@ const premadeBSPrograms = {
     "1" : ";|[.]. Program##sp##Name:##sp##Truth-Machine",
     "2" : "tU++[>+++++[>+++++++<-]<-]>>++.<<++++++++++[>+++<-]>[<+>>+<-]>-.+++++++..+++.<<++++++++++++++.------------.>>++++++++.--------.+++.------.--------.<<+. Program##sp##Name:##sp##Hello,##sp##world!",
     "3" : "tU+++++[>+++<-]>[>++++>++<<-]>+++++++>+++>++++++++++[<<.>.-.+>-] Program##sp##Name:##sp##C!",
-    "4" : ";>;>,=43?<<a.$=45?<<s.$=42?<<m.$=47?<<d.$=37?<<r.$ Program##sp##Name:##sp##Integer##sp##Calculator##nl##Order:##sp##Num1##sp##Num2##sp##Operator##sp##(+,-,*,/,%)"
+    "4" : ";>;>,=43?<<a.$=45?<<s.$=42?<<m.$=47?<<d.$=37?<<r.$ Program##sp##Name:##sp##Integer##sp##Calculator##nl##Order:##sp##Num1##sp##Num2##sp##Operator##sp##(+,-,*,/,%)",
+    "5" : ";[v-]>>:-<<:>>l[<:<m>>-]v<:<. Program##sp##Name:##sp##Factorial##sp##Calculator##sp##(max##sp##value##sp##=##sp##31)"
 }
 
 async function parse(instructions){
@@ -359,6 +360,41 @@ async function parse(instructions){
                     };
                 }
             }
+            // unconditional loop
+            if(char === "{"){
+                let matchingIndex = instructions.indexOf("}", i);
+                if(matchingIndex == -1){
+                    outputArray.push(`\nERROR: Matching '}' expected. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    let temp_i = i;
+                    while(1) {
+                        temp_i++;
+                        if(!validCell(temp_i)){}else{
+                            if(instructions[temp_i] === "{") {
+                                loops[temp_i] = i
+                            }
+                            if(instructions[temp_i] === "}") {
+                                loops[temp_i] = i
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if(char === "}"){
+                let matchingIndex = instructions.lastIndexOf("{", i);
+                if(matchingIndex == -1){
+                    outputArray.push(`\nERROR: Matching '{' expected. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    i = loops[i]
+                }
+            }
 
             // Conditionals =============================================
             if(char === "=" || char === "!" || char === "#"){
@@ -386,7 +422,7 @@ async function parse(instructions){
                                     outputArray.push(`\n${repeat(" ", i)}^`);
                                     i = instructions.length;
                                 } else {
-                                    if(cellValues[pointer - 1] !== datastack[datastack.length - 1]){
+                                    if(datastack[datastack.length - 1] !== 0){
                                         i = conditionalEnd
                                     }
                                 }
@@ -403,6 +439,11 @@ async function parse(instructions){
                                 if(cellValues[pointer - 1] === parseInt(optionalValue)){
                                     i = conditionalEnd
                                 }
+                            break;
+                            case "#":
+                                    if(datastack[datastack.length - 1] !== parseInt(optionalValue)){
+                                        i = conditionalEnd
+                                    }
                             break;
                         }
                     }
@@ -475,18 +516,22 @@ async function parse(instructions){
             if(char === "E"){
                 i = instructions.length
             }
+            if(char === "l"){
+                cellValues[pointer - 1] = datastack.length
+            }
 
             // ==================== STACK COMMANDS ======================
 
             // Stack Manipulation =======================================
-            if(char === "v"){
-                if(datastack.length > stackLength){
+            if(char === "v" || char === "V"){
+                if(datastack.length + 1 > stackLength){
                     outputArray.push(`\nERROR: Stack Overflow!. (char ${i-1})`);
                     outputArray.push(`\n${instructions}`)
                     outputArray.push(`\n${repeat(" ", i)}^`);
                     i = instructions.length;
                 } else {
                     datastack.push(cellValues[pointer - 1])
+                    if(char === "V") cellValues[pointer - 1] = 0
                 }
             }
             if(char === ":"){
@@ -517,6 +562,16 @@ async function parse(instructions){
                     i = instructions.length;
                 } else {
                     datastack = datastack.reverse()
+                }
+            }
+            if(char === "p"){
+                if(datastack.length === 0){
+                    outputArray.push(`\nERROR: Stack is empty. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    datastack.pop()
                 }
             }
             // ==========================================================

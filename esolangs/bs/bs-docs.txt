@@ -16,7 +16,8 @@ I/O
     ; - literal write to current cell (number only) (an inputted 5 will write 5 to the cell)
 
 Loop
-    [ … ] - if cell at pointer is not 0, run … until cell is 0
+    [ … ] - conditional loop; run … until cell is 0
+    { … } - unconditional loop; run … indefinitely
 
 Conditionals
     = … $ - if cell is 0, run …
@@ -50,10 +51,14 @@ Misc
 ========== STACK COMMANDS ==========
 
 Stack Manipulation
-    v - push cell value to top
-    : - set current cell to top value and pop
-    * - duplicate top value
+    v - push cell value to stack
+    V - push cell value to stack and set cell to 0
+    : - set current cell to top and pop
+    p - pop
+    * - duplicate top
     @ - reverse stack order
-
+    
 Conditionals
-    # … $ - if cell equals top of stack, run …
+    # … $ - if top equals 0, run …
+    #value? … $ - if top equals value, run …
+
