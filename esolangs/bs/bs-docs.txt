@@ -44,7 +44,7 @@ Misc
     µ - rocket ship!
     x - fixes any illegal values (like 1.5)
     W - controls pointer wrapping
-    \0-4 - runs a bs program
+    \0-6 - runs a bs program
     E - terminates program
     l - set current cell to length of stack
 
