@@ -41,7 +41,7 @@
         height: 30px;
         outline: 1px solid black;
     }
-    button {
+    #run-btn {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -57,13 +57,16 @@
         left: 317px;
         top: -13px;
     }
-    button:hover {
+    #run-btn:hover {
         background-color: #f0f0f0;
     }
 </style>
 <head>
 </head>
 <body>
+    <a href="stacktape-docs.txt" download="stacktape-docs">
+        <button position="absolute;">Download Stacktape Docs</button>
+    </a>
     <div id="macrostack"></div><br>
     <textarea id="input" title="input"></textarea><br>
     <textarea id="output" style="position: relative; top: -17px;" title="output" readonly></textarea>
