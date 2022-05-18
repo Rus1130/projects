@@ -73,8 +73,8 @@
         <button position="absolute;">Download Stacktape Docs</button>
     </a><br><br>
     <div id="macrostack"></div><br>
-    <textarea id="input" title="input"></textarea><br>
-    <textarea id="output" style="position: relative; top: -19px;" title="output" readonly></textarea>
+    <textarea id="input" title="input" spellcheck="false" autocomplete="off"></textarea><br>
+    <textarea id="output" style="position: relative; top: -19px;" title="output" readonly spellcheck="false"></textarea>
     <button title="run" id="run-btn" onclick="run(input.value)">Run!</button>
 </body>
 <script>
@@ -117,6 +117,7 @@
         for (i = 0; i < stackSize; i++) {
             metastack.push([]);
         }
+        loops = []
         pointer = 0;
     }
 
@@ -137,10 +138,14 @@
 
     loadStacks()
     updateStacks()
+    let loops = []
 
     function timeout(ms) {
         return new Promise(resolve => setTimeout(resolve, ms))
     }
+
+    const mathregexLower = /a|s|m]d|r/g
+    const mathregexUpper = /A|S|M|D|R/g
 
     function repeat(value, times){
         let result = '';
@@ -191,19 +196,128 @@
                     output.push(`\n${instructions}`)
                     output.push(`\n${repeat(" ", i)}^`);
                     i = instructions.length;
+                } else {
+                    metastack[pointer][metastack[pointer].length - 1]++;
                 }
             }
-            // output ==========================
+            if(currentChar === "-"){
+                if(metastack[pointer].length === 0){
+                    output.push(`\nERROR: Cannot decrement an undefined value. (char ${i+1})`);
+                    output.push(`\n${instructions}`)
+                    output.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    metastack[pointer][metastack[pointer].length - 1]--;
+                }
+            }
+            if(currentChar === ":"){
+                if(metastack[pointer].length === 0){
+                    output.push(`\nERROR: Cannot decrement an undefined value. (char ${i+1})`);
+                    output.push(`\n${instructions}`)
+                    output.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                   metastack[pointer].push(metastack[pointer][metastack[pointer].length - 1]);
+                }
+            }
+            // i/o =============================
             if(currentChar === "."){
-                if(nextChar === "q"){
-                    output.push("\n" + metastack[pointer].pop());
-                    i++;
+                if(nextChar === "c"){
+                    output.push(String.fromCharCode(metastack[pointer].pop()));
                 } else {
                     output.push(metastack[pointer].pop());
                 }
             }
+            if(currentChar === ","){
+                if(nextChar === "c"){
+                    let value = prompt("Enter a character: ");
+                    metastack[pointer].push(parseInt(value.charCodeAt(0)));
+                } else {
+                    let value = prompt("Enter a value: ");
+                    metastack[pointer].push(parseInt(value));
+                }
+            }
+            if(currentChar === "q"){
+                output.push("\n")
+            }
+            // loops ===========================
+            if(currentChar === "["){
+                let matchingIndex = instructions.indexOf("]", i);
+                if(matchingIndex == -1){
+                    output.push(`\nERROR: Matching ']' expected. (char ${i+1})`);
+                    output.push(`\n${instructions}`)
+                    output.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    let temp_i = i;
+                    let ignore = 0;
+                    while(1) {
+                        temp_i++;
+                        if(instructions[temp_i] === "[") {
+                            ignore++ 
+                        }
+                        if(instructions[temp_i] === "]") {
+                            if(ignore === 0) {
+                                if(metastack[pointer][metastack[pointer].length - 1] === 0) {
+                                    i = temp_i
+                                } else {
+                                    loops[temp_i] = i
+                                }
+                                break;
+                            } else ignore--;
+                        }
+                    }
+                }
+            } 
+            if(currentChar === "]"){
+                let matchingIndex = instructions.lastIndexOf("[", i);
+                if(matchingIndex == -1){
+                    output.push(`\nERROR: Matching '[' expected. (char ${i+1})`);
+                    output.push(`\n${instructions}`)
+                    output.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    if(metastack[pointer][metastack[pointer].length - 1] !== 0) {
+                        i = loops[i]
+                    } else {
+                        loops[i]
+                    };
+                }
+            }
+            // math ============================
+            if(mathregexLower.test(currentChar)){
+                if(metastack[pointer].length < 2){
+                    output.push(`\nERROR: Cannot perform arithmatic on undefined values. (char ${i+1})`);
+                    output.push(`\n${instructions}`)
+                    output.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    let value1 = metastack[pointer].pop();
+                    let value2 = metastack[pointer].pop();
+                    let result = 0;
+                    console.log(value1, value2)
+                    switch(currentChar){
+                        case "a":
+                            result = value1 + value2;
+                        break;
+                        case "s":
+                            result = value1 - value2;
+                        break;
+                        case "m":
+                            result = value1 * value2;
+                        break;
+                        case "d":
+                            result = value1 / value2;
+                        break;
+                        case "r":
+                            result = value1 % value2;
+                        break;
+                    }
+                    metastack[pointer].push(result);
+                }
+            }
             updateStacks()
-            await this.timeout(100)
+            await this.timeout(80)
         }
     }
 

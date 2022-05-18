@@ -1,3 +1,21 @@
+. - outputs top of current stack as a value and pop
+.c - outputs top of current stack as a unicode character and pop
+, - takes in one byte of input and sets it to top of current stack
+,c - takes in one byte of input and sets it to top of current stack as a unicode character
+
+q - outputs a newline
+
 @ - pushes a 1 to the current stack
-. - pops top of current stack and outputs it
-.q - pops top of current stack and outputs it on a new line
+: - duplicates the top of the current stack
+[ - if the top of the current stack is 0, skip to the next ]
+] - if the top of the current stack is not 0, jump back to last [
+
+Math:
+a - addition
+s - subtraction
+m - multiplication
+d - division
+r - modulus
+
+takes the top two values, first value on left of operatior, second value on right of operation, and does the operation
+if capitalized, will take the top of current stack and top of next stack
