@@ -231,10 +231,24 @@
             if(currentChar === ","){
                 if(nextChar === "c"){
                     let value = prompt("Enter a character: ");
-                    metastack[pointer].push(parseInt(value.charCodeAt(0)));
+                    if(!value){
+                        output.push(`\nERROR: Invalid character. (char ${i+1})`);
+                        output.push(`\n${instructions}`)
+                        output.push(`\n${repeat(" ", i)}^`);
+                        i = instructions.length;
+                    } else {
+                        metastack[pointer].push(parseInt(value.charCodeAt(0)))
+                    }
                 } else {
                     let value = prompt("Enter a value: ");
-                    metastack[pointer].push(parseInt(value));
+                    if(!value){
+                        output.push(`\nERROR: Invalid character. (char ${i+1})`);
+                        output.push(`\n${instructions}`)
+                        output.push(`\n${repeat(" ", i)}^`);
+                        i = instructions.length;
+                    } else {
+                        metastack[pointer].push(parseInt(value));
+                    }
                 }
             }
             if(currentChar === "q"){
