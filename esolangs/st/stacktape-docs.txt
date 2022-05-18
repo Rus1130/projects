@@ -1,0 +1,3 @@
+@ - pushes a 1 to the current stack
+. - pops top of current stack and outputs it
+.q - pops top of current stack and outputs it on a new line

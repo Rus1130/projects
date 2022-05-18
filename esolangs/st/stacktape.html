@@ -8,13 +8,14 @@
         position: relative;
         left: -1.5px;
         top: -21px;
-        height: 100px;
+        height: 160px;
         width: 1039px;
         resize: none;
         font-family: monospace;
         border: 1.5px black solid;
         color: black;
         border-radius: 0%;
+        font-size: 12pt;
     }
     textarea:focus {
         border: 1.5px black solid;
@@ -73,7 +74,7 @@
     </a><br><br>
     <div id="macrostack"></div><br>
     <textarea id="input" title="input"></textarea><br>
-    <textarea id="output" style="position: relative; top: -17px;" title="output" readonly></textarea>
+    <textarea id="output" style="position: relative; top: -19px;" title="output" readonly></textarea>
     <button title="run" id="run-btn" onclick="run(input.value)">Run!</button>
 </body>
 <script>
@@ -81,27 +82,26 @@
     const macrostack = document.getElementById("macrostack");
     const out = document.getElementById("output");
 
-    const macrostackSize = 10
-    const microstackSize = 10
+    const stackSize = 10
 
     let output = []
 
     let metastack = []
 
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < stackSize; i++) {
         metastack.push([]);
     }
 
     let pointer = 0;
 
     function loadStacks(){
-        for(i = 0; i < macrostackSize; i++){
+        for(i = 0; i < stackSize; i++){
             let stack = document.createElement("div");
             stack.classList.add("stack");
             stack.id = `s${i}`;
             macrostack.appendChild(stack);
 
-            for(j = 0; j < microstackSize; j++){
+            for(j = 0; j < stackSize; j++){
                 let microstack = document.createElement("div");
                 microstack.classList.add("microstack");
                 microstack.id = `s${i}m${9 - j}`
@@ -114,20 +114,20 @@
     function resetStacks(){
         output = []
         metastack = []
-        for (i = 0; i < 10; i++) {
+        for (i = 0; i < stackSize; i++) {
             metastack.push([]);
         }
         pointer = 0;
     }
 
     function updateStacks(){
-        for(i = 0; i < macrostackSize; i++){
+        for(i = 0; i < stackSize; i++){
             document.getElementById("s" + i).style.backgroundColor = "beige";
 
             if(i != pointer){
                 document.getElementById("s" + i).style.backgroundColor = "white";
             }
-            for(j = 0; j < microstackSize; j++){
+            for(j = 0; j < stackSize; j++){
                 document.getElementById(`s${i}m${j}`).innerHTML = metastack[i][j];
                 document.getElementById(`s${i}m${j}`).innerHTML = document.getElementById(`s${i}m${j}`).innerHTML.replaceAll("undefined","");
             }
@@ -149,42 +149,59 @@
         }
         return result;
     }
+    function checkStackOverflow(){
+        if(metastack[pointer].length > 9){
+            return true;
+        }
+    }
 
     async function interperet(instructions){
         for(let i = -1; i < instructions.length; i++){
             
-            let prevChar = instructions[i - 1];
             let currentChar = instructions[i];
             let nextChar = instructions[i + 1];
             
             // movement =======================
             if(currentChar === ">"){
                 pointer++;
-                if(pointer > macrostackSize - 1){
+                if(pointer > stackSize - 1){
                     pointer = 0;
                 }
             }
             if(currentChar === "<"){
                 pointer--;
                 if(pointer < 0){
-                    pointer = macrostackSize - 1;
+                    pointer = stackSize - 1;
                 }
             }
             // value manipulation ==============
             if(currentChar === "@"){
-                let matchingEndSpawn = instructions.indexOf("_", i);
-                let value = instructions.substring(i + 1, matchingEndSpawn)
-                if(matchingEndSpawn == -1){
-                    output.push(`\nERROR: Matching "_" expected. (char ${i+1})`);
+                if(checkStackOverflow()){
+                    output.push(`\nERROR: Stack Overflow! (char ${i+1})`);
                     output.push(`\n${instructions}`)
                     output.push(`\n${repeat(" ", i)}^`);
                     i = instructions.length;
                 } else {
-                    i = matchingEndSpawn;
-                    metastack[pointer].push(value);
+                    metastack[pointer].push(1);
                 }
             }
-
+            if(currentChar === "+"){
+                if(metastack[pointer].length === 0){
+                    output.push(`\nERROR: Cannot increment an undefined value. (char ${i+1})`);
+                    output.push(`\n${instructions}`)
+                    output.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                }
+            }
+            // output ==========================
+            if(currentChar === "."){
+                if(nextChar === "q"){
+                    output.push("\n" + metastack[pointer].pop());
+                    i++;
+                } else {
+                    output.push(metastack[pointer].pop());
+                }
+            }
             updateStacks()
             await this.timeout(100)
         }
