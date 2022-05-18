@@ -1,0 +1,172 @@
+<style>
+    html {
+        font-family: monospace;
+        user-select: none;
+        font-size: 20px;
+    }
+    textarea {
+        position: relative;
+        left: -1.5px;
+        top: -21px;
+        height: 100px;
+        width: 1039px;
+        resize: none;
+        font-family: monospace;
+        border: 1.5px black solid;
+        color: black;
+        border-radius: 0%;
+    }
+    textarea:focus {
+        border: 1.5px black solid;
+        outline: none;
+    }
+    #macrostack {
+        width: 1000px;
+        height: 300px;
+        display: grid;
+        grid-template-columns: repeat(10, 100px);
+        grid-template-rows: repeat(1, 300px);
+        column-gap: 4px;
+    }
+    .stack {
+        width: 100px;
+        height: 300px;
+        outline: 1.5px solid black;
+        display: grid;
+        grid-template-columns: repeat(1, 100px);
+        grid-template-rows: repeat(10, 30px);
+    }
+    .microstack {
+        width: 100px;
+        height: 30px;
+        outline: 1px solid black;
+    }
+    button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: monospace;
+        border: 1.5px solid black;
+        font-size: 15px;
+        background-color: beige;
+        width: 404px;
+        height: 60px;
+        font-size: 20px;
+        transition: ease 0.3s;
+        position: relative;
+        left: 317px;
+        top: -13px;
+    }
+    button:hover {
+        background-color: #f0f0f0;
+    }
+</style>
+<head>
+</head>
+<body>
+    <div id="macrostack"></div><br>
+    <textarea id="input" title="input"></textarea><br>
+    <textarea id="output" style="position: relative; top: -17px;" title="output" readonly></textarea>
+    <button title="run" id="run-btn" onclick="run(input.value)">Run!</button>
+</body>
+<script>
+    const input = document.getElementById("input");
+    const macrostack = document.getElementById("macrostack");
+
+    const macrostackSize = 10
+    const microstackSize = 10
+
+    let metastack = []
+
+    for (i = 0; i < 10; i++) {
+        metastack.push([]);
+        for (j = 0; j < 10; j++) {
+            metastack[i].push('');
+        }
+    }
+
+    let pointer = 0;
+
+    function loadStacks(){
+        for(i = 0; i < macrostackSize; i++){
+            let stack = document.createElement("div");
+            stack.classList.add("stack");
+            
+            stack.style.display = "flex"
+            stack.style.justifyContent = "center"
+            stack.style.alignItems = "center"
+
+            stack.id = `s${i}`;
+            macrostack.appendChild(stack);
+
+            for(j = 0; j < microstackSize; j++){
+                let microstack = document.createElement("div");
+                microstack.classList.add("microstack");
+                microstack.id = `s${i}m${j - 9}`
+                document.getElementById(`s${i}`).appendChild(microstack);
+            }
+        }
+        pointer = 0;
+    }
+
+
+    function resetStacks(){
+        metastack = []
+        
+        pointer = 0;
+    }
+
+    function updateStacks(){
+        for(i = 0; i < macrostackSize; i++){
+            document.getElementById("s" + i).style.backgroundColor = "beige";
+
+            if(i != pointer){
+                document.getElementById("s" + i).style.backgroundColor = "white";
+            }
+            for(j = 0; j < microstackSize; j++){
+                document.getElementById(`s${i}m${j - 9}`).innerHTML = metastack[i][j];
+            }
+        }
+    }
+
+    loadStacks()
+    updateStacks()
+
+    function timeout(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms))
+    }
+
+    async function interperet(instructions){
+        for(let i = -1; i < instructions.length; i++){
+
+            let prevChar = instructions[i - 1];
+            let currentChar = instructions[i];
+            let nextChar = instructions[i + 1];
+            
+            // movement =======================
+            if(currentChar === ">"){
+                pointer++;
+                if(pointer > macrostackSize - 1){
+                    pointer = 0;
+                }
+            }
+            if(currentChar === "<"){
+                pointer--;
+                if(pointer < 0){
+                    pointer = macrostackSize - 1;
+                }
+            }
+
+            updateStacks()
+            await this.timeout(100)
+        }
+    }
+
+
+    function run(input){
+        resetStacks()
+        interperet(input)
+        updateStacks()
+    }
+
+</script>
