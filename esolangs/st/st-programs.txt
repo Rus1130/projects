@@ -7,8 +7,18 @@ first input: num1
 second input: num2
 third input: operator
 
-+ - 43
-- - 45
-* - 42
-/ - 47
-% - 37
++ - 1
+- - 2
+* - 3
+/ - 4
+% - 5
+
+,,,\~>=1?<a$=2?<s$=3?<m$=4?<d$=5?<r$.
+
+Factorial Calculator:
+
+,:-~\:-~\[>m<:-~\]>~.
+
+Fibonacci Sequence:
+
+@@-{~:\~:~a~x>:/._<}

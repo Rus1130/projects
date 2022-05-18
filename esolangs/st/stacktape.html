@@ -144,9 +144,6 @@
         return new Promise(resolve => setTimeout(resolve, ms))
     }
 
-    const mathregexLower = /a|s|m]d|r/g
-    const mathregexUpper = /A|S|M|D|R/g
-
     function repeat(value, times){
         let result = '';
         for(let i = 0; i < times; i++){
@@ -212,12 +209,19 @@
             }
             if(currentChar === ":"){
                 if(metastack[pointer].length === 0){
-                    output.push(`\nERROR: Cannot decrement an undefined value. (char ${i+1})`);
+                    output.push(`\nERROR: Cannot dupelicate an undefined value. (char ${i+1})`);
                     output.push(`\n${instructions}`)
                     output.push(`\n${repeat(" ", i)}^`);
                     i = instructions.length;
                 } else {
-                   metastack[pointer].push(metastack[pointer][metastack[pointer].length - 1]);
+                    if(checkStackOverflow()){
+                        output.push(`\nERROR: Stack Overflow! (char ${i+1})`);
+                        output.push(`\n${instructions}`)
+                        output.push(`\n${repeat(" ", i)}^`);
+                        i = instructions.length;
+                    } else {
+                        metastack[pointer].push(metastack[pointer][metastack[pointer].length - 1]);
+                    }
                 }
             }
             if(currentChar === "~"){
@@ -230,10 +234,17 @@
                     output.push(`\n${repeat(" ", i)}^`);
                     i = instructions.length;
                 } else {
-                    if((pointer + 1) == 10){
-                        metastack[0].push(metastack[pointer].pop());
+                    if(checkStackOverflow()){
+                        output.push(`\nERROR: Stack Overflow! (char ${i+1})`);
+                        output.push(`\n${instructions}`)
+                        output.push(`\n${repeat(" ", i)}^`);
+                        i = instructions.length;
                     } else {
-                        metastack[pointer + 1].push(metastack[pointer].pop());
+                        if((pointer + 1) == 10){
+                            metastack[0].push(metastack[pointer].pop());
+                        } else {
+                            metastack[pointer + 1].push(metastack[pointer].pop());
+                        }
                     }
                 }
             }
@@ -244,12 +255,22 @@
                     output.push(`\n${repeat(" ", i)}^`);
                     i = instructions.length;
                 } else {
-                    if((pointer - 1) < 0){
-                        metastack[9].push(metastack[pointer].pop());
+                    if(checkStackOverflow()){
+                        output.push(`\nERROR: Stack Overflow! (char ${i+1})`);
+                        output.push(`\n${instructions}`)
+                        output.push(`\n${repeat(" ", i)}^`);
+                        i = instructions.length;
                     } else {
-                        metastack[pointer - 1].push(metastack[pointer].pop());
+                        if((pointer - 1) < 0){
+                            metastack[9].push(metastack[pointer].pop());
+                        } else {
+                            metastack[pointer - 1].push(metastack[pointer].pop());
+                        }
                     }
                 }
+            }
+            if(currentChar === "x"){
+                metastack[pointer].pop()
             }
             // i/o =============================
             if(currentChar === "."){
@@ -282,7 +303,7 @@
                     }
                 }
             }
-            if(currentChar === "q"){
+            if(currentChar === "_"){
                 output.push("\n")
             }
             // loops ===========================
@@ -329,16 +350,50 @@
                     };
                 }
             }
+            if(currentChar === "{"){
+                let matchingIndex = instructions.indexOf("}", i);
+                if(matchingIndex == -1){
+                    output.push(`\nERROR: Matching '}' expected. (char ${i+1})`);
+                    output.push(`\n${instructions}`)
+                    output.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    let temp_i = i;
+                    while(1) {
+                        temp_i++;
+                        if(instructions[temp_i] === "{") {
+                            loops[temp_i] = i
+                        }
+                        if(instructions[temp_i] === "}") {
+                            loops[temp_i] = i
+                            break;
+                        }
+                    }
+                }
+            }
+            if(currentChar === "}"){
+                let matchingIndex = instructions.lastIndexOf("{", i);
+                if(matchingIndex == -1){
+                    output.push(`\nERROR: Matching '{' expected. (char ${i+1})`);
+                    output.push(`\n${instructions}`)
+                    output.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    i = loops[i]
+                }
+            }
             // math ============================
-            if(mathregexLower.test(currentChar)){
+            if(currentChar === "a" || currentChar === "s" || currentChar === "m" || currentChar === "d" || currentChar === "r"){
                 if(metastack[pointer].length < 2){
                     output.push(`\nERROR: Cannot perform arithmatic on undefined values. (char ${i+1})`);
                     output.push(`\n${instructions}`)
                     output.push(`\n${repeat(" ", i)}^`);
                     i = instructions.length;
                 } else {
-                    let value1 = metastack[pointer].pop();
-                    let value2 = metastack[pointer].pop();
+                    let value1 = metastack[pointer][metastack[pointer].length - 1];
+                    let value2 = metastack[pointer][metastack[pointer].length - 2];
+                    metastack[pointer].pop();
+                    metastack[pointer].pop();
                     let result = 0;
                     console.log(value1, value2)
                     switch(currentChar){
@@ -392,7 +447,7 @@
                 }
             }
             updateStacks()
-            await this.timeout(80)
+            await this.timeout(30)
         }
     }
 

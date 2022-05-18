@@ -3,7 +3,7 @@
 , - takes in one byte of input and sets it to top of current stack
 ,c - takes in one byte of input and sets it to top of current stack as a unicode character
 
-q - outputs a newline
+_ - outputs a newline
 
 @ - pushes a 1 to the current stack
 : - duplicates the top of the current stack
@@ -14,6 +14,8 @@ q - outputs a newline
 
 / - moves to top value of current stack to stack to the left
 \ - moves to top value of current stack to stack to the right
+
+x - discard top value
 
 Math:
 a - addition
