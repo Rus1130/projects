@@ -1,0 +1,14 @@
+truth-machine:
+,[:.].
+
+calculator:
+
+first input: num1
+second input: num2
+third input: operator
+
++ - 43
+- - 45
+* - 42
+/ - 47
+% - 37

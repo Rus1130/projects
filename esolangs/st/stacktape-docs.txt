@@ -10,6 +10,11 @@ q - outputs a newline
 [ - if the top of the current stack is 0, skip to the next ]
 ] - if the top of the current stack is not 0, jump back to last [
 
+= value ? … $ - if top of current stack equals value, run …
+
+/ - moves to top value of current stack to stack to the left
+\ - moves to top value of current stack to stack to the right
+
 Math:
 a - addition
 s - subtraction
@@ -18,4 +23,3 @@ d - division
 r - modulus
 
 takes the top two values, first value on left of operatior, second value on right of operation, and does the operation
-if capitalized, will take the top of current stack and top of next stack

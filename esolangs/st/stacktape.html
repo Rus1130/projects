@@ -220,6 +220,37 @@
                    metastack[pointer].push(metastack[pointer][metastack[pointer].length - 1]);
                 }
             }
+            if(currentChar === "~"){
+                metastack[pointer] = metastack[pointer].reverse();
+            }
+            if(currentChar === "\\"){
+                if(metastack[pointer].length === 0){
+                    output.push(`\nERROR: Cannot decrement an undefined value. (char ${i+1})`);
+                    output.push(`\n${instructions}`)
+                    output.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    if((pointer + 1) == 10){
+                        metastack[0].push(metastack[pointer].pop());
+                    } else {
+                        metastack[pointer + 1].push(metastack[pointer].pop());
+                    }
+                }
+            }
+            if(currentChar === "/"){
+                if(metastack[pointer].length === 0){
+                    output.push(`\nERROR: Cannot decrement an undefined value. (char ${i+1})`);
+                    output.push(`\n${instructions}`)
+                    output.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    if((pointer - 1) < 0){
+                        metastack[9].push(metastack[pointer].pop());
+                    } else {
+                        metastack[pointer - 1].push(metastack[pointer].pop());
+                    }
+                }
+            }
             // i/o =============================
             if(currentChar === "."){
                 if(nextChar === "c"){
@@ -328,6 +359,36 @@
                         break;
                     }
                     metastack[pointer].push(result);
+                }
+            }
+            // conditional =====================
+
+            if(currentChar === "="){
+                let comparisonValue = parseInt(instructions.substring(i + 1, instructions.indexOf("?", i)))
+                let endOfConditional = instructions.indexOf("$", i)
+                if(isNaN(comparisonValue)){
+                    output.push(`\nERROR: Cannot compare with an undefined value. (char ${i+1})`);
+                    output.push(`\n${instructions}`)
+                    output.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    if(endOfConditional == -1){
+                        output.push(`\nERROR: End of conditional expected. (char ${i+1})`);
+                        output.push(`\n${instructions}`)
+                        output.push(`\n${repeat(" ", i)}^`);
+                        i = instructions.length;
+                    } else {
+                        if(metastack[pointer].length === 0){
+                            output.push(`\nERROR: Cannot compare with an undefined value. (char ${i+1})`);
+                            output.push(`\n${instructions}`)
+                            output.push(`\n${repeat(" ", i)}^`);
+                            i = instructions.length;
+                        } else {
+                            if(metastack[pointer][metastack[pointer].length - 1] !== comparisonValue){
+                                i = endOfConditional;
+                            }
+                        }
+                    }
                 }
             }
             updateStacks()
