@@ -23,3 +23,6 @@ Factorial Calculator:
 
 Fibonacci Sequence:
 @@-{~:\~:~a~x>:/._<}
+
+Exponents of Two:
+@{@+m:._}
