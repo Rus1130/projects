@@ -1,6 +1,9 @@
 truth-machine:
 ,[:.].
 
+false-machine:
+,=0?{:.}$.
+
 calculator:
 
 first input: num1
@@ -16,9 +19,7 @@ third input: operator
 ,,,\~>=1?<a$=2?<s$=3?<m$=4?<d$=5?<r$.
 
 Factorial Calculator:
-
-,:-~\:-~\[>m<:-~\]>~.
+,:\-[:\>m<-]>.
 
 Fibonacci Sequence:
-
 @@-{~:\~:~a~x>:/._<}
