@@ -1,10 +1,10 @@
 <style>
     #grid {
         display: grid;
-        grid-template-columns: repeat(20, 20px);
-        grid-template-rows: repeat(20, 20px);
-        width: 400px;
-        height: 400px;
+        grid-template-columns: repeat(30, 20px);
+        grid-template-rows: repeat(30, 20px);
+        width: 600px;
+        height: 600px;
         border: 1px solid black;
     }
     .grid-cell {
@@ -13,6 +13,7 @@
         align-items: center;
         height: 20px;
         width: 20px;
+        font-family: monospace;
     }
 </style>
 <head>
@@ -24,17 +25,21 @@
     const grid = document.getElementById("grid");
 
     let pointer = 0;
+    let grid_array = [];
 
-    for(i = 0; i < 400; i++){
+    for(i = 0; i < 900; i++){
         let newGridCell = document.createElement("div");
         newGridCell.className = "grid-cell";
         newGridCell.id = "cell" + i;
         grid.appendChild(newGridCell);
+        grid_array.push('');
     }
-
+    let cellFocus = -1
     function updateCells(){
-        for(i = 0; i < 400; i++){
-            if(i == pointer){
+        for(i = 0; i < 900; i++){
+            if(cellFocus == i){
+                document.getElementById("cell" + i).style.backgroundColor = "indianred"; 
+            } else if(i == pointer){
                 document.getElementById("cell" + i).style.backgroundColor = "beige";
             } else {
                 document.getElementById("cell" + i).style.backgroundColor = "white";
@@ -43,35 +48,35 @@
     }
 
     function moveRight(){
-        cellFocus = false;
-        if(pointer % 20 != 19){
+        cellFocus = -1;
+        if(pointer % 30 != 29){
             pointer++
         } else {
-            pointer -= 19
+            pointer -= 29
         }
     }
     function moveLeft(){
-        cellFocus = false;
-        if(pointer % 20 != 0){
+        cellFocus = -1;
+        if(pointer % 30 != 0){
             pointer--
         } else {
-            pointer += 19
+            pointer += 29
         }
     }
     function moveUp(){
-        cellFocus = false;
-        if(pointer >= 20){
-            pointer -= 20
+        cellFocus = -1;
+        if(pointer >= 30){
+            pointer -= 30
         } else {
-            pointer += 380
+            pointer += 880
         }
     }
     function moveDown(){
-        cellFocus = false;
-        if(pointer < 380){
-            pointer += 20
+        cellFocus = -1;
+        if(pointer < 880){
+            pointer += 30
         } else {
-            pointer -= 380
+            pointer -= 980
         }
     }
 
@@ -85,11 +90,16 @@
             moveUp()
         } else if(key == 83){ // s
             moveDown()
+        } else if(key == 32){ // space
+            cellFocus = pointer;
+        } else if(cellFocus != -1){
+            grid_array[pointer] = e.key
         }
     }
 
     setInterval(() => {
         updateCells()
     },10)
+    
 
 </script>

@@ -6,6 +6,14 @@
     <div id="s"></div>
 </body>
 <script>
+        ArrayGame.create.display.screen("s");
+        ArrayGame.create.display.board(64, 32);
+        ArrayGame.display_setup()
+        ArrayGame.DNE.stateTypes.player.up = "#"
+        ArrayGame.DNE.stateTypes.player.down = "#"
+        ArrayGame.DNE.stateTypes.player.left = "#"
+        ArrayGame.DNE.stateTypes.player.right = "#"
+        ArrayGame.display_update()
     setInterval(() => {
         if(ArrayGame.settings.game_state === "ready") ArrayGame.display_update()
     }, 16.66)
