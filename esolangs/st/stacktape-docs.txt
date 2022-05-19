@@ -17,6 +17,8 @@ _ - outputs a newline
 
 x - discard top value
 
+; - halts program
+
 Math:
 a - addition
 s - subtraction

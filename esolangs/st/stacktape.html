@@ -446,6 +446,10 @@
                     }
                 }
             }
+            // misc =============================
+            if(currentChar === ";"){
+                i = instructions.length
+            }
             updateStacks()
             await this.timeout(50)
         }
