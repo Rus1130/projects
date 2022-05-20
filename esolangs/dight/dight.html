@@ -63,7 +63,7 @@
         }
     }
 
-    let squares = []
+    let dots = []
 
     function moveRight(){
         if(pointer % 30 != 29){
@@ -95,12 +95,14 @@
     }
 
     let editMode = true;
-    const horizontalPipe = "──";
+
+    
+    const horizontalPipe = "───";
     const verticalPipe = "│";
-    const topLeftCorner = "┌";
-    const topRightCorner = "┐";
-    const bottomLeftCorner = "└";
-    const bottomRightCorner = "┘";
+    const topLeftCorner = "╭";
+    const topRightCorner = "╮";
+    const bottomLeftCorner = "╰";
+    const bottomRightCorner = "╯";
 
 
     const pipeIdentifier = (str) => {
@@ -168,32 +170,32 @@
         }
     }
 
-    function deleteSquares(pos){
-        getGridCell(squares[pos].cellID).innerText = "";
-        squares.splice(pos, 1);
+    function deleteDots(pos){
+        getGridCell(dots[pos].cellID).innerText = "";
+        dots.splice(pos, 1);
         pos++
     }
 
     function setSquarePos(pos){
-        getGridCell(squares[pos].cellID).innerText = ''
-        squares[pos].cellID += squares[pos].direction;
-        getGridCell(squares[pos].cellID).innerText = squares[pos].sprite
+        getGridCell(dots[pos].cellID).innerText = ''
+        dots[pos].cellID += dots[pos].direction;
+        getGridCell(dots[pos].cellID).innerText = dots[pos].sprite
     }
 
-    function updateSquares(){
-        for(i = 0; i < squares.length; i++){
-            if(squares[i].cellID < 0 || squares[i].cellID > 899){
-                deleteSquares(i);
+    function updateDots(){
+        for(i = 0; i < dots.length; i++){
+            if(dots[i].cellID < 0 || dots[i].cellID > 899){
+                deleteDots(i);
             }
-            if(directionChanges[getUndergridCell(squares[i].cellID).innerText]){
-                if(directionChanges[getUndergridCell(squares[i].cellID).innerText][String(squares[i].direction)]){
-                    squares[i].direction = directionChanges[getUndergridCell(squares[i].cellID).innerText][String(squares[i].direction)];
+            if(directionChanges[getUndergridCell(dots[i].cellID).innerText]){
+                if(directionChanges[getUndergridCell(dots[i].cellID).innerText][String(dots[i].direction)]){
+                    dots[i].direction = directionChanges[getUndergridCell(dots[i].cellID).innerText][String(dots[i].direction)];
                     setSquarePos(i)
                 } else {
-                    deleteSquares(i);
+                    deleteDots(i);
                 }
             } else {
-                deleteSquares(i);
+                deleteDots(i);
             }
         }
     }
@@ -213,14 +215,14 @@
             editMode = !editMode
         }
         if(editMode){
-            if(key == "Enter"){ // place square
-                if(getGridCell(pointer).innerText != "■"){
-                    squares.push({
+            if(key == "Enter"){ // place dot
+                if(getGridCell(pointer).innerText != "O"){
+                    dots.push({
                         cellID: pointer,
                         direction: 1, // 1 = right, -1 = left, -30 = up, 30 = down
-                        sprite: "■"
+                        sprite: "O"
                     })
-                    getGridCell(pointer).innerText = "■"
+                    getGridCell(pointer).innerText = "O"
                 }
             } else if(key == "Backspace"){ // remove peice
                 getUndergridCell(pointer).innerText = ""
@@ -240,8 +242,8 @@
     },10)
 
     setInterval(() => {
-        updateSquares()
-    }, 100)
+        updateDots()
+    }, 200)
     
 
 </script>
