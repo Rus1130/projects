@@ -30,10 +30,10 @@
 
     let pointer = 0;
 
-    function underCell(id){
+    function getUndergridCell(id){
         return document.getElementById("under-cell" + id)
     }
-    function gridCell(id){
+    function getGridCell(id){
         return document.getElementById("cell" + id)
     }
 
@@ -53,18 +53,17 @@
         for(i = 0; i < 1800; i++){
             if(i == pointer){
                 if(editMode){
-                    gridCell(i).style.backgroundColor = "beige";
+                    getGridCell(i).style.backgroundColor = "beige";
                 } else {
-                    gridCell(i).style.backgroundColor = "indianred"; 
+                    getGridCell(i).style.backgroundColor = "indianred"; 
                 }
             } else {
-                gridCell(i).style.backgroundColor = "white";
+                getGridCell(i).style.backgroundColor = "white";
             }
         }
     }
 
     let squares = []
-    const squareSprite = '■'
 
     function moveRight(){
         if(pointer % 60 != 59){
@@ -97,25 +96,94 @@
 
     let editMode = true;
 
-    let cornerCycle = 0;
-    let pipeCycle = 0;
+    const pipeIdentifier = (str) => {
+        return str == "═" || str == "║" 
+    }
+    const cornerIdentifier = (str) => {
+        return str == "╗" || str == "╝" || str == "╚" || str == "╔"
+    }
+
+    let currentPipe = "═";
+    let currentCorner = "╗";
+
+    function placeTrack(){
+        if(pipeIdentifier(getUndergridCell(pointer).innerText)){
+            switch(currentPipe){
+                case "═":
+                    currentPipe = "║";
+                break;
+                case "║":
+                    currentPipe = "═";
+                break;
+            }
+        } else if(cornerIdentifier(getUndergridCell(pointer).innerText)){
+            switch(currentCorner){
+                case "╗":
+                    currentCorner = "╝";
+                break;
+                case "╝":
+                    currentCorner = "╚";
+                break;
+                case "╚":
+                    currentCorner = "╔";
+                break;
+                case "╔":
+                    currentCorner = "╗";
+                break;
+            }
+        }
+    }
+
+    const directionChanges = {
+        "╗": {
+            directionOne: 60,
+            directionTwo: -1
+        },
+        "╝": {
+            directionOne: -60,
+            directionTwo: -1
+        },
+        "╚": {
+            directionOne: 1,
+            directionTwo: -60
+        },
+        "╔": {
+            directionOne: 1,
+            directionTwo: 60
+        },
+        "║": {
+            directionOne: 60,
+            directionTwo: -60
+        },
+        "═": {
+            directionOne: 1,
+            directionTwo: -1
+        }
+    }
+
+    function deleteSquares(pos){
+        getGridCell(squares[pos].cellID).innerText = "";
+        squares.splice(pos, 1);
+        pos++
+    }
+
+    function setSquarePos(pos){
+        getGridCell(squares[pos].cellID).innerText = ''
+        squares[pos].cellID += squares[pos].direction;
+        getGridCell(squares[pos].cellID).innerText = squares[pos].sprite
+    }
 
     function updateSquares(){
         for(i = 0; i < squares.length; i++){
-            if(squares[i].cellID < 0 || squares[i].cellID > 1800){
-                squares.splice(i, 1);
-                i++;
-            } else {
-                try {
-                    gridCell(squares[i].cellID).innerText = squareSprite
-                } catch {}
+            if(squares[i].cellID < 0 || squares[i].cellID > 1799){
+                deleteSquares(i);
             }
         }
     }
 
     document.onkeydown = function(e) {
         let key = e.key;
-        
+        // pointer movement
         if(key == "w" || key == "ArrowUp"){
             moveUp()
         } else if(key == "a" || key == "ArrowLeft"){
@@ -124,80 +192,39 @@
             moveDown()
         } else if(key == "d" || key == "ArrowRight"){
             moveRight()
-        } else if(key == " "){
+        } else if(key == " "){ // change edit mode
             editMode = !editMode
         }
         if(editMode){
-            if(key == "Enter"){
-                if(gridCell(pointer).innerText != squareSprite){
+            if(key == "Enter"){ // place square
+                if(getGridCell(pointer).innerText != "■"){
                     squares.push({
                         cellID: pointer,
-                        direction: 1 // 1 = right, -1 = left, -60 = up, 60 = down
+                        direction: 1, // 1 = right, -1 = left, -60 = up, 60 = down
+                        sprite: "■"
                     })
+                    getGridCell(pointer).innerText = "■"
                 }
-            } else if(key == "Backspace"){
-                underCell(pointer).innerText = ""
-            } else if(key == "T"){
-                pipeCycle++
-                switch(pipeCycle % 2){
-                    case 0:
-                        underCell(pointer).innerText = "═"
-                    break;
-                    case 1:
-                        underCell(pointer).innerText = "║"
-                    break;
-                }
+            } else if(key == "Backspace"){ // remove peice
+                getUndergridCell(pointer).innerText = ""
             } else if(key == "t"){
-                switch(pipeCycle % 2){
-                    case 0:
-                        underCell(pointer).innerText = "═"
-                    break;
-                    case 1:
-                        underCell(pointer).innerText = "║"
-                    break;
-                }
-            } else if(key == "C"){
-                cornerCycle++
-                switch(cornerCycle % 4){
-                    case 0:
-                        underCell(pointer).innerText = "╗"
-                    break;
-                    case 1:
-                        underCell(pointer).innerText = "╝"
-                    break;
-                    case 2:
-                        underCell(pointer).innerText = "╚"
-                    break;
-                    case 3:
-                        underCell(pointer).innerText = "╔	"
-                    break;
-                }
+                placeTrack()
+                getUndergridCell(pointer).innerText = currentPipe
             } else if(key == "c"){
-                switch(cornerCycle % 4){
-                    case 0:
-                        underCell(pointer).innerText = "╗"
-                    break;
-                    case 1:
-                        underCell(pointer).innerText = "╝"
-                    break;
-                    case 2:
-                        underCell(pointer).innerText = "╚"
-                    break;
-                    case 3:
-                        underCell(pointer).innerText = "╔	"
-                    break;
-                }
+                placeTrack()
+                getUndergridCell(pointer).innerText = currentCorner
+
             }
         }
     }
 
-    setInterval(() =>{
-        updateSquares()
-    }, 100)
-
     setInterval(() => {
         updateCells()
     },10)
+
+    setInterval(() => {
+        updateSquares()
+    }, 100)
     
 
 </script>
