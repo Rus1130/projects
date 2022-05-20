@@ -1,7 +1,7 @@
 <style>
     .grid {
         display: grid;
-        grid-template-columns: repeat(60, 10px);
+        grid-template-columns: repeat(30, 20px);
         grid-template-rows: repeat(30, 20px);
         width: 600px;
         height: 600px;
@@ -13,7 +13,7 @@
         justify-content: center;
         align-items: center;
         height: 20px;
-        width: 10px;
+        width: 20px;
         font-size: 18px;
         font-family: monospace;
     }
@@ -37,7 +37,7 @@
         return document.getElementById("cell" + id)
     }
 
-    for(i = 0; i < 1800; i++){
+    for(i = 0; i < 900; i++){
         let gridCell = document.createElement("div");
         gridCell.className = "grid-cell";
         gridCell.id = "cell" + i;
@@ -50,7 +50,7 @@
     }
 
     function updateCells(){
-        for(i = 0; i < 1800; i++){
+        for(i = 0; i < 900; i++){
             if(i == pointer){
                 if(editMode){
                     getGridCell(i).style.backgroundColor = "beige";
@@ -66,98 +66,105 @@
     let squares = []
 
     function moveRight(){
-        if(pointer % 60 != 59){
+        if(pointer % 30 != 29){
             pointer++
         } else {
-            pointer -= 59
+            pointer -= 29
         }
     }
     function moveLeft(){
-        if(pointer % 60 != 0){
+        if(pointer % 30 != 0){
             pointer--
         } else {
-            pointer += 59
+            pointer += 29
         }
     }
     function moveUp(){
-        if(pointer > 60){
-            pointer -= 60
+        if(pointer > 30){
+            pointer -= 30
         } else {
-            pointer += 1740
+            pointer += 870
         }
     }
     function moveDown(){
-        if(pointer < 1740){
-            pointer += 60
+        if(pointer < 870){
+            pointer += 30
         } else {
-            pointer -= 1740
+            pointer -= 870
         }
     }
 
     let editMode = true;
+    const horizontalPipe = "──";
+    const verticalPipe = "│";
+    const topLeftCorner = "┌";
+    const topRightCorner = "┐";
+    const bottomLeftCorner = "└";
+    const bottomRightCorner = "┘";
+
 
     const pipeIdentifier = (str) => {
-        return str == "═" || str == "║" 
+        return str == horizontalPipe || str == verticalPipe
     }
     const cornerIdentifier = (str) => {
-        return str == "╗" || str == "╝" || str == "╚" || str == "╔"
+        return str == topRightCorner || str == bottomRightCorner || str == bottomLeftCorner || str == topLeftCorner
     }
 
-    let currentPipe = "═";
-    let currentCorner = "╗";
+    let currentPipe = horizontalPipe;
+    let currentCorner = topRightCorner;
 
     function placeTrack(){
         if(pipeIdentifier(getUndergridCell(pointer).innerText)){
             switch(currentPipe){
-                case "═":
-                    currentPipe = "║";
+                case horizontalPipe:
+                    currentPipe = verticalPipe;
                 break;
-                case "║":
-                    currentPipe = "═";
+                case verticalPipe:
+                    currentPipe = horizontalPipe;
                 break;
             }
         } else if(cornerIdentifier(getUndergridCell(pointer).innerText)){
             switch(currentCorner){
-                case "╗":
-                    currentCorner = "╝";
+                case topRightCorner:
+                    currentCorner = bottomRightCorner;
                 break;
-                case "╝":
-                    currentCorner = "╚";
+                case bottomRightCorner:
+                    currentCorner = bottomLeftCorner;
                 break;
-                case "╚":
-                    currentCorner = "╔";
+                case bottomLeftCorner:
+                    currentCorner = topLeftCorner;
                 break;
-                case "╔":
-                    currentCorner = "╗";
+                case topLeftCorner:
+                    currentCorner = topRightCorner;
                 break;
             }
         }
     }
 
     const directionChanges = {
-        "╗": {
-            directionOne: 60,
-            directionTwo: -1
+        [horizontalPipe]: {
+            '1': 1,
+            '-1': -1
         },
-        "╝": {
-            directionOne: -60,
-            directionTwo: -1
+        [verticalPipe]: {
+            '30': 30,
+            '-30': -30
         },
-        "╚": {
-            directionOne: 1,
-            directionTwo: -60
+        [topRightCorner]: {
+            '1': 30,
+            '-30': -1
         },
-        "╔": {
-            directionOne: 1,
-            directionTwo: 60
+        [bottomRightCorner]: {
+            '1': -30,
+            '30': -1
         },
-        "║": {
-            directionOne: 60,
-            directionTwo: -60
+        [bottomLeftCorner]: {
+            '30': 1,
+            '-1': -30
         },
-        "═": {
-            directionOne: 1,
-            directionTwo: -1
+        [topLeftCorner]: {
+            '-30': 1,
+            '-1': 30
         }
     }
 
@@ -175,7 +182,17 @@
 
     function updateSquares(){
         for(i = 0; i < squares.length; i++){
-            if(squares[i].cellID < 0 || squares[i].cellID > 1799){
+            if(squares[i].cellID < 0 || squares[i].cellID > 899){
+                deleteSquares(i);
+            }
+            if(directionChanges[getUndergridCell(squares[i].cellID).innerText]){
+                if(directionChanges[getUndergridCell(squares[i].cellID).innerText][String(squares[i].direction)]){
+                    squares[i].direction = directionChanges[getUndergridCell(squares[i].cellID).innerText][String(squares[i].direction)];
+                    setSquarePos(i)
+                } else {
+                    deleteSquares(i);
+                }
+            } else {
                 deleteSquares(i);
             }
         }
@@ -200,7 +217,7 @@
                 if(getGridCell(pointer).innerText != "■"){
                     squares.push({
                         cellID: pointer,
-                        direction: 1, // 1 = right, -1 = left, -60 = up, 60 = down
+                        direction: 1, // 1 = right, -1 = left, -30 = up, 30 = down
                         sprite: "■"
                     })
                     getGridCell(pointer).innerText = "■"
