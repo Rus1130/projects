@@ -1,0 +1,5 @@
+space - toggle edit mode
+enter - place a dot
+
+c - cycle corner peices
+t - cycle pipe peices

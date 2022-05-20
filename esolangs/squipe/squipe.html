@@ -1,0 +1,203 @@
+<style>
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(60, 10px);
+        grid-template-rows: repeat(30, 20px);
+        width: 600px;
+        height: 600px;
+        border: 1px solid black;
+        position: absolute;
+    }
+    .grid-cell {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 20px;
+        width: 10px;
+        font-size: 18px;
+        font-family: monospace;
+    }
+</style>
+<head>
+</head>
+<body>
+    <div id="grid" class="grid"></div>
+    <div id="under-grid" class="grid"></div>
+</body>
+<script>
+    const grid = document.getElementById("grid");
+    const underGrid = document.getElementById("under-grid");
+
+    let pointer = 0;
+
+    function underCell(id){
+        return document.getElementById("under-cell" + id)
+    }
+    function gridCell(id){
+        return document.getElementById("cell" + id)
+    }
+
+    for(i = 0; i < 1800; i++){
+        let gridCell = document.createElement("div");
+        gridCell.className = "grid-cell";
+        gridCell.id = "cell" + i;
+        grid.appendChild(gridCell);
+
+        let underCell = document.createElement("div");
+        underCell.className = "grid-cell";
+        underCell.id = "under-cell" + i;
+        underGrid.appendChild(underCell);
+    }
+
+    function updateCells(){
+        for(i = 0; i < 1800; i++){
+            if(i == pointer){
+                if(editMode){
+                    gridCell(i).style.backgroundColor = "beige";
+                } else {
+                    gridCell(i).style.backgroundColor = "indianred"; 
+                }
+            } else {
+                gridCell(i).style.backgroundColor = "white";
+            }
+        }
+    }
+
+    let squares = []
+    const squareSprite = '■'
+
+    function moveRight(){
+        if(pointer % 60 != 59){
+            pointer++
+        } else {
+            pointer -= 59
+        }
+    }
+    function moveLeft(){
+        if(pointer % 60 != 0){
+            pointer--
+        } else {
+            pointer += 59
+        }
+    }
+    function moveUp(){
+        if(pointer > 60){
+            pointer -= 60
+        } else {
+            pointer += 1740
+        }
+    }
+    function moveDown(){
+        if(pointer < 1740){
+            pointer += 60
+        } else {
+            pointer -= 1740
+        }
+    }
+
+    let editMode = true;
+
+    let cornerCycle = 0;
+    let pipeCycle = 0;
+
+    function updateSquares(){
+        for(i = 0; i < squares.length; i++){
+            if(squares[i].cellID < 0 || squares[i].cellID > 1800){
+                squares.splice(i, 1);
+                i++;
+            } else {
+                try {
+                    gridCell(squares[i].cellID).innerText = squareSprite
+                } catch {}
+            }
+        }
+    }
+
+    document.onkeydown = function(e) {
+        let key = e.key;
+        
+        if(key == "w" || key == "ArrowUp"){
+            moveUp()
+        } else if(key == "a" || key == "ArrowLeft"){
+            moveLeft()
+        } else if(key == "s" || key == "ArrowDown"){
+            moveDown()
+        } else if(key == "d" || key == "ArrowRight"){
+            moveRight()
+        } else if(key == " "){
+            editMode = !editMode
+        }
+        if(editMode){
+            if(key == "Enter"){
+                if(gridCell(pointer).innerText != squareSprite){
+                    squares.push({
+                        cellID: pointer,
+                        direction: 1 // 1 = right, -1 = left, -60 = up, 60 = down
+                    })
+                }
+            } else if(key == "Backspace"){
+                underCell(pointer).innerText = ""
+            } else if(key == "T"){
+                pipeCycle++
+                switch(pipeCycle % 2){
+                    case 0:
+                        underCell(pointer).innerText = "═"
+                    break;
+                    case 1:
+                        underCell(pointer).innerText = "║"
+                    break;
+                }
+            } else if(key == "t"){
+                switch(pipeCycle % 2){
+                    case 0:
+                        underCell(pointer).innerText = "═"
+                    break;
+                    case 1:
+                        underCell(pointer).innerText = "║"
+                    break;
+                }
+            } else if(key == "C"){
+                cornerCycle++
+                switch(cornerCycle % 4){
+                    case 0:
+                        underCell(pointer).innerText = "╗"
+                    break;
+                    case 1:
+                        underCell(pointer).innerText = "╝"
+                    break;
+                    case 2:
+                        underCell(pointer).innerText = "╚"
+                    break;
+                    case 3:
+                        underCell(pointer).innerText = "╔	"
+                    break;
+                }
+            } else if(key == "c"){
+                switch(cornerCycle % 4){
+                    case 0:
+                        underCell(pointer).innerText = "╗"
+                    break;
+                    case 1:
+                        underCell(pointer).innerText = "╝"
+                    break;
+                    case 2:
+                        underCell(pointer).innerText = "╚"
+                    break;
+                    case 3:
+                        underCell(pointer).innerText = "╔	"
+                    break;
+                }
+            }
+        }
+    }
+
+    setInterval(() =>{
+        updateSquares()
+    }, 100)
+
+    setInterval(() => {
+        updateCells()
+    },10)
+    
+
+</script>
