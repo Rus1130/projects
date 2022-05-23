@@ -53,8 +53,8 @@
     const inputTextarea = document.getElementById("inputTextarea")
     const output = document.getElementById("output")
     const transmutationArea = document.getElementById("transmutation_area")
-    const baseTransmutationCircleDiameter = 690
-    const innerBaseTransmutationCirclesDiameter = 640
+    const tmutBaseDiameter = 690
+    const tmutSubringsDiameter = 640
     
 
     var canvas;
@@ -69,38 +69,43 @@
      */
 
     function interpret(){
+        canvas.clear()
         transmutationArea.innerHTML = ''
         canvas.parent("transmutation_area")
         let instructions = inputTextarea.value.split("\n")
         for(i = 0; i < instructions.length; i++){
             let instruction = instructions[i].split(" ")
-            if(instruction[0] == "transmutation"){
-                if(instruction[1] == "circle"){
-                    if(instruction[2] == "base"){
-                        stroke('black')
-                        strokeWeight(3.5)
-                        noFill()
-                        circle(width / 2, height / 2, baseTransmutationCircleDiameter)
+            if(instruction[0] == "tmut"){
+                if(instruction[1] == "base"){
+                    stroke('black')
+                    strokeWeight(3.5)
+                    noFill()
+                    circle(width / 2, height / 2, tmutBaseDiameter)
 
-                        stroke('black')
-                        strokeWeight(2)
-                        noFill()
-                        circle(width / 2, height / 2, baseTransmutationCircleDiameter - 100)
-                    }else if (instruction[2] == 'outer'){
-                        if(typeof parseInt(instructions[3]) === "number"){
-                            let angle = 0;
-                            let outerCircleCount = parseInt(instructions[3]);
-                            for(let i = angle; i < radians(360 + angle) ; i += radians(360 / outerCircleCount) ){
-                                let x = innerBaseTransmutationCirclesDiameter / 2 * Math.cos(i) + width / 2;
-                                let y = innerBaseTransmutationCirclesDiameter / 2 * Math.sin(i) + height / 2;
-                                stroke('black')
-                                strokeWeight(1)
-                                fill('white')
-                                circle(x, y, 48)
-                            }
+                    stroke('black')
+                    strokeWeight(2)
+                    noFill()
+                    circle(width / 2, height / 2, tmutBaseDiameter - 100)
+                } else if(instruction[1] == 'subrings'){
+                    if(typeof parseInt(instruction[2]) == 'number'){
+                        let subrings = parseInt(instruction[2])
+                        let separation = 360 / subrings
+                        let angle = 0;
+                        console.log(separation)
+                        for(j = 0; j < subrings; j++){
+                            
+                            let x = tmutSubringsDiameter * Math.cos(angle) + width / 2
+                            let y = tmutSubringsDiameter * Math.sin(angle) + height / 2
+
+                            angle += separation
+
+                            stroke('black')
+                            strokeWeight(2)
+                            noFill()
+                            circle(x, y, 50)
                         }
                     }
-                } 
+                }
             }
         }
     }

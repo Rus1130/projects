@@ -1,5 +1,5 @@
-transmutation circle base
-    	creates a base transmutation circle
+tmut base
+    creates a base transmutation circle
 
-transmutation circle outer
-    creates a small, outer circle
+tmut subrings n
+    creates n subrings
