@@ -1,0 +1,5 @@
+transmutation circle base
+    	creates a base transmutation circle
+
+transmutation circle outer
+    creates a small, outer circle
