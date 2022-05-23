@@ -54,14 +54,69 @@
     const output = document.getElementById("output")
     const transmutationArea = document.getElementById("transmutation_area")
     const tmutBaseDiameter = 690
-    const tmutSubringsDiameter = 640
+    const tmutSubringsDiameter = 635
+    const alchemical_symbols = {
+        "salt": '🜔',
+        'air': "🜁",
+        'earth': "🜃",
+        'fire': "🜂",
+        'water': "🜄",
+        'lead': '♄',
+        'tin': '♃',
+        'iron': '♂',
+        'gold': '☉',
+        'copper': "♀",
+        'quicksilver': "☿",
+        'silver': "☾",
+        'antimony': "♁",
+        'arsenic': "🜺",
+        'bismuth': "🜘",
+        'magnesium': "⊛",
+        'sulpher': '🜍',
+        'acid': "🜊",
+        'sal-ammoniac': '🜹',
+        'aqua-fortis': "🜅",
+        'aqua-regia': "🜆",
+        'aqua-vitae': '🜈',
+        'amalgam': '🝛',
+        'cinnabar': "🜓",
+        'vinegar': "🜋",
+        'vitriol': "🜖",
+        'brimstone': "🜏",
+        'calcination': "♈︎",
+        'congelation': "♉︎",
+        'fixation': "♊︎",
+        'solution': "♋︎",
+        'digestion': "♌︎",
+        'distillation': "♍︎",
+        'sublimation': "♎︎",
+        'separation': "♏︎",
+        'ceration': "♐︎",
+        'putrefaction': "♑︎",
+        'multiplication': "♒︎",
+        'projection': "♓︎",
     
+    
+    }
+
+    function getEqualPoints(r, n){
+        const pi2 = Math.PI * 2
+        let pi2OverN = pi2/n
+        let result = [];
+        for(a = 0; a < pi2; a += pi2OverN){
+            let x = r * Math.sin(a)
+            let y = r * Math.cos(a)
+            result.push([x,y])
+        }
+        return result
+    }
 
     var canvas;
     function setup(){
         canvas = createCanvas(700, 700)
         canvas.parent("transmutation_area")
         background("#ffffff")
+        angleMode(DEGREES);
 
     }
     /**
@@ -85,25 +140,39 @@
                     stroke('black')
                     strokeWeight(2)
                     noFill()
-                    circle(width / 2, height / 2, tmutBaseDiameter - 100)
+                    circle(width / 2, height / 2, tmutBaseDiameter - 150)
                 } else if(instruction[1] == 'subrings'){
-                    if(typeof parseInt(instruction[2]) == 'number'){
+                    if(!isNaN(parseInt(instruction[2]) && parseInt(instruction[2]) <= 10)){
                         let subrings = parseInt(instruction[2])
-                        let separation = 360 / subrings
-                        let angle = 0;
-                        console.log(separation)
-                        for(j = 0; j < subrings; j++){
-                            
-                            let x = tmutSubringsDiameter * Math.cos(angle) + width / 2
-                            let y = tmutSubringsDiameter * Math.sin(angle) + height / 2
+                        let points = getEqualPoints(tmutSubringsDiameter / 2 - 10, subrings)
+                        let contentsRotationAngle = 180
 
-                            angle += separation
+                        for(p = 0; p < points.length; p++){
+                            let x = points[p][0] + width / 2
+                            let y = points[p][1] + height / 2
+
+                            let div = createDiv('');
+                            div.style('font-size', '25px');
+                            div.id("subring" + p)
+                            document.getElementById("subring" + p).style.transform = "rotate(" + contentsRotationAngle + "deg)"
+                            document.getElementById("subring" + p).style.display = "flex"
+                            document.getElementById("subring" + p).style.justifyContent = "center"
+                            document.getElementById("subring" + p).style.alignItems = "center"
+                            contentsRotationAngle -= 360 / subrings
+                            div.parent("transmutation_area")
+                            div.position(x - 6, y - 12);
 
                             stroke('black')
                             strokeWeight(2)
                             noFill()
-                            circle(x, y, 50)
+                            circle(x, y, 71)
                         }
+                    }
+                }
+            } else if (instruction[0] == 'subring'){
+                if(!isNaN(parseInt(instruction[1]))){
+                    if(alchemical_symbols[instruction[2]]){
+                        document.getElementById("subring" + instruction[1]).innerHTML = alchemical_symbols[instruction[2]]
                     }
                 }
             }
