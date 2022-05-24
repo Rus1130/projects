@@ -1,5 +1,0 @@
-tmut base
-    creates a base transmutation circle
-
-tmut subrings n
-    creates n subrings

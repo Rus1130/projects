@@ -1,0 +1,51 @@
+tmut base
+    creates a base transmutation circle
+
+tmut subrings_l1 n
+    creates n subrings
+
+subring_l1 n x
+    places the alchemical symbol for x in the nth subring
+
+i am too goddamn lazy to reformat this so heres the raw constant from the code
+    const alchemical_symbols = {
+        "salt": '🜔',
+        'air': "🜁",
+        'earth': "🜃",
+        'fire': "🜂",
+        'water': "🜄",
+        'lead': '♄',
+        'tin': '♃',
+        'iron': '♂',
+        'gold': '☉',
+        'copper': "♀",
+        'quicksilver': "☿",
+        'silver': "☾",
+        'antimony': "♁",
+        'arsenic': "🜺",
+        'bismuth': "🜘",
+        'magnesium': "⊛",
+        'sulpher': '🜍',
+        'acid': "🜊",
+        'sal-ammoniac': '🜹',
+        'aqua-fortis': "🜅",
+        'aqua-regia': "🜆",
+        'aqua-vitae': '🜈',
+        'amalgam': '🝛',
+        'cinnabar': "🜓",
+        'vinegar': "🜋",
+        'vitriol': "🜖",
+        'brimstone': "🜏",
+        'calcination': "♈︎",
+        'congelation': "♉︎",
+        'fixation': "♊︎",
+        'solution': "♋︎",
+        'digestion': "♌︎",
+        'distillation': "♍︎",
+        'sublimation': "♎︎",
+        'separation': "♏︎",
+        'ceration': "♐︎",
+        'putrefaction': "♑︎",
+        'multiplication': "♒︎",
+        'projection': "♓︎",
+    }
