@@ -1,10 +1,10 @@
 tmut base
     creates a base transmutation circle
 
-tmut subrings_l1 n
+tmut subrings n
     creates n subrings
 
-subring_l1 n x
+subring n x
     places the alchemical symbol for x in the nth subring
 
 i am too goddamn lazy to reformat this so heres the raw constant from the code
@@ -49,3 +49,6 @@ i am too goddamn lazy to reformat this so heres the raw constant from the code
         'multiplication': "♒︎",
         'projection': "♓︎",
     }
+
+subring line n0 n1
+    places a line that connects subring n0 and n1

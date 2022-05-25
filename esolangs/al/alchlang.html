@@ -119,7 +119,11 @@
 
     }
 
+    let subringsAmnt = 0;
+    const svgns = "http://www.w3.org/2000/svg";
+
     function interpret(){
+        subringsAmnt = 0;
         canvas.clear()
         transmutationArea.innerHTML = ''
         canvas.parent("transmutation_area")
@@ -137,20 +141,12 @@
                     strokeWeight(2)
                     noFill()
                     circle(width / 2, height / 2, tmutBaseDiameter - 150)
-                } else if(instruction[1] == 'subrings_l1'){
+                } else if(instruction[1] == 'subrings'){
                     if(!isNaN(parseInt(instruction[2]) && parseInt(instruction[2]) <= 20)){
-                        let subrings_l1 = parseInt(instruction[2])
-                        let points = getEqualPoints(tmutSubringsDiameter / 2 - 10, subrings_l1)
+                        let subrings = parseInt(instruction[2])
+                        subringsAmnt = parseInt(instruction[2])
+                        let points = getEqualPoints(tmutSubringsDiameter / 2 - 10, subrings)
                         let contentsRotationAngle = 180
-                        for(l = 0; l < points.length; l++){
-                                let x = points[l][0]
-                                let y = points[l][1]
-                                for(k = 0; k < points.length; k++){
-                                    let x2 = points[k][0]
-                                    let y2 = points[k][1]
-                                    let lines = line(x + width/2, y + height/2, x2 + width/2, y2 + height/2);
-                                }
-                        }
 
                         for(p = 0; p < points.length; p++){
                             let x = points[p][0] + width / 2
@@ -160,24 +156,57 @@
                             div.style('font-size', '30px');
                             div.style('border-radius', '100%');
                             div.style('border', '2px black solid');
-                            div.id("subring_l1" + p)
-                            document.getElementById("subring_l1" + p).style.transform = "rotate(" + contentsRotationAngle + "deg)"
-                            document.getElementById("subring_l1" + p).style.display = "flex"
-                            document.getElementById("subring_l1" + p).style.justifyContent = "center"
-                            document.getElementById("subring_l1" + p).style.alignItems = "center"
-                            document.getElementById("subring_l1" + p).style.width = "70px"
-                            document.getElementById("subring_l1" + p).style.height = "70px"
-                            document.getElementById("subring_l1" + p).style.backgroundColor = "white"
-                            contentsRotationAngle -= 360 / subrings_l1
+                            div.id("subring" + p)
+                            document.getElementById("subring" + p).style.transform = "rotate(" + contentsRotationAngle + "deg)"
+                            document.getElementById("subring" + p).style.display = "flex"
+                            document.getElementById("subring" + p).style.justifyContent = "center"
+                            document.getElementById("subring" + p).style.alignItems = "center"
+                            document.getElementById("subring" + p).style.width = "70px"
+                            document.getElementById("subring" + p).style.height = "70px"
+                            document.getElementById("subring" + p).style.backgroundColor = "white"
+                            contentsRotationAngle -= 360 / subrings
                             div.parent("transmutation_area")
-                            div.position(x - 37, y - 38);
+                            div.position(x - 37, y - 37.5);
                         }
                     }
+                } else if(instruction[1] == 'innerpoly'){
+                    let polySubrings = instructions.join(" ").split('innerpoly')[1].split(" ")
+                    polySubrings.shift()
+                    console.log(polySubrings)
+                    if(subringsAmnt >= 3){
+                        
+                        let newPoly = document.createElementNS(svgns, "polygon");
+                        let svg = document.createElementNS(svgns, "svg");
+                        let points = getEqualPoints(tmutSubringsDiameter / 2 - 10, subringsAmnt)
+                        let pointsAttribute = []
+                        for(i = 0; i < points.length; i++){
+                            pointsAttribute.push(`${points[i][0]},${points[i][1]}`)
+                        }
+                        newPoly.setAttribute("points", pointsAttribute.join(" "))
+                        newPoly.setAttribute("fill", "#FFFFFF");
+                        svg.setAttribute("width", width/2);
+                        svg.setAttribute("height", height/2);
+                        transmutationArea.appendChild(newPoly)
+                    }   
                 }
-            } else if (instruction[0] == 'subring_l1'){
-                if(!isNaN(parseInt(instruction[1]))){
+            } else if (instruction[0] == 'subring'){
+                if(instruction[1] == 'line'){
+                    if(!isNaN(parseInt(instruction[2]))){
+                        if(!isNaN(parseInt(instruction[3]))){
+                            let points = getEqualPoints(tmutSubringsDiameter / 2 - 10, subringsAmnt)
+                            let x = points[parseInt(instruction[2])][0]
+                            let y = points[parseInt(instruction[2])][1]
+
+                            let x2 = points[parseInt(instruction[3])][0]
+                            let y2 = points[parseInt(instruction[3])][1]
+                            stroke('black')
+                            strokeWeight(2)
+                            line(x + width/2, y + height/2, x2 + width/2, y2 + height/2)
+                        }
+                    }
+                } else if(!isNaN(parseInt(instruction[1]))){
                     if(alchemical_symbols[instruction[2]]){
-                        document.getElementById("subring_l1" + instruction[1]).innerHTML = alchemical_symbols[instruction[2]]
+                        document.getElementById("subring" + instruction[1]).innerHTML = alchemical_symbols[instruction[2]]
                     }
                 }
             }
