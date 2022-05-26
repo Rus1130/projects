@@ -1,0 +1,80 @@
+<style>
+    #input {
+        width: 700px;
+        height: 1000px;
+        resize: none;
+        outline: none;
+        border-radius: 0%;
+        font-size: 20px;
+    }
+    #input:focus {
+        outline: none;
+        border-radius: 0%;
+    }
+    #grid {
+        display: grid;
+        grid-template-columns: repeat(5, 700px);
+        column-gap: 10px;
+    }
+    #graph {
+        width: 1000px;
+        height: 1000px;
+        border-radius: 0%;
+        display: grid;
+        grid-template-columns: repeat(100, 10px);
+        grid-template-rows: repeat(100, 10px);
+    }
+</style>
+<head>
+
+</head>
+<body>
+    <div id="grid">
+        <textarea id="input" spellcheck="false" placeholder="tab to run"></textarea>
+        <div id='graph' style="border: 1px black solid"></div>
+    </div>
+    
+</body>
+<script>
+    const graph = document.getElementById('graph');
+    const input = document.getElementById('input');
+
+
+    function draw(){
+        let instructions = input.value.split('\n');
+        for(i = 0; i < instructions.length; i++){
+            let instruction = instructions[i].split(' ');
+            
+        }
+    }
+
+
+    // keybinds
+    document.addEventListener('keydown', (e) => {
+        if(e.key == 'Tab'){
+            e.preventDefault()
+            draw()
+        }
+    });
+
+    // on page load event
+    window.onload = setup();
+    
+    function setup(){
+        for(x = 1; x <= 100; x++){
+            for(y = 1; y <= 100; y++){
+                let cell = document.createElement('div');
+                cell.style.backgroundColor = 'white';
+                cell.style.border = '1px black solid';
+                cell.style.width = '10px';
+                cell.style.transform = 'translate(-1px, -1px)';
+                cell.style.height = '10px';
+                cell.id = `${x}-${y}`
+                graph.appendChild(cell)
+            }
+        }
+        graph.style.transform = 'rotate(-90deg)'
+    }
+
+
+</script>
