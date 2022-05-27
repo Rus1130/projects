@@ -39,10 +39,10 @@
                 cell.id = `${x},${y}`
                 cell.style.width = '10px';
                 cell.style.height = '10px';
-
-                if(y % 1 == 0 && x % 1 == 0){
+                if(y == random(1,100) || x == random(1,100)){
                     cellPositions.push(`${x},${y}`)
                 }
+
                 area.appendChild(cell)
             }
         }
@@ -55,15 +55,33 @@
 
             let x = parseInt(coords[0])
             let y = parseInt(coords[1])
-
+            
             let cell = document.getElementById(`${x},${y}`)
-            let color = `rgb(${random(0, 255)},${random(0, 255)},${random(0, 255)})`
-            cell.style.backgroundColor = color
-
+            switch(i % 3){
+                case 0:
+                    cell.style.backgroundColor = 'red'
+                    cell.innerText = "R"
+                break;
+                case 1:
+                    cell.style.backgroundColor = 'green'
+                    cell.innerText = "G"
+                break;
+                case 2:
+                    cell.style.backgroundColor = 'blue'
+                    cell.innerText = "B"
+                break;
+            }
+            try{
+                if(document.getElementById(`${x+1},${y}`).innerText == cell.innerText){
+                    document.getElementById(`${x+1},${y}`).style.backgroundColor = 'black'
+                } else {
+                    document.getElementById(`${x+1},${y}`).style.backgroundColor = 'white'
+                }
+            } catch {}
         }
     }
 
-    setInterval(run, 1)
+    setInterval(run, 1000)
     
 
 
