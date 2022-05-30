@@ -1,25 +1,9 @@
 <style>
-    #input {
-        width: 700px;
-        height: 1000px;
-        resize: none;
-        outline: none;
-        border-radius: 0%;
-        font-size: 20px;
-    }
-    #input:focus {
-        outline: none;
-        border-radius: 0%;
-    }
-    #grid {
-        display: grid;
-        grid-template-columns: repeat(5, 700px);
-        column-gap: 10px;
-    }
-    #graph {
+    #area {
         width: 1000px;
         height: 1000px;
         border-radius: 0%;
+        border: 1px solid black;
         display: grid;
         grid-template-columns: repeat(100, 10px);
         grid-template-rows: repeat(100, 10px);
@@ -29,52 +13,76 @@
 
 </head>
 <body>
-    <div id="grid">
-        <textarea id="input" spellcheck="false" placeholder="tab to run"></textarea>
-        <div id='graph' style="border: 1px black solid"></div>
-    </div>
+    <button style="height: 20px">stort</button>
+    <div id='area'></div>
     
 </body>
 <script>
-    const graph = document.getElementById('graph');
-    const input = document.getElementById('input');
-
-
-    function draw(){
-        let instructions = input.value.split('\n');
-        for(i = 0; i < instructions.length; i++){
-            let instruction = instructions[i].split(' ');
-            
-        }
+    // randomly pick between 1 and 3
+    const random = (min, max) => {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
+    const area = document.getElementById('area');
+    let cellPositions = []
+    setup()
 
-    // keybinds
-    document.addEventListener('keydown', (e) => {
-        if(e.key == 'Tab'){
-            e.preventDefault()
-            draw()
-        }
-    });
 
-    // on page load event
-    window.onload = setup();
-    
     function setup(){
-        for(x = 1; x <= 100; x++){
-            for(y = 1; y <= 100; y++){
+        for(y = 1; y <= 100; y++){
+            for(x = 1; x <= 100; x++){
                 let cell = document.createElement('div');
                 cell.style.backgroundColor = 'white';
-                cell.style.border = '1px black solid';
+                cell.style.fontSize = '10px';
+                cell.style.fontFamily = 'monospace';
+                cell.style.color = 'transparent'
+                cell.id = `${x},${y}`
                 cell.style.width = '10px';
-                cell.style.transform = 'translate(-1px, -1px)';
                 cell.style.height = '10px';
-                cell.id = `${x}-${y}`
-                graph.appendChild(cell)
+                if(y == random(1,100) || x == random(1,100)){
+                    cellPositions.push(`${x},${y}`)
+                }
+
+                area.appendChild(cell)
             }
         }
-        graph.style.transform = 'rotate(-90deg)'
+        area.style.transform = 'rotate(-90deg)'
     }
+
+    function run(){
+        for(i = 0; i < cellPositions.length; i++){
+            let coords = cellPositions[i].split(',')
+
+            let x = parseInt(coords[0])
+            let y = parseInt(coords[1])
+            
+            let cell = document.getElementById(`${x},${y}`)
+            switch(i % 3){
+                case 0:
+                    cell.style.backgroundColor = 'red'
+                    cell.innerText = "R"
+                break;
+                case 1:
+                    cell.style.backgroundColor = 'green'
+                    cell.innerText = "G"
+                break;
+                case 2:
+                    cell.style.backgroundColor = 'blue'
+                    cell.innerText = "B"
+                break;
+            }
+            try{
+                if(document.getElementById(`${x+1},${y}`).innerText == cell.innerText){
+                    document.getElementById(`${x+1},${y}`).style.backgroundColor = 'black'
+                } else {
+                    document.getElementById(`${x+1},${y}`).style.backgroundColor = 'white'
+                }
+            } catch {}
+        }
+    }
+
+    setInterval(run, 1000)
+    
 
 
 </script>
