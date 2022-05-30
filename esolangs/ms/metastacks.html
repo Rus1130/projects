@@ -21,7 +21,7 @@
         border: 1.5px black solid;
         outline: none;
     }
-    #macrostack {
+    #metastack {
         width: 1000px;
         height: 300px;
         display: grid;
@@ -69,17 +69,17 @@
 <head>
 </head>
 <body>
-    <a href="stacktape-docs.txt" download="stacktape-docs">
-        <button position="absolute;">Download Stacktape Docs</button>
+    <a href="metastacks-docs.txt" download="metastacks-docs">
+        <button position="absolute;">Download Metastacks Docs</button>
     </a><br><br>
-    <div id="macrostack"></div><br>
+    <div id="metastack"></div><br>
     <textarea id="input" title="input" spellcheck="false" autocomplete="off"></textarea><br>
     <textarea id="output" style="position: relative; top: -19px;" title="output" readonly spellcheck="false"></textarea>
     <button title="run" id="run-btn" onclick="run(input.value)">Run!</button>
 </body>
 <script>
     const input = document.getElementById("input");
-    const macrostack = document.getElementById("macrostack");
+    const metastackHTMLElem = document.getElementById("metastack");
     const out = document.getElementById("output");
 
     const stackSize = 10
@@ -99,7 +99,7 @@
             let stack = document.createElement("div");
             stack.classList.add("stack");
             stack.id = `s${i}`;
-            macrostack.appendChild(stack);
+            metastackHTMLElem.appendChild(stack);
 
             for(j = 0; j < stackSize; j++){
                 let microstack = document.createElement("div");
