@@ -159,7 +159,6 @@
 
     async function interperet(instructions){
         for(let i = -1; i < instructions.length; i++){
-            
             let currentChar = instructions[i];
             let nextChar = instructions[i + 1];
             
@@ -289,7 +288,11 @@
                         output.push(`\n${repeat(" ", i)}^`);
                         i = instructions.length;
                     } else {
-                        metastack[pointer].push(parseInt(value.charCodeAt(0)))
+                        if(isNaN(parseInt(value.charCodeAt(0)))){
+                            metastack[pointer].push(0)
+                        } else {
+                            metastack[pointer].push(parseInt(value.charCodeAt(0)))
+                        }
                     }
                 } else {
                     let value = prompt("Enter a value: ");
@@ -299,7 +302,11 @@
                         output.push(`\n${repeat(" ", i)}^`);
                         i = instructions.length;
                     } else {
-                        metastack[pointer].push(parseInt(value));
+                        if(isNaN(parseInt(value))){
+                            metastack[pointer].push(0)
+                        } else {
+                            metastack[pointer].push(parseInt(value))
+                        }
                     }
                 }
             }
@@ -395,7 +402,6 @@
                     metastack[pointer].pop();
                     metastack[pointer].pop();
                     let result = 0;
-                    console.log(value1, value2)
                     switch(currentChar){
                         case "a":
                             result = value1 + value2;
