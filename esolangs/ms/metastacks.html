@@ -82,6 +82,8 @@
     const metastackHTMLElem = document.getElementById("metastack");
     const out = document.getElementById("output");
 
+    
+
     const stackSize = 10
 
     let output = []
@@ -159,6 +161,8 @@
 
     async function interperet(instructions){
         for(let i = -1; i < instructions.length; i++){
+            out.scrollTop = out.scrollHeight 
+
             let currentChar = instructions[i];
             let nextChar = instructions[i + 1];
             
