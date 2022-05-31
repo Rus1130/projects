@@ -19,10 +19,10 @@ _ - outputs a newline
 
 / - moves to top value of current stack to stack to the left
 \ - moves to top value of current stack to stack to the right
+~ - reverses items in current stack
 
 x - discard top value
-
-; - halts program
+X - halts program
 
 Math:
 a - addition
