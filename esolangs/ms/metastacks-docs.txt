@@ -10,6 +10,9 @@ _ - outputs a newline
 [ - if the top of the current stack is 0, skip to the next ]
 ] - if the top of the current stack is not 0, jump back to last [
 
+> - move right
+< - move left
+
 { } - unconditional loop
 
 = value ? … $ - if top of current stack equals value, run …
