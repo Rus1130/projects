@@ -82,6 +82,9 @@ const output = document.getElementById('output');
 const runButton = document.getElementById('btn');
 const stack = document.getElementById('stack');
 
+const disSpace = '#-sp-#';
+const disNL = '#-nl-#';
+
 let pointer = 1;
 
 let cellValues = [];
@@ -199,14 +202,14 @@ function timeout(ms) {
 
 let running = false;
 const premadeBSPrograms = {
-    "0" : "tU++[>+++++[>+++++++<-]<-]>>++.<<++++++++++[>+++<-]>[<+>>+<-]>-.+++++++..+++.<<++++++++++++++.------------.>>++++++++.--------.+++.------.--------.<<+. Program##sp##Name:##sp##Hello,##sp##world!",
-    "1" : ";[.]. Program##sp##Name:##sp##Truth-Machine",
-    "2" : ";v;v,v@:>:<#43?a.=#45?s.=#42?m.=#47?d.=#37?r.= Program##sp##Name:##sp##Integer##sp##Calculator##nl##Order:##sp##Num1##sp##Num2##sp##Operator##sp##(+,-,*,/,%)",
-    "3" : "+>;[<m>-]<. Program##sp##Name:##sp##Factorial##sp##Calculator",
-    "4" : "{v,V#43?p:+$#44?p:,$#45?p:-$#46?p:.$#60?p:<$#62?p:>$} Program##sp##Name:##sp##6/8ths##sp##Brainfuck",
-    "5" : "W++++[>++++<-]>[[>+<-]>[>+<-]>] Program##sp##Name:##sp##Crawler",
-    "6" : "tU+++++[>+++<-]>[>++++>++<<-]>+++++++>+++>++++++++++[<<.>.-.+>-] Program##sp##Name:##sp##C!",
-    "7" : "+{va>:_<} Program##sp##Name:##sp##Fibonacci##sp##Sequence"
+    "0" : `tU++[>+++++[>+++++++<-]<-]>>++.<<++++++++++[>+++<-]>[<+>>+<-]>-.+++++++..+++.<<++++++++++++++.------------.>>++++++++.--------.+++.------.--------.<<+. Program${disSpace}Name:${disSpace}Hello,${disSpace}world!`,
+    "1" : `;[.]. Program${disSpace}Name:${disSpace}Truth-Machine`,
+    "2" : `;v;v,v@:>:<#43?a.=#45?s.=#42?m.=#47?d.=#37?r.= Program${disSpace}Name:${disSpace}Integer${disSpace}Calculator${disNL}Order:${disSpace}Num1${disSpace}Num2${disSpace}Operator${disSpace}(+,-,*,/,%)`,
+    "3" : `+>;[<m>-]<. Program${disSpace}Name${disSpace}Factorial${disSpace}Calculator`,
+    "4" : `{v,V#43?p:+$#44?p:,$#45?p:-$#46?p:.$#60?p:<$#62?p:>$} Program${disSpace}Name:${disSpace}6/8ths${disSpace}Brainfuck`,
+    "5" : `W++++[>++++<-]>[[>+<-]>[>+<-]>] Program${disSpace}Name:${disSpace}Crawler`,
+    "6" : `tU+++++[>+++<-]>[>++++>++<<-]>+++++++>+++>++++++++++[<<.>.-.+>-] Program${disSpace}Name:${disSpace}C!`,
+    "7" : `+{va>:_<} Program${disSpace}Name:${disSpace}Fibonacci${disSpace}Sequence`
 }
 
 async function parse(instructions){
@@ -511,7 +514,7 @@ async function parse(instructions){
                     let programName = premadeBSPrograms[programID].split(" ")[1]
                     let program = premadeBSPrograms[programID].split(" ")[0]
                     input.value = program;
-                    outputArray.push(programName.replaceAll("##sp##"," ").replaceAll("##nl##","\n"));
+                    outputArray.push(programName.replaceAll(disSpace," ").replaceAll(disNL,"\n"));
                 }
             }
             if(char === "E"){
