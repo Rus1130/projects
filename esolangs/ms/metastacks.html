@@ -212,7 +212,7 @@
             }
             if(currentChar === ":"){
                 if(metastack[pointer].length === 0){
-                    output.push(`\nERROR: Cannot dupelicate an undefined value. (char ${i+1})`);
+                    output.push(`\nERROR: Cannot duplicate an undefined value. (char ${i+1})`);
                     output.push(`\n${instructions}`)
                     output.push(`\n${repeat(" ", i)}^`);
                     i = instructions.length;
