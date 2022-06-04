@@ -32,44 +32,40 @@
     const stringy = {
         compress(str){
             let uncompString = [...str]
-            uncompString = uncompString.map(char => char.charCodeAt(0).toString().replaceAll(".", "").padStart(3, "0")).join("").match(/.{1,81}/g)
-            console.log(uncompString)
-            uncompString = uncompString.map(x => String(Number(x)).replaceAll(".", "").replaceAll("e+",":")).join(":").split(":")
-            console.log(uncompString)
-            uncompString = uncompString.map(x => Number(x).toString(36)).join(";")
-            console.log(uncompString)
-
-            return uncompString
-        },
-        decompress(str){
-            let compString = str.split(";")
-            let base = []
+            let zeroStart = []
             let codes = []
-            let numberArray = []
+            let body = []
             let result = []
-
-            for(i = 0; i < compString.length; i++){
-                if(i % 2 == 0){
-                    base.push(compString[i])
-                }else{
-                    codes.push(compString[i])
+            uncompString = uncompString.map(char => char.charCodeAt(0).toString().replaceAll(".", "").padStart(3, "0")).join("").match(/.{1,243}/g)
+            for(i = 0; i < uncompString.length; i++){
+                if(uncompString[i][0] == "0"){
+                    zeroStart.push(1)
+                } else {
+                    zeroStart.push(0)
                 }
             }
-            base = base.map(x => parseInt(x,36))
-            codes = codes.map(x => parseInt(x,36))
 
-            for(i = 0; i < codes.length; i++){
-                numberArray.push(`${base[i]}e+${codes[i]}`)
+            uncompString = uncompString.map(str => String(Number(str))).join("e+").split("e+")
+            uncompString = uncompString.map(str => Number(str.replaceAll(".","")).toString(36))
+            for(i = 0; i < uncompString.length; i++){
+                switch(i % 2){
+                    case 0:
+                        body.push(uncompString[i])
+                    break;
+                    case 1:
+                        codes.push(uncompString[i])
+                    break;
+                }
             }
-            numberArray = numberArray.map(x => ('0' + BigInt(Number(x)).toString()).match(/.{1,3}/g))
+            for(i = 0; i < body.length; i++){
+                result.push(`${zeroStart[i]}:${body[i]}:${codes[i]}`)
+            }
+            result = result.join("-").replaceAll("undefined", "0")
 
-            for(i = 0; i < numberArray.length; i++){
-                result.push(String.fromCharCode(...numberArray[i]))
-            }
-            
-            console.log(base)
-            console.log(codes)
             return result
+        },
+        decompress(str){
+
         }
     }
 </script>
