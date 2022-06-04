@@ -61,11 +61,21 @@
                 result.push(`${zeroStart[i]}:${body[i]}:${codes[i]}`)
             }
             result = result.join("-").replaceAll("undefined", "0")
-
+            
             return result
         },
         decompress(str){
+            let compString = str.split("-")
+            compString = compString.map(x => x.split(":"))
+            for(i = 0; i < compString.length; i++){
+                for(j = 0; j < compString[0].length; j++){
+                    if(j % 3 != 0){
+                        compString[i][j] = parseInt(compString[i][j],36)
+                    }
+                }
+            }
 
+            return compString
         }
     }
 </script>
