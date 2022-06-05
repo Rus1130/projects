@@ -31,51 +31,10 @@
     }
     const stringy = {
         compress(str){
-            let uncompString = [...str]
-            let zeroStart = []
-            let codes = []
-            let body = []
-            let result = []
-            uncompString = uncompString.map(char => char.charCodeAt(0).toString().replaceAll(".", "").padStart(3, "0")).join("").match(/.{1,243}/g)
-            for(i = 0; i < uncompString.length; i++){
-                if(uncompString[i][0] == "0"){
-                    zeroStart.push(1)
-                } else {
-                    zeroStart.push(0)
-                }
-            }
 
-            uncompString = uncompString.map(str => String(Number(str))).join("e+").split("e+")
-            uncompString = uncompString.map(str => Number(str.replaceAll(".","")).toString(36))
-            for(i = 0; i < uncompString.length; i++){
-                switch(i % 2){
-                    case 0:
-                        body.push(uncompString[i])
-                    break;
-                    case 1:
-                        codes.push(uncompString[i])
-                    break;
-                }
-            }
-            for(i = 0; i < body.length; i++){
-                result.push(`${zeroStart[i]}:${body[i]}:${codes[i]}`)
-            }
-            result = result.join("-").replaceAll("undefined", "0")
-            
-            return result
         },
         decompress(str){
-            let compString = str.split("-")
-            compString = compString.map(x => x.split(":"))
-            for(i = 0; i < compString.length; i++){
-                for(j = 0; j < compString[0].length; j++){
-                    if(j % 3 != 0){
-                        compString[i][j] = parseInt(compString[i][j],36)
-                    }
-                }
-            }
 
-            return compString
         }
     }
 </script>
