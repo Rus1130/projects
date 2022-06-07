@@ -31,7 +31,31 @@
     }
     const stringy = {
         compress(str){
+            let input = str.split("");
+            let startsWithZeros = []
+            input = input.map(char => char.charCodeAt(0).toString().padStart(3, "0"));
+            input = input.join("").match(/.{1,243}/g);
+            for(i = 0; i < input.length; i++){
+                if(input[i][0] == "0"){
+                    startsWithZeros.push(true);
+                } else {
+                    startsWithZeros.push(false);
+                }
+            }
 
+            let result = input.map(index => String(Number(index)).replaceAll(".",""))
+            for(i = 0; i < startsWithZeros.length; i++){
+                if(startsWithZeros[i]){
+                    result[i] = "1e+" + result[i];
+                }
+            }
+            
+            for(i = 0; i < result.length; i++){
+                result[i] = result[i].split("e+")
+                result[i] = result[i].map(x => Number(x))
+            }
+
+            return result
         },
         decompress(str){
 

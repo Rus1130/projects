@@ -1,0 +1,27 @@
+<style>
+
+</style>
+<head>
+
+</head>
+<body>
+
+</body>
+<script>
+    function bin2dec(bin) {
+        let Bin = bin.split(" ")
+        let result = ''
+        for(i = 0; i < Bin.length; i++) {
+            result += parseInt(Bin[i], 2).toString(16) + " "   
+        }
+        return result.trim()
+    }
+    function dec2uni(dec) {
+        let Dec = dec.split(" ")
+        let result = ''
+        for(i = 0; i < Dec.length; i++) {
+            result += String.fromCharCode(parseInt(Dec[i], 16))
+        }
+        return result
+    }
+</script>

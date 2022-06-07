@@ -16,6 +16,7 @@ _ - outputs a newline
 { } - unconditional loop
 
 = value ? … $ - if top of current stack equals value, run …
+! value ? … $ - if top of current stack does not equal value, run …
 
 / - moves to top value of current stack to stack to the left
 \ - moves to top value of current stack to stack to the right

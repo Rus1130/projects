@@ -428,7 +428,7 @@
             }
             // conditional =====================
 
-            if(currentChar === "="){
+            if(currentChar === "=" || currentChar === "!" || currentChar === "g" || currentChar === "l" || currentChar === "G" || currentChar === "L"){
                 let comparisonValue = parseInt(instructions.substring(i + 1, instructions.indexOf("?", i)))
                 let endOfConditional = instructions.indexOf("$", i)
                 if(isNaN(comparisonValue)){
@@ -449,13 +449,43 @@
                             output.push(`\n${repeat(" ", i)}^`);
                             i = instructions.length;
                         } else {
-                            if(metastack[pointer][metastack[pointer].length - 1] !== comparisonValue){
-                                i = endOfConditional;
+                            switch(currentChar){
+                                case "=":
+                                    if(metastack[pointer][metastack[pointer].length - 1] !== comparisonValue){
+                                        i = endOfConditional;
+                                    }
+                                break
+                                case "!":
+                                    if(metastack[pointer][metastack[pointer].length - 1] === comparisonValue){
+                                        i = endOfConditional;
+                                    }
+                                break;
+                                case "g":
+                                    if(metastack[pointer][metastack[pointer].length - 1] < comparisonValue){
+                                        i = endOfConditional;
+                                    }
+                                break;
+                                case "l":
+                                    if(metastack[pointer][metastack[pointer].length - 1] > comparisonValue){
+                                        i = endOfConditional;
+                                    }
+                                break;
+                                case "G":
+                                    if(metastack[pointer][metastack[pointer].length - 1] <= comparisonValue){
+                                        i = endOfConditional;
+                                    }
+                                break;
+                                case "L":
+                                    if(metastack[pointer][metastack[pointer].length - 1] >= comparisonValue){
+                                        i = endOfConditional;
+                                    }
+                                break;
                             }
                         }
                     }
                 }
             }
+
             // misc =============================
             if(currentChar === "X"){
                 i = instructions.length
