@@ -1,0 +1,8 @@
+inc (x|y) n:
+    increments x or y by n
+
+dec (x|y) n:
+    decrements x or y by n
+
+bdr (true|false):
+    turns border on or off

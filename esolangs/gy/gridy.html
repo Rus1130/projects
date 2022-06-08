@@ -1,0 +1,109 @@
+<style>
+    textarea {
+        position: relative;
+        height: 700px;
+        width: 400px;
+        resize: none;
+        font-family: monospace;
+        border: 1.5px black solid;
+        color: black;
+        border-radius: 0%;
+        font-size: 12pt;
+    }
+    textarea:focus {
+        border: 1.5px black solid;
+        outline: none;
+    }
+    #layout {
+        display: grid;
+        grid-template-columns: repeat(2, 400px);
+        column-gap: 5px;
+    }
+    #output {
+        display: grid;
+        grid-template-columns: repeat(100, 7px);
+        grid-template-rows: repeat(100, 7px);
+        width: 700px;
+        height: 700px;
+        border: 1px black solid;
+    }
+    #run-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: monospace;
+        border: 1.5px solid black;
+        font-size: 15px;
+        background-color: beige;
+        width: 400px;
+        height: 60px;
+        font-size: 20px;
+        transition: ease 0.3s;
+        position: relative;
+    }
+    #run-btn :hover {
+        background-color: #f0f0f0;
+    }
+</style>
+<head>
+
+</head>
+<body>
+    <div id="layout">
+        <textarea id="input" spellcheck="false"></textarea>
+        <div id="output"></div>
+    </div>
+    <button id="run-btn" onclick="run(input.value)">Run!</button>
+</body>
+<script>
+    const input = document.getElementById("input")
+    const output = document.getElementById('output')
+    
+    let pointer = {
+        x: 0,
+        y: 0
+    }
+    
+    // setup
+    function setup(){
+        for(i = 0; i < 100; i++){
+            for(j = 0; j < 100; j++){
+                let cell = document.createElement('div')
+                cell.style.backgroundColor = '#FFFFFF'
+                cell.style.fontSize = '10px'
+                cell.style.fontFamily = 'monospace'
+                cell.style.border = '1px black solid'
+                cell.style.width = '7px'
+                cell.style.height = '7px'
+                cell.id = `${i},${j}`
+                output.appendChild(cell)
+            }
+        }
+        output.style.transform = 'rotate(-90deg)'
+    }
+
+    function fixIllegalXY(){
+        if(pointer.x > 100){
+            pointer.x = 100
+        }
+        if(pointer.x < 0){
+            pointer.x = 0
+        }
+        if(pointer.y > 100){
+            pointer.y = 100
+        }
+        if(pointer.y < 0){
+            pointer.y = 0
+        }
+    }
+
+    setup()
+
+    function run(instructions){
+        output.innerHTML = ''
+        setup()
+    }
+
+    
+
+</script>
