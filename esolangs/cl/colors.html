@@ -165,7 +165,46 @@
     async function run(instructions){
         output.innerHTML = ''
         setup()
+        let input = ["q"].concat(instructions.replaceAll("\n","").split(""))
+        for(i = 0; i < input.length; i++){
+            console.log(pointer)
+            fixIllegalXY()
+            modCurrentCell(true,pointer.x,pointer.y)
+            let currentChar = input[i]
+            let nextChar = input[i + 1]
+            if(currentChar == "q"){
+                modCurrentCell(true,pointer.x,pointer.y)
+                pointer.x = 0
+                pointer.y = 0
+                modCurrentCell(false,pointer.x,pointer.y)
+            }
+            if(currentChar == "+" || currentChar == "-"){
+                if(nextChar == "{" || nextChar == "("){
+                    let matchingIndexParen = input.indexOf(")",i)
+                    let matchingIndexCurly = input.indexOf("}",i)
+                    if(matchingIndexParen != -1){
+                        let matchingValue = parseInt(instructions.slice(i + 1,matchingIndexParen - 1))
+                        if(currentChar == "+"){
+                            pointer.x += matchingValue
+                        } else {
+                            pointer.x -= matchingValue
+                        }
 
+                    } else if(matchingIndexCurly != -1){
+                        let matchingValue = parseInt(instructions.slice(i + 2,matchingIndexCurly))
+                        if(currentChar == "+"){
+                            pointer.y += matchingValue
+                        } else {
+                            pointer.y -= matchingValue
+                        }
+                    }
+                }
+            }
+            timeout(500)
+            modCurrentCell(false,pointer.x,pointer.y)
+            fixIllegalXY()
+            
+        }
     }
 
     
