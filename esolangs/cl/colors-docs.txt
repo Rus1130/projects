@@ -1,0 +1,5 @@
+inc (x|y) n:
+    increments x or y n
+
+dec (x|y) n:
+    decrements x or y by n

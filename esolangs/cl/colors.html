@@ -1,0 +1,206 @@
+<style>
+    textarea {
+        position: relative;
+        height: 700px;
+        width: 400px;
+        resize: none;
+        font-family: monospace;
+        border: 1.5px black solid;
+        color: black;
+        border-radius: 0%;
+        font-size: 12pt;
+    }
+    textarea:focus {
+        border: 1.5px black solid;
+        outline: none;
+    }
+    #layout {
+        display: grid;
+        grid-template-columns: repeat(2, 400px);
+        column-gap: 5px;
+    }
+    #output {
+        display: grid;
+        grid-template-columns: repeat(200, 5px);
+        grid-template-rows: repeat(200, 5px);
+        width: 1000px;
+        height: 1000px;
+    }
+    #run-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: monospace;
+        border: 1.5px solid black;
+        font-size: 15px;
+        background-color: beige;
+        width: 400px;
+        height: 60px;
+        top: -280px;
+        font-size: 20px;
+        transition: ease 0.3s;
+        position: relative;
+    }
+    #run-btn:hover {
+        background-color: #f0f0f0;
+    }
+</style>
+<head>
+
+</head>
+<body>
+    <div id="layout">
+        <textarea id="input" spellcheck="false"></textarea>
+        <div id="output"></div>
+    </div>
+    <button id="run-btn" onclick="run(input.value)">Run!</button>
+</body>
+<script>
+    const input = document.getElementById("input")
+    const output = document.getElementById('output')
+    
+    let pointer = {
+        x: 0,
+        y: 0
+    }
+    let max_X = 200
+    let max_Y = 200
+    // setup
+    function setup(){
+        for(i = 0; i < max_X; i++){
+            for(j = 0; j < max_Y; j++){
+                let cell = document.createElement('div')
+                cell.style.backgroundColor = '#FFFFFF'
+                cell.style.fontSize = '10px'
+                cell.style.fontFamily = 'monospace'
+                cell.style.border = '1px black solid'
+                cell.style.width = '5px'
+                cell.style.height = '5px'
+                cell.id = `${j},${i}`
+                output.appendChild(cell)
+            }
+        }
+        output.style.transform = 'rotate(-90deg)'
+    }
+
+    function fixIllegalXY(){
+        if(pointer.x > max_X){
+            pointer.x = max_X
+        }
+        if(pointer.x < 0){
+            pointer.x = 0
+        }
+        if(pointer.y > max_Y){
+            pointer.y = max_Y
+        }
+        if(pointer.y < 0){
+            pointer.y = 0
+        }
+    }
+
+    const colorsArray = {
+        0: "#0a544f",
+        1: "#0d6a73",
+        2: "#14783c",
+        3: "#1a869c",
+        4: "#263847",
+        5: "#3da3bf",
+        6: "#459c28",
+        7: "#52002d",
+        8: "#565876",
+        9: "#654c68",
+        10: "#682e2e",
+        11: "#72847f",
+        12: "#79cfd9",
+        13: "#823fa1",
+        14: "#861008",
+        15: "#8bb842",
+        16: "#8f5931",
+        17: "#a4b2a0",
+        18: "#a6834e",
+        19: "#ab63d4",
+        20: "#b54b12",
+        21: "#b60e2d",
+        22: "#bfedf2",
+        23: "#d4821e",
+        24: "#d9d4c4",
+        25: "#dc2828",
+        26: "#e573cf",
+        27: "#ee9481",
+        28: "#f6d884",
+        29: "#ffaef8",
+        30: "#ffc9bd",
+        31: "#ffffff"
+    }
+    
+    function colorArraySort(){
+        let result = []
+        let temp = []
+        for(i = 0; i < colorsArray.length; i++){
+            temp.push(parseInt(colorsArray[i],16))
+        }
+        result = temp.sort(function(a, b) {
+            return a - b;
+        });
+        result = result.map(x => "#" + x.toString(16).padStart(6, "0"));
+        return result
+    }
+
+    function timeout(milliseconds) {
+        var start = new Date().getTime();
+        for (var i = 0; i < 1e7; i++) {
+            if ((new Date().getTime() - start) > milliseconds){
+                break;
+            }
+        }
+    }
+    
+    setup()
+
+    function run(instructions){
+        output.innerHTML = ''
+        setup()
+        pointer = {x: 0, y: 0}
+
+        let instructionsArray = instructions.split("\n")
+        for(i = 0; i < instructionsArray.length; i++){
+            let line = instructionsArray[i].split(" ")
+            for(j = 0; j < line.length; j++){
+                let instruction = line[j]
+                // incrementing and decrementing pointer
+                if(instruction === "inc" || instruction === "dec"){
+                    if(instruction === "inc"){
+                        if(!isNaN(parseInt(line[j + 2]))){
+                            if(line[j + 1] === "x" || line[j + 1] === "y"){
+                                if(line[j + 1] === "x"){
+                                    pointer.x += parseInt(line[j + 2])
+                                } else {
+                                    pointer.y += parseInt(line[j + 2])
+                                }
+                            }
+                        }
+                    }
+
+                    if(instruction === "dec"){
+                        if(!isNaN(parseInt(line[j + 2]))){
+                            if(line[j + 1] === "x" || line[j + 1] === "y"){
+                                if(line[j + 1] === "x"){
+                                    pointer.x -= parseInt(line[j + 2])
+                                } else {
+                                    pointer.y -= parseInt(line[j + 2])
+                                }
+                            }
+                        }
+                    }
+                }
+                fixIllegalXY()
+            }
+            console.log(pointer)
+            timeout(800)
+        }
+       
+    }
+
+    
+
+</script>
