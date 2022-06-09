@@ -81,7 +81,6 @@
             }
         }
         output.style.transform = 'rotate(-90deg)'
-        modCurrentCell(false,pointer.x,pointer.y)
     }
 
     function fixIllegalXY(){
@@ -133,22 +132,9 @@
         30: "#ffc9bd",
         31: "#ffffff"
     }
-    
-    function colorArraySort(){
-        let result = []
-        let temp = []
-        for(i = 0; i < colorsArray.length; i++){
-            temp.push(parseInt(colorsArray[i],16))
-        }
-        result = temp.sort(function(a, b) {
-            return a - b;
-        });
-        result = result.map(x => "#" + x.toString(16).padStart(6, "0"));
-        return result
-    }
 
     function modCurrentCell(clearMode,x,y){
-        let cell = document.getElementById(`${y ?? 0},${x ?? 0}`)
+        let cell = document.getElementById(`${y},${x}`)
         if(clearMode == true){
             cell.style.borderLeft = 'none'
         } else {
@@ -163,47 +149,13 @@
     }
 
     async function run(instructions){
+        pointer = {x: 0, y: 0}
         output.innerHTML = ''
         setup()
-        let input = ["q"].concat(instructions.replaceAll("\n","").split(""))
+        let input = instructions.replaceAll("\n","").split("")
         for(i = 0; i < input.length; i++){
-            console.log(pointer)
-            fixIllegalXY()
-            modCurrentCell(true,pointer.x,pointer.y)
-            let currentChar = input[i]
-            let nextChar = input[i + 1]
-            if(currentChar == "q"){
-                modCurrentCell(true,pointer.x,pointer.y)
-                pointer.x = 0
-                pointer.y = 0
-                modCurrentCell(false,pointer.x,pointer.y)
-            }
-            if(currentChar == "+" || currentChar == "-"){
-                if(nextChar == "{" || nextChar == "("){
-                    let matchingIndexParen = input.indexOf(")",i)
-                    let matchingIndexCurly = input.indexOf("}",i)
-                    if(matchingIndexParen != -1){
-                        let matchingValue = parseInt(instructions.slice(i + 1,matchingIndexParen - 1))
-                        if(currentChar == "+"){
-                            pointer.x += matchingValue
-                        } else {
-                            pointer.x -= matchingValue
-                        }
 
-                    } else if(matchingIndexCurly != -1){
-                        let matchingValue = parseInt(instructions.slice(i + 2,matchingIndexCurly))
-                        if(currentChar == "+"){
-                            pointer.y += matchingValue
-                        } else {
-                            pointer.y -= matchingValue
-                        }
-                    }
-                }
-            }
-            timeout(500)
-            modCurrentCell(false,pointer.x,pointer.y)
-            fixIllegalXY()
-            
+            timeout(500)        
         }
     }
 
