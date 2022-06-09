@@ -1,5 +1,9 @@
-inc (x|y) n:
-    increments x or y n
++(n):
+    increments x by n
++{n}:
+    increments y by n
 
-dec (x|y) n:
-    decrements x or y by n
+-(n):
+    decrements x by n
+-{n}:
+    decrements y by n

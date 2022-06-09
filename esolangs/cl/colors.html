@@ -21,17 +21,18 @@
     }
     #output {
         display: grid;
-        grid-template-columns: repeat(200, 5px);
-        grid-template-rows: repeat(200, 5px);
+        grid-template-columns: repeat(100, 10px);
+        grid-template-rows: repeat(100, 10px);
         width: 1000px;
         height: 1000px;
+        border: 1.5px black solid;
     }
     #run-btn {
         display: flex;
         align-items: center;
         justify-content: center;
         font-family: monospace;
-        border: 1.5px solid black;
+        border: 1px solid black;
         font-size: 15px;
         background-color: beige;
         width: 400px;
@@ -63,24 +64,24 @@
         x: 0,
         y: 0
     }
-    let max_X = 200
-    let max_Y = 200
+    let max_X = 100
+    let max_Y = 100
     // setup
     function setup(){
         for(i = 0; i < max_X; i++){
             for(j = 0; j < max_Y; j++){
                 let cell = document.createElement('div')
                 cell.style.backgroundColor = '#FFFFFF'
-                cell.style.fontSize = '10px'
+                cell.style.fontSize = '5px'
                 cell.style.fontFamily = 'monospace'
-                cell.style.border = '1px black solid'
-                cell.style.width = '5px'
-                cell.style.height = '5px'
+                cell.style.width = '10px'
+                cell.style.height = '10px'
                 cell.id = `${j},${i}`
                 output.appendChild(cell)
             }
         }
         output.style.transform = 'rotate(-90deg)'
+        modCurrentCell(false,pointer.x,pointer.y)
     }
 
     function fixIllegalXY(){
@@ -146,59 +147,25 @@
         return result
     }
 
-    function timeout(milliseconds) {
-        var start = new Date().getTime();
-        for (var i = 0; i < 1e7; i++) {
-            if ((new Date().getTime() - start) > milliseconds){
-                break;
-            }
+    function modCurrentCell(clearMode,x,y){
+        let cell = document.getElementById(`${y ?? 0},${x ?? 0}`)
+        if(clearMode == true){
+            cell.style.borderLeft = 'none'
+        } else {
+            cell.style.borderLeft = '1px black solid'
         }
     }
     
     setup()
 
-    function run(instructions){
+    function timeout(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms))
+    }
+
+    async function run(instructions){
         output.innerHTML = ''
         setup()
-        pointer = {x: 0, y: 0}
 
-        let instructionsArray = instructions.split("\n")
-        for(i = 0; i < instructionsArray.length; i++){
-            let line = instructionsArray[i].split(" ")
-            for(j = 0; j < line.length; j++){
-                let instruction = line[j]
-                // incrementing and decrementing pointer
-                if(instruction === "inc" || instruction === "dec"){
-                    if(instruction === "inc"){
-                        if(!isNaN(parseInt(line[j + 2]))){
-                            if(line[j + 1] === "x" || line[j + 1] === "y"){
-                                if(line[j + 1] === "x"){
-                                    pointer.x += parseInt(line[j + 2])
-                                } else {
-                                    pointer.y += parseInt(line[j + 2])
-                                }
-                            }
-                        }
-                    }
-
-                    if(instruction === "dec"){
-                        if(!isNaN(parseInt(line[j + 2]))){
-                            if(line[j + 1] === "x" || line[j + 1] === "y"){
-                                if(line[j + 1] === "x"){
-                                    pointer.x -= parseInt(line[j + 2])
-                                } else {
-                                    pointer.y -= parseInt(line[j + 2])
-                                }
-                            }
-                        }
-                    }
-                }
-                fixIllegalXY()
-            }
-            console.log(pointer)
-            timeout(800)
-        }
-       
     }
 
     
