@@ -16,6 +16,7 @@
         color: black;
         border-radius: 0%;
         font-size: 12pt;
+        caret-color: black;
     }
     textarea:focus {
         border: 1.5px black solid;
@@ -461,22 +462,22 @@
                                     }
                                 break;
                                 case "g":
-                                    if(metastack[pointer][metastack[pointer].length - 1] < comparisonValue){
+                                    if(!(metastack[pointer][metastack[pointer].length - 1] > comparisonValue)){
                                         i = endOfConditional;
                                     }
                                 break;
                                 case "l":
-                                    if(metastack[pointer][metastack[pointer].length - 1] > comparisonValue){
+                                    if(!(metastack[pointer][metastack[pointer].length - 1] < comparisonValue)){
                                         i = endOfConditional;
                                     }
                                 break;
                                 case "G":
-                                    if(metastack[pointer][metastack[pointer].length - 1] <= comparisonValue){
+                                    if(!(metastack[pointer][metastack[pointer].length - 1] >= comparisonValue)){
                                         i = endOfConditional;
                                     }
                                 break;
                                 case "L":
-                                    if(metastack[pointer][metastack[pointer].length - 1] >= comparisonValue){
+                                    if(!(metastack[pointer][metastack[pointer].length - 1] <= comparisonValue)){
                                         i = endOfConditional;
                                     }
                                 break;
