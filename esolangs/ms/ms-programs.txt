@@ -1,8 +1,12 @@
 truth-machine:
-,[:.].
+,[
+    :.
+].
 
 false-machine:
-,=0?{:.}$.
+,=0?{
+    :.
+}$.
 
 calculator:
 
@@ -19,53 +23,32 @@ third input: operator
 ,,,\~>=1?<a$=2?<s$=3?<m$=4?<d$=5?<r$.
 
 Factorial Calculator:
-,:\-[:\>m<-]>.
+,:\-[
+    :\>m<-
+]>.
 
 Fibonacci Sequence:
-@@-{~:\~:~a~x>:/._<}
+@@-{
+    ~:\~:~a~x>:/._<
+}
 
 Exponents of Two:
-@{@+m:._}
+@{
+    @+m:._
+}
 
 Hello, world!:
 
 @+++@+m:+m:.c@++++@++m@+m++:~a:---.c++++::.c.c+++:.c~:@+++++@+ma.c:.c~:++++++++.c:.c:+++.c:---.c@++@++m++~\s.c>+.c
 
-H - @+++@+m:+m:.c
-e - @++++@++m@+m++:~a:---.c
-ll - ++++::.c.c
-o - +++:.c
-,(space) - ~:@+++++@+ma.c:.c
-wo - ~:++++++++.c:.c
-r - :+++.c
-l - :---.c
-d! - @++@++m++~\s.c>+.c
+Advanced Calculator
 
-GAME???
+input 1 - num1
+input 2 - operator
+input 3 (if prompted) - num2
 
-0 for potion, 1 for attack
-
-potion heals for 4, attack for 5
-
-win message print .c>.>.c.c.c.c.c.c
-
-@++@++++m@+m:
-\>>@++++:\>
->>@+@+m@+m:++m>@+@>@+@+m@+m@+m@+m:\::a>:://<aa---------:--------------:+++++:+++++>+/<~>>
-,=0?>>>G0?-<<@+++a$
-
-
-initialize health of player 1 and player 2
-    @++@++++m@+m:
-
-initialize potion amount for each player, then initialize attack damage amount and potion heal amount
-    \>>@++++:\
-
-setup win messages
-    >>@+@+m@+m:++m>@+@>@+@+m@+m@+m@+m:\::a>:://<aa---------:--------------:+++++:+++++>+/<~>>
-
-player 1 turn
-    ,=0?>>>G0?-<<@+++a$
-
-
-72 101 108 108 111 44 32 119 111 114 108 100 33
+,,c=33?x:\-[
+    :\>m<-
+]>.X$=94?x:>,-[
+    <~:~m>-
+]<.X$=43?x,a.X$=45?x,~s.X$=42?x,m.X$=47?x,~d.X$=37?x,~r.X$
