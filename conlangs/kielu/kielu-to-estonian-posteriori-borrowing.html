@@ -1,0 +1,38 @@
+<style>
+
+</style>
+<head>
+
+</head>
+<body>
+
+</body>
+<script>
+    const vowelRegex = /[iyuoeõäa]n/g
+    const nasals = ["n", "m", "ņ"]
+
+    function applyVowelRules(mode, str){
+        let string = str
+        let output
+        if(mode === "roman"){
+            string = string.replaceAll("y","õ")
+            string = string.replaceAll("ö","y")
+            string = string.replaceAll("ä","e")
+            string = string.replaceAll("u","y")
+            string = string.replaceAll("å","a")
+            for(i = 0; i < nasals.length; i++){
+                string = string.replaceAll(`${nasals[i]}a`,`${nasals[i]}u`)
+                string = string.replaceAll(`${nasals[i]}e`,`${nasals[i]}i`)
+            }
+            // for each instance of a vowel followed by h, replace the h with the vowel + the vowel
+            output = string.replaceAll(/[iyuoeäöõ]h/g, function(match){
+                return match.replace(/h/g, match[0])
+            })
+        } else if(mode === "ipa"){
+
+        } else {
+            return console.error("Unknown mode: " + mode);
+        }
+        return output
+    }
+</script>
