@@ -8,30 +8,42 @@
 
 </body>
 <script>
-    const vowelRegex = /[iyuoeõäa]n/g
     const nasals = ["n", "m", "ņ"]
+    const consonants = ["m","n","p","b","t","d","k","g","v","s","ś","c","h","j","r","l"]
 
-    function applyVowelRules(mode, str){
+    function applyVowelRules(str){
         let string = str
         let output
-        if(mode === "roman"){
-            string = string.replaceAll("y","õ")
-            string = string.replaceAll("ö","y")
-            string = string.replaceAll("ä","e")
-            string = string.replaceAll("u","y")
-            string = string.replaceAll("å","a")
-            for(i = 0; i < nasals.length; i++){
-                string = string.replaceAll(`${nasals[i]}a`,`${nasals[i]}u`)
-                string = string.replaceAll(`${nasals[i]}e`,`${nasals[i]}i`)
+        string = string.replaceAll("y","õ")
+        string = string.replaceAll("ö","y")
+        string = string.replaceAll("ä","e")
+        string = string.replaceAll("u","y")
+        string = string.replaceAll("å","a")
+        for(i = 0; i < nasals.length; i++){
+            string = string.replaceAll(`${nasals[i]}a`,`${nasals[i]}u`)
+            string = string.replaceAll(`${nasals[i]}e`,`${nasals[i]}i`)
+        }
+        // for each instance of a vowel followed by h, replace the h with the vowel + the vowel
+        output = string.replaceAll(/[iyuoeäöõ]h/g, function(match){
+            return match.replace(/h/g, match[0])
+        })
+        return output
+    }
+    function applyConsonantRules(str){
+        let string = str
+        let output
+        string = string.replaceAll("ņ","n")
+        string = string.replaceAll("c","k")
+        string = string.replaceAll("č","ś")
+        string = string.replaceAll("ja","ä")
+        string = string.replaceAll("ü","u")
+        output = string.split(" ")
+        for(i = 0; i < output.length; i++){
+            if(output[i].endsWith("n")){
+                // replace the final n with the letter before it
+                // geminate before sequence
+                output[i] = output[i].replace(/n$/, output[i][output[i].length - 2])
             }
-            // for each instance of a vowel followed by h, replace the h with the vowel + the vowel
-            output = string.replaceAll(/[iyuoeäöõ]h/g, function(match){
-                return match.replace(/h/g, match[0])
-            })
-        } else if(mode === "ipa"){
-
-        } else {
-            return console.error("Unknown mode: " + mode);
         }
         return output
     }
