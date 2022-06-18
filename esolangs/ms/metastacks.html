@@ -72,7 +72,7 @@
 <body>
     <a href="metastacks-docs.txt" download="metastacks-docs">
         <button position="absolute;">Download Metastacks Docs</button>
-    </a><button onclick="saveTextAsFile(input.value, 'file.metastacks')">export file</button><br><br>
+    </a><button onclick="saveTextAsFile(input.value)">export file</button><br><br>
     <div id="metastack"></div><br>
     <textarea id="input" title="input" spellcheck="false" autocomplete="off"></textarea><br>
     <textarea id="output" style="position: relative; top: -19px;" title="output" readonly spellcheck="false"></textarea>
@@ -515,20 +515,17 @@
         return result
     }
 
-    function saveTextAsFile(textToWrite, fileNameToSaveAs)
-    {
-    	var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'}); 
+    function saveTextAsFile(textToWrite){
+        let fileNameToSaveAs = 'file.metastacks'
+    	var textFileAsBlob = new Blob([result], {type:'text/plain'}); 
     	var downloadLink = document.createElement("a");
     	downloadLink.download = fileNameToSaveAs;
     	downloadLink.innerHTML = "Download File";
-    	if (window.webkitURL != null)
-    	{
+    	if(window.webkitURL != null){
     		// Chrome allows the link to be clicked
     		// without actually adding it to the DOM.
     		downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
-    	}
-    	else
-    	{
+    	} else {
     		// Firefox requires the link to be added to the DOM
     		// before it can be clicked.
     		downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
