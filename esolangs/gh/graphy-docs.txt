@@ -1,0 +1,5 @@
+point x y color_ID
+    creates a point at the given coordinates with the given color.
+
+line x1 y1 x2 y2 color_ID
+    creates a line between the given coordinates with the given color.
