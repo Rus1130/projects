@@ -250,15 +250,34 @@
                 let x2 = parseInt(line[3])
                 let y2 = parseInt(line[4])
                 let color = parseInt(line[5])
-                if(!isNaN(x1) && !isNaN(y1) && !isNaN(x2) && !isNaN(y2) && !isNaN(color)){
-                    pointer.x = x1
-                    pointer.y = y1
-                    fixIllegalXY()
-                    let cell = document.getElementById(`${pointer.y},${pointer.x}`)
-                    cell.style.backgroundColor = colorsArray[color]
-                    // create a line between the two points
+                if(isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2) || !(x2 > x1) || !(y2 > y1)){
+                    consoleArray.push("Error: Invalid line coordinate inputs")
+
+                } else if(isNaN(color) || colorsArray[color] === undefined){
+                    consoleArray.push("Error: Invalid color_ID (0-32)")
                 } else {
-                    consoleArray.push("Error: Invalid line command")
+                    let dx = Math.abs(x2 - x1)
+                    let dy = Math.abs(y2 - y1)
+                    let sx = (x1 < x2) ? 1 : -1
+                    let sy = (y1 < y2) ? 1 : -1
+                    let err = dx - dy
+                    let e2 = 0
+                    while(true){
+                        let cell = document.getElementById(`${pointer.y},${pointer.x}`)
+                        cell.style.backgroundColor = colorsArray[color]
+                        if(pointer.x === x2 || pointer.y === y2){
+                            break
+                        }
+                        e2 = 2 * err
+                        if(e2 > -dy){
+                            err -= dy
+                            pointer.x += sx
+                        }
+                        if(e2 < dx){
+                            err += dx
+                            pointer.y += sy
+                        }
+                    }
                 }
                 console.log(line)
             }
