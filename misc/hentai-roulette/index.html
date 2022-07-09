@@ -37,9 +37,10 @@
             img.src = `imgs/${randomFile}.png`;
         };
 
-        img.style.position = 'absolute';
+        const randomfit = Math.floor(Math.random() * 2) + 1;
         img.style.height = '100%';
         img.style.width = '100%';
+        img.style.position = 'absolute';
         img.style.objectFit = 'contain';
         document.body.appendChild(img);
 
