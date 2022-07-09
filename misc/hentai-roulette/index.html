@@ -24,29 +24,43 @@
 <script>
     const files = 100;
     const filecover = document.getElementById("cover");
+    const bulletkour = [30]
 
     // wait for the webpage to load
-    window.onload = function() {
-        let randomFile = Math.floor(Math.random() * files) + 1;
+    let randomFile = Math.floor(Math.random() * files) + 1;
 
-        const img = document.createElement('img');
+    const img = document.createElement('img');
+    img.src = `imgs/${randomFile}.png`;
+
+    img.onerror = function() {
+        randomFile = Math.floor(Math.random() * files) + 1;
         img.src = `imgs/${randomFile}.png`;
+    };
 
-        img.onerror = function() {
-            randomFile = Math.floor(Math.random() * files) + 1;
-            img.src = `imgs/${randomFile}.png`;
-        };
+    img.style.height = '100%';
+    img.style.width = '100%';
+    img.style.position = 'absolute';
+    img.style.objectFit = 'contain';
+    document.body.appendChild(img);
 
-        const randomfit = Math.floor(Math.random() * 2) + 1;
+    // check if the img is fully loaded
+    img.onload = function() {
+        filecover.style.display = 'none';
+    };
+
+
+    img.onclick = function() {
+        if (bulletkour.includes(randomFile)) {
+            location.href = "https://store.steampowered.com/app/1996800/Bulletkour/";
+        }
+    };
+
+    function forceChange(imgID){
+        img.src = `imgs/${imgID}.png`;
         img.style.height = '100%';
         img.style.width = '100%';
         img.style.position = 'absolute';
         img.style.objectFit = 'contain';
         document.body.appendChild(img);
-
-        // check if the img is fully loaded
-        img.onload = function() {
-            filecover.style.display = 'none';
-        };
-    };
+    }
 </script>
