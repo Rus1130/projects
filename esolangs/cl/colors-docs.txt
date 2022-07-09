@@ -1,9 +1,0 @@
-+(n)
-    increments x by n
-+{n}
-    increments y by n
-
--(n)
-    decrements x by n
--{n}
-    decrements y by n

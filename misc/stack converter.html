@@ -1,0 +1,32 @@
+<style>
+
+</style>
+<head>
+
+</head>
+<body>
+    type s to convert
+    <textarea placeholder="input item amount here" style="resize: none" id="num"></textarea>
+    <textarea placeholder="input stacksize here" style="resize: none" id="stack"></textarea>
+</body>
+<script>
+    function stackConvert(n, ss){
+        let i = n % ss
+        let s = ( n - i ) / ss
+        return `${s} stack${s == 1 ? "" : "s"} and ${i} item${i == 1 ? "" : "s"}`
+    }
+
+    const num = document.getElementById('num')
+    const stack = document.getElementById('stack')
+
+    // onkeydown event
+    document.addEventListener('keydown', function(e){
+        if(e.key == 's'){
+            if(!isNaN(parseInt(num.value)) && !isNaN(parseInt(stack.value))){
+                alert(stackConvert(parseInt(num.value), parseInt(stack.value)))
+            } else {
+                alert('invalid input')
+            }
+        }
+    })
+</script>
