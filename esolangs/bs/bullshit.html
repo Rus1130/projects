@@ -64,7 +64,7 @@
     </div>
     <span style="font-size: 19px">Code:</span>
     <div>
-        <textarea cols="77" rows="10" spellcheck="false" id="input" style="width: 565px;"></textarea>
+        <textarea cols="77" rows="10" spellcheck="false" id="input" style="width: 565px;" style="caret-color: black;"></textarea>
     </div>
     <br>
     <span style="font-size: 19px">Output:<br></span>
@@ -212,13 +212,17 @@ const premadeBSPrograms = {
     "7" : `+{va>:_<} Program${disSpace}Name:${disSpace}Fibonacci${disSpace}Sequence`
 }
 
-async function parse(instructions){
+async function parse(Instructions){
     let speed = 15;
     running = true;
     let pointerWrap = false;
+    let instructions = Instructions.replaceAll("\n","");
     if(running == true){
         for(i = -1; i < instructions.length; i++){
             let char = instructions[i];
+            if(char === '\n'){
+                i++
+            }
 
             // ===================== TAPE COMMANDS ======================
 
@@ -576,6 +580,45 @@ async function parse(instructions){
                     i = instructions.length;
                 } else {
                     datastack.pop()
+                }
+            }
+            if(char === "~"){
+                // swap top two values on stack
+                if(datastack.length < 2){
+                    outputArray.push(`\nERROR: Stack is too small. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    let temp = datastack[datastack.length - 1]
+                    datastack[datastack.length - 1] = datastack[datastack.length - 2]
+                    datastack[datastack.length - 2] = temp
+                }
+            }
+            if(char === "%"){
+                // take input from user and push to stack
+                let input = prompt("Enter a number to push to the stack: ")
+                if(input === null || input === isNaN(parseInt(input))){
+                    outputArray.push(`\nERROR: User input invalid. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    datastack.push(parseInt(input))
+                }
+            }
+            if(char === "&"){
+                // take character value input from user and push to stack
+                let input = prompt("Enter a character to push to the stack: ")
+                // check if input is enter
+
+                if(input === null || input === ""){
+                    outputArray.push(`\nERROR: User input invalid. (char ${i+1})`);
+                    outputArray.push(`\n${instructions}`)
+                    outputArray.push(`\n${repeat(" ", i)}^`);
+                    i = instructions.length;
+                } else {
+                    datastack.push(input.charCodeAt(0))
                 }
             }
             // ==========================================================

@@ -37,6 +37,11 @@ Exponents of Two:
     @+m:._
 }
 
+Exponent Calculator:
+,:\,-[
+    ~>:/<m~-
+]~.
+
 Hello, world!:
 
 @+++@+m:+m:.c@++++@++m@+m++:~a:---.c++++::.c.c+++:.c~:@+++++@+ma.c:.c~:++++++++.c:.c:+++.c:---.c@++@++m++~\s.c>+.c
@@ -52,3 +57,5 @@ input 3 (if prompted) - num2
 ]>.X$=94?x:>,-[
     <~:~m>-
 ]<.X$=43?x,a.X$=45?x,~s.X$=42?x,m.X$=47?x,~d.X$=37?x,~r.X$
+
+

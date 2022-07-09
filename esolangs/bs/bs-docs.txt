@@ -7,7 +7,7 @@ Pointer Movement
 Value Handling
     + - incrememnt cell
     - - decrement cell
-    | - if value positive, change to 1, if 0 or negative change to 0
+    | - if value positive, change to 1, if negative change to 0
 
 I/O
     . - read cell output cell
@@ -57,6 +57,10 @@ Stack Manipulation
     p - pop
     * - duplicate top
     @ - reverse stack order
+    ~ - swap top two
+    % - input value to stack
+    & - input character value to stack
+
     
 Conditionals
     # … $ - if top equals 0, run …

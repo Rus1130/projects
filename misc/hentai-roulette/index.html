@@ -1,0 +1,51 @@
+<style>
+    body {
+        margin: 0;
+        background-color: black;
+    }
+    #cover {
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        position: absolute;
+        z-index: 100;
+    }
+</style>
+<head>
+    <!--meta tags-->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Hentai roulette; everytime you reload the page, a different picute appears, and sometimes that picture might be hentai. gl hf dont bust my guy ;)">
+    <title>Hentai Roulette</title>
+</head>
+<body>
+    <div id="cover"></div>
+</body>
+<script>
+    const files = 100;
+    const filecover = document.getElementById("cover");
+
+    // wait for the webpage to load
+    window.onload = function() {
+        let randomFile = Math.floor(Math.random() * files) + 1;
+
+        const img = document.createElement('img');
+        img.src = `imgs/${randomFile}.png`;
+
+        img.onerror = function() {
+            randomFile = Math.floor(Math.random() * files) + 1;
+            img.src = `imgs/${randomFile}.png`;
+        };
+
+        img.style.position = 'absolute';
+        img.style.height = '100%';
+        img.style.width = '100%';
+        img.style.objectFit = 'contain';
+        document.body.appendChild(img);
+
+        // check if the img is fully loaded
+        img.onload = function() {
+            filecover.style.display = 'none';
+        };
+    };
+</script>
