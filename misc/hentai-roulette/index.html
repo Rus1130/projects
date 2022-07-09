@@ -24,7 +24,7 @@
 <script>
     const files = 100;
     const filecover = document.getElementById("cover");
-    const bulletkour = [30]
+    const bulletkour = [30, 31, 32, 33, 34]
 
     // wait for the webpage to load
     let randomFile = Math.floor(Math.random() * files) + 1;
@@ -48,13 +48,6 @@
         filecover.style.display = 'none';
     };
 
-
-    img.onclick = function() {
-        if (bulletkour.includes(randomFile)) {
-            location.href = "https://store.steampowered.com/app/1996800/Bulletkour/";
-        }
-    };
-
     function forceChange(imgID){
         img.src = `imgs/${imgID}.png`;
         img.style.height = '100%';
@@ -63,4 +56,18 @@
         img.style.objectFit = 'contain';
         document.body.appendChild(img);
     }
+
+    // if the image id is in the bulletkour array, onclick redirect to the bulletkour steam page
+    img.onclick = function() {
+        if (bulletkour.includes(randomFile)){
+            window.location.href = "https://store.steampowered.com/app/1996800/Bulletkour/";
+        }
+    }
+
+    img.onmouseover = function() {
+        if (bulletkour.includes(randomFile)){
+            img.style.cursor = 'pointer'
+        }
+    } 
+
 </script>
