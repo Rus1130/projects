@@ -36,7 +36,7 @@
     img.src = `imgs/${fileID}.png`;
     
     img.onerror = function() {
-        console.log(`Failed fileID: ${fileID}`)
+        console.log(`Failed fileID: ${fileID} (does not exist)`)
         fileID = Math.floor(Math.random() * files) + 1;
         img.src = `imgs/${fileID}.png`;
     };
