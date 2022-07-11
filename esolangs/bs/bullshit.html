@@ -213,7 +213,7 @@ const premadeBSPrograms = {
 }
 
 async function parse(Instructions){
-    let speed = 15;
+    let speed = 2;
     running = true;
     let pointerWrap = false;
     let instructions = Instructions.replaceAll("\n","");
@@ -633,6 +633,25 @@ async function parse(Instructions){
             await this.timeout(speed)
         }
     }
+}
+
+// create a function that turns a string into its unicode representation
+function stringToUnicode(str){
+    let unicode = "";
+    for(let i = 0; i < str.length; i++){
+        unicode += str.charCodeAt(i) + " ";
+    }
+    return unicode;
+}
+
+function bfFiveAdd(times){
+    let begin = ''
+    let end = ''
+    for(i = 0; i < times; i++){
+        begin += '>+++++'
+        end += '<'
+    }
+    return begin + end
 }
 
 function run(struct){
