@@ -10,6 +10,17 @@
         position: absolute;
         z-index: 100;
     }
+    #hentai-score {
+        z-index: 200;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        height: 20px;
+        width: 180px;
+        color: white;
+        font-size: 20px;
+        font-family: Arial, Helvetica, sans-serif
+    }
 </style>
 <head>
     <!--meta tags-->
@@ -19,21 +30,23 @@
     <title>Hentai Roulette</title>
 </head>
 <body>
+    <div id="hentai-score"></div>
     <div id="cover"></div>
 </body>
 <script>
     const files = 100;
     const filecover = document.getElementById("cover");
+    const hentaiscore = document.getElementById("hentai-score");
+
     const bulletkour = [30, 31, 32, 33, 34]
     const hentai = [16, 17, 18, 19, 20, 21, 22]
     const longload = [23]
     let imageType = ''
+    let hentaiScore = 0;
 
-    // wait for the webpage to load
     let fileID = Math.floor(Math.random() * files) + 1;
-
     const img = document.createElement('img');
-    // onclick space
+
     document.onkeydown = function(e) {
         if(e.key == " "){
             img.src = `imgs/${fileID}.png`;
@@ -67,8 +80,12 @@
         if (longload.includes(fileID)){
             imageType += '/longload';
         }
-        filecover.style.display = 'none';
 
+        filecover.style.display = 'none';
+        if(hentai.includes(fileID)) hentaiScore++;
+        hentaiscore.innerText = `Hentai Score: ${hentaiScore}`;
+        
+        
         console.log(`imageType: ${imageType}\nfileID: ${fileID}`);
     };
 
@@ -94,6 +111,4 @@
             img.setAttribute('title', 'Click to open Bulletkour')
         }
     }
-
-
 </script>
