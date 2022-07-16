@@ -41,26 +41,36 @@
     const bulletkour = [30, 31, 32, 33, 34]
     const hentai = [16, 17, 18, 19, 20, 21, 22]
     const longload = [23]
+    const gif = [56]
     let imageType = ''
     let hentaiScore = 0;
 
     let fileID = Math.floor(Math.random() * files) + 1;
     const img = document.createElement('img');
 
-    document.onkeydown = function(e) {
-        if(e.key == " "){
-            img.src = `imgs/${fileID}.png`;
-            imageType = '';
-            fileID = Math.floor(Math.random() * files) + 1;
-            img.src = `imgs/${fileID}.png`;
+    function setImage(ID){
+        if(gif.includes(ID)){
+            img.src = `imgs/${ID}.gif`;
+        } else {
+            img.src = `imgs/${ID}.png`;
         }
     }
-    img.src = `imgs/${fileID}.png`;
+
+    setImage(fileID);
+
+    document.onkeydown = function(e) {
+        if(e.key == " "){
+            imageType = '';
+            fileID = Math.floor(Math.random() * files) + 1;
+            setImage(fileID);
+        }
+    }
+
     
     img.onerror = function() {
         console.log(`Failed fileID: ${fileID} (does not exist)`)
         fileID = Math.floor(Math.random() * files) + 1;
-        img.src = `imgs/${fileID}.png`;
+        setImage(fileID);
     };
 
     img.style.height = '100%';
@@ -79,6 +89,8 @@
         }
         if (longload.includes(fileID)){
             imageType += '/longload';
+        } else if(gif.includes(fileID)){
+            imageType += '/gif';
         }
 
         filecover.style.display = 'none';
