@@ -33,6 +33,15 @@
     let fileID = Math.floor(Math.random() * files) + 1;
 
     const img = document.createElement('img');
+    // onclick space
+    document.onkeydown = function(e) {
+        if(e.key == " "){
+            img.src = `imgs/${fileID}.png`;
+            imageType = '';
+            fileID = Math.floor(Math.random() * files) + 1;
+            img.src = `imgs/${fileID}.png`;
+        }
+    }
     img.src = `imgs/${fileID}.png`;
     
     img.onerror = function() {
@@ -47,7 +56,6 @@
     img.style.objectFit = 'contain';
     document.body.appendChild(img);
 
-    // check if the img is fully loaded
     img.onload = function() {
         if (bulletkour.includes(fileID)){
             imageType += 'bulletkour';
