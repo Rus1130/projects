@@ -1,12 +1,25 @@
 <style>
-
+    .io {
+        width: 500px;
+        height: 500px;
+        resize: none;
+    }
+    textarea:focus {
+        outline: none;
+    }
 </style>
 <head>
 
 </head>
 <body>
-
+    <textarea id="input" class="io"></textarea><br><br>
+    <textarea id="output" class="io"></textarea>
 </body>
 <script>
-    
+    function timeout(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms))
+    }
+
+    let stack = [];
+
 </script>
