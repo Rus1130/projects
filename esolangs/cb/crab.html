@@ -7,19 +7,124 @@
     textarea:focus {
         outline: none;
     }
+    #stack {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 500px;
+        height: 1240px;
+    }
+    #wrap {
+        display: grid;
+        grid-template-columns: 500px 700px;
+        grid-template-rows: 500px 500px;
+        row-gap: 10px;
+        column-gap: 10px;
+    }
+    .stack-cell {
+        width: 400px;
+        height: 31px;
+        border: 1px solid black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: monospace;
+        font-size: 20px;
+    }
+    #run {
+        width: 500px;
+        height: 50px;
+        font-size: 30pt;
+    }
 </style>
 <head>
 
 </head>
 <body>
-    <textarea id="input" class="io"></textarea><br><br>
-    <textarea id="output" class="io"></textarea>
+    <div id="wrap">
+        <textarea id="input" class="io" spellcheck="false"></textarea>
+        <div id="stack">
+
+        </div>
+        <textarea id="output" class="io" readonly></textarea>
+    </div>
+    <button id="run" onclick="run(input.value)">Run!</button>
 </body>
 <script>
-    function timeout(ms) {
+    const stack = document.getElementById("stack");
+    const input = document.getElementById("input");
+    const output = document.getElementById("output");
+    let outputArray = []
+
+    async function timeout(ms) {
         return new Promise(resolve => setTimeout(resolve, ms))
     }
 
-    let stack = [];
+    let stackArray = [];
+
+    function setCells(){
+        stack.innerHTML = ''
+        for(i = 0; i < 40; i++){
+            let newStackCell = document.createElement('div');
+            newStackCell.id = `stackCell${39 - i}`;
+            newStackCell.classList.add('stack-cell');
+            stack.appendChild(newStackCell);
+        }
+    }
+
+    setCells()
+    
+    // create a function that displays the stack
+    function updateStack(){
+        stackArray.forEach(function(element, index){
+            document.getElementById(`stackCell${index}`).innerHTML = element;
+        })
+    }
+
+    async function run(instructions){
+        stackArray = [];
+        outputArray = [];
+        setCells()
+
+        let instruction = instructions.split('\n');
+        for(i = 0; i < instruction.length; i++){
+            if(stackArray.length > 40){
+                i = instruction.length;
+                outputArray.push("Error: Stack Overflow!")
+
+            } else if(instruction[i] == "Crab crab"){
+                if(instruction[i + 1]){
+                    let line = instruction[i + 1].split(' ');
+                    let count = 0;
+                    for (j of line) {
+                        if (j == 'crab') {
+                            count++;
+                        }
+                    }
+                    stackArray.push(count - 1);
+
+                    i++;
+                } else {
+                    console.log("undefined")
+                }
+            } else if (instruction[i] == 'crab'){
+                // get the last element of the stack
+                let lastElement = stackArray.pop();
+                outputArray.push(lastElement);
+            } else if(instruction[i] == 'crab crab'){
+                let lastElement = stackArray.pop();
+                outputArray.push(lastElement);
+                setCells()
+                updateStack()
+            }
+
+
+            output.value = outputArray.join('\n');
+            updateStack()
+            await timeout(100)
+        }
+    }
+
 
 </script>

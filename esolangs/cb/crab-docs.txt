@@ -1,0 +1,3 @@
+Crab crab - in the next instruction, the amount of times "crab" is written minus 1 (ex. crab is 0) will be the value pushed to the stack.
+crab - will output the top value of the stack
+crab crab - will output the top value of the stack and pop
