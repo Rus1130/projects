@@ -108,15 +108,17 @@
                 } else {
                     console.log("undefined")
                 }
+
             } else if (instruction[i] == 'crab'){
-                // get the last element of the stack
                 let lastElement = stackArray.pop();
                 outputArray.push(lastElement);
+
             } else if(instruction[i] == 'crab crab'){
                 let lastElement = stackArray.pop();
                 outputArray.push(lastElement);
                 setCells()
                 updateStack()
+                
             }
 
 
