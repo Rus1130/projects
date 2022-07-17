@@ -1,3 +1,6 @@
+crab* = variable amount of crabs
+
+
 valid words:
 crab, Crab, CRAB
 
@@ -9,3 +12,6 @@ crab Crab - will output the top value of the stack
 crab crab Crab - will output the top value of the stack and pop
 crab crab crab Crab - will output the unicode equivalent of the top value of the stack
 crab crab crab crab Crab - will output the unicode equivalent of the top value of the stack and pop
+
+Control Flow:
+CRAB crab* - will check the top value of the stack and if it is not crab*, will skip to the next CRAB Crab
