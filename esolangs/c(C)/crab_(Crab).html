@@ -43,7 +43,7 @@
 </head>
 <body>
     <div id="wrap">
-        <textarea id="input" class="io" spellcheck="false"></textarea>
+        <textarea id="input" class="io" spellcheck="false" placeholder="if you want to find the docs, just add '-docs.txt' to the end of the url"></textarea>
         <div id="stack">
 
         </div>
@@ -110,24 +110,24 @@
                     console.log("undefined")
                 }
 
-            } else if(instruction[i] == 'crab'){
+            } else if(instruction[i] == 'crab Crab'){
 
                 let lastElement = stackArray.pop();
                 outputArray.push(lastElement);
 
-            } else if(instruction[i] == 'crab crab'){
+            } else if(instruction[i] == 'crab crab Crab'){
 
                 let lastElement = stackArray.pop();
                 outputArray.push(lastElement);
                 setCells()
                 updateStack()
 
-            } else if(instruction[i] == 'crab crab crab'){
+            } else if(instruction[i] == 'crab crab crab Crab'){
 
                 let lastElement = stackArray.pop();
                 outputArray.push(String.fromCharCode(lastElement));
 
-            } else if(instruction[i] == 'crab crab crab crab'){
+            } else if(instruction[i] == 'crab crab crab crab Crab'){
 
                 let lastElement = stackArray.pop();
                 outputArray.push(String.fromCharCode(lastElement));
