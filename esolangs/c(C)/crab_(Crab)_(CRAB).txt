@@ -1,6 +1,5 @@
 crab* = variable amount of crabs
 
-
 valid words:
 crab, Crab, CRAB
 
