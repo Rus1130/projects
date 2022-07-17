@@ -1,5 +1,5 @@
 Integers:
-Crab crab - in the next instruction, the amount of times "crab" is written minus 1 (ex. crab is 0) will be the value pushed to the stack.
+Crab crab - in the next instruction, the amount of times "crab" is written minus 1 (crab is 0) will be the value pushed to the stack.
 
 I/O:
 crab Crab - will output the top value of the stack
