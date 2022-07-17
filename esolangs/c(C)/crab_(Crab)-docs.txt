@@ -1,3 +1,6 @@
+valid words:
+crab, Crab, CRAB
+
 Integers:
 Crab crab - in the next instruction, the amount of times "crab" is written minus 1 (crab is 0) will be the value pushed to the stack.
 
