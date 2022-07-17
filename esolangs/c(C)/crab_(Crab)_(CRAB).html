@@ -97,7 +97,10 @@
 
         let instruction = instructions.split('\n');
         for(i = 0; i < instruction.length; i++){
+
             let firstKeyword = instruction[i].split(' ')[0];
+            let secondKeyword = instruction[i].split(' ')[1];
+
             if(stackArray.length > 40){
 
                 i = instruction.length;
@@ -138,9 +141,9 @@
                 setCells()
                 updateStack()
 
-            } else if(firstKeyword == 'CRAB'){
+            } else if(firstKeyword == 'CRAB' && secondKeyword == 'CRAB'){
                 let line = instruction[i].split(' ');
-                let endBlock = instruction.indexOf('CRAB Crab', i);
+                let endBlock = instruction.indexOf('CRAB CRAB Crab', i);
 
                 let lastElement = stackArray[stackArray.length - 1];
                 let crabCount = countCrab(line, 'crab') - 1;
@@ -148,6 +151,8 @@
                 if(crabCount != lastElement){
                     i = endBlock;
                 }
+            } else if (instruction[i] == 'CRAB crab'){
+                
             }
 
 

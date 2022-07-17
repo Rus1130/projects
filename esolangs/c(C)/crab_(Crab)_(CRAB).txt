@@ -14,4 +14,4 @@ crab crab crab Crab - will output the unicode equivalent of the top value of the
 crab crab crab crab Crab - will output the unicode equivalent of the top value of the stack and pop
 
 Control Flow:
-CRAB crab* - will check the top value of the stack and if it is not crab*, will skip to the next CRAB Crab
+CRAB CRAB crab* - will check the top value of the stack and if it is not crab*, will skip to the next CRAB CRAB Crab
