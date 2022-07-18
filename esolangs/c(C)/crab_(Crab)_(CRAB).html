@@ -176,7 +176,34 @@
                 stackArray.push(result);
             } else if (instruction[i] == 'crab CRAB'){
                 stackArray.push(countCrab(prompt("input in crabs:").split(' '), 'crab') - 1);
+
+            } else if (instruction[i] == 'Crab CRAB CRAB'){
+                let startLoop = instruction.lastIndexOf('Crab CRAB', i);
+                if(startLoop == -1){
+                    outputArray.push("Error: Missing Loop Start!")
+                }
+                if(stackArray[stackArray.length - 1]){
+                    if(stackArray[stackArray.length - 1] != 0){
+                        i = startLoop;
+                    }
+                } else {
+                    outputArray.push("Error: Missing Loop Integer!")
+                }
+            } else if (instruction[i] == "CRAB"){
+                stackArray.pop();
+                setCells()
+                updateStack()
+            } else if (instruction[i] == 'CRAB Crab Crab'){
+                // swap the top two elements
+                let temp = stackArray[stackArray.length - 1];
+                stackArray[stackArray.length - 1] = stackArray[stackArray.length - 2];
+                stackArray[stackArray.length - 2] = temp;
+
+
+                setCells()
+                updateStack()
             }
+            
 
 
             output.value = outputArray.join('\n');

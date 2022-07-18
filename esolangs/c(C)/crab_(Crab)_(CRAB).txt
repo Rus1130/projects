@@ -17,8 +17,16 @@ crab Crab - will output the top value of the stack
 crab crab Crab - will output the top value of the stack and pop
 crab crab crab Crab - will output the unicode equivalent of the top value of the stack
 crab crab crab crab Crab - will output the unicode equivalent of the top value of the stack and pop
-
-crab CRAB - will take integer input in crab* and push it to the stack
+crab CRAB - will take input in crab* and push it to the stack
 
 Control Flow:
 CRAB CRAB crab* - will check the top value of the stack and if it is not crab*, will skip to the next CRAB CRAB Crab
+Crab CRAB - loop will continue until the top value of the stack is 0
+Crab CRAB CRAB - end loop
+
+Stack Manipulation:
+CRAB - pops the top value of the stack
+CRAB Crab Crab - swaps the top two values
+
+
+72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100, 33
