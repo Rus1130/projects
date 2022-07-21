@@ -7,10 +7,6 @@ Integers:
 Crab crab - in the next instruction, the amount of times "crab" is written minus 1 (crab is 0) will be the value pushed to the stack.
 
 The following 4 math operations take the top two values and perform the operation on them (top value is on the left of the equation):
-CRAB crab crab: addition
-CRAB crab crab crab: subtraction
-CRAB crab crab crab crab: multiplication
-CRAB crab crab crab crab crab: division
 
 I/O:
 crab Crab - will output the top value of the stack
@@ -20,13 +16,11 @@ crab crab crab crab Crab - will output the unicode equivalent of the top value o
 crab CRAB - will take input in crab* and push it to the stack
 
 Control Flow:
-CRAB CRAB crab* - will check the top value of the stack and if it is not crab*, will skip to the next CRAB CRAB Crab
-Crab CRAB - loop will continue until the top value of the stack is 0
-Crab CRAB CRAB - end loop
+
 
 Stack Manipulation:
-CRAB - pops the top value of the stack
-CRAB Crab Crab - swaps the top two values
+CRAB - swaps the top two values
+CRAB CRAB - pops the top value of the stack
 
 
 72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100, 33

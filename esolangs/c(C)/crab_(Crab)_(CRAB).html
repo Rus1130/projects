@@ -94,14 +94,10 @@
     async function run(instructions){
         stackArray = [];
         outputArray = [];
-        loops = [];
         setCells()
 
         let instruction = instructions.split('\n');
         for(i = 0; i < instruction.length; i++){
-
-            let firstKeyword = instruction[i].split(' ')[0];
-            let secondKeyword = instruction[i].split(' ')[1];
 
             if(stackArray.length > 40){
 
@@ -143,66 +139,32 @@
                 setCells()
                 updateStack()
 
-            } else if(firstKeyword == 'CRAB' && secondKeyword == 'CRAB'){
-                let line = instruction[i].split(' ');
-                let endBlock = instruction.indexOf('CRAB CRAB Crab', i);
-
-                let lastElement = stackArray[stackArray.length - 1];
-                let crabCount = countCrab(line, 'crab') - 1;
-
-                if(crabCount != lastElement){
-                    i = endBlock;
-                }
-            } else if (firstKeyword == 'CRAB' && secondKeyword == 'crab'){
-                let line = instruction[i].split(' ');
-                let crabCount = countCrab(line, 'crab') - 2;
-                let integer1 = stackArray[stackArray.length - 1];
-                let integer2 = stackArray[stackArray.length - 2];
-                let result;
-
-                switch(crabCount){
-                    case 0:
-                        result = integer1 + integer2;
-                        break;
-                    case 1:
-                        result = integer1 - integer2;
-                        break;
-                    case 2:
-                        result = integer1 * integer2;
-                        break;
-                    case 3:
-                        result = integer1 / integer2;
-                        break;
-                }
-
-                stackArray.push(result);
             } else if (instruction[i] == 'crab CRAB'){
+            
                 stackArray.push(countCrab(prompt("input in crabs:").split(' '), 'crab') - 1);
 
-            } else if (instruction[i] == 'Crab CRAB'){
-                let matchingIndex = instruction.indexOf("Crab CRAB CRAB", i);
-                if(matchingIndex == -1){
-                    outputArray.push(`Error: Missing end of loop!`);
+            } else if (instruction[i] == 'CRAB'){
+                if(stackArray[stackArray.length - 1] == undefined || stackArray[stackArray.length - 2] == undefined){
+                    outputArray.push("Error: Not enough stack space!")
                     i = instruction.length;
                 } else {
+                    let temp = stackArray[stackArray.length - 1];
+                    stackArray[stackArray.length - 1] = stackArray[stackArray.length - 2];
+                    stackArray[stackArray.length - 2] = temp
 
-              }      
-            } else if(instruction[i] === "Crab CRAB CRAB"){
-                let matchingIndex = instruction.lastIndexOf("Crab CRAB", i);
-
-            } else if (instruction[i] == "CRAB"){
-                stackArray.pop();
-                setCells()
-                updateStack()
-            } else if (instruction[i] == 'CRAB Crab Crab'){
-                // swap the top two elements
-                let temp = stackArray[stackArray.length - 1];
-                stackArray[stackArray.length - 1] = stackArray[stackArray.length - 2];
-                stackArray[stackArray.length - 2] = temp;
-
-
-                setCells()
-                updateStack()
+                    setCells()
+                    updateStack()
+                }
+            } else if (instruction[i] == 'CRAB CRAB'){
+                if(stackArray[stackArray.length - 1] == undefined){
+                    outputArray.push("Error: Not enough stack space!")
+                    i = instruction.length;
+                } else {
+                    // remove the top element
+                    stackArray.pop();
+                    setCells()
+                    updateStack()
+                }
             }
             
 
