@@ -93,6 +93,11 @@
         })
     }
 
+    function update(){
+        setCells()
+        updateStack()
+    }
+
     async function run(instructions){
         stackArray = [];
         outputArray = [];
@@ -106,67 +111,6 @@
                 i = instruction.length;
                 outputArray.push("Error: Stack Overflow!")
 
-            } else if(instruction[i] == "Crab crab"){
-
-                if(instruction[i + 1]){
-                    let line = instruction[i + 1].split(' ');
-                    stackArray.push(countCrab(line, 'crab') - 1);
-                    i++;
-                } else {
-                    outputArray.push("Error: Missing Argument!")
-                    i = instruction.length;
-                }
-
-            } else if(instruction[i] == 'crab Crab'){
-
-                let lastElement = stackArray.pop();
-                outputArray.push(lastElement);
-
-            } else if(instruction[i] == 'crab crab Crab'){
-
-                let lastElement = stackArray.pop();
-                outputArray.push(lastElement);
-                setCells()
-                updateStack()
-
-            } else if(instruction[i] == 'crab crab crab Crab'){
-
-                let lastElement = stackArray.pop();
-                outputArray.push(String.fromCharCode(lastElement));
-
-            } else if(instruction[i] == 'crab crab crab crab Crab'){
-
-                let lastElement = stackArray.pop();
-                outputArray.push(String.fromCharCode(lastElement));
-                setCells()
-                updateStack()
-
-            } else if (instruction[i] == 'crab CRAB'){
-            
-                stackArray.push(countCrab(prompt("input in crabs:").split(' '), 'crab') - 1);
-
-            } else if (instruction[i] == 'CRAB'){
-                if(stackArray[stackArray.length - 1] == undefined || stackArray[stackArray.length - 2] == undefined){
-                    outputArray.push("Error: Not enough stack space!")
-                    i = instruction.length;
-                } else {
-                    let temp = stackArray[stackArray.length - 1];
-                    stackArray[stackArray.length - 1] = stackArray[stackArray.length - 2];
-                    stackArray[stackArray.length - 2] = temp
-
-                    setCells()
-                    updateStack()
-                }
-            } else if (instruction[i] == 'CRAB CRAB'){
-                if(stackArray[stackArray.length - 1] == undefined){
-                    outputArray.push("Error: Not enough stack space!")
-                    i = instruction.length;
-                } else {
-                    // remove the top element
-                    stackArray.pop();
-                    setCells()
-                    updateStack()
-                }
             }
             
 
