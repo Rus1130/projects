@@ -105,12 +105,18 @@
 
         let instruction = instructions.split('\n');
         for(i = 0; i < instruction.length; i++){
-
-            if(stackArray.length > 40){
-
+            let line = instruction[i].split(' ');
+            if(stackArray.length > 39){
+                outputArray.push('Stack overflow');
                 i = instruction.length;
-                outputArray.push("Error: Stack Overflow!")
-
+            }
+            if(line[0] === 'put'){
+                if(!isNaN(parseInt(line[1]))){
+                    stackArray.push(parseInt(line[1]));
+                } else {
+                    outputArray.push*(`Error: ${line[1]} is not a number`)
+                    i = instruction.length;
+                }
             }
             
 

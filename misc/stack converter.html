@@ -17,7 +17,7 @@
     }
 
     function stackConvert2(n, ss){
-        let i=n%ss;let s=(n-i)/ss;return`${s} stack${s==1?"":"s"} and ${i} item${i==1?"":"s"}`
+        let i,s;i=n%ss;s=(n-i)/ss;return`${s} stack${s==1?"":"s"} and ${i} item${i==1?"":"s"}`
     }
 
     const num = document.getElementById('num')

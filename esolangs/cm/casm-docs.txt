@@ -1,26 +1,5 @@
-crab* = variable amount of crabs
+# - number
 
-valid words:
-crab, Crab, CRAB
-
-Integers:
-Crab crab - in the next instruction, the amount of times "crab" is written minus 1 (crab is 0) will be the value pushed to the stack.
-
-The following 4 math operations take the top two values and perform the operation on them (top value is on the left of the equation):
-
-I/O:
-crab Crab - will output the top value of the stack
-crab crab Crab - will output the top value of the stack and pop
-crab crab crab Crab - will output the unicode equivalent of the top value of the stack
-crab crab crab crab Crab - will output the unicode equivalent of the top value of the stack and pop
-crab CRAB - will take input in crab* and push it to the stack
-
-Control Flow:
-
-
-Stack Manipulation:
-CRAB - swaps the top two values
-CRAB CRAB - pops the top value of the stack
-
+put # - puts # to the top of the stack
 
 72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100, 33
