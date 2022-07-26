@@ -71,7 +71,7 @@
         return count;
     }
 
-    let loops = []
+    let labels = [];
     let stackArray = [];
 
     function setCells(){
@@ -117,7 +117,54 @@
                     outputArray.push*(`Error: ${line[1]} is not a number`)
                     i = instruction.length;
                 }
+            } else if(line[0] === 'in' || line[0] === 'cin'){
+                let userInput = parseInt(prompt("User input:"))
+                if(userInput === ''){
+                    outputArray.push('Error: input is empty')
+                    i = instruction.length;
+                }
+                if(line[0] === 'cin'){
+                    stackArray.push(userInput.toString().charCodeAt(0));
+                } else {
+                    stackArray.push(userInput);
+                }
+            } else if(line[0] === 'out' || line[0] === 'cout'){
+                if(stackArray[stackArray.length - 1] === undefined){
+                    outputArray.push('Error: stack is empty')
+                    i = instruction.length;
+                } else {
+                    if(line[0] === 'out'){
+                        outputArray.push(stackArray[stackArray.length - 1])
+                    } else {
+                        outputArray.push(stackArray[stackArray.length-1].toString().charCodeAt(0));
+                    }
+                }
+            } else if(line[0] === 'dup'){
+                if(stackArray.length > 0){
+                    stackArray.push(stackArray[stackArray.length - 1]);
+                } else {
+                    outputArray.push('Error: stack is empty')
+                    i = instruction.length;
+                }
+            } else if(line[0] === 'swap'){
+                if(stackArray.length > 1){
+                    let temp = stackArray[stackArray.length - 1];
+                    stackArray[stackArray.length - 1] = stackArray[stackArray.length - 2];
+                    stackArray[stackArray.length - 2] = temp;
+                } else {
+                    outputArray.push('Error: stack is empty')
+                    i = instruction.length;
+                }
+            } else if(line[0] === 'drop'){
+                if(stackArray.length > 0){
+                    stackArray.pop();
+                    update()
+                } else {
+                    outputArray.push('Error: stack is empty')
+                    i = instruction.length;
+                }
             }
+
             
 
 
