@@ -61,17 +61,7 @@
         return new Promise(resolve => setTimeout(resolve, ms))
     }
 
-    function countCrab(input, keyword){
-        let count = 0;
-        for (j of input) {
-            if (j == keyword) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    let labels = [];
+    let labels = {};
     let stackArray = [];
 
     function setCells(){
@@ -101,6 +91,7 @@
     async function run(instructions){
         stackArray = [];
         outputArray = [];
+        labels = {};
         setCells()
 
         let instruction = instructions.split('\n');
@@ -163,11 +154,26 @@
                     outputArray.push('Error: stack is empty')
                     i = instruction.length;
                 }
+            } else if(line[0] === 'label'){
+                labels[line[1]] = {
+                    startIndex: i + 1,
+                    endIndex: instruction.indexOf('end', i)
+                }
+                i = labels[line[1]].endIndex
+
+                console.log(labels)
+            } else if(line[0] === 'call'){
+                if(labels[line[1]] === undefined){
+                    outputArray.push(`Error: label ${line[1]} does not exist`)
+                    i = instruction.length;
+                } else {
+  
+                }
             }
 
             
 
-
+            console.log(i)
             output.value = outputArray.join('\n');
             updateStack()
             await timeout(100)
