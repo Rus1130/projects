@@ -1,0 +1,33 @@
+<style>
+
+</style>
+<head>
+
+</head>
+<body>
+
+</body>
+<script>
+
+    const currencies = {
+        // ore : iron nuggets
+        iron_nugget: {
+            rate: 1,
+            sng: "Iron Nugget",
+            pl: "Iron Nuggets"
+        },
+        iron_ingot: {
+            rate: 9,
+            sng: "Iron Ingot",
+            pl: "Iron Ingots"
+        },
+    }
+
+
+    function convert(from, to, amnt){
+        let out = ((currencies[from].rate * amnt) / currencies[to].rate);
+        return out
+    }
+
+
+</script>
