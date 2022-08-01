@@ -1,63 +1,83 @@
 <DOCTYPE html>
-<style>
-    body {
-        display: flex;
-        align-items: start;
-        justify-content: center;
-        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        transform:translateY(50px)
-    }
-    .button {
-        background-color: rgb(159, 187, 247);
-        padding: 15px 32px;
-        text-decoration: none;
-        font-size: 16px;
-        border: 1px solid rgb(159, 187, 247);
-        transition-duration: 0.65s;
-        transition-delay: 50ms;
-        border-radius: 7px;
+    <style>
+        body {
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-    .button:hover {
-        background-color: rgb(101, 150, 255);
-    }
-    .button:active {
-        background-color: rgb(65, 124, 252);
-    }
-    .footer {
-        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        padding: 1rem;
-        text-align: center;
-        margin-left: 20%;
-        margin-right: 20%;
+        .button {
+            background-color: rgb(159, 187, 247);
+            padding: 15px 32px;
+            text-decoration: none;
+            font-size: 16px;
+            border: 1px solid rgb(159, 187, 247);
+            transition-duration: 0.65s;
+            transition-delay: 50ms;
+            border-radius: 7px;
+            width: 500px;
+            
         }
-</style>
-
-
-<head>
-    <meta content="Rus1130/projects" property="og:title" />
-    <meta content="https://www.rus1130.github.io/projects" property="og:url" />
-    <meta content="#43B581" data-react-helmet="true" name="theme-color" />
-    <meta property="og:description" content="Rus' random projects">
-</head>
-<body>
-    <h1>Rus1130/projects</h1>
-    <br>
-    <p>Probably only works on Chrome</p>
-    <br>
-    <div style="display: grid; row-gap: 5px;">
-        <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/misc/orbs'">Orbs</button>
-        <button class="button" onclick="location.href = 'https://www.fenuclicker.com'">Fenuclicker</button>
-        <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/computers/calculator'">Calculator</button>
-        <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/computers/scrambler'">Scrambler</button>
-        <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/computers/HDD'">HDD</button>
-        <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/misc/shooter'">Shooter</button>
-        <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/esolangs/bs/bullshit'">bullshit</button>
-        <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/esolangs/ms/metastacks'">Metastacks</button>
-        <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/misc/hentai-roulette/index'">Hentai Roulette</button>
-        <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/esolangs/c(C)/crab_(Crab)_(CRAB)'">crab (Crab) (CRAB)</button>
-    </div>
-</body>
+        .button:hover {
+            background-color: rgb(101, 150, 255);
+        }
+        .button:active {
+            background-color: rgb(65, 124, 252);
+        }
+        .footer {
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            padding: 1rem;
+            text-align: center;
+            margin-left: 20%;
+            margin-right: 20%;
+        }
+        .grid {
+            display: grid;
+            align-items: center;
+            justify-content: center;
+            row-gap: 5px;
+        }
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+    </style>
+    
+    
+    <head>
+        <meta content="Rus1130/projects" property="og:title" />
+        <meta content="https://www.rus1130.github.io/projects" property="og:url" />
+        <meta content="#43B581" data-react-helmet="true" name="theme-color" />
+        <meta property="og:description" content="Rus' random projects">
+    </head>
+    <body>
+        <div class="container">
+            <div class='grid'>
+                <div><h1>Rus1130/projects/index.html</h1></div>
+                <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/misc/orbs'">Orbs</button>
+                <button class="button" onclick="location.href = 'https://www.fenuclicker.com'">Fenuclicker</button>
+                <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/computers/calculator'">Calculator</button>
+                <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/computers/scrambler'">Scrambler</button>
+                <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/computers/HDD'">HDD</button>
+                <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/misc/shooter'">Shooter</button>
+                <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/misc/hentai-roulette/index'">Hentai Roulette</button>
+                <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/index-esolangs'">Esolangs (Esoteric Programming Laguages) ></button>
+                <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/index-conlangs'">Conlangs (Constructed Laguages) ></button>
+            </div>
+        </div>
+    </body>
+    
+    
+    <script>
+        // function that gets the unicode of each caracter in a string
+        function getUnicode(str) {
+            var result = [];
+            for (var i = 0; i < str.length; i++) {
+                result.push(str.charCodeAt(i));
+            }
+            return result;
+        }
+    </script>

@@ -1,0 +1,184 @@
+<style>
+    .io {
+        width: 500px;
+        height: 500px;
+        resize: none;
+    }
+    textarea:focus {
+        outline: none;
+    }
+    #stack {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 500px;
+        height: 1240px;
+    }
+    #wrap {
+        display: grid;
+        grid-template-columns: 500px 700px;
+        grid-template-rows: 500px 500px;
+        row-gap: 10px;
+        column-gap: 10px;
+    }
+    .stack-cell {
+        width: 400px;
+        height: 31px;
+        border: 1px solid black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: monospace;
+        font-size: 20px;
+    }
+    #run {
+        width: 500px;
+        height: 50px;
+        font-size: 30pt;
+    }
+</style>
+<head>
+
+</head>
+<body>
+    <div id="wrap">
+        <textarea id="input" class="io" spellcheck="false" placeholder="if you want to find the docs, just add '-docs.txt' to the end of the url"></textarea>
+        <div id="stack"></div>
+        <textarea id="output" class="io" readonly></textarea>
+    </div>
+    <button id="run" onclick="run(input.value)">Run!</button>
+</body>
+<script>
+
+
+    const stack = document.getElementById("stack");
+    const input = document.getElementById("input");
+    const output = document.getElementById("output");
+    let outputArray = []
+
+    async function timeout(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms))
+    }
+
+    let labels = {};
+    let stackArray = [];
+
+    function setCells(){
+        stack.innerHTML = ''
+        for(i = 0; i < 40; i++){
+            let newStackCell = document.createElement('div');
+            newStackCell.id = `stackCell${39 - i}`;
+            newStackCell.classList.add('stack-cell');
+            stack.appendChild(newStackCell);
+        }
+    }
+
+    setCells()
+    
+    // create a function that displays the stack
+    function updateStack(){
+        stackArray.forEach(function(element, index){
+            document.getElementById(`stackCell${index}`).innerHTML = element;
+        })
+    }
+
+    function update(){
+        setCells()
+        updateStack()
+    }
+
+    async function run(instructions){
+        stackArray = [];
+        outputArray = [];
+        labels = {};
+        setCells()
+
+        let instruction = instructions.split('\n');
+        for(i = 0; i < instruction.length; i++){
+            let line = instruction[i].split(' ');
+            if(stackArray.length > 39){
+                outputArray.push('Stack overflow');
+                i = instruction.length;
+            }
+            if(line[0] === 'put'){
+                if(!isNaN(parseInt(line[1]))){
+                    stackArray.push(parseInt(line[1]));
+                } else {
+                    outputArray.push*(`Error: ${line[1]} is not a number`)
+                    i = instruction.length;
+                }
+            } else if(line[0] === 'in' || line[0] === 'cin'){
+                let userInput = parseInt(prompt("User input:"))
+                if(userInput === ''){
+                    outputArray.push('Error: input is empty')
+                    i = instruction.length;
+                }
+                if(line[0] === 'cin'){
+                    stackArray.push(userInput.toString().charCodeAt(0));
+                } else {
+                    stackArray.push(userInput);
+                }
+            } else if(line[0] === 'out' || line[0] === 'cout'){
+                if(stackArray[stackArray.length - 1] === undefined){
+                    outputArray.push('Error: stack is empty')
+                    i = instruction.length;
+                } else {
+                    if(line[0] === 'out'){
+                        outputArray.push(stackArray[stackArray.length - 1])
+                    } else {
+                        outputArray.push(stackArray[stackArray.length-1].toString().charCodeAt(0));
+                    }
+                }
+            } else if(line[0] === 'dup'){
+                if(stackArray.length > 0){
+                    stackArray.push(stackArray[stackArray.length - 1]);
+                } else {
+                    outputArray.push('Error: stack is empty')
+                    i = instruction.length;
+                }
+            } else if(line[0] === 'swap'){
+                if(stackArray.length > 1){
+                    let temp = stackArray[stackArray.length - 1];
+                    stackArray[stackArray.length - 1] = stackArray[stackArray.length - 2];
+                    stackArray[stackArray.length - 2] = temp;
+                } else {
+                    outputArray.push('Error: stack is empty')
+                    i = instruction.length;
+                }
+            } else if(line[0] === 'drop'){
+                if(stackArray.length > 0){
+                    stackArray.pop();
+                    update()
+                } else {
+                    outputArray.push('Error: stack is empty')
+                    i = instruction.length;
+                }
+            } else if(line[0] === 'label'){
+                labels[line[1]] = {
+                    startIndex: i + 1,
+                    endIndex: instruction.indexOf('end', i)
+                }
+                i = labels[line[1]].endIndex
+
+                console.log(labels)
+            } else if(line[0] === 'call'){
+                if(labels[line[1]] === undefined){
+                    outputArray.push(`Error: label ${line[1]} does not exist`)
+                    i = instruction.length;
+                } else {
+  
+                }
+            }
+
+            
+
+            console.log(i)
+            output.value = outputArray.join('\n');
+            updateStack()
+            await timeout(100)
+        }
+    }
+
+
+</script>
