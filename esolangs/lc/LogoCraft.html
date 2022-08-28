@@ -5,11 +5,12 @@
     textarea {
         resize: none;
         border: none;
-        height: 600px;
-        width: 400px;
+        height: 570px;
+        width: 270px;
         position: relative;
         top: 50px;
         left: 45px;
+        font-size: 60px;
 
     }
     textarea:focus {
@@ -28,19 +29,32 @@
         top: 1px;
     }
     #input-container {
-        width: 500px;
+        width: 370px;
         height: 700px;
         background-color: whitesmoke;
     }
     #craft:hover, #save:hover, #write:hover {
         background-color: whitesmoke;
+        cursor: pointer;
     }
     .hidden {
         display: none;
     }
+    #wrapper {
+        display: grid;
+        grid-template-columns: 400px 400px;
+    }
+
+    #craft-output-container {
+        display: grid;
+        grid-template-columns: repeat(8, 80px);
+        grid-template-rows: repeat(8, 80px);
+        width: 640px;
+        height: 640px;
+    }
 </style>
 <head>
-
+    <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
 </head>
 <body>
     <div id="tabs">
@@ -48,32 +62,97 @@
         <div id="save" onclick="switchSelectedTab(`${this.id}-input-container`)">Save</div>
         <div id="write" onclick="switchSelectedTab(`${this.id}-input-container`)">Write</div>
     </div>
-    <div id="input-container">
-        <div id="craft-input-container">
-            <textarea id="craft-input" placeholder="craft"></textarea>
+    <div id="wrapper">
+        <div id="input-container">
+            <div id="craft-input-container">
+                <textarea id="craft-input" placeholder="craft" maxlength="64"></textarea>
+            </div>
+            <div id="save-input-container" class="hidden">
+                <textarea id="save-input" placeholder="save" maxlength="64" disabled></textarea>
+            </div>
+            <div id="write-input-container" class="hidden">
+                <textarea id="write-input" placeholder="write" maxlength="64" disabled></textarea>
+            </div>
         </div>
-        <div id="save-input-container" class="hidden">
-            <textarea id="save-input" placeholder="save" disabled></textarea>
+        <div id="output-container">
+            <div id="craft-output-container" style="border: 1px solid black">
+            </div>
+            <div id="save-output-container" class="hidden">
+            </div>
+            <div id="write-output-container" class="hidden">
+            </div>
         </div>
-        <div id="write-input-container" class="hidden">
-            <textarea id="write-input" placeholder="write" disabled></textarea>
-        </div>
-    </div>
-    <div id="output-container">
-
     </div>
 </body>
 <script>
     const craftInputContainer = document.getElementById("craft-input-container");
     const saveInputContainer = document.getElementById("save-input-container");
     const writeInputContainer = document.getElementById("write-input-container");
+
+    const craftOutputContainer = document.getElementById("craft-output-container");
+    const saveOutputContainer = document.getElementById("save-output-container");
+    const writeOutputContainer = document.getElementById("write-output-container");
+
+
     let currentSelectedTab = "craft-input-container";
+
+    document.getElementById(currentSelectedTab).getElementsByTagName('textarea')[0].value = "----------------------------------------------------------------";
+
     function switchSelectedTab(id){
         currentSelectedTab = id;
         craftInputContainer.classList.add("hidden");
         saveInputContainer.classList.add("hidden");
         writeInputContainer.classList.add("hidden");
+
+        craftOutputContainer.classList.add("hidden");
+        saveOutputContainer.classList.add("hidden");
+        writeOutputContainer.classList.add("hidden");
+
         document.getElementById(id).classList.remove("hidden");
+        document.getElementById(id.replace('input','output')).classList.remove("hidden");
+        
     }
+
+    function setupCraftOutput(){
+        craftOutputContainer.innerHTML = '';
+        for(i = 0; i < 64; i++){
+            let cell = document.createElement('div');
+            cell.style.width = '80px';
+            cell.style.height = '80px';
+            cell.style.border = '1px solid black';
+            cell.id = `craftOutputCell${i}`;
+            craftOutputContainer.appendChild(cell);
+        }
+    }
+
+    function updateGrid(){
+        if(currentSelectedTab == 'craft-input-container'){
+            setupCraftOutput()
+        }
+
+        let input = document.getElementById(currentSelectedTab).getElementsByTagName("textarea")[0].value;
+        for(i = 0; i < input.length; i++){
+            if(input[i] == "B"){
+                document.getElementById(`craftOutputCell${i}`).style.backgroundColor = "black";
+            } else if(input[i] == "H"){
+                document.getElementById(`craftOutputCell${i}`).style.background = 'linear-gradient(to right, black 50%, white 50%)';
+            } else if(input[i] == "h"){
+                document.getElementById(`craftOutputCell${i}`).style.background = 'linear-gradient(to left, black 50%, white 50%)';
+            } else if(input[i] == "J"){
+                document.getElementById(`craftOutputCell${i}`).style.background = 'linear-gradient(to bottom, black 50%, white 50%)';
+            } else if(input[i] == "j"){
+                document.getElementById(`craftOutputCell${i}`).style.background = 'linear-gradient(to top, black 50%, white 50%)';
+            } else {
+                document.getElementById(`craftOutputCell${i}`).style.backgroundColor = "white";
+            }
+        }
+        
+    }
+
+    craftInputContainer.addEventListener("keydown", (e) => {
+        if(e.key == ' '){
+            updateGrid();
+        }
+    })
 
 </script>

@@ -1,0 +1,6 @@
+- : blank
+B : fully filled
+H : left half filled
+h : right half filled
+J : top half filled
+j : bottom half filled
