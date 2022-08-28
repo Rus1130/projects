@@ -148,6 +148,14 @@
                 cell.style.background = 'linear-gradient(to bottom, black 50%, white 50%)';
             } else if(input[i] == "J"){ // bottom half
                 cell.style.background = 'linear-gradient(to top, black 50%, white 50%)';
+            } else if(input[i] == "q"){ // top left quarter 
+                cell.style.background = 'conic-gradient(white 0deg, white 90deg, white 90deg, white 180deg, white 180deg, white 270deg, black 270deg)';
+            } else if(input[i] == "w"){ // top right quarter
+                cell.style.background = 'conic-gradient(black 0deg, black 90deg, white 90deg, white 180deg, white 180deg, white 270deg, white 270deg)';
+            } else if(input[i] == "Q"){ // bottom left quarter
+                cell.style.background = 'conic-gradient(white 0deg, white 90deg, white 90deg, white 180deg, black 180deg, black 270deg, white 270deg)';
+            } else if(input[i] == "W"){ // bottom right quarter
+                cell.style.background = 'conic-gradient(white 0deg, white 90deg, black 90deg, black 180deg, white 180deg, white 270deg, white 270deg)';
             } else {
                 cell.style.backgroundColor = "white";
             }
