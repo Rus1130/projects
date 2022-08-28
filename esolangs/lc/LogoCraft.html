@@ -1,0 +1,79 @@
+<style>
+    html {
+        font-family: monospace;
+    }
+    textarea {
+        resize: none;
+        border: none;
+        height: 600px;
+        width: 400px;
+        position: relative;
+        top: 50px;
+        left: 45px;
+
+    }
+    textarea:focus {
+        outline: none;
+    }
+
+    #tabs {
+        display: grid;
+        font-size: 30px;
+        grid-template-columns: 100px 100px 100px;
+        grid-template-rows: 40px;
+        column-gap: 5px;
+        width: 310px;
+        height: 40px;
+        position: relative;
+        top: 1px;
+    }
+    #input-container {
+        width: 500px;
+        height: 700px;
+        background-color: whitesmoke;
+    }
+    #craft:hover, #save:hover, #write:hover {
+        background-color: whitesmoke;
+    }
+    .hidden {
+        display: none;
+    }
+</style>
+<head>
+
+</head>
+<body>
+    <div id="tabs">
+        <div id="craft" onclick="switchSelectedTab(`${this.id}-input-container`)">Craft</div>
+        <div id="save" onclick="switchSelectedTab(`${this.id}-input-container`)">Save</div>
+        <div id="write" onclick="switchSelectedTab(`${this.id}-input-container`)">Write</div>
+    </div>
+    <div id="input-container">
+        <div id="craft-input-container">
+            <textarea id="craft-input" placeholder="craft"></textarea>
+        </div>
+        <div id="save-input-container" class="hidden">
+            <textarea id="save-input" placeholder="save" disabled></textarea>
+        </div>
+        <div id="write-input-container" class="hidden">
+            <textarea id="write-input" placeholder="write" disabled></textarea>
+        </div>
+    </div>
+    <div id="output-container">
+
+    </div>
+</body>
+<script>
+    const craftInputContainer = document.getElementById("craft-input-container");
+    const saveInputContainer = document.getElementById("save-input-container");
+    const writeInputContainer = document.getElementById("write-input-container");
+    let currentSelectedTab = "craft-input-container";
+    function switchSelectedTab(id){
+        currentSelectedTab = id;
+        craftInputContainer.classList.add("hidden");
+        saveInputContainer.classList.add("hidden");
+        writeInputContainer.classList.add("hidden");
+        document.getElementById(id).classList.remove("hidden");
+    }
+
+</script>
