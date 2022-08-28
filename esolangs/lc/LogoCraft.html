@@ -11,6 +11,7 @@
         top: 50px;
         left: 45px;
         font-size: 60px;
+        hyphens: none;
 
     }
     textarea:focus {
@@ -142,10 +143,10 @@
                 cell.style.backgroundColor = "black"; // full
             } else if(input[i] == "h"){ // left half
                 cell.style.background = 'linear-gradient(to right, black 50%, white 50%)';
-            } else if(input[i] == "j"){ // right half
-                cell.style.background = 'linear-gradient(to left, black 50%, white 50%)';
-            } else if(input[i] == "H"){ // top half
+            } else if(input[i] == "j"){ // top half
                 cell.style.background = 'linear-gradient(to bottom, black 50%, white 50%)';
+            } else if(input[i] == "H"){ // left half
+                cell.style.background = 'linear-gradient(to left, black 50%, white 50%)';
             } else if(input[i] == "J"){ // bottom half
                 cell.style.background = 'linear-gradient(to top, black 50%, white 50%)';
             } else if(input[i] == "q"){ // top left quarter 
@@ -156,6 +157,14 @@
                 cell.style.background = 'conic-gradient(white 0deg, white 90deg, white 90deg, white 180deg, black 180deg, black 270deg, white 270deg)';
             } else if(input[i] == "W"){ // bottom right quarter
                 cell.style.background = 'conic-gradient(white 0deg, white 90deg, black 90deg, black 180deg, white 180deg, white 270deg, white 270deg)';
+            } else if(input[i] == "r"){ // top left large triangle
+                cell.style.background = 'linear-gradient(to top left, white 50%, black 50%)';
+            } else if(input[i] == "t"){ // top right large triangle
+                cell.style.background = 'linear-gradient(to top right, white 50%, black 50%)';
+            } else if(input[i] == "R"){ // bottom left large triangle
+                cell.style.background = 'linear-gradient(to bottom left, white 50%, black 50%)';
+            } else if(input[i] == "T"){ // bottom right large triangle
+                cell.style.background = 'linear-gradient(to bottom right, white 50%, black 50%)';
             } else {
                 cell.style.backgroundColor = "white";
             }
