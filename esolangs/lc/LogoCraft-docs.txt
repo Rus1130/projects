@@ -1,6 +1,6 @@
 - : blank
 B : fully filled
-H : left half filled
-h : right half filled
-J : top half filled
-j : bottom half filled
+h : left half filled
+H : top half filled
+j : right half filled
+J : bottom half filled

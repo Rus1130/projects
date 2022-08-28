@@ -139,14 +139,14 @@
         for(i = 0; i < input.length; i++){
             let cell = document.getElementById(`craftOutputCell${i}`)
             if(input[i] == "B"){
-                cell.style.backgroundColor = "black";
-            } else if(input[i] == "H"){
+                cell.style.backgroundColor = "black"; // full
+            } else if(input[i] == "h"){ // left half
                 cell.style.background = 'linear-gradient(to right, black 50%, white 50%)';
-            } else if(input[i] == "h"){
+            } else if(input[i] == "j"){ // right half
                 cell.style.background = 'linear-gradient(to left, black 50%, white 50%)';
-            } else if(input[i] == "J"){
+            } else if(input[i] == "H"){ // top half
                 cell.style.background = 'linear-gradient(to bottom, black 50%, white 50%)';
-            } else if(input[i] == "j"){
+            } else if(input[i] == "J"){ // bottom half
                 cell.style.background = 'linear-gradient(to top, black 50%, white 50%)';
             } else {
                 cell.style.backgroundColor = "white";
@@ -157,6 +157,10 @@
 
     craftInputContainer.addEventListener("keydown", (e) => {
         if(e.key == ' '){
+            e.preventDefault()
+            while(document.getElementById(currentSelectedTab).getElementsByTagName("textarea")[0].value.length < 64){
+                document.getElementById(currentSelectedTab).getElementsByTagName("textarea")[0].value += "-";
+            }
             updateGrid();
         }
     })
