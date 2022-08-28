@@ -68,7 +68,7 @@
                 <textarea id="craft-input" placeholder="craft" maxlength="64"></textarea>
             </div>
             <div id="save-input-container" class="hidden">
-                <textarea id="save-input" placeholder="save" maxlength="64" disabled></textarea>
+                <textarea id="save-input" placeholder="save" maxlength="64" style="font-size: 12pt" disabled></textarea>
             </div>
             <div id="write-input-container" class="hidden">
                 <textarea id="write-input" placeholder="write" maxlength="64" disabled></textarea>
@@ -83,6 +83,11 @@
             </div>
         </div>
     </div>
+    <button style="
+    font-family: monospace;
+    width: 150px;
+    height: 25px;
+    "><a href="https://rus1130.github.io/projects/esolangs/lc/LogoCraft-docs.txt" target="_blank" rel="noopener noreferrer">LogoCraft Docs</a></button>
 </body>
 <script>
     const craftInputContainer = document.getElementById("craft-input-container");
@@ -132,18 +137,19 @@
 
         let input = document.getElementById(currentSelectedTab).getElementsByTagName("textarea")[0].value;
         for(i = 0; i < input.length; i++){
+            let cell = document.getElementById(`craftOutputCell${i}`)
             if(input[i] == "B"){
-                document.getElementById(`craftOutputCell${i}`).style.backgroundColor = "black";
+                cell.style.backgroundColor = "black";
             } else if(input[i] == "H"){
-                document.getElementById(`craftOutputCell${i}`).style.background = 'linear-gradient(to right, black 50%, white 50%)';
+                cell.style.background = 'linear-gradient(to right, black 50%, white 50%)';
             } else if(input[i] == "h"){
-                document.getElementById(`craftOutputCell${i}`).style.background = 'linear-gradient(to left, black 50%, white 50%)';
+                cell.style.background = 'linear-gradient(to left, black 50%, white 50%)';
             } else if(input[i] == "J"){
-                document.getElementById(`craftOutputCell${i}`).style.background = 'linear-gradient(to bottom, black 50%, white 50%)';
+                cell.style.background = 'linear-gradient(to bottom, black 50%, white 50%)';
             } else if(input[i] == "j"){
-                document.getElementById(`craftOutputCell${i}`).style.background = 'linear-gradient(to top, black 50%, white 50%)';
+                cell.style.background = 'linear-gradient(to top, black 50%, white 50%)';
             } else {
-                document.getElementById(`craftOutputCell${i}`).style.backgroundColor = "white";
+                cell.style.backgroundColor = "white";
             }
         }
         
