@@ -99,6 +99,7 @@
     const saveOutputContainer = document.getElementById("save-output-container");
     const writeOutputContainer = document.getElementById("write-output-container");
 
+    let cellBorders = false
 
     let currentSelectedTab = "craft-input-container";
 
@@ -125,7 +126,7 @@
             let cell = document.createElement('div');
             cell.style.width = '80px';
             cell.style.height = '80px';
-            cell.style.border = '1px solid black';
+            if(cellBorders) cell.style.border = '1px solid black';
             cell.id = `craftOutputCell${i}`;
             craftOutputContainer.appendChild(cell);
         }
