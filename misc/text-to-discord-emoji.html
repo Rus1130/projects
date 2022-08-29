@@ -1,0 +1,90 @@
+<style>
+
+</style>
+<head>
+
+</head>
+<body>
+
+</body>
+<script>
+    const fourLength = {
+        cool: ":cool:",
+        free: ":free:"
+    }
+    const threeLength = {
+        sos: ":sos:",
+        new: ":new:",
+
+    }
+    const twoLength = {
+        id: ':id:',
+        vs: ':vs:',
+        ab: ':ab:',
+        cl: ':cl:',
+        ng: ':ng:',
+        ok: ':ok:',
+        "10": ":keycap_ten:",
+    }
+    const oneLength = {
+        "0": ':zero:',
+        "1": ':one:',
+        "2": ':two:',
+        "3": ':three:',
+        "4": ':four:',
+        "5": ':five:',
+        "6": ':six:',
+        "7": ':seven:',
+        "8": ':eight:',
+        "9": ':nine:',
+        a: ':a:',
+        b: ':b:',
+        c: ':regional_indicator_c:',
+        d: ':regional_indicator_d:',
+        e: ':regional_indicator_e:',
+        f: ':regional_indicator_f:',
+        g: ':regional_indicator_g:',
+        h: ':regional_indicator_h:',
+        i: ':information_source:',
+        j: ':regional_indicator_j:',
+        k: ':regional_indicator_k:',
+        l: ':regional_indicator_l:',
+        m: ':m:',
+        n: ':regional_indicator_n:',
+        o: ':o2:',
+        p: ':parking:',
+        q: ':regional_indicator_q:',
+        r: ':regional_indicator_r:',
+        s: ':regional_indicator_s:',
+        t: ':regional_indicator_t:',
+        u: ':regional_indicator_u:',
+        v: ':regional_indicator_v:',
+        w: ':regional_indicator_w:',
+        x: ':regional_indicator_x:',
+        y: ':regional_indicator_y:',
+        z: ':regional_indicator_z:',
+    }
+
+    function convert(str){
+        let input = str
+        input = input.toLowerCase()
+        input.replaceAll('!', ":exclamation:")
+        input.replaceAll('?', ":question:")
+        input.replaceAll('!!', ':bangbang:')
+        input.replaceAll('!?', ':interrobang:')
+
+        let arr = input.split(' ')
+        for(i = 0; i < arr.length; i++){
+            for(j = 0; j = fourLength.length; j++){
+                if(arr[i] == fourLength[j]){
+                    arr[i] = fourLength[j]
+                }
+            }
+        }
+
+        return arr
+    }
+
+
+
+</script>
