@@ -199,6 +199,19 @@
 
             } else if(input[i] == 'R'){ // square with bottom right corner rounded
                 cell.appendChild(addOverlay('BottomRight', '50%'));
+
+            } else if(input[i] == 'd'){ // top left quarter circle
+                cell.appendChild(addOverlay('TopLeft', '100%'));
+
+            } else if(input[i] == 'f'){ // top right quarter circle
+                cell.appendChild(addOverlay('TopRight', '100%'));
+
+            } else if(input[i] == 'D'){ // bottom left quarter circle
+                cell.appendChild(addOverlay('BottomLeft', '100%'));
+
+            } else if(input[i] == 'F'){ // bottom right quarter circle
+                cell.appendChild(addOverlay('BottomRight', '100%'));
+
             } else {
                 cell.style.backgroundColor = "white";
             }

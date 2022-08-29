@@ -21,7 +21,12 @@ r : square with top right corner rounded
 E : square with bottom left corner rounded
 R : square with bottom right corner rounded
 
--BqwQWasASzxZXerER : full test
+d : top left quarter circle
+f : top right quarter circle
+D : bottom left quarter circle
+F : bottom right quarter circle
+
+-BqwQWasASzxZXerERdfDF : full test
 
 conic-gradient(white 0deg, white 90deg, white 90deg, white 180deg, white 180deg, white 270deg, white 270deg);
                |_____________________|  |_______________________|  |________________________|  |__________|
