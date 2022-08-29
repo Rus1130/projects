@@ -1,22 +1,27 @@
 - : blank
 
-B : fully filled
-h : left half filled
-j : top half filled
-H : right half filled
-J : bottom half filled
+B : square
+q : left half of square
+w : top half of square
+Q : right half of square
+W : bottom half of square
 
-q : top left quarter
-w : top right quarter
-Q : bottom left quarter
-W : bottom right quarter
+a : top left quarter
+s : top right quarter
+A : bottom left quarter
+S : bottom right quarter
 
-r : top left triangle large
-t : top right triangle large
-R : bottom left triangle large
-T : bottom right triangle large
+z : large top left triangle
+x : large top right triangle
+Z : large bottom left triangle
+X : large bottom right triangle
 
--BhjHJqwQWrtRT : full test
+e : square with top left corner rounded
+r : square with top right corner rounded
+E : square with bottom left corner rounded
+R : square with bottom right corner rounded
+
+-BqwQWasASzxZXerER : full test
 
 conic-gradient(white 0deg, white 90deg, white 90deg, white 180deg, white 180deg, white 270deg, white 270deg);
                |_____________________|  |_______________________|  |________________________|  |__________|

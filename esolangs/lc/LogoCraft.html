@@ -31,7 +31,7 @@
         top: 1px;
     }
     #input-container {
-        width: 370px;
+        width: 390px;
         height: 700px;
         background-color: whitesmoke;
     }
@@ -121,6 +121,15 @@
         
     }
 
+    function addOverlay(radiusType, radiusPercent){
+        let overlay = document.createElement('div');
+        overlay.style.width = '80px';
+        overlay.style.height = '80px';
+        overlay.style.backgroundColor = 'black';
+        overlay.style[`border${radiusType}Radius`] = radiusPercent
+        return overlay
+    }
+
     function setupCraftOutput(){
         craftOutputContainer.innerHTML = '';
         for(i = 0; i < 64; i++){
@@ -143,30 +152,53 @@
             let cell = document.getElementById(`craftOutputCell${i}`)
             if(input[i] == "B"){
                 cell.style.backgroundColor = "black"; // full
-            } else if(input[i] == "h"){ // left half
+            } else if(input[i] == "q"){ // left half of square
                 cell.style.background = 'linear-gradient(to right, black 50%, white 50%)';
-            } else if(input[i] == "j"){ // top half
+
+            } else if(input[i] == "w"){ // top half of square
                 cell.style.background = 'linear-gradient(to bottom, black 50%, white 50%)';
-            } else if(input[i] == "H"){ // left half
+
+            } else if(input[i] == "Q"){ // right half of square
                 cell.style.background = 'linear-gradient(to left, black 50%, white 50%)';
-            } else if(input[i] == "J"){ // bottom half
+
+            } else if(input[i] == "W"){ // bottom half of square
                 cell.style.background = 'linear-gradient(to top, black 50%, white 50%)';
-            } else if(input[i] == "q"){ // top left quarter 
+
+            } else if(input[i] == "a"){ // top left quarter 
                 cell.style.background = 'conic-gradient(white 0deg, white 90deg, white 90deg, white 180deg, white 180deg, white 270deg, black 270deg)';
-            } else if(input[i] == "w"){ // top right quarter
+
+            } else if(input[i] == "s"){ // top right quarter
                 cell.style.background = 'conic-gradient(black 0deg, black 90deg, white 90deg, white 180deg, white 180deg, white 270deg, white 270deg)';
-            } else if(input[i] == "Q"){ // bottom left quarter
+
+            } else if(input[i] == "A"){ // bottom left quarter
                 cell.style.background = 'conic-gradient(white 0deg, white 90deg, white 90deg, white 180deg, black 180deg, black 270deg, white 270deg)';
-            } else if(input[i] == "W"){ // bottom right quarter
+
+            } else if(input[i] == "S"){ // bottom right quarter
                 cell.style.background = 'conic-gradient(white 0deg, white 90deg, black 90deg, black 180deg, white 180deg, white 270deg, white 270deg)';
-            } else if(input[i] == "r"){ // top left large triangle
+
+            } else if(input[i] == "z"){ // largr top left triangle
                 cell.style.background = 'linear-gradient(to top left, white 50%, black 50%)';
-            } else if(input[i] == "t"){ // top right large triangle
+
+            } else if(input[i] == "x"){ // large top right triangle
                 cell.style.background = 'linear-gradient(to top right, white 50%, black 50%)';
-            } else if(input[i] == "R"){ // bottom left large triangle
+
+            } else if(input[i] == "Z"){ // large bottom left triangle
                 cell.style.background = 'linear-gradient(to bottom left, white 50%, black 50%)';
-            } else if(input[i] == "T"){ // bottom right large triangle
+
+            } else if(input[i] == "X"){ // large bottom right triangle
                 cell.style.background = 'linear-gradient(to bottom right, white 50%, black 50%)';
+
+            } else if(input[i] == 'e'){ // square with top left corner rounded
+                cell.appendChild(addOverlay('TopLeft', '50%'));
+
+            } else if(input[i] == 'r'){ // square with top right corner rounded
+                cell.appendChild(addOverlay('TopRight', '50%'));
+                
+            } else if(input[i] == 'E'){ // square with bottom left corner rounded
+                cell.appendChild(addOverlay('BottomLeft', '50%'));
+
+            } else if(input[i] == 'R'){ // square with bottom right corner rounded
+                cell.appendChild(addOverlay('BottomRight', '50%'));
             } else {
                 cell.style.backgroundColor = "white";
             }
