@@ -13,8 +13,8 @@ W : bottom right quarter
 
 r : top left triangle large
 t : top right triangle large
-y : bottom left triangle large
-Y : bottom right triangle large
+R : bottom left triangle large
+T : bottom right triangle large
 
 -BhjHJqwQWrtRT : full test
 
