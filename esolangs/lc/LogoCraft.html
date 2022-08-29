@@ -11,12 +11,12 @@
         top: 50px;
         left: 45px;
         font-size: 60px;
-        hyphens: none;
+        word-break: break-all;
+        font-family: monospace;
 
     }
     textarea:focus {
         outline: none;
-        word-break: break-all;
     }
 
     #tabs {
@@ -31,7 +31,7 @@
         top: 1px;
     }
     #input-container {
-        width: 390px;
+        width: 410px;
         height: 700px;
         background-color: whitesmoke;
     }
@@ -90,6 +90,7 @@
     width: 150px;
     height: 25px;
     "><a href="https://rus1130.github.io/projects/esolangs/lc/LogoCraft-docs.txt" target="_blank" rel="noopener noreferrer">LogoCraft Docs</a></button>
+    <button onclick="run()">Click to generate grid</button>
 </body>
 <script>
     const craftInputContainer = document.getElementById("craft-input-container");
@@ -150,7 +151,7 @@
         let input = document.getElementById(currentSelectedTab).getElementsByTagName("textarea")[0].value;
         for(i = 0; i < input.length; i++){
             let cell = document.getElementById(`craftOutputCell${i}`)
-            if(input[i] == "B"){
+            if(input[i] == "b"){
                 cell.style.backgroundColor = "black"; // full
             } else if(input[i] == "q"){ // left half of square
                 cell.style.background = 'linear-gradient(to right, black 50%, white 50%)';
@@ -219,14 +220,27 @@
         
     }
 
-    craftInputContainer.addEventListener("keydown", (e) => {
-        if(e.key == ' '){
-            e.preventDefault()
-            while(document.getElementById(currentSelectedTab).getElementsByTagName("textarea")[0].value.length < 64){
-                document.getElementById(currentSelectedTab).getElementsByTagName("textarea")[0].value += "-";
-            }
-            updateGrid();
+    hotkeys.filter = function(event) {
+        var target = event.target || event.srcElement;
+        var tagName = target.tagName;
+        return !(target.isContentEditable || tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
+    }
+
+    hotkeys.filter = function(event){
+        var tagName = (event.target || event.srcElement).tagName;
+        hotkeys.setScope(/^(INPUT|TEXTAREA|SELECT)$/.test(tagName) ? 'input' : 'other');
+        return true;
+    }
+
+    function run(){
+        while(document.getElementById(currentSelectedTab).getElementsByTagName("textarea")[0].value.length < 64){
+            document.getElementById(currentSelectedTab).getElementsByTagName("textarea")[0].value += "-";
         }
+        updateGrid();
+    }
+
+    hotkeys('shift+space', () => {
+        run()
     })
 
 </script>

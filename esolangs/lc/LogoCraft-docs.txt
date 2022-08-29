@@ -1,6 +1,9 @@
-- : blank
+Shift + space to generate the grid
 
-B : square
+- : blank
+Spaces can be used instead of hyphens, but I would recommand using hyphens.
+
+b : square
 q : left half of square
 w : top half of square
 Q : right half of square
@@ -26,7 +29,9 @@ f : top right quarter circle
 D : bottom left quarter circle
 F : bottom right quarter circle
 
--BqwQWasASzxZXerERdfDF : full test
+-bqwQWasASzxZXerERdfDF : full test
+
+ebbbbbbrbxZ--Xzbb-xZXz-bb--xz--bb------bb------bb------bEbbbbbbR
 
 conic-gradient(white 0deg, white 90deg, white 90deg, white 180deg, white 180deg, white 270deg, white 270deg);
                |_____________________|  |_______________________|  |________________________|  |__________|
