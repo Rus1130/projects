@@ -1,0 +1,37 @@
+Shift + space to generate the grid
+
+- : blank
+Spaces can be used instead of hyphens, but I would recommand using hyphens.
+
+b : square
+q : left half of square
+w : top half of square
+Q : right half of square
+W : bottom half of square
+
+a : top left quarter
+s : top right quarter
+A : bottom left quarter
+S : bottom right quarter
+
+z : large top left triangle
+x : large top right triangle
+Z : large bottom left triangle
+X : large bottom right triangle
+
+e : square with top left corner rounded
+r : square with top right corner rounded
+E : square with bottom left corner rounded
+R : square with bottom right corner rounded
+
+d : top left quarter circle
+f : top right quarter circle
+D : bottom left quarter circle
+F : bottom right quarter circle
+
+-bqwQWasASzxZXerERdfDF : full test
+
+ebbbbbbrbxZ--Xzbb-xZXz-bb--xz--bb------bb------bb------bEbbbbbbR
+
+conic-gradient(white 0deg, white 90deg, white 90deg, white 180deg, white 180deg, white 270deg, white 270deg);
+               |_____________________|  |_______________________|  |________________________|  |__________|

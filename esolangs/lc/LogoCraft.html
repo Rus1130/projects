@@ -1,0 +1,246 @@
+<style>
+    html {
+        font-family: monospace;
+    }
+    textarea {
+        resize: none;
+        border: none;
+        height: 570px;
+        width: 270px;
+        position: relative;
+        top: 50px;
+        left: 45px;
+        font-size: 60px;
+        word-break: break-all;
+        font-family: monospace;
+
+    }
+    textarea:focus {
+        outline: none;
+    }
+
+    #tabs {
+        display: grid;
+        font-size: 30px;
+        grid-template-columns: 100px 100px 100px;
+        grid-template-rows: 40px;
+        column-gap: 5px;
+        width: 310px;
+        height: 40px;
+        position: relative;
+        top: 1px;
+    }
+    #input-container {
+        width: 410px;
+        height: 700px;
+        background-color: whitesmoke;
+    }
+    #craft:hover, #save:hover, #write:hover {
+        background-color: whitesmoke;
+        cursor: pointer;
+    }
+    .hidden {
+        display: none;
+    }
+    #wrapper {
+        display: grid;
+        grid-template-columns: 400px 400px;
+    }
+
+    #craft-output-container {
+        display: grid;
+        grid-template-columns: repeat(8, 80px);
+        grid-template-rows: repeat(8, 80px);
+        width: 640px;
+        height: 640px;
+    }
+</style>
+<head>
+    <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
+</head>
+<body>
+    <div id="tabs">
+        <div id="craft" onclick="switchSelectedTab(`${this.id}-input-container`)">Craft</div>
+        <div id="save" onclick="switchSelectedTab(`${this.id}-input-container`)">Save</div>
+        <div id="write" onclick="switchSelectedTab(`${this.id}-input-container`)">Write</div>
+    </div>
+    <div id="wrapper">
+        <div id="input-container">
+            <div id="craft-input-container">
+                <textarea id="craft-input" placeholder="craft" maxlength="64"></textarea>
+            </div>
+            <div id="save-input-container" class="hidden">
+                <textarea id="save-input" placeholder="save" maxlength="64" style="font-size: 12pt" disabled></textarea>
+            </div>
+            <div id="write-input-container" class="hidden">
+                <textarea id="write-input" placeholder="write" maxlength="64" disabled></textarea>
+            </div>
+        </div>
+        <div id="output-container">
+            <div id="craft-output-container" style="border: 1px solid black">
+            </div>
+            <div id="save-output-container" class="hidden">
+            </div>
+            <div id="write-output-container" class="hidden">
+            </div>
+        </div>
+    </div>
+    <button style="
+    font-family: monospace;
+    width: 150px;
+    height: 25px;
+    "><a href="https://rus1130.github.io/projects/esolangs/lc/LogoCraft-docs.txt" target="_blank" rel="noopener noreferrer">LogoCraft Docs</a></button>
+    <button onclick="run()">Click to generate grid</button>
+</body>
+<script>
+    const craftInputContainer = document.getElementById("craft-input-container");
+    const saveInputContainer = document.getElementById("save-input-container");
+    const writeInputContainer = document.getElementById("write-input-container");
+
+    const craftOutputContainer = document.getElementById("craft-output-container");
+    const saveOutputContainer = document.getElementById("save-output-container");
+    const writeOutputContainer = document.getElementById("write-output-container");
+
+    let cellBorders = false
+
+    let currentSelectedTab = "craft-input-container";
+
+    document.getElementById(currentSelectedTab).getElementsByTagName('textarea')[0].value = "----------------------------------------------------------------";
+
+    function switchSelectedTab(id){
+        currentSelectedTab = id;
+        craftInputContainer.classList.add("hidden");
+        saveInputContainer.classList.add("hidden");
+        writeInputContainer.classList.add("hidden");
+
+        craftOutputContainer.classList.add("hidden");
+        saveOutputContainer.classList.add("hidden");
+        writeOutputContainer.classList.add("hidden");
+
+        document.getElementById(id).classList.remove("hidden");
+        document.getElementById(id.replace('input','output')).classList.remove("hidden");
+        
+    }
+
+    function addOverlay(radiusType, radiusPercent){
+        let overlay = document.createElement('div');
+        overlay.style.width = '80px';
+        overlay.style.height = '80px';
+        overlay.style.backgroundColor = 'black';
+        overlay.style[`border${radiusType}Radius`] = radiusPercent
+        return overlay
+    }
+
+    function setupCraftOutput(){
+        craftOutputContainer.innerHTML = '';
+        for(i = 0; i < 64; i++){
+            let cell = document.createElement('div');
+            cell.style.width = '80px';
+            cell.style.height = '80px';
+            if(cellBorders) cell.style.border = '1px solid black';
+            cell.id = `craftOutputCell${i}`;
+            craftOutputContainer.appendChild(cell);
+        }
+    }
+
+    function updateGrid(){
+        if(currentSelectedTab == 'craft-input-container'){
+            setupCraftOutput()
+        }
+
+        let input = document.getElementById(currentSelectedTab).getElementsByTagName("textarea")[0].value;
+        for(i = 0; i < input.length; i++){
+            let cell = document.getElementById(`craftOutputCell${i}`)
+            if(input[i] == "b"){
+                cell.style.backgroundColor = "black"; // full
+            } else if(input[i] == "q"){ // left half of square
+                cell.style.background = 'linear-gradient(to right, black 50%, white 50%)';
+
+            } else if(input[i] == "w"){ // top half of square
+                cell.style.background = 'linear-gradient(to bottom, black 50%, white 50%)';
+
+            } else if(input[i] == "Q"){ // right half of square
+                cell.style.background = 'linear-gradient(to left, black 50%, white 50%)';
+
+            } else if(input[i] == "W"){ // bottom half of square
+                cell.style.background = 'linear-gradient(to top, black 50%, white 50%)';
+
+            } else if(input[i] == "a"){ // top left quarter 
+                cell.style.background = 'conic-gradient(white 0deg, white 90deg, white 90deg, white 180deg, white 180deg, white 270deg, black 270deg)';
+
+            } else if(input[i] == "s"){ // top right quarter
+                cell.style.background = 'conic-gradient(black 0deg, black 90deg, white 90deg, white 180deg, white 180deg, white 270deg, white 270deg)';
+
+            } else if(input[i] == "A"){ // bottom left quarter
+                cell.style.background = 'conic-gradient(white 0deg, white 90deg, white 90deg, white 180deg, black 180deg, black 270deg, white 270deg)';
+
+            } else if(input[i] == "S"){ // bottom right quarter
+                cell.style.background = 'conic-gradient(white 0deg, white 90deg, black 90deg, black 180deg, white 180deg, white 270deg, white 270deg)';
+
+            } else if(input[i] == "z"){ // largr top left triangle
+                cell.style.background = 'linear-gradient(to top left, white 50%, black 50%)';
+
+            } else if(input[i] == "x"){ // large top right triangle
+                cell.style.background = 'linear-gradient(to top right, white 50%, black 50%)';
+
+            } else if(input[i] == "Z"){ // large bottom left triangle
+                cell.style.background = 'linear-gradient(to bottom left, white 50%, black 50%)';
+
+            } else if(input[i] == "X"){ // large bottom right triangle
+                cell.style.background = 'linear-gradient(to bottom right, white 50%, black 50%)';
+
+            } else if(input[i] == 'e'){ // square with top left corner rounded
+                cell.appendChild(addOverlay('TopLeft', '50%'));
+
+            } else if(input[i] == 'r'){ // square with top right corner rounded
+                cell.appendChild(addOverlay('TopRight', '50%'));
+                
+            } else if(input[i] == 'E'){ // square with bottom left corner rounded
+                cell.appendChild(addOverlay('BottomLeft', '50%'));
+
+            } else if(input[i] == 'R'){ // square with bottom right corner rounded
+                cell.appendChild(addOverlay('BottomRight', '50%'));
+
+            } else if(input[i] == 'd'){ // top left quarter circle
+                cell.appendChild(addOverlay('TopLeft', '100%'));
+
+            } else if(input[i] == 'f'){ // top right quarter circle
+                cell.appendChild(addOverlay('TopRight', '100%'));
+
+            } else if(input[i] == 'D'){ // bottom left quarter circle
+                cell.appendChild(addOverlay('BottomLeft', '100%'));
+
+            } else if(input[i] == 'F'){ // bottom right quarter circle
+                cell.appendChild(addOverlay('BottomRight', '100%'));
+
+            } else {
+                cell.style.backgroundColor = "white";
+            }
+        }
+        
+    }
+
+    hotkeys.filter = function(event) {
+        var target = event.target || event.srcElement;
+        var tagName = target.tagName;
+        return !(target.isContentEditable || tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
+    }
+
+    hotkeys.filter = function(event){
+        var tagName = (event.target || event.srcElement).tagName;
+        hotkeys.setScope(/^(INPUT|TEXTAREA|SELECT)$/.test(tagName) ? 'input' : 'other');
+        return true;
+    }
+
+    function run(){
+        while(document.getElementById(currentSelectedTab).getElementsByTagName("textarea")[0].value.length < 64){
+            document.getElementById(currentSelectedTab).getElementsByTagName("textarea")[0].value += "-";
+        }
+        updateGrid();
+    }
+
+    hotkeys('shift+space', () => {
+        run()
+    })
+
+</script>
