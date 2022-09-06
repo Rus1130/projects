@@ -29,13 +29,24 @@
         }
         return result
     }
-    function checkChar(char){
-        return char.charCodeAt(0) >= 32 && char.charCodeAt(0) <= 126
-    }
+
     function compress(str){
-        for(i = 0; i < str.length; i++){
-            if(!checkChar(str[i])) return console.error("Invalid character: " + str[i])
+        let numberStringArray = str.split("").map(x => x.charCodeAt(0).toString());
+        for(i = 0; i < numberStringArray.length; i++){
+            numberStringArray[i] = numberStringArray[i].padStart(3, "0");
         }
+        let bigNumberString = numberStringArray.join("")
+        .replaceAll("00", "a")
+        .replaceAll("11", "b")
+        .replaceAll("22", "c")
+        .replaceAll("33", "d")
+        .replaceAll("44", "e")
+        .replaceAll("55", "f")
+        .replaceAll("66", "g")
+        .replaceAll("77", "h")
+        .replaceAll("88", "i")
+        .replaceAll("99", "j")
+        return bigNumberString;
     }
     function decompress(str){
 
