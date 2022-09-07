@@ -29,6 +29,18 @@
         }
         return result
     }
+    const replacers = {
+        "00": "a",
+        "11": "b",
+        "22": "c",
+        "33": "d",
+        "44": "e",
+        "55": "f",
+        "66": "g",
+        "77": "h",
+        "88": "i",
+        "99": "j",
+    }
 
     function compress(str){
         let numberStringArray = str.split("").map(x => x.charCodeAt(0).toString());
