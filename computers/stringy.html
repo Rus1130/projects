@@ -30,18 +30,7 @@
     }
 
     function compress(str){
-        let codeArray = str.split("").map(char => String(char.charCodeAt(0)).padStart(3, "0"));
-        let combined12LengthIndexArray = codeArray.join("").match(/.{1,12}/g);
-        let eachIndexStartsWithZero = []
-        for(i = 0; i < combined12LengthIndexArray.length; i++){
-            if(combined12LengthIndexArray[i].startsWith("0")){
-                eachIndexStartsWithZero.push('1:')
-            } else {
-                eachIndexStartsWithZero.push('')
-            }
-        }
-        console.log(eachIndexStartsWithZero)
-        return combined12LengthIndexArray
+
     }
     function decompress(str){
 
