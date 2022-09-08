@@ -16,7 +16,6 @@
 
 </head>
 <body>
-
 </body>
 <script>
     /*
@@ -31,14 +30,18 @@
     }
 
     function compress(str){
-        let characterCodeArray = str.split("").map(index => {
-            return String(index.charCodeAt(0)).padStart(3, "0");
-        });
-        for(i = 0; i < characterCodeArray.length; i++){
-            if(characterCodeArray[i].length > 3){
-                return console.error("Character code is too large to compress");
+        let codeArray = str.split("").map(char => String(char.charCodeAt(0)).padStart(3, "0"));
+        let combined12LengthIndexArray = codeArray.join("").match(/.{1,12}/g);
+        let eachIndexStartsWithZero = []
+        for(i = 0; i < combined12LengthIndexArray.length; i++){
+            if(combined12LengthIndexArray[i].startsWith("0")){
+                eachIndexStartsWithZero.push('1:')
+            } else {
+                eachIndexStartsWithZero.push('')
             }
         }
+        console.log(eachIndexStartsWithZero)
+        return combined12LengthIndexArray
     }
     function decompress(str){
 
