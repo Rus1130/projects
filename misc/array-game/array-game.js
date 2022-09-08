@@ -192,4 +192,4 @@ const ArrayGame = {
 
         document.getElementById("screen").innerHTML = topFrame + "<br>" + JSON.stringify(ArrayGame.gameboard).replaceAll("],[","║<br>║").replace("[[","║").replace("]]","║").replaceAll('"',"").replaceAll(",","")  + "<br>" + bottomFrame
     }
-}
+};
