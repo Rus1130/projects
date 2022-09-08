@@ -29,36 +29,16 @@
         }
         return result
     }
-    const replacers = {
-        "00": "a",
-        "11": "b",
-        "22": "c",
-        "33": "d",
-        "44": "e",
-        "55": "f",
-        "66": "g",
-        "77": "h",
-        "88": "i",
-        "99": "j",
-    }
 
     function compress(str){
-        let numberStringArray = str.split("").map(x => x.charCodeAt(0).toString());
-        for(i = 0; i < numberStringArray.length; i++){
-            numberStringArray[i] = numberStringArray[i].padStart(3, "0");
+        let characterCodeArray = str.split("").map(index => {
+            return String(index.charCodeAt(0)).padStart(3, "0");
+        });
+        for(i = 0; i < characterCodeArray.length; i++){
+            if(characterCodeArray[i].length > 3){
+                return console.error("Character code is too large to compress");
+            }
         }
-        let bigNumberString = numberStringArray.join("")
-        .replaceAll("00", "a")
-        .replaceAll("11", "b")
-        .replaceAll("22", "c")
-        .replaceAll("33", "d")
-        .replaceAll("44", "e")
-        .replaceAll("55", "f")
-        .replaceAll("66", "g")
-        .replaceAll("77", "h")
-        .replaceAll("88", "i")
-        .replaceAll("99", "j")
-        return bigNumberString;
     }
     function decompress(str){
 
