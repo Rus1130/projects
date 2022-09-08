@@ -27,4 +27,15 @@
     function syllabify(input){;
     };
 
+    function create2dArray(rows, cols){
+        let array = []
+        for (i = 0; i < cols; i++) {
+            array.push([]);
+            for (j = 0; j < parseInt(rows); j++) {
+                array.push([]);
+            }
+        }
+        return array;
+    }
+
 </script>
