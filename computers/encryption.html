@@ -19,58 +19,8 @@
 
 </body>
 <script>
-    function repeatPow(num, base, times) {
-        return Math.pow(num, base * times)
-    }
-    function repeatLog(num, base, times) {
-        return Math.log(num) / Math.log(base) * times
-    }
-    const Crypt = {
-        generateSalt(){
-            return Math.floor(Math.random() * (687 - 192 + 1) + 192);
-        },
-        generateDelimiter(){
-            return Math.floor(Math.random() * (191 - 161 + 1) + 161);
-        },
-        encrypt: {
-            LIE(string){ // Length Integrated Encryption
-                if(string.length > 35) return console.error("String too long (max 36 chars)");
-                let encryptedMessageArray = [];
-                let encryptedKeyArray = [];
-                let delimiter = String.fromCharCode(Crypt.generateDelimiter()) + String.fromCharCode(Crypt.generateDelimiter()) + String.fromCharCode(Crypt.generateDelimiter())
-
-                let slkey = Crypt.generateSalt()
-                let stringLength = String.fromCharCode(string.length.toString(36).charCodeAt(0) + slkey);
-                let stringLengthKey = String.fromCharCode(slkey)
-
-
-                for(i = 0; i < string.length; i++){
-                    let keypoint = Crypt.generateSalt()
-                    encryptedMessageArray.push(String.fromCharCode(string.charCodeAt(i) + keypoint));
-                    encryptedKeyArray.push(String.fromCharCode(keypoint))
-                }
-
-                let encryptedMessage = encryptedMessageArray.join("")
-                let encryptedKey = encryptedKeyArray.join("")
-
-                return stringLength + encryptedMessage + String.fromCharCode(Crypt.generateSalt()) + encryptedKey + stringLengthKey
-            }
-        },
-        decrypt: {
-            LIE(string){
-                let encryptedLength = string[0].charCodeAt(0)
-                let encryptedLengthKey = string[string.length - 1].charCodeAt(0)
-                let length = parseInt(String.fromCharCode(encryptedLength - encryptedLengthKey),36)
-
-                let messageArray = string.slice(1, string.length - 1).split(String(string).charAt(length + 1))
-                let encryptedMessage = Array(...messageArray[0]).map(x => x.charCodeAt(0))
-                let encryptedKey = Array(...messageArray[1]).map(x => x.charCodeAt(0))
-                let decryptedMessage = '';
-                for(i = 0; i < encryptedMessage.length; i++){
-                    decryptedMessage += String.fromCharCode(encryptedMessage[i] - encryptedKey[i])
-                }
-                return decryptedMessage
-            }
-        }
+    function encrypt(string){
+        let currentDateUnix = Date.now();
+        return currentDateUnix
     }
 </script>
