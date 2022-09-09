@@ -20,7 +20,21 @@
 </body>
 <script>
     function encrypt(string){
-        let currentDateUnix = Date.now();
-        return currentDateUnix
+        let key = []
+        let charCodeArray = `${string}_${Date.now()}`.split("").map(char => char.charCodeAt(0) + 100);
+        for(i = 0; i < charCodeArray.length; i++){
+            let seed = (charCodeArray.length % charCodeArray[i]) + Math.round((Math.random() * 100));
+            key.push(seed);
+        }
+        let result = []
+        for(i = 0; i < charCodeArray.length; i++){
+            result.push(charCodeArray[i] + key[i]);
+            result[i] = String.fromCharCode(result[i])
+        }
+        let final = {
+            key: key.map(num => String.fromCharCode(num + 300)).join(""),
+            output: result.join("")
+        }
+        return final
     }
 </script>
