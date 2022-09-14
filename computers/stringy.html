@@ -46,23 +46,8 @@
         let encoderArray = []
         for(i = 0; i < charCodeArray.length; i++){
             encoderArray.push({});
-            for(j = 0; j <= 40; j++){
+            for(j = 0; j <= 12; j++){
                 encoderArray[i][Math.pow(2,j)] = 0;
-            }
-        }
-
-        for(i = 0; i < charCodeArray.length; i++){
-            let test = Math.pow(2,40);
-            let current = charCodeArray[i];
-
-           // if current is greater than test, then add 1 to the encoderArray[i][test] and subtract test from current, repeat until current is 0
-
-            while(current > 0){
-                if(current >= test){
-                    encoderArray[i][test] += 1;
-                    current -= test;
-                }
-                test /= 2;
             }
         }
 
