@@ -41,15 +41,8 @@
             charCodeArray[i] = Number(charCodeArray[i].join(""));
         }
 
-        // 1099511627776;
-
         let encoderArray = []
-        for(i = 0; i < charCodeArray.length; i++){
-            encoderArray.push({});
-            for(j = 0; j <= 12; j++){
-                encoderArray[i][Math.pow(2,j)] = 0;
-            }
-        }
+
 
         
         console.log(encoderArray);
