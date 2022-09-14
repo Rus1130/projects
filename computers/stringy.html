@@ -30,7 +30,15 @@
     }
 
     function compress(str){
-
+        let charCodeArray = str.split('').map(char => char.charCodeAt(0));
+        for(times = 0; times < 3; times++){
+            for(i = 0; i < charCodeArray.length; i++){
+                if(charCodeArray[i] % 2 == 0){
+                    charCodeArray[i] = charCodeArray[i] / 2;
+                }
+            }
+        }
+        return charCodeArray
     }
     function decompress(str){
 
