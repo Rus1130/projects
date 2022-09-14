@@ -30,14 +30,25 @@
     }
 
     function compress(str){
-        let charCodeArray = str.split('').map(char => char.charCodeAt(0));
-        for(times = 0; times < 3; times++){
-            for(i = 0; i < charCodeArray.length; i++){
-                if(charCodeArray[i] % 2 == 0){
-                    charCodeArray[i] = charCodeArray[i] / 2;
+        let charCodeArray = str.split('').map(char => (char.charCodeAt(0) + 100).toString().padStart(3, '0')).join("");
+        charCodeArray = charCodeArray.match(/.{1,9}/g);
+
+        charCodeArray[charCodeArray.length - 1] = charCodeArray[charCodeArray.length - 1].padEnd(9, '000');
+
+        for(i = 0; i < charCodeArray.length; i++){
+            charCodeArray[i] = charCodeArray[i].match(/.{1,3}/g);
+            charCodeArray[i] = Number(charCodeArray[i].join(""));
+        }
+
+        for(i = 0; i < 3; i++){
+            for(j = 0; j < charCodeArray.length; j++){
+                if(charCodeArray[i] % 64 == 0){
+                    charCodeArray[i] = charCodeArray[i] / 64;
                 }
             }
         }
+
+        
         return charCodeArray
     }
     function decompress(str){
