@@ -20,33 +20,15 @@
 <script>
     /*
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+    https://www3.nd.edu/~busiforc/handouts/cryptography/Letter%20Frequencies.html
     */
-    function repeat(num, repeat){
-        let result = 0;
-        for(i = 0; i < repeat; i++){
-            result += num;
-        }
-        return result
+
+    const dict = {
     }
 
     function compress(str){
-        let charCodeArray = str.split('').map(char => (char.charCodeAt(0) + 100).toString().padStart(3, '0')).join("");
-        charCodeArray = charCodeArray.match(/.{1,9}/g);
 
-        charCodeArray[charCodeArray.length - 1] = charCodeArray[charCodeArray.length - 1].padEnd(9, '0');
-
-
-        for(i = 0; i < charCodeArray.length; i++){
-            charCodeArray[i] = charCodeArray[i].match(/.{1,3}/g);
-            charCodeArray[i] = Number(charCodeArray[i].join(""));
-        }
-
-        let encoderArray = []
-
-
-        
-        console.log(encoderArray);
-        return charCodeArray
     }
     function decompress(str){
 
