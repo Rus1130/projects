@@ -31,9 +31,9 @@
 
     function compress(str){
         let charCodeArray = str.split('').map(char => (char.charCodeAt(0) + 100).toString().padStart(3, '0')).join("");
-        charCodeArray = charCodeArray.match(/.{1,12}/g);
+        charCodeArray = charCodeArray.match(/.{1,9}/g);
 
-        charCodeArray[charCodeArray.length - 1] = charCodeArray[charCodeArray.length - 1].padEnd(12, '000');
+        charCodeArray[charCodeArray.length - 1] = charCodeArray[charCodeArray.length - 1].padEnd(9, '0');
 
 
         for(i = 0; i < charCodeArray.length; i++){
