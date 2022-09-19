@@ -25,8 +25,10 @@
     */
 
     function compress(str){
-        let charCodeArray = str.split('').map(char => char.charCodeAt(0).toString(2));
-        return charCodeArray
+        let charCodeArray = str.split('').map(char => char.charCodeAt(0));
+        let compressedArray = []
+
+        return compressedArray
         
     }
     function decompress(str){
