@@ -25,7 +25,14 @@
     */
 
     function compress(str){
-        let charCodeArray = str.split('').map(char => char.charCodeAt(0));
+        let charCodeArray = str.match(/.{1,3}/g);
+        for(i = 0; i < charCodeArray.length; i++){
+            charCodeArray[i] = charCodeArray[i].split('').map(char => char.charCodeAt(0));
+            while(charCodeArray[i].length < 3){
+                charCodeArray[i].push(000);
+            }
+        }
+
         let compressedArray = []
 
         return charCodeArray
