@@ -24,12 +24,8 @@
     https://www3.nd.edu/~busiforc/handouts/cryptography/Letter%20Frequencies.html
     */
 
-    function bitNot(num){
-        return num.toString(2).split('').map(x => ~~!+x).join('')
-    }
-
     function compress(str){
-        let charCodeArray = str.split('').map(char => char.charCodeAt(0));
+        let charCodeArray = str.split('').map(char => (char.charCodeAt(0) ^ 100).toString().padStart(2, "0"));
         return charCodeArray
         
     }
