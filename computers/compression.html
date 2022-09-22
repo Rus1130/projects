@@ -22,16 +22,37 @@
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
     */
 
-
     function compress(str){
-        let charCodeArray = str.split("").map(char => char.charCodeAt(0).toString(2).padStart(8, "0"));
-        let runArray = []
-        for(i = 0; i < charCodeArray.length; i++){
-
-
+        let charArray = str.split("").map(char => char.charCodeAt(0).toString(2))
+        // create an object that orders the characters by frequency
+        let charFreq = {}
+        for (i = 0; i < charArray.length; i++){
+            if (charFreq[charArray[i]]){
+                charFreq[charArray[i]]++
+            } else {
+                charFreq[charArray[i]] = 1
+            }
         }
+        let highestFreq = 0;
+        for (i in charFreq){
+            if (charFreq[i] > highestFreq){
+                highestFreq = charFreq[i]
+            }
+            if (charFreq[i] == 1){
+                delete charFreq[i]
+            }
+        }
+        let sortedFreq = Object.keys(charFreq).sort((a, b) => charFreq[b] - charFreq[a])
+        let replacers = {}
+        for(i = highestFreq; i >= 0; i--){
+            replacers[sortedFreq[i - 1]] = i.toString(2).padStart(highestFreq, "0")
+        }
+        delete replacers[Object.keys(replacers)[Object.keys(replacers).length - 1]]
 
-        return charCodeArray;
+
+        console.log(replacers)
+        console.log(charFreq)
+        return charArray;
         
     }
     function decompress(str){
