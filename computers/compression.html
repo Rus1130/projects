@@ -38,14 +38,14 @@
             if (charFreq[i] > highestFreq){
                 highestFreq = charFreq[i]
             }
-            if (charFreq[i] == 1){
+            if (charFreq[i] < 3){
                 delete charFreq[i]
             }
         }
         let sortedFreq = Object.keys(charFreq).sort((a, b) => charFreq[b] - charFreq[a])
         let replacers = {}
         for(i = highestFreq; i >= 0; i--){
-            replacers[sortedFreq[i - 1]] = i.toString(2).padStart(highestFreq, "0")
+            replacers[sortedFreq[i - 1]] = i.toString(2).padStart(4, "0")
         }
         delete replacers[Object.keys(replacers)[Object.keys(replacers).length - 1]]
 
@@ -54,10 +54,18 @@
 
         let dict = []
         for(i = 0; i < keys.length; i++){
-            
+            dict.push(values[i])
+            dict.push(keys[i])
         }
-        console.log(replacers)
+
+        for(i = 0; i < charArray.length; i++){
+            if (replacers[charArray[i]]){
+                charArray[i] = replacers[charArray[i]]
+            }
+        }
         console.log(charFreq)
+        console.log(dict)
+        console.log(replacers)
         return charArray;
         
     }
