@@ -40,7 +40,7 @@
     }
 
     function compress(str){
-        let charCodeArray = str.split("").map(char => char.charCodeAt(0));
+        let charCodeArray = str.split("").map(char => char.charCodeAt(0) + 100).join("").match(/.{1,9}/g).map(index => +index);
         return charCodeArray
 
     }
