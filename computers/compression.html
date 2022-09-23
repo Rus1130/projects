@@ -22,52 +22,25 @@
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
     */
 
-    function compress(str){
-        let charArray = str.split("").map(char => char.charCodeAt(0).toString(2))
-        // create an object that orders the characters by frequency
-        let charFreq = {}
-        for (i = 0; i < charArray.length; i++){
-            if (charFreq[charArray[i]]){
-                charFreq[charArray[i]]++
+    function primeFactors(n) {
+        const factors = [];
+        let divisor = 2;
+
+        while (n >= 2) {
+            if (n % divisor == 0) {
+                factors.push(divisor);
+                n = n / divisor;
             } else {
-                charFreq[charArray[i]] = 1
+                divisor++;
             }
         }
-        let highestFreq = 0;
-        for (i in charFreq){
-            if (charFreq[i] > highestFreq){
-                highestFreq = charFreq[i]
-            }
-            if (charFreq[i] < 6){
-                delete charFreq[i]
-            }
-        }
-        let sortedFreq = Object.keys(charFreq).sort((a, b) => charFreq[b] - charFreq[a])
-        let replacers = {}
-        for(i = highestFreq; i >= 0; i--){
-            replacers[sortedFreq[i - 1]] = i.toString(2).padStart(4, "0")
-        }
-        delete replacers[Object.keys(replacers)[Object.keys(replacers).length - 1]]
+        return factors;
+    }
 
-        let keys = Object.keys(replacers)
-        let values = Object.values(replacers)
+    function compress(str){
+        let charCodeArray = str.split("").map(char => char.charCodeAt(0) + 100).join("").match(/.{1,8}/g).map(index => index.padEnd(8, '0'));
+        return charCodeArray
 
-        let dict = []
-        for(i = 0; i < keys.length; i++){
-            dict.push(values[i])
-            dict.push(keys[i])
-        }
-
-        for(i = 0; i < charArray.length; i++){
-            if (replacers[charArray[i]]){
-                charArray[i] = replacers[charArray[i]]
-            }
-        }
-        console.log(charFreq)
-        console.log(dict)
-        console.log(replacers)
-        return charArray;
-        
     }
     function decompress(str){
 
