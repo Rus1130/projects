@@ -5,6 +5,7 @@
     }
     textarea {
         resize: none;
+        word-break: break-all;
         font-family: monospace;
     }
     textarea:focus {
@@ -20,31 +21,7 @@
 <script>
     /*
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-    https://en.wikipedia.org/wiki/Arithmetic_coding
     */
 
-    function primeFactors(n) {
-        const factors = [];
-        let divisor = 2;
 
-        while (n >= 2) {
-            if (n % divisor == 0) {
-                factors.push(divisor);
-                n = n / divisor;
-            } else {
-                divisor++;
-            }
-        }
-        return factors;
-    }
-
-    function compress(str){
-        let charCodeArray = str.split("").map(char => char.charCodeAt(0) + 100).join("").match(/.{1,18}/g).map(index => +index);
-        return charCodeArray
-
-    }
-    function decompress(str){
-
-    }
 </script>
