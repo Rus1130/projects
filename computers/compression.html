@@ -21,13 +21,13 @@
 <script>
     /*
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+    if the last index is 4 bits or 2 bits
     */
 
-    const encodingValues = ['01', '10', '11']
+    const encodingValues = ['0', '1', '00', '01', '10', '11']
 
-    let encoder = {
-        '1111': '00',
-    }
+    let encoder = {}
 
     function compress(str){
         let frequency = {}
@@ -44,7 +44,7 @@
             }
         }
         // get the 4 most frequent bits
-        let mostFrequent = Object.keys(frequency).sort((a, b) => frequency[b] - frequency[a]).slice(0, 3);
+        let mostFrequent = Object.keys(frequency).sort((a, b) => frequency[b] - frequency[a]).slice(0, 6);
         for(i = 0; i < mostFrequent.length; i++){
             encoder[mostFrequent[i]] = encodingValues[i];
         }
@@ -54,6 +54,14 @@
                 if(encoder[bitArray[i][j]]){
                     bitArray[i][j] = encoder[bitArray[i][j]];
                 }
+            }
+        }
+
+        for(i = 0; i < bitArray.length; i++){
+            if(bitArray[i][0].length == 1){
+                bitArray[i].push('0')
+            } else if(bitArray[i][0].length == 2){
+                bitArray[i].push('1')
             }
         }
 
