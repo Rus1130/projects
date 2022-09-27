@@ -23,20 +23,41 @@
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
     */
 
+    const encodingValues = ['1', '01', '10', '11']
+
+    let encoder = {
+        '1111': '0',
+    }
 
     function compress(str){
         let frequency = {}
         let bitArray = str.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0').match(/.{1,4}/g));
         for(i = 0; i < bitArray.length; i++){
             for(j = 0; j < bitArray[i].length; j++){
-                if(frequency[bitArray[i][j]]){
-                    frequency[bitArray[i][j]]++;
-                } else {
-                    frequency[bitArray[i][j]] = 1;
+                if(bitArray[i][j] != '0000' && bitArray[i][j] != '1111'){
+                    if(frequency[bitArray[i][j]]){
+                        frequency[bitArray[i][j]]++;
+                    } else {
+                        frequency[bitArray[i][j]] = 1;
+                    }
+                }
+            }
+        }
+        // get the 4 most frequent bits
+        let mostFrequent = Object.keys(frequency).sort((a, b) => frequency[b] - frequency[a]).slice(0, 4);
+        for(i = 0; i < mostFrequent.length; i++){
+            encoder[mostFrequent[i]] = encodingValues[i];
+        }
+
+        for(i = 0; i < bitArray.length; i++){
+            for(j = 0; j < bitArray[i].length; j++){
+                if(encoder[bitArray[i][j]]){
+                    bitArray[i][j] = encoder[bitArray[i][j]];
                 }
             }
         }
 
+        console.log(encoder);
         console.log(frequency)
         return bitArray
     }
