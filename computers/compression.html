@@ -23,57 +23,20 @@
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
     */
 
+
     function compress(str){
-        let bitArray = str.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0'));
-        let original = str.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0'));
-        
-        let binaryAmount = {
-            '0000': 0,
-            '0001': 0,
-            '0010': 0,
-            '0011': 0,
-            '0100': 0,
-            '0101': 0,
-            '0110': 0,
-            '0111': 0,
-            '1000': 0,
-            '1001': 0,
-            '1010': 0,
-            '1011': 0,
-            '1100': 0,
-            '1101': 0,
-            '1110': 0,
-            '1111': 0
+        let frequency = {
+            "00": 0,
+            "01": 0,
+            "10": 0,
+            "11": 0
         }
-
+        let bitArray = str.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0')).join('').match(/.{1,2}/g);
         for(i = 0; i < bitArray.length; i++){
-            bitArray[i] = bitArray[i].match(/.{1,4}/g)
-            for(j = 0; j < bitArray[i].length; j++){
-                binaryAmount[bitArray[i][j]]++;
-            }
+            frequency[bitArray[i]]++;
         }
 
-        let highest = Object.keys(binaryAmount).sort((a, b) => binaryAmount[b] - binaryAmount[a]).slice(0, 4);
-        let unused = Object.keys(binaryAmount).filter(key => !highest.includes(key));
-
-        let encoder = {
-            [highest[0]]: '00',
-            [highest[1]]: '01',
-            [highest[2]]: '10',
-            [highest[3]]: '11'
-        }
-
-        for(i = 0; i < bitArray.length; i++){
-            for(j = 0; j < bitArray[i].length; j++){
-                if(encoder[bitArray[i][j]]){
-                    bitArray[i][j] = encoder[bitArray[i][j]];
-                }
-            }
-        }
-
-        console.log(original)
-        console.log(encoder)
-        console.log(unused)
+        console.log(frequency)
         return bitArray
     }
 
