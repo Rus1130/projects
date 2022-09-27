@@ -29,11 +29,13 @@
             "00": 0,
             "01": 0,
             "10": 0,
-            "11": 0
+            "11": 0,
         }
-        let bitArray = str.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0')).join('').match(/.{1,2}/g);
+        let bitArray = str.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0').match(/.{1,2}/g));
         for(i = 0; i < bitArray.length; i++){
-            frequency[bitArray[i]]++;
+            for(j = 0; j < bitArray[i].length; j++){
+                frequency[bitArray[i][j]]++;
+            }
         }
 
         console.log(frequency)
