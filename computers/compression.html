@@ -25,16 +25,15 @@
 
 
     function compress(str){
-        let frequency = {
-            "00": 0,
-            "01": 0,
-            "10": 0,
-            "11": 0,
-        }
-        let bitArray = str.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0').match(/.{1,2}/g));
+        let frequency = {}
+        let bitArray = str.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0').match(/.{1,4}/g));
         for(i = 0; i < bitArray.length; i++){
             for(j = 0; j < bitArray[i].length; j++){
-                frequency[bitArray[i][j]]++;
+                if(frequency[bitArray[i][j]]){
+                    frequency[bitArray[i][j]]++;
+                } else {
+                    frequency[bitArray[i][j]] = 1;
+                }
             }
         }
 
