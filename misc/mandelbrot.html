@@ -1,0 +1,35 @@
+<body>
+    <canvas id="output" width="1500" height="1500"></canvas>
+</body>
+<script>
+    const m = document.getElementById("output").getContext("2d");
+    const zoom = 600
+
+    atom = function(x, y, c){
+        m.fillStyle = c;
+        m.fillRect(x, y, 3, 3);
+    }
+
+    for(y = 0; y < 1500; y++){
+        for(x = 0; x < 1500; x++){
+
+            let dx = (x - 500)/zoom
+            let dy = (y - 500)/zoom
+
+            let a = dx
+            let b = dy
+
+            for(t = 0; t < 1000; t++){
+                let d = (a*a) - (b*b) + dx
+                b = 2 * (a*b) + dy
+                a = d
+                let H = d > 200
+
+                if(H){
+                    atom(x, y, `rgb(${t*3}, ${t}, ${t*0.5})`);
+                    break;
+                }
+            }
+        }
+    }
+</script>
