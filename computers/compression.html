@@ -160,37 +160,14 @@
     /*
     Even Modular Dictionary Length Compression
 
-    set to minimum: 0 (0)
-    set to maximum: 15 (15)
-
-    add one: 1
-    subtract one: 2
-
-    shift left: 3
-    shift right: 4
-
-    go to next: 5
-    repeat current: 6
+    add one: 0 (0000)
+    subtract one: 1 (0001)
 
     */
 
     const NewComp = {
         instructionTest(str){
-            let input = str.split(" ")
-            let inputDecimal = input.map(x => parseInt(x, 2))
-
-            let instructions = []
-            // create a system that takes the current and next value, and outputs the instruction to get from current to next in binary
-            for(i = 0; i < inputDecimal.length - 1; i++){
-                let current = inputDecimal[i]
-                let next = inputDecimal[i + 1]
-                let instruction = 0
-
-                instructions.push(instruction)
-            }
-
-            console.log(instructions)
-            console.log(inputDecimal)
+            let input = str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join("").match(/.{1,5}/g).map(x => parseInt(x, 2))
             return input
         },
 
