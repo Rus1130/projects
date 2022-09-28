@@ -20,7 +20,8 @@
 </body>
 <script>
     /*
-    Frequent-Dictionary Length Compression
+    Modular Dictionary Length Compression
+    
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
     if the first index is 1 bit the length bit is 0, if its 2 bits its 1
@@ -30,14 +31,14 @@
     order: 0 1 00 01 10 11
     */
 
-    const FDLC = {
+    const MDLC = {
 
         compressionTest(str){
-            let compressedLength = FDLC.compress(str).replaceAll(" ", "").length
+            let compressedLength = MDLC.compress(str).replaceAll(" ", "").length
             let uncompressedLength = str.replaceAll(" ", "").split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join("").length
 
             console.log(`Compressed Length: ${compressedLength}`)
-            console.log(`Compressed Data: ${FDLC.compress(str)}`)
+            console.log(`Compressed Data: ${MDLC.compress(str)}`)
             console.log("")
             console.log(`Uncompressed Length: ${uncompressedLength}`)
             console.log(`Uncompressed Data: ${str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join(" ")}`)
@@ -156,7 +157,24 @@
         }
     }
 
+    /*
+    Even Modular Dictionary Length Compression
 
+
+    */
+
+    const NewComp = {
+        compress(str){
+            let byteArray = str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join("").match(/.{1,4}/g);
+            let byteArrayDecimal = str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join("").match(/.{1,4}/g).map(x => parseInt(x, 2));
+
+            let currentNumber = byteArrayDecimal[0];
+
+
+            console.log(byteArrayDecimal)
+            return byteArray
+        }
+    }
 
 
 
