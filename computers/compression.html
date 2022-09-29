@@ -159,12 +159,16 @@
 
     /*
     Even Modular Dictionary Length Compression
+    0 (000): add 1
+    1 (001): subtract 1
 
-    0 (000): multiply by 2
-    1 (001): multiply by 2 and add 1
+    2 (010): multiply by 2
+    3 (011): multiply by 2 and add 1
 
-    2 (010): divide by 2
-    3 (011): divide by 2 and add 1
+    4 (100): divide by 2
+    5 (101): divide by 2 and add 1
+
+    
 
     7 (111): repeat
 
