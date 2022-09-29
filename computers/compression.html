@@ -158,12 +158,20 @@
     }
 
     /*
-    Even Instruction Set Compression
+    Even Bit Criterion Compression
 
     first bit: 1 if even, 0 if odd
+    if first bit 1:
+        second bit: 1 if exponent of 2, 0 if not
 
+    if first bit 0:
+        second bit: 1 if prime, 0 if not
     */
-
+    function isPrime(num){
+        for(let i = 2, s = Math.sqrt(num); i <= s; i++)
+            if(num % i === 0) return false; 
+            return num > 1;
+        }
     const NewComp = {
         compress(str){ // input in text
             let bitArray = str.split('').map(x => x.charCodeAt(0).toString(2).padStart(8, '0')).join("").match(/.{1,4}/g);
@@ -171,17 +179,34 @@
 
             let codes = []
             for(i = 0; i < bitArrayDecimal.length; i++){
+                let number = bitArrayDecimal[i];
                 let code = ''
                 let possibleNumbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-                if(bitArrayDecimal[i] % 2 == 0){
+                if(number % 2 == 0){ // 1
                     code += '1'
                     possibleNumbers = possibleNumbers.filter(x => x % 2 == 0)
-                } else {
+                    // if exponent of 2
+                    if(Math.log2(number) % 1 == 0){  // 1
+                        code += '1'
+                        possibleNumbers = possibleNumbers.filter(x => Math.log2(x) % 1 == 0)
+                    } else { // 0
+                        code += '0'
+                        possibleNumbers = possibleNumbers.filter(x => Math.log2(x) % 1 != 0)
+                    }
+                } else { // 0
                     code += '0'
                     possibleNumbers = possibleNumbers.filter(x => x % 2 == 1)
+                    if(isPrime(number)){ // 1
+                        code += '1'
+                        possibleNumbers = possibleNumbers.filter(x => isPrime(x))
+                    } else { // 0
+                        code += '0'
+                        possibleNumbers = possibleNumbers.filter(x => !isPrime(x))
+                    }
+
                 }
                 
-                codes.push([code, possibleNumbers])
+                codes.push([code, number, possibleNumbers])
             }
             console.log(codes)
             return bitArrayDecimal
