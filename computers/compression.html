@@ -159,19 +159,17 @@
 
     /*
     Even Instruction Set Compression
+    
+
 
     */
 
     const NewComp = {
-        instructionTest(str){ // input in text
-            let input = str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join("").match(/.{1,2}/g).map(x => parseInt(x, 2))
-            let inputBin = str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join("").match(/.{1,2}/g)
-            let instructions
-            console.log(inputBin)
-            return input
+        compress(str){ // input in text
+
         },
 
-        compress(str){
+        decompress(str){
 
         }
     }
