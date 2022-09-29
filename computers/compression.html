@@ -159,14 +159,32 @@
 
     /*
     Even Instruction Set Compression
-    
 
+    first bit: 1 if even, 0 if odd
 
     */
 
     const NewComp = {
         compress(str){ // input in text
+            let bitArray = str.split('').map(x => x.charCodeAt(0).toString(2).padStart(8, '0')).join("").match(/.{1,4}/g);
+            let bitArrayDecimal = str.split('').map(x => x.charCodeAt(0).toString(2).padStart(8, '0')).join("").match(/.{1,4}/g).map(x => parseInt(x, 2));
 
+            let codes = []
+            for(i = 0; i < bitArrayDecimal.length; i++){
+                let code = ''
+                let possibleNumbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+                if(bitArrayDecimal[i] % 2 == 0){
+                    code += '1'
+                    possibleNumbers = possibleNumbers.filter(x => x % 2 == 0)
+                } else {
+                    code += '0'
+                    possibleNumbers = possibleNumbers.filter(x => x % 2 == 1)
+                }
+                
+                codes.push([code, possibleNumbers])
+            }
+            console.log(codes)
+            return bitArrayDecimal
         },
 
         decompress(str){
