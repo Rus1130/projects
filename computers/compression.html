@@ -160,23 +160,24 @@
     /*
     Even Modular Dictionary Length Compression
 
+    0 (000): multiply by 2
+    1 (001): multiply by 2 and add 1
 
+    2 (010): divide by 2
+    3 (011): divide by 2 and add 1
+
+    7 (111): repeat
 
     */
 
     const NewComp = {
-        instructionTest(str){
-            let input = str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join("").match(/.{1,5}/g).map(x => parseInt(x, 2))
+        instructionTest(str){ // input in text
+            let input = str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join("").match(/.{1,4}/g).map(x => parseInt(x, 2))
             return input
         },
 
         compress(str){
-            let byteArray = str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join("").match(/.{1,4}/g);
-            let byteArrayDecimal = str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join("").match(/.{1,4}/g).map(x => parseInt(x, 2));
 
-
-            console.log(byteArrayDecimal)
-            return byteArray
         }
     }
 
