@@ -158,25 +158,16 @@
     }
 
     /*
-    Even Modular Dictionary Length Compression
-    0 (000): add 1
-    1 (001): subtract 1
-
-    2 (010): multiply by 2
-    3 (011): multiply by 2 and add 1
-
-    4 (100): divide by 2
-    5 (101): divide by 2 and add 1
-
-    
-
-    7 (111): repeat
+    Even Instruction Set Compression
 
     */
 
     const NewComp = {
         instructionTest(str){ // input in text
-            let input = str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join("").match(/.{1,4}/g).map(x => parseInt(x, 2))
+            let input = str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join("").match(/.{1,2}/g).map(x => parseInt(x, 2))
+            let inputBin = str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join("").match(/.{1,2}/g)
+            let instructions
+            console.log(inputBin)
             return input
         },
 
