@@ -161,7 +161,9 @@
 
     const CC = {
         compress(str){
-
+            bitArray = str.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0'));
+            let chopCodes = []
+            return bitArray
         }
     }
 
