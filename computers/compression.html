@@ -167,6 +167,20 @@
         }
     }
 
+    function repeat(){
+        const alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+        let repeatAmount = 1
+        let result = ''
+        for(i = 0; i < alphabet.length; i++){
+            for(j = 0; j < repeatAmount; j++){
+                result += alphabet[i]
+                console.log(result)
+            }
+            repeatAmount *= 2
+        }
+        return result
+    }
+
 
 
 
