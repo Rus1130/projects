@@ -157,12 +157,14 @@
         }
     }
 
-    /* Chop Compressiob*/
+    /* Chop Compression*/
 
     const CC = {
         compress(str){
-            bitArray = str.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0'));
-            let chopCodes = []
+            bitArray = str.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0')).map(x => x.match(/.{1,3}/g));
+            for(i = 0; i < bitArray.length; i++){
+                bitArray[i] = bitArray[i].map(x => x.padStart(3, '0'));
+            }
             return bitArray
         }
     }
