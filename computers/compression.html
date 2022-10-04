@@ -49,12 +49,7 @@
 
 
         compress(str, debug){
-            const predetermindedPatterns = {
-                '0000': '000',
-                '1111': '001',
-            }
-            const encodingValues = ['0', '1', '00', '01', '10', '11']
-            const prepatRegex = /1111|0000/g
+            const encodingValues = ['0', '1', '00', '01', '10', '11', '100', '101', '110, 111']
 
             let encoder = {}
             if(debug === undefined) debug = false
@@ -62,15 +57,11 @@
             let bitArray = str.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0').match(/.{1,4}/g));
             for(i = 0; i < bitArray.length; i++){
                 for(j = 0; j < bitArray[i].length; j++){
-                    if(!bitArray[i][j].match(prepatRegex)){
-                        if(frequency[bitArray[i][j]]){
-                            frequency[bitArray[i][j]]++;
-                        } else {
-                            frequency[bitArray[i][j]] = 1;
-                        }
+                    if(frequency[bitArray[i][j]]){
+                        frequency[bitArray[i][j]]++;
+                    } else {
+                        frequency[bitArray[i][j]] = 1;
                     }
-
-
                 }
             }
             // get the 4 most frequent bits
@@ -83,9 +74,6 @@
                 for(j = 0; j < bitArray[i].length; j++){
                     if(encoder[bitArray[i][j]]){
                         bitArray[i][j] = encoder[bitArray[i][j]];
-                    }
-                    if(predetermindedPatterns[bitArray[i][j]]){
-                        bitArray[i][j] = predetermindedPatterns[bitArray[i][j]];
                     }
                 }
                 if(bitArray[i][0].length == 1){
@@ -121,13 +109,13 @@
                 '01': bitArray[3],
                 '10': bitArray[4],
                 '11': bitArray[5],
+                '100': bitArray[6],
+                '101': bitArray[7],
+                '110': bitArray[8],
+                '111': bitArray[9]
             }
 
-            const predetermindedPatterns = {
-                '000': '0000',
-                '001': '1111',
-            }
-            bitArray = bitArray.slice(6);
+            bitArray = bitArray.slice(10);
 
             let lengthBits = []
             for(i = 0; i < bitArray.length; i++){
@@ -144,9 +132,6 @@
                 for(j = 0; j < bitArray[i].length; j++){
                     if(decoder[bitArray[i][j]]){
                         bitArray[i][j] = decoder[bitArray[i][j]];
-                    }
-                    if(predetermindedPatterns[bitArray[i][j]]){
-                        bitArray[i][j] = predetermindedPatterns[bitArray[i][j]];
                     }
                 }
                 bitArray[i] = bitArray[i].join("");
