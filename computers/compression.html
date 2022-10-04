@@ -49,7 +49,7 @@
 
 
         compress(str, debug){
-            const encodingValues = ['0', '1', '00', '01', '10', '11', '100', '101', '110, 111']
+            const encodingValues = ['0', '1', '00', '01', '10', '11']
 
             let encoder = {}
             if(debug === undefined) debug = false
@@ -109,10 +109,6 @@
                 '01': bitArray[3],
                 '10': bitArray[4],
                 '11': bitArray[5],
-                '100': bitArray[6],
-                '101': bitArray[7],
-                '110': bitArray[8],
-                '111': bitArray[9]
             }
 
             bitArray = bitArray.slice(10);
@@ -142,14 +138,23 @@
         }
     }
 
-    /* Chop Compression*/
+    /* Even MDLC
 
-    const CC = {
+    
+    
+    */
+
+    const ELMDLC = {
         compress(str){
-            bitArray = str.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0')).map(x => x.match(/.{1,3}/g));
+            let bitArray = MDLC.compress(str).split(" ");
+            // get length of longest index
+            let maxLength = 0;
             for(i = 0; i < bitArray.length; i++){
-                bitArray[i] = bitArray[i].map(x => x.padStart(3, '0'));
+                if(bitArray[i].length > maxLength){
+                    maxLength = bitArray[i].length;
+                }
             }
+            bitArray = bitArray.map(x => x.padStart(maxLength, "0"));
             return bitArray
         }
     }
