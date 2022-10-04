@@ -50,6 +50,11 @@
 
         compress(str, debug){
             const encodingValues = ['0', '1', '00', '01', '10', '11']
+            const predetermindedPatterns = {
+                '0000': '000',
+                '1111': '001',
+            }
+            const prepatRegex = /1111|0000/g
 
             let encoder = {}
             if(debug === undefined) debug = false
@@ -57,10 +62,12 @@
             let bitArray = str.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0').match(/.{1,4}/g));
             for(i = 0; i < bitArray.length; i++){
                 for(j = 0; j < bitArray[i].length; j++){
-                    if(frequency[bitArray[i][j]]){
-                        frequency[bitArray[i][j]]++;
-                    } else {
-                        frequency[bitArray[i][j]] = 1;
+                    if(!bitArray[i][j].match(prepatRegex)){
+                        if(frequency[bitArray[i][j]]){
+                            frequency[bitArray[i][j]]++;
+                        } else {
+                            frequency[bitArray[i][j]] = 1;
+                        }
                     }
                 }
             }
@@ -74,6 +81,9 @@
                 for(j = 0; j < bitArray[i].length; j++){
                     if(encoder[bitArray[i][j]]){
                         bitArray[i][j] = encoder[bitArray[i][j]];
+                    }
+                    if(predetermindedPatterns[bitArray[i][j]]){
+                        bitArray[i][j] = predetermindedPatterns[bitArray[i][j]];
                     }
                 }
                 if(bitArray[i][0].length == 1){
@@ -110,8 +120,12 @@
                 '10': bitArray[4],
                 '11': bitArray[5],
             }
+            const predetermindedPatterns = {
+                '0000': '000',
+                '1111': '001',
+            }
 
-            bitArray = bitArray.slice(10);
+            bitArray = bitArray.slice(6);
 
             let lengthBits = []
             for(i = 0; i < bitArray.length; i++){
@@ -128,6 +142,9 @@
                 for(j = 0; j < bitArray[i].length; j++){
                     if(decoder[bitArray[i][j]]){
                         bitArray[i][j] = decoder[bitArray[i][j]];
+                    }
+                    if(predetermindedPatterns[bitArray[i][j]]){
+                        bitArray[i][j] = predetermindedPatterns[bitArray[i][j]];
                     }
                 }
                 bitArray[i] = bitArray[i].join("");
