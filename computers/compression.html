@@ -155,6 +155,8 @@
                 }
             }
             bitArray = bitArray.map(x => x.padStart(maxLength, "0"));
+            bitArray = str.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0'));
+            let chopCodes = []
             return bitArray
         }
     }
