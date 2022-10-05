@@ -31,7 +31,10 @@
     c.compress("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
 
 
-    1st byte: amount of keys
+
+
+    
+
     */
 
     const c = {
@@ -66,19 +69,7 @@
 
         compress(str){
             let charCodeArray = str.split('').map(x => x.charCodeAt(0).toString(2).padStart(8, "0"));
-            let charCodeArrayVerticalRemap = [];
-            for(let i = 0; i < charCodeArray[0].length; i++){
-                let temp = "";
-                for(let j = 0; j < charCodeArray.length; j++){
-                    temp += charCodeArray[j][i];
-                }
-                charCodeArrayVerticalRemap.push(temp);
-            }
-
-            let preparedArray = charCodeArrayVerticalRemap.join("").replaceAll("01", "0 1").replaceAll("10", "1 0").split(" ");
-            let appliedArray = [];
-
-            
+            return charCodeArray;
 
         },
 
