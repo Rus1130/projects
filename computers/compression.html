@@ -26,12 +26,48 @@
 
     Code Encoding
 
+    c.compress("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    c.compress("Hello, World!")
+    c.compress("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+
+
+    1st byte: amount of keys
     */
 
     const c = {
+        bwt(str){
+            const arr = [];
+            for(let i = 0; i < str.length; i++){
+                arr.push(str.slice(i) + str.slice(0, i));
+            }
+            arr.sort();
+            let result = "";
+            for(let i = 0; i < arr.length; i++){
+                result += arr[i].slice(-1);
+            }
+            return result;
+        },
+        // inverse bwt
+        ibwt(str){
+            const arr = [];
+            for(let i = 0; i < str.length; i++){
+                arr.push(str.slice(i) + str.slice(0, i));
+            }
+            arr.sort();
+            let result = "";
+            for(let i = 0; i < arr.length; i++){
+                if(arr[i].slice(-1) == "$"){
+                    result = arr[i];
+                    break;
+                }
+            }
+            return result.slice(0, -1);
+        },
 
         compress(str){
-            
+            let charArray = str.split('').map(x => x.charCodeAt(0).toString(2).padStart(7, '0'));
+            return charArray
+
         },
 
 
