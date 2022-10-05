@@ -39,36 +39,22 @@
 
     const c = {
         bwt(str){
-            const arr = [];
-            for(let i = 0; i < str.length; i++){
-                arr.push(str.slice(i) + str.slice(0, i));
+            let template = [(str + "✠").split("")];
+            let rotations = [];
+            for(i = 0; i < input.length; i++){
+                let s = template.shift()
+            
             }
-            arr.sort();
-            let result = "";
-            for(let i = 0; i < arr.length; i++){
-                result += arr[i].slice(-1);
-            }
-            return result;
+            return input
+            return rotations;
         },
         // inverse bwt
         ibwt(str){
-            const arr = [];
-            for(let i = 0; i < str.length; i++){
-                arr.push(str.slice(i) + str.slice(0, i));
-            }
-            arr.sort();
-            let result = "";
-            for(let i = 0; i < arr.length; i++){
-                if(arr[i].slice(-1) == "$"){
-                    result = arr[i];
-                    break;
-                }
-            }
-            return result.slice(0, -1);
+
         },
 
         compress(str){
-            let charCodeArray = str.split('').map(x => x.charCodeAt(0).toString(2).padStart(8, "0"));
+            let charCodeArray = str;
             return charCodeArray;
 
         },
