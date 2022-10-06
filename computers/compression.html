@@ -20,56 +20,47 @@
 </body>
 <script>
     /*
-    Modular Dictionary Length Compression
     
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-    Neighbor-Based Condition Encoding
+    Pair-Based Replacement Encoding
 
-    NBCE.compress("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-    NBCE.compress("Hello, World!")
-    NBCE.compress("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
-    NBCE.compress("1XH^l[`5PvT^;f0@lk$yqz~+_]4O`aa>")
-    NBCE.compress("EZk1Xsd-;DRz\d9;6TR$81QXaDc6/0k(")
-
-
-
-    0:
-        0:
-        1:
-        2:
-        3:
-
-    1:
-        0:
-        1:
-        2:
-        3:
+    PBRE.compress("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    PBRE.compress("Hello, World!")
+    PBRE.compress("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+    PBRE.compress("1XH^l[`5PvT^;f0@lk$yqz~+_]4O`aa>")
+    PBRE.compress("EZk1Xsd-;DRz\d9;6TR$81QXaDc6/0k(")
     */
 
-    const NBCE = {
-        bitNot(str){
-            return (parseInt(str, 2) ^ 3).toString(2).padStart(2, "0");
-        },
-        compress(str){
-            let charCodeArray = str.split("").map(char => char.charCodeAt(0).toString(2).padStart(8, "0"));
-            let preprocessing = charCodeArray.map(x => x.match(/.{1,2}/g))
-            console.log(charCodeArray.map(x => x.match(/.{1,2}/g)))
-            
-            for(i = 0; i < preprocessing.length; i++){
-                for(j = 0; j < preprocessing[i].length; j++){
-                    if(j != 3){
-                        if(preprocessing[i][j+1] == preprocessing[i][j]){
-                            preprocessing[i][j] = '1';
-                        }
-                        if(NBCE.bitNot(preprocessing[i][j+1]) == preprocessing[i][j]){
-                            preprocessing[i][j] = '0';
-                        }
-                    }
+    const PBRE = {
+        getFrequency(str){
+            let freq = {};
+            for (let i = 0; i < str.length; i++) {
+                let char1 = str.charAt(i);
+                let char2 = str.charAt(i + 1);
+                if (freq[char1 + char2]) {
+                    freq[char1 + char2]++;
+                } else {
+                    freq[char1 + char2] = 1;
                 }
             }
-            
-            return preprocessing
+            return freq
+        },
+        pairEncoder: {
+            '00': 'a',
+            '01': 'b',
+            '10': 'c',
+            '11': 'd',
+        },
+        compress(str){
+            let processor = str.split("").map(char => char.charCodeAt(0).toString(2).padStart(8, "0").match(/.{1,2}/g));
+            processor = processor.map(index => index.map(pair => this.pairEncoder[pair]).join("")).join("");
+
+            // get frequency of each pair of chars
+
+            let freq = PBRE.getFrequency(processor);
+            console.log(freq)
+            return processor
 
 
         },
