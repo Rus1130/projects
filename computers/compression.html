@@ -39,7 +39,7 @@
                 arr.push(str[i])
                 arr.push(str[i + 1])
             }
-            arr = arr.join("").match(/.{1,2}/g)
+            arr = arr.join("").match(/.{1,4}/g)
             // if the last index has a length of one, remove it
             if(arr[arr.length - 1].length == 1){
                 arr.pop()
@@ -52,7 +52,6 @@
                     freq[arr[i]] = 1
                 }
             }
-            // delete all keys with a value of 1
             for(key in freq){
                 if(freq[key] == 1){
                     delete freq[key]
@@ -61,9 +60,25 @@
             return freq
         },
         compress(str){
-            let processor = str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join("").match(/.{1,4}/g).map(x => parseInt(x, 2).toString(16))
-            let freq = PBRE.getFrequency(processor)
-            console.log(freq)
+            let processor = str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join("").match(/.{1,4}/g)
+            let frequencyObject = PBRE.getFrequency(processor)
+            // sort the keys by their value
+            let keys = Object.keys(frequencyObject).sort((a, b) => frequencyObject[a] - frequencyObject[b]).slice(0, 6)
+            let encoder = {
+                [keys[0]]: '0',
+                [keys[1]]: '1',
+                [keys[2]]: '00',
+                [keys[3]]: '01',
+                [keys[4]]: '10',
+                [keys[5]]: '11'
+            }
+
+            processor = processor.map(x => encoder[x] == undefined ? x : encoder[x])
+            let result = []
+            
+            console.log(frequencyObject)
+            console.log(keys)
+            console.log(encoder)
             return processor
 
         },
