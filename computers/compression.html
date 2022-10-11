@@ -30,39 +30,17 @@
     PBRE.compress("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
     PBRE.compress("1XH^l[`5PvT^;f0@lk$yqz~+_]4O`aa>")
     PBRE.compress("EZk1Xsd-;DRz\d9;6TR$81QXaDc6/0k(")
+
+    compress = num >> 4
+    decompress = (compress << 4) + (compress - 4)
     */
 
     const PBRE = {
-        getFrequency(str){
-            let arr = []
-            for(i = 0; i < str.length; i++){
-                arr.push(str[i])
-                arr.push(str[i + 1])
-            }
-            arr = arr.join("").match(/.{1,4}/g)
-            // if the last index has a length of one, remove it
-            if(arr[arr.length - 1].length == 1){
-                arr.pop()
-            }
-            let freq = {}
-            for(i = 0; i < arr.length; i++){
-                if(freq[arr[i]]){
-                    freq[arr[i]]++
-                }else{
-                    freq[arr[i]] = 1
-                }
-            }
-            for(key in freq){
-                if(freq[key] == 1){
-                    delete freq[key]
-                }
-            }
-            return freq
-        },
         compress(str, debug){
             if(debug == undefined) debug = false
-            let processor = str.match(/.{1,4}/g).map(x => x.split("").map(y => y.charCodeAt(0)))
-            return processor
+            let processorArray = str.split('').map(x => x.charCodeAt(0).toString(2).padStart(8, '0')).join("").match(/.{1,16}/g).map(x => x.match(/.{1,8}/g))
+
+            return processorArray
 
         },
 
