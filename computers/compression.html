@@ -31,15 +31,17 @@
     PBRE.compress("1XH^l[`5PvT^;f0@lk$yqz~+_]4O`aa>")
     PBRE.compress("EZk1Xsd-;DRz\d9;6TR$81QXaDc6/0k(")
 
-    compress = num >> 4
-    decompress = (compress << 4) + (compress - 4)
+
     */
 
     const PBRE = {
         compress(str, debug){
             if(debug == undefined) debug = false
-            let processorArray = str.split('').map(x => x.charCodeAt(0).toString(2).padStart(8, '0')).join("").match(/.{1,16}/g).map(x => x.match(/.{1,8}/g))
+            let processorArray = str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0").match(/.{1,4}/g))
+            let comparison = str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, '0')).join("").match(/.{1,4}/g).join(" ")
 
+
+            if(debug) console.log(comparison)
             return processorArray
 
         },
