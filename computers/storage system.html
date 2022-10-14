@@ -1,0 +1,54 @@
+<style>
+
+</style>
+<head>
+
+</head>
+<body>
+<pre>docs:
+    driveSys:
+        displayDrives(driveNumber):
+            displays all drives
+            parameters: driveNumber (optional), displays specified drive
+        changeDriveName(driveNumber, newName):
+            changes the name of the drive
+            parameters: driveNumber, newName
+
+    fileSys:
+        
+</docs>
+</body>
+<script>
+    const fileTempate = {
+        "name": "Untitled",
+        "type": "file",
+        "content": ""
+    }
+    let drives = {}
+    function setDrives(){
+        for(i = 0; i < 20; i++){
+            drives[i] = {
+                name: "Drive " + i,
+                size: 100000,
+                used: 0,
+                files: {}
+            }
+        }
+    }
+
+    const managementSys = {
+        driveSys : {
+            displayDrives(driveNumber){
+                if(driveNumber == undefined) return drives
+                return drives[driveNumber]
+            },
+            changeDriveName(driveNumber, newName){
+                drives[driveNumber].name = newName
+                return drives[driveNumber]
+            }
+        }
+    }
+
+
+    setDrives()
+</script>

@@ -20,150 +20,35 @@
 </body>
 <script>
     /*
-    Modular Dictionary Length Compression
     
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-    if the first index is 1 bit the length bit is 0, if its 2 bits its 1
-    1 0
-    11 1
+    Pair-Based Replacement Encoding
 
-    order: 0 1 00 01 10 11
+    PBRE.compress("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    PBRE.compress("Hello, World!")
+    PBRE.compress("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+    PBRE.compress("1XH^l[`5PvT^;f0@lk$yqz~+_]4O`aa>")
+    PBRE.compress("EZk1Xsd-;DRz\d9;6TR$81QXaDc6/0k(")
+
+
     */
 
-    const MDLC = {
-
-        compressionTest(str){
-            let compressedLength = MDLC.compress(str).replaceAll(" ", "").length
-            let uncompressedLength = str.replaceAll(" ", "").split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join("").length
-
-            console.log(`Compressed Length: ${compressedLength}`)
-            console.log(`Compressed Data: ${MDLC.compress(str)}`)
-            console.log("")
-            console.log(`Uncompressed Length: ${uncompressedLength}`)
-            console.log(`Uncompressed Data: ${str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join(" ")}`)
-            console.log("")
-            console.log(`Compression Ratio: ${(compressedLength / uncompressedLength * 100).toFixed(2)}%`)
-            return `Result: ${compressedLength < uncompressedLength ? "Compressed" : "Uncompressed"}`
-        },
-
-
+    const PBRE = {
         compress(str, debug){
-            const predetermindedPatterns = {
-                '0000': '000',
-                '1111': '001',
-            }
-            const encodingValues = ['0', '1', '00', '01', '10', '11']
-            const prepatRegex = /1111|0000/g
-
-            let encoder = {}
-            if(debug === undefined) debug = false
-            let frequency = {}
-            let bitArray = str.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0').match(/.{1,4}/g));
-            for(i = 0; i < bitArray.length; i++){
-                for(j = 0; j < bitArray[i].length; j++){
-                    if(!bitArray[i][j].match(prepatRegex)){
-                        if(frequency[bitArray[i][j]]){
-                            frequency[bitArray[i][j]]++;
-                        } else {
-                            frequency[bitArray[i][j]] = 1;
-                        }
-                    }
+            if(debug == undefined) debug = false
+            let processorArray = str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0").match(/.{1,4}/g))
+            let comparison = str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, '0')).join("").match(/.{1,4}/g).join(" ")
 
 
-                }
-            }
-            // get the 4 most frequent bits
-            let mostFrequent = Object.keys(frequency).sort((a, b) => frequency[b] - frequency[a]).slice(0, 6);
-            for(i = 0; i < mostFrequent.length; i++){
-                encoder[mostFrequent[i]] = encodingValues[i];
-            }
+            if(debug) console.log(comparison)
+            return processorArray
 
-            for(i = 0; i < bitArray.length; i++){
-                for(j = 0; j < bitArray[i].length; j++){
-                    if(encoder[bitArray[i][j]]){
-                        bitArray[i][j] = encoder[bitArray[i][j]];
-                    }
-                    if(predetermindedPatterns[bitArray[i][j]]){
-                        bitArray[i][j] = predetermindedPatterns[bitArray[i][j]];
-                    }
-                }
-                if(bitArray[i][0].length == 1){
-                    bitArray[i].push('0')
-                } else if(bitArray[i][0].length == 2){
-                    bitArray[i].push('1')
-                }
-            }
-
-            let keys = Object.keys(encoder).sort((a, b) => encodingValues.indexOf(encoder[a]) - encodingValues.indexOf(encoder[b]));
-
-            if(debug){
-                console.log(encoder);
-                console.log(frequency);
-                console.log(encodingValues);
-                console.log(keys);
-                console.log(bitArray);
-            }
-
-
-            let compressedBody = bitArray.map(arr => arr.join(''));
-            compressedBody = keys.concat(compressedBody)
-
-            return compressedBody.join(" ")
         },
+
 
         decompress(str){
-            let bitArray = str.split(" ");
-            const decoder = {
-                '0': bitArray[0],
-                '1': bitArray[1],
-                '00': bitArray[2],
-                '01': bitArray[3],
-                '10': bitArray[4],
-                '11': bitArray[5],
-            }
 
-            const predetermindedPatterns = {
-                '000': '0000',
-                '001': '1111',
-            }
-            bitArray = bitArray.slice(6);
-
-            let lengthBits = []
-            for(i = 0; i < bitArray.length; i++){
-                lengthBits.push(bitArray[i].slice(-1));
-                bitArray[i] = bitArray[i].slice(0, -1);
-
-                if(lengthBits[i] == '0'){
-                    bitArray[i] = bitArray[i].slice(0, 1) + " " + bitArray[i].slice(1);
-                } else if(lengthBits[i] == '1'){
-                    bitArray[i] = bitArray[i].slice(0, 2) + " " + bitArray[i].slice(2);
-                }
-
-                bitArray[i] = bitArray[i].split(" ")
-                for(j = 0; j < bitArray[i].length; j++){
-                    if(decoder[bitArray[i][j]]){
-                        bitArray[i][j] = decoder[bitArray[i][j]];
-                    }
-                    if(predetermindedPatterns[bitArray[i][j]]){
-                        bitArray[i][j] = predetermindedPatterns[bitArray[i][j]];
-                    }
-                }
-                bitArray[i] = bitArray[i].join("");
-            }
-
-            let result = bitArray.map(bit => String.fromCharCode(parseInt(bit, 2))).join("");
-            return result
-        }
-    }
-
-    /* Chop Compressiob*/
-
-    const CC = {
-        compress(str){
-            bitArray = str.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0'));
-            let chopCodes = []
-            return bitArray
         }
     }
 
