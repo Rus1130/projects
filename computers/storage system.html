@@ -6,49 +6,137 @@
 </head>
 <body>
 <pre>docs:
-    driveSys:
-        displayDrives(driveNumber):
-            displays all drives
-            parameters: driveNumber (optional), displays specified drive
-        changeDriveName(driveNumber, newName):
-            changes the name of the drive
-            parameters: driveNumber, newName
+    Sys:
+        mgmt:
+            displayDrives(driveNumber):
+                displays all drives
+                parameters:
+                    driveNumber (Integer) (optional): displays specified drive
 
-    fileSys:
+            changeDriveName(driveNumber, newName):
+                changes the name of the drive
+                parameters:
+                    driveNumber (Integer): drive number
+                    newName (String): new name for drive of driveNumber
+
+            createFile(driveNumber, fileName, fileType, fileContent)
+                creates a file
+                parameters:
+                    driveNumber (Integer): drive number
+                    fileName (String): name of file
+                    fileContent (String): content of file
+
+                overwriteFile(driveNumber, fileName, fileType, fileContent)
+                overwrites the content of a file
+                parameters:
+                    driveNumber (Integer): drive number
+                    fileName (String): name of file
+                    fileContent (String): content of file
+
+        sec:
+            hideFile(driveNumber, fileName, value):
+                sets the hidden status of a file
+                parameters:
+                    driveNumber (Integer): drive number
+                    fileName (String): name of file
+                    value (Boolean): hidden status
+            
+            lockFile(driveNumber, fileName, value):
+                sets the locked status of a file
+                parameters:
+                    driveNumber (Integer): drive number
+                    fileName (String): name of file
+                    value (Boolean): locked status
+
+        out:
+            readFile(driveNumber, fileName):
+                reads the content of a file
+                parameters:
+                    driveNumber (Integer): drive number
+                    fileName (String): name of file
         
 </docs>
 </body>
 <script>
     const fileTempate = {
-        "name": "Untitled",
-        "type": "file",
+        'hidden': false,
+        'locked': false,
         "content": ""
     }
-    let drives = {}
     function setDrives(){
         for(i = 0; i < 20; i++){
-            drives[i] = {
+            Sys.drives[i] = {
                 name: "Drive " + i,
-                size: 100000,
+                size: 8000000,
                 used: 0,
                 files: {}
             }
         }
     }
 
-    const managementSys = {
-        driveSys : {
+    function secShow(){
+        let drives = JSON.parse(JSON.stringify(Sys.drives))
+        for(i = 0; i < Object.keys(drives).length; i++){
+            drives[i].files = Object.keys(drives[i].files)
+        }
+        return drives
+    }
+
+    const Sys = {
+        drives : {},
+        mgmt : {
             displayDrives(driveNumber){
-                if(driveNumber == undefined) return drives
-                return drives[driveNumber]
+                if(driveNumber == undefined) return secShow(Sys.drives)
+                return secShow(Sys.drives)[driveNumber]
             },
             changeDriveName(driveNumber, newName){
-                drives[driveNumber].name = newName
-                return drives[driveNumber]
+                Sys.drives[driveNumber].name = newName
+                return secShow(Sys.drives)[driveNumber]
+            },
+            createFile(driveNumber, fileName, fileContent){
+                if(Sys.drives[driveNumber].files[fileName] != undefined) return "Error: File already exists. Please use the overwrite function instead."
+                let fileContentLength = fileContent.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join("").length
+                if(fileContentLength > Sys.drives[driveNumber].size - Sys.drives[driveNumber].used) return 'Error: Not enough space.'
+                let file = fileTempate
+                file.content = fileContent
+                Sys.drives[driveNumber].files[fileName] = file;
+
+                Sys.drives[driveNumber].used += fileContentLength
+                return Sys.drives[driveNumber].files[fileName]
+            },
+            overwriteFile(driveNumber, fileName, fileContent){
+                if(Sys.drives[driveNumber].files[fileName].locked) return 'Error: file is locked.'
+                let fileContentLength = fileContent.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join("").length
+                if(fileContentLength > Sys.drives[driveNumber].size - Sys.drives[driveNumber].used) return 'Error: Not enough space.'
+                let file = fileTempate
+                file.content = fileContent
+                Sys.drives[driveNumber].files[fileName] = file;
+
+                Sys.drives[driveNumber].used += fileContentLength
+                return Sys.drives[driveNumber].files[fileName]
             }
+        },
+        sec : {
+            hideFile(driveNumber, fileName, value){
+                Sys.drives[driveNumber].files[fileName].hidden = value
+                return `Hidden value successfully set to ${value}.`
+            },
+            lockFile(driveNumber, fileName, value){
+                Sys.drives[driveNumber].files[fileName].locked = value
+                return `Locked value successfully set to ${value}.`
+            }
+        },
+        out : {
+            readFile(driveNumber, fileName){
+                if(Sys.drives[driveNumber].files[fileName].hidden) return 'Error: file is hidden.'
+                return Sys.drives[driveNumber].files[fileName].content
+            }
+
         }
+
     }
 
 
     setDrives()
+    Sys.mgmt.createFile(0, "test", "hello world")
 </script>
