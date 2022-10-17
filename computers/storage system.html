@@ -34,60 +34,11 @@
         }
     }
 
-    function secureDisplay(){
-        let drives = JSON.parse(JSON.stringify(Sys.drives))
-        for(i = 0; i < Object.keys(drives).length; i++){
-            drives[i].files = Object.keys(drives[i].files)
-            if(drives[i].hidden){
-                delete drives[i]
-            }
-        }
-        return drives
-    }
-    // make a function that return true if any file in the specified drive is locked, hidden, or if that drive is locked or hidden
-    function secDisplay(driveNumber, checkFiles){
-        /*
-        0: ok
-        1: drive hidden
-        2: drive locked
-        3: file hidden
-        4: file locked
-        */
-        if(checkFiles == undefined) checkFiles = false;
-        let drive = Sys.drives[driveNumber]
-        if(drive.hidden){
-            return 1
-        }
-        if(drive.locked){
-            return 2
-        }
-        if(checkFiles){
-            for(i = 0; i < Object.keys(drive.files).length; i++){
-                let file = drive.files[Object.keys(drive.files)[i]]
-                if(file.hidden){
-                    return 3
-                }
-                if(file.locked){
-                    return 4
-                }
-            }
-        }
-        return true
-    }
-
     const Sys = {
         drives : {},
-        out : {
-            displayDrives(driveNumber){
-                if(driveNumber == undefined) return secureDisplay()
-                if(secCheck(driveNumber) == 1) return "Drive is hidden"
-                return secureDisplay(driveNumber)
-            }
-        }
 
     }
 
 
     setDrives()
-    Sys.drives[0].hidden = true;
 </script>
