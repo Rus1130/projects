@@ -8,11 +8,6 @@
 <pre>docs:
     Sys:
         mgmt:
-            displayDrives(driveNumber):
-                displays all drives
-                parameters:
-                    driveNumber (Integer) (optional): displays specified drive
-
             changeDriveName(driveNumber, newName):
                 changes the name of the drive
                 parameters:
@@ -48,12 +43,23 @@
                     fileName (String): name of file
                     value (Boolean): locked status
 
+            hideDrive(driveNumber, value){
+                sets the hidden status of a drive
+                parameters:
+                    driveNumber (Integer): drive number
+                    value (Boolean): hidden status
+
         out:
             readFile(driveNumber, fileName):
                 reads the content of a file
                 parameters:
                     driveNumber (Integer): drive number
                     fileName (String): name of file
+
+            displayDrives(driveNumber):
+            displays all drives
+            parameters:
+                driveNumber (Integer) (optional): displays specified drive
         
 </docs>
 </body>
@@ -69,6 +75,8 @@
                 name: "Drive " + i,
                 size: 8000000,
                 used: 0,
+                hidden: false,
+                locked: false,
                 files: {}
             }
         }
@@ -78,22 +86,40 @@
         let drives = JSON.parse(JSON.stringify(Sys.drives))
         for(i = 0; i < Object.keys(drives).length; i++){
             drives[i].files = Object.keys(drives[i].files)
+            if(drives[i].hidden){
+                delete drives[i]
+            }
         }
         return drives
+    }
+    // make a function that return true if any file in the specified drive is locked, hidden, or if that drive is locked or hidden
+    function secCheck(driveNumber, checkFiles){
+        if(checkFiles == undefined) checkFiles = false;
+        let drive = Sys.drives[driveNumber]
+        if(drive.hidden || drive.locked){
+            return true
+        }
+        if(checkFiles){
+            for(i = 0; i < Object.keys(drive.files).length; i++){
+                let file = drive.files[Object.keys(drive.files)[i]]
+                if(file.hidden || file.locked){
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     const Sys = {
         drives : {},
         mgmt : {
-            displayDrives(driveNumber){
-                if(driveNumber == undefined) return secShow(Sys.drives)
-                return secShow(Sys.drives)[driveNumber]
-            },
             changeDriveName(driveNumber, newName){
+                if(secCheck(driveNumber)) return `Permission Error.`
                 Sys.drives[driveNumber].name = newName
                 return secShow(Sys.drives)[driveNumber]
             },
             createFile(driveNumber, fileName, fileContent){
+                if(secCheck(driveNumber)) return `Permission Error.`
                 if(Sys.drives[driveNumber].files[fileName] != undefined) return "Error: File already exists. Please use the overwrite function instead."
                 let fileContentLength = fileContent.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0")).join("").length
                 if(fileContentLength > Sys.drives[driveNumber].size - Sys.drives[driveNumber].used) return 'Error: Not enough space.'
@@ -124,13 +150,22 @@
             lockFile(driveNumber, fileName, value){
                 Sys.drives[driveNumber].files[fileName].locked = value
                 return `Locked value successfully set to ${value}.`
+            },
+            hideDrive(driveNumber, value){
+                Sys.drives[driveNumber].hidden = value
+                return `Drive ${driveNumber} successfully hidden.`
             }
         },
         out : {
             readFile(driveNumber, fileName){
                 if(Sys.drives[driveNumber].files[fileName].hidden) return 'Error: file is hidden.'
                 return Sys.drives[driveNumber].files[fileName].content
-            }
+            },
+            displayDrives(driveNumber){
+                if(driveNumber == undefined) return secShow(Sys.drives)
+                if(Sys.drives[driveNumber].hidden) return `Error: Drive ${driveNumber} is hidden.`
+                return secShow(Sys.drives)[driveNumber]
+            },
 
         }
 
