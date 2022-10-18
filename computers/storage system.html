@@ -5,6 +5,8 @@
 
 </head>
 <body>
+    list drives
+    rename drives
     create files
     delete files
     overwrite files
@@ -15,31 +17,79 @@
 
 <pre>docs:
     Sys:
+        displayDrive(driveNumber):
+            display drives
+            parameters:
+                driveNumber (integer) (optional): drive number
 </docs>
 </body>
 <script>
     const fileTemplate = {
-        content: "",
+        name: "Test",
+        content: "Hello, world!",
         locked: false,
         hidden: false
     }
+    const fileTemplate2 = {
+        name: "Test2",
+        content: "Hello, world!",
+        locked: false,
+        hidden: true
+    }
+
+    let backDrives = []
     function setDrives(){
         for(i = 0; i < 20; i++){
-            Sys.drives[i] = {
+            backDrives.push({
                 name: "Drive " + i,
                 size: 8000000,
                 used: 0,
-                hidden: false,
+                hidden: true,
                 locked: false,
-                files: {}
+                files: [fileTemplate, fileTemplate2]
+            })
+        }
+    }
+
+    function secureDrives(){
+        let drives = JSON.parse(JSON.stringify(backDrives));
+        for(i = 0; i < drives.length; i++){
+            files = []
+            for(j = 0; j < drives[i].files.length; j++){
+                if(drives[i].files[j].hidden){
+                    delete drives[i].files[j]
+                }
+                
+            }
+            drives[i].files = drives[i].files.filter(function (el) {
+                return el != null;
+            });
+            for(j = 0; j < drives[i].files.length; j++){
+                files.push(drives[i].files[j].name)
+            }
+            drives[i].files = files
+        }
+
+        return drives
+    }
+
+    const Sys = {
+        drives: [],
+        displayDrives(driveNumber){
+            Sys.drives = secureDrives()
+            if(driveNumber == undefined) driveNumber = false;
+            if(driveNumber){
+                return Sys.drives[driveNumber];
+            } else {
+                return Sys.drives;
             }
         }
     }
 
-    const Sys = {
-        drives: {},
-    }
-
-
     setDrives()
+    secureDrives()
+    
+
+
+
 </script>
