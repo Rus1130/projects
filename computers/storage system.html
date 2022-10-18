@@ -5,28 +5,23 @@
 
 </head>
 <body>
+    create files
+    delete files
+    overwrite files
+    lock files
+    hide files
+    lock drives
+    hide drives
+
 <pre>docs:
     Sys:
-        out:
-            displayDrives(driveNumber):
-                displays drives
-                parameters:
-                    driveNumber (optional): drive number
-        
-        mgmt:
-            renameDrive(driveNumber, newName):
-                renames drive driveNumber to newName
-                paremeters:
-                    driveNumber (integer): drive number
-                    newName (string): new name for drive       
 </docs>
 </body>
 <script>
     const fileTemplate = {
-        'name': 'untitled',
-        'hidden': false,
-        'locked': false,
-        "content": ""
+        content: "",
+        locked: false,
+        hidden: false
     }
     function setDrives(){
         for(i = 0; i < 20; i++){
@@ -36,49 +31,13 @@
                 used: 0,
                 hidden: false,
                 locked: false,
-                files: []
+                files: {}
             }
         }
-    }
-
-    function getDrives(){
-        let drives = {};
-        for(i = 0; i < Object.keys(Sys.drives).length; i++){
-            if(!Sys.drives[i].hidden){
-                drives[i] = Sys.drives[i];
-            }
-            if(drives[i]){
-                let files = []
-                for(j = 0; j < drives[i].files.length; j++){
-                    if(!drives[i].files[j].hidden){
-                        files.push(drives[i].files[j].name);
-                    }
-                }
-                drives[i].files = files
-            }
-        }
-        return drives
     }
 
     const Sys = {
         drives: {},
-        out: {
-            displayDrives(driveNumber){
-                if(driveNumber == undefined) return getDrives();
-                if(getDrives()[driveNumber]) return getDrives()[driveNumber];
-                else return `Error: Drive ${driveNumber} does not exist.`;
-                
-            }
-        },
-        mgmt: {
-            renameDrives(driveNumber, newName){
-                if(getDrives()[driveNumber]){
-                    Sys.drives[driveNumber].name = newName;
-                    return `Drive ${driveNumber} renamed to ${newName}.`
-                }
-                return `Error: Drive ${driveNumber} does not exist.`;
-            }
-        }
     }
 
 
