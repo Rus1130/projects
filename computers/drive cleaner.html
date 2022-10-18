@@ -1,0 +1,44 @@
+<style>
+
+</style>
+<head>
+
+</head>
+<body>
+    <div id='tickCounter'>Tick: 0</div>
+    <div id='dayCounter'>Day 0</div>
+    <div id="epochTimeCounter">Epoch Time: 0</div>
+    <div id="epochDayStart">Epoch Day Start: 0</div>
+    <div id="epochDayUntilEnd">Epoch Day Until End: 0</div>
+</body>
+<script>
+    let tick = 0;
+    let day = 0;
+    let epochTime = Date.now();
+    let dayStart = Date.now();
+
+    const settings = {
+        dayLength: 150000,
+    }
+    
+    const tickCounter = document.getElementById('tickCounter');
+    const dayCounter = document.getElementById('dayCounter');
+    const epochTimeCounter = document.getElementById('epochTimeCounter');
+    const epochDayStart = document.getElementById('epochDayStart');
+    const epochDayUntilEnd = document.getElementById('epochDayUntilEnd');
+
+    setInterval(() => {
+        tick++;
+        tickCounter.innerHTML = `Tick: ${tick}`;
+        epochTimeCounter.innerHTML = `Epoch Time: ${Date.now()}`;
+        epochDayStart.innerHTML = `Epoch Day Start: ${dayStart}`;
+        epochDayUntilEnd.innerHTML = `Epoch Day Until End: ${settings.dayLength - (Date.now() - dayStart)}`;
+
+        if(Date.now() - dayStart >= settings.dayLength) {
+            day++;
+            dayCounter.innerHTML = `Day ${day}`;
+            dayStart = Date.now();
+        }
+    }, 10);
+
+</script>
