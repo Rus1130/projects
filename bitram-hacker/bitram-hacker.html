@@ -115,27 +115,76 @@
             return `You do not have any ${item} to sell.`
         }
     }
+    let cellIDs = []
+    let hacking = false;
+    let clickedCell = '';
 
     function hack(item){
         // check if the item is in the inventory
         if(inventory[switcher.StL[item]]){
-            paused = true;
-            let cellIDs = []
-            for(i = 0; i < technicals[item].gridY; i++){
-                for(j = 0; j < technicals[item].gridX; j++){
-                    let cell = document.createElement('div');
-                    cell.id = `(${j},${i})`;
-                    cellIDs.push(cell.id);
-                    cell.style.border = '1px solid black';
+            if(!hacking){
+                paused = true;
+                hacking = true;
+                cellIDs = []
+                for(i = 0; i < technicals[item].gridY; i++){
+                    for(j = 0; j < technicals[item].gridX; j++){
+                        let cell = document.createElement('div');
+                        cell.id = `(${j},${i})`;
+                        cellIDs.push(cell.id);
+                        cell.style.border = '1px solid black';
 
-                    grid.setAttribute('style', `grid-template-columns: repeat(${technicals[item].gridX}, ${500 / technicals[item].gridX}px)`);
-                    grid.setAttribute('style', `grid-template-columns: repeat(${technicals[item].gridX}, ${500 / technicals[item].gridX}px)`);
 
-                    grid.appendChild(cell);
+                        grid.setAttribute('style', `grid-template-columns: repeat(${technicals[item].gridX}, ${500 / technicals[item].gridX}px)`);
+                        grid.setAttribute('style', `grid-template-columns: repeat(${technicals[item].gridX}, ${500 / technicals[item].gridX}px)`);
+
+                        grid.appendChild(cell);
+                    }
+                }
+                console.log(cellIDs)
+                grid.removeAttribute('class');
+                // add a click event listener to each cell
+
+
+                let randomIndexes = [];
+                while(randomIndexes.length < technicals[item].puzzleLength){
+                    let randomIndex = Math.floor(Math.random() * cellIDs.length);
+                    if(!randomIndexes.includes(cellIDs[randomIndex])){
+                        randomIndexes.push(cellIDs[randomIndex]);
+                    }
+                }
+                // if the cells are clicked in the correct order, console.log("correct!"), else console.log("incorrect!")
+                let correctOrder = false;
+                let clickedCells = [];
+                console.log(randomIndexes)
+                for(i = 0; i < cellIDs.length; i++){
+                    document.getElementById(cellIDs[i]).addEventListener('click', () => {
+                        clickedCells.push(event.target.id);
+                        if(clickedCells.length == randomIndexes.length){
+                            for(i = 0; i < randomIndexes.length; i++){
+                                if(randomIndexes[i] == clickedCells[i]){
+                                    correctOrder = true;
+                                } else {
+                                    correctOrder = false;
+                                }
+                            }
+                            if(correctOrder){
+                                console.log('correct!')
+                                paused = false;
+                                hacking = false;
+                                grid.setAttribute('class', 'hidden');
+                                grid.innerHTML = '';
+                            } else {
+                                console.log('incorrect!')
+                                paused = false;
+                                hacking = false;
+                                grid.setAttribute('class', 'hidden');
+                                grid.innerHTML = '';
+                            }
+                        }
+                    })
                 }
             }
-            console.log(cellIDs)
-            grid.removeAttribute('class');
+
         } else {
             return `You do not have any ${switcher.StL[item].replace('Partition', 'Partitions')}.`
         }
