@@ -126,16 +126,15 @@
                 paused = true;
                 hacking = true;
                 cellIDs = []
-                for(i = 0; i < technicals[item].gridY; i++){
-                    for(j = 0; j < technicals[item].gridX; j++){
+                for(i = 0; i < technicals[item].gridSize; i++){
+                    for(j = 0; j < technicals[item].gridSize; j++){
                         let cell = document.createElement('div');
                         cell.id = `(${j},${i})`;
                         cellIDs.push(cell.id);
                         cell.style.border = '1px solid black';
+                        cell.style.fontSize = '20px';
 
-
-                        grid.setAttribute('style', `grid-template-columns: repeat(${technicals[item].gridX}, ${500 / technicals[item].gridX}px)`);
-                        grid.setAttribute('style', `grid-template-columns: repeat(${technicals[item].gridX}, ${500 / technicals[item].gridX}px)`);
+                        grid.setAttribute('style', `grid-template-columns: repeat(${technicals[item].gridSize}, ${500 / technicals[item].gridSize}px)`);
 
                         grid.appendChild(cell);
                     }
@@ -152,33 +151,41 @@
                         randomIndexes.push(cellIDs[randomIndex]);
                     }
                 }
-                // if the cells are clicked in the correct order, console.log("correct!"), else console.log("incorrect!")
-                let correctOrder = false;
+                // insert the number order into the cells
+
                 let clickedCells = [];
                 console.log(randomIndexes)
+                for(i = 0; i < randomIndexes.length; i++){
+                    document.getElementById(randomIndexes[i]).innerHTML = i + 1;
+                }
                 for(i = 0; i < cellIDs.length; i++){
                     document.getElementById(cellIDs[i]).addEventListener('click', () => {
+                        for(i = 0; i < randomIndexes.length; i++){
+                            document.getElementById(randomIndexes[i]).innerHTML = '';
+                        }
                         clickedCells.push(event.target.id);
                         if(clickedCells.length == randomIndexes.length){
                             for(i = 0; i < randomIndexes.length; i++){
                                 if(randomIndexes[i] == clickedCells[i]){
                                     correctOrder = true;
                                 } else {
-                                    correctOrder = false;
+                                    paused = false;
+                                    hacking = false;
+                                    grid.setAttribute('class', 'hidden');
+                                    grid.innerHTML = '';
+                                    removeFromInventory(switcher.StL[item])
+                                    addToInventory('Failed ' + switcher.StL[item])
+                                    return console.log(`Failed to hack ${switcher.StL[item]}.`)
                                 }
                             }
                             if(correctOrder){
-                                console.log('correct!')
                                 paused = false;
                                 hacking = false;
                                 grid.setAttribute('class', 'hidden');
                                 grid.innerHTML = '';
-                            } else {
-                                console.log('incorrect!')
-                                paused = false;
-                                hacking = false;
-                                grid.setAttribute('class', 'hidden');
-                                grid.innerHTML = '';
+                                removeFromInventory(switcher.StL[item])
+                                addToInventory('Hacked ' + switcher.StL[item])
+                                return console.log(`Successfully hacked ${switcher.StL[item]}!`)
                             }
                         }
                     })

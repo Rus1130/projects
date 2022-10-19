@@ -14,9 +14,8 @@ const shop = {
 const technicals = {
     ubp1 : {
         time: 30,
-        gridX: 2,
-        gridY: 2,
-        puzzleLength: 2
+        gridSize: 2,
+        puzzleLength: 2,
     }
 }
 
