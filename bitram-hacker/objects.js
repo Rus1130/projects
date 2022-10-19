@@ -5,8 +5,19 @@ const shop = {
         name: 'Unsecure Bitram Partition Mk. 1',
         price: 2,
         unchangedPrice: this.price * 0.5,
-        failedPrice: this.price * 0.25,
-        hackedPrice: this.price * 1.5,
+        hackedPrice: this.price * 2,
+    },
+    'ubp2': {
+        name: 'Unsecure Bitram Partition Mk. 2',
+        price: 3,
+        unchangedPrice: this.price * 0.5,
+        hackedPrice: this.price * 2,
+    },
+    'ubp3': {
+        name: 'Unsecure Bitram Partition Mk. 3',
+        price: 4,
+        unchangedPrice: this.price * 0.5,
+        hackedPrice: this.price * 2,
     }
 }
 
@@ -16,12 +27,19 @@ const technicals = {
         time: 30,
         gridSize: 2,
         puzzleLength: 2,
+    },
+    ubp2 : {
+        time: 30,
+        gridSize: 2,
+        puzzleLength: 3,
+    },
+    ubp3 : {
+        time: 30,
+        gridSize: 3,
+        puzzleLength: 2,
     }
 }
 
-const switcherLtS = {
-
-}
 const switcher = {
     LtS: {
         'Hacked': 'h',
@@ -91,6 +109,21 @@ function removeFromInventory(item){
             delete inventory[item]
         }
     }
+}
+
+
+function directions(){
+    console.log("Welcome to Bitram Hacker!")
+    console.log("To view your inventory, type 'inventory'. You should already have an Unsecure Bitram Partition Mk. 1 in it.")
+    console.log("To hack Bitram Partitions, type hack('partition'). But do not use it's name, use its abbreviation instead.")
+    console.log("The abbreviation is the first letter of each word, and the number of the partition.")
+    console.log("For example, the Unsecure Bitram Partition Mk. 1 is 'ubp1'.")
+    console.log("Be careful, though, because if you fail to hack the partition, it will be destroyed.")
+    console.log("But it you succeed, it will double in value!")
+    console.log("To sell your Bitram Partitions, type sell('partition'). Make sure to include an 'h' at the beginning of the abbreviation.")
+    console.log("You can also sell normal Bitram Partitions, but they will only be worth half of what you bought them for.")
+    console.log("When you sell Partitions, you get Partition Records, which can be used to buy more Partitions.")
+    return 'Good Luck!'
 }
 
 /*
