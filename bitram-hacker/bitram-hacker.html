@@ -1,10 +1,9 @@
 <style>
 #grid {
     display: grid;
-    grid-template-columns: repeat(var(puzzle-x), 1fr);
-    grid-template-rows: repeat(var(--puzzle-y), 1fr);
-    grid-gap: 10px;
-    grid-auto-flow: dense;
+    width: 500px;
+    height: 500px;
+    grid-gap: 2px;
 }
 .hidden {
     display: none;
@@ -115,6 +114,32 @@
         } else {
             return `You do not have any ${item} to sell.`
         }
+    }
+
+    function hack(item){
+        // check if the item is in the inventory
+        if(inventory[switcher.StL[item]]){
+            paused = true;
+            let cellIDs = []
+            for(i = 0; i < technicals[item].gridY; i++){
+                for(j = 0; j < technicals[item].gridX; j++){
+                    let cell = document.createElement('div');
+                    cell.id = `(${j},${i})`;
+                    cellIDs.push(cell.id);
+                    cell.style.border = '1px solid black';
+
+                    grid.setAttribute('style', `grid-template-columns: repeat(${technicals[item].gridX}, ${500 / technicals[item].gridX}px)`);
+                    grid.setAttribute('style', `grid-template-columns: repeat(${technicals[item].gridX}, ${500 / technicals[item].gridX}px)`);
+
+                    grid.appendChild(cell);
+                }
+            }
+            console.log(cellIDs)
+            grid.removeAttribute('class');
+        } else {
+            return `You do not have any ${switcher.StL[item].replace('Partition', 'Partitions')}.`
+        }
+        return `Hacking ${switcher.StL[item]}...`
     }
 
     addToInventory('Unsecure Bitram Partition Mk. 1')
