@@ -1,0 +1,124 @@
+<style>
+#grid {
+    display: grid;
+    grid-template-columns: repeat(var(puzzle-x), 1fr);
+    grid-template-rows: repeat(var(--puzzle-y), 1fr);
+    grid-gap: 10px;
+    grid-auto-flow: dense;
+}
+.hidden {
+    display: none;
+}
+</style>
+<head>
+    <script src="objects.js"></script>
+</head>
+<body>
+    <div id="partitionRecordsCount">Partition Records: 2</div>
+    <div id='dayCounter'>Day 1</div>
+    <div id="nextDayCounter">Seconds Until Day End:</div>
+    <div id="grid" class="hidden"></div>
+</body>
+<script>
+
+    const dayCounter = document.getElementById('dayCounter');
+    const nextDayCounter = document.getElementById('nextDayCounter');
+    const partitionRecordsCount = document.getElementById('partitionRecordsCount');
+
+    const grid = document.getElementById('grid');
+
+    let partitionRecords = 2;
+    let ticks = 0;
+    let day = 1;
+
+    // calculate the number of seconds until the next day
+
+    let seconds = Math.round((1200 - (ticks % 1200)) * 125 / 1000);
+
+
+    nextDayCounter.innerHTML = `Day ${day + 1} in ${seconds} second${seconds == 1 ? '' : 's'}`;
+
+    let paused = false;
+    setInterval(() => {
+        if(!paused){
+            ticks++;
+            partitionRecordsCount.innerHTML = `Partition Records: ${partitionRecords}`;
+            if(ticks % 1200 == 0){
+                day++;
+                dayCounter.innerHTML = `Day ${day}`;   
+            } else {
+                seconds = Math.round((1200 - (ticks % 1200)) * 125 / 1000);
+                nextDayCounter.innerHTML = `Day ${day + 1} in ${seconds} second${seconds == 1 ? '' : 's'}`;
+            }
+        }
+    }, 125);
+
+
+    function showShop(){
+        console.log("Do not use the 'name' field for buying or selling items. Use the object name instead. (ex. wbp1)")
+        return shop
+    }
+
+    function showInventory(){
+        if(JSON.stringify(inventory) == '{}') return 'Your inventory is empty.';
+        return inventory
+    }
+
+    function buy(item){
+        if(partitionRecords >= shop[item].price){
+            partitionRecords -= shop[item].price;
+            if(inventory[switcher.StL[item]]){
+                inventory[switcher.StL[item]]++;
+            } else {
+                inventory[switcher.StL[item]] = 1;
+            }
+            return inventory
+        } else {
+            return `You do not have enough Partition Records to buy ${item}.`
+        }
+    }
+
+    function sell(item){
+        let type = ''
+        if(item[0] == 'h'){
+            type = "Hacked "
+        } else if(item[0] == 'f'){
+            type = 'Failed '
+        } else {
+            type = ''
+        }
+        if(item.length == 5){
+            item = item.slice(1);
+        }
+        
+        let baseItem = item
+        item = `${type}${switcher.StL[item]}`
+
+        if(inventory[item]){
+            if(inventory[item] > 1){
+                inventory[item]--;
+            } else {
+                delete inventory[item];
+            }
+            let sellPrice = 0;
+            if(type == 'Hacked '){
+                partitionRecords += Math.round(shop[baseItem].price * 1.5);
+                sellPrice = Math.round(shop[baseItem].price * 1.5);
+            } else if(type == 'Failed '){
+                partitionRecords += Math.round(shop[baseItem].price * 0.25);
+                sellPrice = Math.round(shop[baseItem].price * 0.25);
+            } else {
+                partitionRecords += Math.round(shop[baseItem].price * 0.50);
+                sellPrice = Math.round(shop[baseItem].price * 0.50);
+            }
+            return `Sold ${item} for ${sellPrice} Partition Records.`
+        } else {
+            return `You do not have any ${item} to sell.`
+        }
+    }
+
+    addToInventory('Unsecure Bitram Partition Mk. 1')
+    addToInventory('Hacked Unsecure Bitram Partition Mk. 1')
+    addToInventory('Failed Unsecure Bitram Partition Mk. 1')
+
+</script>
