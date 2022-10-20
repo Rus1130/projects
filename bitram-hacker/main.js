@@ -4,37 +4,30 @@ const shop = {
     'ubp1': {
         name: 'Unsecure Bitram Partition Mk. 1',
         price: 2,
-        unchangedPrice: this.price * 0.5,
-        hackedPrice: this.price * 2,
     },
     'ubp2': {
         name: 'Unsecure Bitram Partition Mk. 2',
         price: 3,
-        unchangedPrice: this.price * 0.5,
-        hackedPrice: this.price * 2,
     },
     'ubp3': {
         name: 'Unsecure Bitram Partition Mk. 3',
         price: 4,
-        unchangedPrice: this.price * 0.5,
-        hackedPrice: this.price * 2,
     }
 }
 
-
 const technicals = {
     ubp1 : {
-        time: 30,
+        timeLimit: 5,
         gridSize: 2,
         puzzleLength: 2,
     },
     ubp2 : {
-        time: 30,
+        timeLimit: 30,
         gridSize: 2,
         puzzleLength: 3,
     },
     ubp3 : {
-        time: 30,
+        timeLimit: 30,
         gridSize: 3,
         puzzleLength: 2,
     }
@@ -88,10 +81,6 @@ const switcher = {
 
 }
 
-function converter(type, name){
-    return switcher[type][name]
-}
-
 
 function addToInventory(item){
     if(inventory[item] == undefined){
@@ -125,6 +114,7 @@ function directions(){
     console.log("When you sell Partitions, you get Partition Records, which can be used to buy more Partitions.")
     return 'Good Luck!'
 }
+
 
 /*
 Unsecure

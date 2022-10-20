@@ -10,13 +10,14 @@
 }
 </style>
 <head>
-    <script src="objects.js"></script>
+    <script src="main.js"></script>
 </head>
 <body>
     <div>type directions() in the console to get started</div> 
     <div id="partitionRecordsCount">Partition Records: 0</div>
     <div id='dayCounter'>Day 1</div>
     <div id="nextDayCounter">Seconds Until Day End:</div>
+    <div id="timer" class="hidden"></div>
     <div id="grid" class="hidden"></div>
 </body>
 <script>
@@ -24,11 +25,13 @@
     const dayCounter = document.getElementById('dayCounter');
     const nextDayCounter = document.getElementById('nextDayCounter');
     const partitionRecordsCount = document.getElementById('partitionRecordsCount');
+    const timeLeft = document.getElementById('timer');
 
     const grid = document.getElementById('grid');
 
     let partitionRecords = 0;
     let ticks = 0;
+    let timeMeasuringTicks = 0;
     let day = 1;
 
     // calculate the number of seconds until the next day
@@ -51,7 +54,9 @@
                 nextDayCounter.innerHTML = `Day ${day + 1} in ${seconds} second${seconds == 1 ? '' : 's'}`;
             }
         }
+        timeMeasuringTicks++;
     }, 125);
+    setInterval
 
 
     function showShop(){
@@ -112,12 +117,16 @@
     let hacking = false;
     let clickedCell = '';
 
+
     function hack(item){
         // check if the item is in the inventory
         if(inventory[switcher.StL[item]]){
             if(!hacking){
+                let startTime = timeMeasuringTicks;
                 paused = true;
                 hacking = true;
+                let correctOrder = true;
+
                 cellIDs = []
                 for(i = 0; i < technicals[item].gridSize; i++){
                     for(j = 0; j < technicals[item].gridSize; j++){
@@ -146,14 +155,33 @@
                 // insert the number order into the cells
 
                 let clickedCells = [];
+                // continuously check if the current time is greater than the start time + the time it takes to hack the item
                 for(i = 0; i < randomIndexes.length; i++){
                     document.getElementById(randomIndexes[i]).innerHTML = i + 1;
                 }
+
+                grid.removeAttribute('class');
+                let timer = setInterval(() => {
+                    timeLeft.removeAttribute('class');
+                    timeLeft.innerHTML = `Time left: ${Math.round((technicals[item].timeLimit * 1000 / 125 - (timeMeasuringTicks - startTime)) * 125 / 1000)}`
+                    if(technicals[item].timeLimit * 1000 / 125 <= timeMeasuringTicks - startTime){
+                        paused = false;
+                        hacking = false;
+                        grid.setAttribute('class', 'hidden');
+                        grid.innerHTML = '';
+                        timeLeft.setAttribute('class', 'hidden');
+                        timeLeft.innerHTML = '';
+                        removeFromInventory(switcher.StL[item])
+                        clearInterval(timer)
+                        return console.log(`Failed to hack ${switcher.StL[item]}.`)
+                    }
+                }, 1)
                 for(i = 0; i < cellIDs.length; i++){
                     document.getElementById(cellIDs[i]).addEventListener('click', () => {
                         for(i = 0; i < randomIndexes.length; i++){
                             document.getElementById(randomIndexes[i]).innerHTML = '';
                         }
+
                         clickedCells.push(event.target.id);
                         if(clickedCells.length == randomIndexes.length){
                             for(i = 0; i < randomIndexes.length; i++){
@@ -164,7 +192,10 @@
                                     hacking = false;
                                     grid.setAttribute('class', 'hidden');
                                     grid.innerHTML = '';
+                                    timeLeft.setAttribute('class', 'hidden');
+                                    timeLeft.innerHTML = '';
                                     removeFromInventory(switcher.StL[item])
+                                    clearInterval(timer)
                                     return console.log(`Failed to hack ${switcher.StL[item]}.`)
                                 }
                             }
@@ -173,9 +204,13 @@
                                 hacking = false;
                                 grid.setAttribute('class', 'hidden');
                                 grid.innerHTML = '';
+                                timeLeft.setAttribute('class', 'hidden');
+                                timeLeft.innerHTML = '';
                                 removeFromInventory(switcher.StL[item])
                                 addToInventory('Hacked ' + switcher.StL[item])
-                                return console.log(`Successfully hacked ${switcher.StL[item]}!`)
+                                let time = Math.round((timeMeasuringTicks - startTime) * 125 / 1000)
+                                clearInterval(timer)
+                                return console.log(`Successfully hacked ${switcher.StL[item]} in a time span of ${time} second${time == 1 ? '' : 's'}!`)
                             }
                         }
                     })
@@ -194,6 +229,8 @@
         }
         return `Hacking ${switcher.StL[item]}...`
     }
+
+    // convert ticks to seconds
 
     addToInventory('Unsecure Bitram Partition Mk. 1')
 
