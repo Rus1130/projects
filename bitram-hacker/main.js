@@ -8,12 +8,12 @@ const shop = {
     },
     'ubp2': {
         name: 'Unsecure Bitram Partition Mk. 2',
-        price: 3,
+        price: 2,
         levelRequirement: 2,
     },
     'ubp3': {
         name: 'Unsecure Bitram Partition Mk. 3',
-        price: 5,
+        price: 3,
         levelRequirement: 5,
     }
 }
@@ -126,21 +126,86 @@ function directions(){
     return 'Good Luck!'
 }
 
-const contractList = {
-    0 : {
-        name: "Beginner's Luck",
-        contractor: "Nicholas M.",
-        offerDay: 1,
-        completeBy: 5,
-        reward: 15,
-        requirements: {
-            'ubp2': 1,
-        },
-        description: "Welcome to the wide world of Bitram Hacking! I'm Nicholas M., and I'm pretty well known around here (😎😏). I heard you're new to this, so I'll give you a contract to get you started. I need you to hack an Unsecure Bitram Partition Mk. 2. I'll give you 15 Partition Records for it. You can find it in the shop. Good luck!",
+
+let relations = {
+    'Nicholas M.': 0,
+    "Baheer Jamati": -5,
+}
+
+relationRequirements = {
+    'Nicholas M.': {
+        "What's up :)": 0,
+        "What's up :) 2": 1,
+    },
+    "Baheer Jamati": {
+        "I'll give you a chance": -5,
     }
 }
 
-let contractListArray = Object.keys(contractList)
+
+const contractList = {
+    "Nicholas M." : {
+        "What's up :)" : {
+            contractor: "Nicholas M.",
+            offerDay: 3,
+            completeBy: 5,
+            reward: 15,
+            requirements: {
+                'ubp2': 1,
+            },
+            description: {
+                0: "Welcome to the wide world of Bitram Hacking!",
+                1: "I'm Nicholas M., and I'm pretty well known around here (😎😏)." ,
+                2: "I heard you're new to this, so I'll give you a contract to get you started. You have 2 days to complete it.",
+                3: "I need you to hack an Unsecure Bitram Partition Mk. 2.",
+                4: "I'll give you 15 Partition Records for it. You can find it in the shop. Good luck!"
+            }
+        },
+        "What's up :) 2" : {
+            contractor: "Nicholas M.",
+            offerDay: 3,
+            completeBy: 5,
+            reward: 15,
+            requirements: {
+                'ubp3': 1,
+            },
+            description: {
+                0: "Welcome to the wide world of Bitram Hacking!",
+                1: "I'm Nicholas M., and I'm pretty well known around here (😎😏)." ,
+                2: "I heard you're new to this, so I'll give you a contract to get you started. You have 2 days to complete it.",
+                3: "I need you to hack an Unsecure Bitram Partition Mk. 2.",
+                4: "I'll give you 15 Partition Records for it. You can find it in the shop. Good luck!"
+            }
+        }
+
+    },
+    "Baheer Jamati": {
+        "I'll give you a chance" : {
+            contractor: "Baheer Jamati",
+            offerDay: 5,
+            completeBy: 6,
+            reward: 5,
+            requirements: {
+                'ubp3': 3,
+            },
+            description: {
+                0: "I'll get straight to the point; You're not welcome here.",
+                1: "I do low-level business, and I got a notif on HackMail that you're new in town.",
+                2: "I need you to hack 3 Unsecure Bitram Partitions Mk. 3 for me.",
+                3: "I'll give you 5 Partition Records for it. It better be complete by tomorrow."
+            }
+        }
+    }
+}
+
+function contractCheck(contractor, contractName, d){
+    if(d < contractList[contractor][contractName].offerDay || d >= contractList[contractor][contractName].completeBy) return false
+    if(relations[contractor] < relationRequirements[contractor][contractName]) return false
+    return true;
+
+}
+
+let contractorList = Object.keys(contractList)
 
 
 /*

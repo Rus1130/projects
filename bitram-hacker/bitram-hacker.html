@@ -34,14 +34,14 @@
     let partitionRecords = 0;
     let ticks = 0;
     let timeMeasuringTicks = 0;
-    let day = 1;
+    let day = 3;
 
     let level = 1
     let currentExp = 0;
     let expNeeded = 10;
 
-    let currentContracts = {};
-    let acceptedContracts = {};
+    let currentContract = {};
+    let acceptableContracts = {};
 
     let lastSoldItem = '';
 
@@ -53,16 +53,13 @@
 
     let paused = false;
     let truePaused = false;
-    console.log(contractListArray)
+
+
+
     setInterval(() => {
         if(!paused){
             ticks++;
             partitionRecordsCount.innerHTML = `Partition Records: ${partitionRecords}`;
-            for(i = 0; i < contractListArray.length; i++){
-                if(day == contractList[i].offerDay){
-                    currentContracts[i] = contractList[i]
-                }
-            }
             if(ticks % 1200 == 0){
                 day++;
                 dayCounter.innerHTML = `Day ${day}`;
