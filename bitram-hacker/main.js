@@ -3,15 +3,18 @@ let inventory = {}
 const shop = {
     'ubp1': {
         name: 'Unsecure Bitram Partition Mk. 1',
-        price: 2,
+        price: 1,
+        levelRequirement: 1,
     },
     'ubp2': {
         name: 'Unsecure Bitram Partition Mk. 2',
         price: 3,
+        levelRequirement: 2,
     },
     'ubp3': {
         name: 'Unsecure Bitram Partition Mk. 3',
-        price: 4,
+        price: 5,
+        levelRequirement: 5,
     }
 }
 
@@ -20,19 +23,22 @@ const technicals = {
         timeLimit: 20,
         gridSize: 2,
         puzzleLength: 2,
-        exp: 1,
+        exp: 2,
+        levelReq: 1,
     },
     ubp2 : {
         timeLimit: 20,
         gridSize: 2,
         puzzleLength: 3,
-        exp: 2,
+        exp: 4,
+        levelReq: 2,
     },
     ubp3 : {
         timeLimit: 20,
         gridSize: 2,
         puzzleLength: 4,
-        exp: 3,
+        exp: 6,
+        levelReq: 5,
     }
 }
 
@@ -115,6 +121,8 @@ function directions(){
     console.log("To sell your Bitram Partitions, type sell('partition'). Make sure to include an 'h' at the beginning of the abbreviation.")
     console.log("You can also sell normal Bitram Partitions, but they will only be worth half of what you bought them for.")
     console.log("When you sell Partitions, you get Partition Records, which can be used to buy more Partitions.")
+    console.log("To buy Partitions, type buy('partition').")
+    console.log("To view the shop, type 'shop'.")
     return 'Good Luck!'
 }
 

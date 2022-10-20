@@ -64,17 +64,18 @@
         if(!truePaused){
             timeMeasuringTicks++;
         }
+        while(currentExp >= expNeeded){
+            level++;
+            currentExp -= expNeeded;
+            expNeeded = Math.round(Math.pow(expNeeded, 1.1));
+        }
+        levelDisplay.innerHTML = `Level ${level} (${currentExp}/${expNeeded})`;
     }, 125);
-    setInterval
 
-
-    function showShop(){
-        console.log("Do not use the 'name' field for buying or selling items. Use the object name instead. (ex. wbp1)")
-        return shop
-    }
 
     function buy(item){
         if(hacking) return `You cannot do this right now!`
+        if(level < technicals[item].levelReq) return `You need to be level ${technicals[item].levelReq} to buy this!`;
         if(partitionRecords >= shop[item].price){
             partitionRecords -= shop[item].price;
             if(inventory[switcher.StL[item]]){
@@ -82,7 +83,7 @@
             } else {
                 inventory[switcher.StL[item]] = 1;
             }
-            return inventory
+            return `Successfully bought ${item}!`;
         } else {
             return `You do not have enough Partition Records to buy ${item}.`
         }
@@ -106,18 +107,16 @@
         item = `${type}${switcher.StL[item]}`
 
         if(inventory[item]){
-            if(inventory[item] > 1){
-                inventory[item]--;
-            } else {
-                delete inventory[item];
-            }
+            if(inventory[item] == 0) delete inventory[item];
+            inventory[item]--;
+            if(inventory[item] == 0) delete inventory[item];
             let sellPrice = 0;
             if(type == 'Hacked '){
-                partitionRecords += Math.round(shop[baseItem].price * 1.5);
-                sellPrice = Math.round(shop[baseItem].price * 1.5);
+                partitionRecords += Math.round(shop[baseItem].price * 2);
+                sellPrice = Math.round(shop[baseItem].price * 2);
             } else {
-                partitionRecords += Math.round(shop[baseItem].price * 0.50);
-                sellPrice = Math.round(shop[baseItem].price * 0.50);
+                partitionRecords += Math.round(shop[baseItem].price * 0.5);
+                sellPrice = Math.round(shop[baseItem].price * 0.5);
             }
             return `Sold ${item} for ${sellPrice} Partition Record${sellPrice == 1 ? "" : 's'}.`
         } else {
@@ -219,8 +218,9 @@
                                 timeLeft.innerHTML = '';
                                 addToInventory('Hacked ' + switcher.StL[item])
                                 let time = Math.round((timeMeasuringTicks - startTime) * 125 / 1000)
-                                clearInterval(timer)
+
                                 currentExp += technicals[item].exp;
+                                clearInterval(timer)
                                 return console.log(`Successfully hacked ${switcher.StL[item]} in a time span of ${time} second${time == 1 ? '' : 's'}!`)
                             }
                         }
@@ -243,6 +243,5 @@
 
     // convert ticks to seconds
 
-    addToInventory('Unsecure Bitram Partition Mk. 1')
     addToInventory('Unsecure Bitram Partition Mk. 1')
 </script>
