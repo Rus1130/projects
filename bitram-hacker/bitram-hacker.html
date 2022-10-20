@@ -40,6 +40,11 @@
     let currentExp = 0;
     let expNeeded = 10;
 
+    let currentContracts = {};
+    let acceptedContracts = {};
+
+    let lastSoldItem = '';
+
     // calculate the number of seconds until the next day
 
     let seconds = Math.round((1200 - (ticks % 1200)) * 125 / 1000);
@@ -48,14 +53,20 @@
 
     let paused = false;
     let truePaused = false;
-
+    console.log(contractListArray)
     setInterval(() => {
         if(!paused){
             ticks++;
             partitionRecordsCount.innerHTML = `Partition Records: ${partitionRecords}`;
+            for(i = 0; i < contractListArray.length; i++){
+                if(day == contractList[i].offerDay){
+                    currentContracts[i] = contractList[i]
+                }
+            }
             if(ticks % 1200 == 0){
                 day++;
-                dayCounter.innerHTML = `Day ${day}`;   
+                dayCounter.innerHTML = `Day ${day}`;
+                
             } else {
                 seconds = Math.round((1200 - (ticks % 1200)) * 125 / 1000);
                 nextDayCounter.innerHTML = `Day ${day + 1} in ${seconds} second${seconds == 1 ? '' : 's'}`;
@@ -118,6 +129,7 @@
                 partitionRecords += Math.round(shop[baseItem].price * 0.5);
                 sellPrice = Math.round(shop[baseItem].price * 0.5);
             }
+            lastSoldItem = item;
             return `Sold ${item} for ${sellPrice} Partition Record${sellPrice == 1 ? "" : 's'}.`
         } else {
             return `You do not have any ${item} to sell.`

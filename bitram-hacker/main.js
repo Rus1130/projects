@@ -126,6 +126,22 @@ function directions(){
     return 'Good Luck!'
 }
 
+const contractList = {
+    0 : {
+        name: "Beginner's Luck",
+        contractor: "Nicholas M.",
+        offerDay: 1,
+        completeBy: 5,
+        reward: 15,
+        requirements: {
+            'ubp2': 1,
+        },
+        description: "Welcome to the wide world of Bitram Hacking! I'm Nicholas M., and I'm pretty well known around here (😎😏). I heard you're new to this, so I'll give you a contract to get you started. I need you to hack an Unsecure Bitram Partition Mk. 2. I'll give you 15 Partition Records for it. You can find it in the shop. Good luck!",
+    }
+}
+
+let contractListArray = Object.keys(contractList)
+
 
 /*
 Unsecure
