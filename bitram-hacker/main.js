@@ -17,19 +17,22 @@ const shop = {
 
 const technicals = {
     ubp1 : {
-        timeLimit: 5,
+        timeLimit: 20,
         gridSize: 2,
         puzzleLength: 2,
+        exp: 1,
     },
     ubp2 : {
-        timeLimit: 30,
+        timeLimit: 20,
         gridSize: 2,
         puzzleLength: 3,
+        exp: 2,
     },
     ubp3 : {
-        timeLimit: 30,
-        gridSize: 3,
-        puzzleLength: 2,
+        timeLimit: 20,
+        gridSize: 2,
+        puzzleLength: 4,
+        exp: 3,
     }
 }
 
@@ -106,9 +109,9 @@ function directions(){
     console.log("To view your inventory, type 'inventory'. You should already have an Unsecure Bitram Partition Mk. 1 in it.")
     console.log("To hack Bitram Partitions, type hack('partition'). But do not use it's name, use its abbreviation instead.")
     console.log("The abbreviation is the first letter of each word, and the number of the partition.")
-    console.log("For example, the Unsecure Bitram Partition Mk. 1 is 'ubp1'.")
-    console.log("Be careful, though, because if you fail to hack the partition, it will be destroyed.")
-    console.log("But it you succeed, it will double in value!")
+    console.log("For example, the abbreviation of Unsecure Bitram Partition Mk. 1 is 'ubp1'.")
+    console.log("Be careful, though, because if you take too long to hack the partition or put in the wrong pattern, it will be destroyed.")
+    console.log("But if you succeed, it will double in value!")
     console.log("To sell your Bitram Partitions, type sell('partition'). Make sure to include an 'h' at the beginning of the abbreviation.")
     console.log("You can also sell normal Bitram Partitions, but they will only be worth half of what you bought them for.")
     console.log("When you sell Partitions, you get Partition Records, which can be used to buy more Partitions.")

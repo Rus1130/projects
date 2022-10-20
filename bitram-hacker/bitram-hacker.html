@@ -13,7 +13,8 @@
     <script src="main.js"></script>
 </head>
 <body>
-    <div>type directions() in the console to get started</div> 
+    <div>type directions() in the console to get started</div>
+    <div id="levelDisplay">Level 1 (0/10)</div>
     <div id="partitionRecordsCount">Partition Records: 0</div>
     <div id='dayCounter'>Day 1</div>
     <div id="nextDayCounter">Seconds Until Day End:</div>
@@ -26,6 +27,7 @@
     const nextDayCounter = document.getElementById('nextDayCounter');
     const partitionRecordsCount = document.getElementById('partitionRecordsCount');
     const timeLeft = document.getElementById('timer');
+    const levelDisplay = document.getElementById('levelDisplay');
 
     const grid = document.getElementById('grid');
 
@@ -34,14 +36,19 @@
     let timeMeasuringTicks = 0;
     let day = 1;
 
+    let level = 1
+    let currentExp = 0;
+    let expNeeded = 10;
+
     // calculate the number of seconds until the next day
 
     let seconds = Math.round((1200 - (ticks % 1200)) * 125 / 1000);
 
-
     nextDayCounter.innerHTML = `Day ${day + 1} in ${seconds} second${seconds == 1 ? '' : 's'}`;
 
     let paused = false;
+    let truePaused = false;
+
     setInterval(() => {
         if(!paused){
             ticks++;
@@ -54,7 +61,9 @@
                 nextDayCounter.innerHTML = `Day ${day + 1} in ${seconds} second${seconds == 1 ? '' : 's'}`;
             }
         }
-        timeMeasuringTicks++;
+        if(!truePaused){
+            timeMeasuringTicks++;
+        }
     }, 125);
     setInterval
 
@@ -65,6 +74,7 @@
     }
 
     function buy(item){
+        if(hacking) return `You cannot do this right now!`
         if(partitionRecords >= shop[item].price){
             partitionRecords -= shop[item].price;
             if(inventory[switcher.StL[item]]){
@@ -79,6 +89,7 @@
     }
 
     function sell(item){
+        if(hacking) return `You cannot do this right now!`
         let type = ''
         if(item[0] == 'h'){
             type = "Hacked "
@@ -108,7 +119,7 @@
                 partitionRecords += Math.round(shop[baseItem].price * 0.50);
                 sellPrice = Math.round(shop[baseItem].price * 0.50);
             }
-            return `Sold ${item} for ${sellPrice} Partition Records.`
+            return `Sold ${item} for ${sellPrice} Partition Record${sellPrice == 1 ? "" : 's'}.`
         } else {
             return `You do not have any ${item} to sell.`
         }
@@ -126,7 +137,7 @@
                 paused = true;
                 hacking = true;
                 let correctOrder = true;
-
+                truePaused = true;
                 cellIDs = []
                 for(i = 0; i < technicals[item].gridSize; i++){
                     for(j = 0; j < technicals[item].gridSize; j++){
@@ -159,8 +170,9 @@
                 for(i = 0; i < randomIndexes.length; i++){
                     document.getElementById(randomIndexes[i]).innerHTML = i + 1;
                 }
-
                 grid.removeAttribute('class');
+                removeFromInventory(switcher.StL[item])
+
                 let timer = setInterval(() => {
                     timeLeft.removeAttribute('class');
                     timeLeft.innerHTML = `Time left: ${Math.round((technicals[item].timeLimit * 1000 / 125 - (timeMeasuringTicks - startTime)) * 125 / 1000)}`
@@ -171,13 +183,13 @@
                         grid.innerHTML = '';
                         timeLeft.setAttribute('class', 'hidden');
                         timeLeft.innerHTML = '';
-                        removeFromInventory(switcher.StL[item])
                         clearInterval(timer)
                         return console.log(`Failed to hack ${switcher.StL[item]}.`)
                     }
                 }, 1)
                 for(i = 0; i < cellIDs.length; i++){
                     document.getElementById(cellIDs[i]).addEventListener('click', () => {
+                        truePaused = false;
                         for(i = 0; i < randomIndexes.length; i++){
                             document.getElementById(randomIndexes[i]).innerHTML = '';
                         }
@@ -194,7 +206,6 @@
                                     grid.innerHTML = '';
                                     timeLeft.setAttribute('class', 'hidden');
                                     timeLeft.innerHTML = '';
-                                    removeFromInventory(switcher.StL[item])
                                     clearInterval(timer)
                                     return console.log(`Failed to hack ${switcher.StL[item]}.`)
                                 }
@@ -206,10 +217,10 @@
                                 grid.innerHTML = '';
                                 timeLeft.setAttribute('class', 'hidden');
                                 timeLeft.innerHTML = '';
-                                removeFromInventory(switcher.StL[item])
                                 addToInventory('Hacked ' + switcher.StL[item])
                                 let time = Math.round((timeMeasuringTicks - startTime) * 125 / 1000)
                                 clearInterval(timer)
+                                currentExp += technicals[item].exp;
                                 return console.log(`Successfully hacked ${switcher.StL[item]} in a time span of ${time} second${time == 1 ? '' : 's'}!`)
                             }
                         }
@@ -233,5 +244,5 @@
     // convert ticks to seconds
 
     addToInventory('Unsecure Bitram Partition Mk. 1')
-
+    addToInventory('Unsecure Bitram Partition Mk. 1')
 </script>
