@@ -1,4 +1,4 @@
-let inventory = {}
+
 
 const shop = {
     'ubp1': {
@@ -91,23 +91,7 @@ const switcher = {
 }
 
 
-function addToInventory(item){
-    if(inventory[item] == undefined){
-        inventory[item] = 1
-    } else {
-        inventory[item] += 1
-    }
-}
 
-function removeFromInventory(item){
-    for(i = 0; i < Object.keys(inventory).length; i++){
-        if(inventory[item] > 1){
-            inventory[item] -= 1
-        } else {
-            delete inventory[item]
-        }
-    }
-}
 
 
 function directions(){

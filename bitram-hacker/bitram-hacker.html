@@ -31,65 +31,71 @@
 
     const grid = document.getElementById('grid');
 
-    let partitionRecords = 0;
-    let ticks = 0;
-    let timeMeasuringTicks = 0;
-    let day = 3;
+    const saftey = {
+        partitionRecords: 0,
+        ticks: 0,
+        timeMeasuringTicks: 0,
+        day: 3,
+        level: 1,
+        currentExp: 0,
+        expNeeded: 10,
+        currentContract: {},
+        acceptableContracts: {},
+        lastSoldItem: '',
+        paused: false,
+        truePaused: false,
+        cellIDs: [],
+        hacking: false,
+        clickedCell: '',
+        inventory: {},
+    }
 
-    let level = 1
-    let currentExp = 0;
-    let expNeeded = 10;
 
-    let currentContract = {};
-    let acceptableContracts = {};
-
-    let lastSoldItem = '';
 
     // calculate the number of seconds until the next day
 
-    let seconds = Math.round((1200 - (ticks % 1200)) * 125 / 1000);
+    let seconds = Math.round((1200 - (saftey.ticks % 1200)) * 125 / 1000);
 
-    nextDayCounter.innerHTML = `Day ${day + 1} in ${seconds} second${seconds == 1 ? '' : 's'}`;
+    nextDayCounter.innerHTML = `Day ${saftey.day + 1} in ${seconds} second${seconds == 1 ? '' : 's'}`;
 
-    let paused = false;
-    let truePaused = false;
+
 
 
 
     setInterval(() => {
-        if(!paused){
-            ticks++;
-            partitionRecordsCount.innerHTML = `Partition Records: ${partitionRecords}`;
-            if(ticks % 1200 == 0){
-                day++;
-                dayCounter.innerHTML = `Day ${day}`;
+        if(!saftey.paused){
+            saftey.ticks++;
+            partitionRecordsCount.innerHTML = `Partition Records: ${saftey.partitionRecords}`;
+            if(saftey.ticks % 1200 == 0){
+                saftey.day++;
+                dayCounter.innerHTML = `Day ${saftey.day}`;
                 
             } else {
-                seconds = Math.round((1200 - (ticks % 1200)) * 125 / 1000);
-                nextDayCounter.innerHTML = `Day ${day + 1} in ${seconds} second${seconds == 1 ? '' : 's'}`;
+                seconds = Math.round((1200 - (saftey.ticks % 1200)) * 125 / 1000);
+                nextDayCounter.innerHTML = `Day ${saftey.day + 1} in ${seconds} second${seconds == 1 ? '' : 's'}`;
             }
         }
-        if(!truePaused){
-            timeMeasuringTicks++;
+        if(!saftey.truePaused){
+            saftey.timeMeasuringTicks++;
         }
-        while(currentExp >= expNeeded){
-            level++;
-            currentExp -= expNeeded;
-            expNeeded = Math.round(Math.pow(expNeeded, 1.1));
+        while(saftey.currentExp >= saftey.expNeeded){
+            saftey.level++;
+            saftey.currentExp -= saftey.expNeeded;
+            saftey.expNeeded = Math.round(Math.pow(saftey.expNeeded, 1.1));
         }
-        levelDisplay.innerHTML = `Level ${level} (${currentExp}/${expNeeded})`;
+        levelDisplay.innerHTML = `Level ${saftey.level} (${saftey.currentExp}/${saftey.expNeeded})`;
     }, 125);
 
 
     function buy(item){
-        if(hacking) return `You cannot do this right now!`
+        if(saftey.hacking) return `You cannot do this right now!`
         if(level < technicals[item].levelReq) return `You need to be level ${technicals[item].levelReq} to buy this!`;
-        if(partitionRecords >= shop[item].price){
-            partitionRecords -= shop[item].price;
-            if(inventory[switcher.StL[item]]){
-                inventory[switcher.StL[item]]++;
+        if(saftey.partitionRecords >= shop[item].price){
+            saftey.partitionRecords -= shop[item].price;
+            if(saftey.inventory[switcher.StL[item]]){
+                saftey.inventory[switcher.StL[item]]++;
             } else {
-                inventory[switcher.StL[item]] = 1;
+                saftey.inventory[switcher.StL[item]] = 1;
             }
             return `Successfully bought ${item}!`;
         } else {
@@ -98,7 +104,7 @@
     }
 
     function sell(item){
-        if(hacking) return `You cannot do this right now!`
+        if(saftey.hacking) return `You cannot do this right now!`
         let type = ''
         if(item[0] == 'h'){
             type = "Hacked "
@@ -114,44 +120,41 @@
         let baseItem = item
         item = `${type}${switcher.StL[item]}`
 
-        if(inventory[item]){
-            if(inventory[item] == 0) delete inventory[item];
-            inventory[item]--;
-            if(inventory[item] == 0) delete inventory[item];
+        if(saftey.inventory[item]){
+            if(saftey.inventory[item] == 0) delete saftey.inventory[item];
+            saftey.inventory[item]--;
+            if(saftey.inventory[item] == 0) delete saftey.inventory[item];
             let sellPrice = 0;
             if(type == 'Hacked '){
-                partitionRecords += Math.round(shop[baseItem].price * 2);
+                saftey.partitionRecords += Math.round(shop[baseItem].price * 2);
                 sellPrice = Math.round(shop[baseItem].price * 2);
             } else {
-                partitionRecords += Math.round(shop[baseItem].price * 0.5);
+                saftey.partitionRecords += Math.round(shop[baseItem].price * 0.5);
                 sellPrice = Math.round(shop[baseItem].price * 0.5);
             }
-            lastSoldItem = item;
+            saftey.lastSoldItem = item;
             return `Sold ${item} for ${sellPrice} Partition Record${sellPrice == 1 ? "" : 's'}.`
         } else {
             return `You do not have any ${item} to sell.`
         }
     }
-    let cellIDs = []
-    let hacking = false;
-    let clickedCell = '';
 
 
     function hack(item){
         // check if the item is in the inventory
-        if(inventory[switcher.StL[item]]){
-            if(!hacking){
-                let startTime = timeMeasuringTicks;
-                paused = true;
-                hacking = true;
+        if(saftey.inventory[switcher.StL[item]]){
+            if(!saftey.hacking){
+                let startTime = saftey.timeMeasuringTicks;
+                saftey.paused = true;
+                saftey.hacking = true;
                 let correctOrder = true;
-                truePaused = true;
-                cellIDs = []
+                saftey.truePaused = true;
+                saftey.cellIDs = []
                 for(i = 0; i < technicals[item].gridSize; i++){
                     for(j = 0; j < technicals[item].gridSize; j++){
                         let cell = document.createElement('div');
                         cell.id = `(${j},${i})`;
-                        cellIDs.push(cell.id);
+                        saftey.cellIDs.push(cell.id);
                         cell.style.border = '1px solid black';
                         cell.style.fontSize = '20px';
 
@@ -166,14 +169,14 @@
 
                 let randomIndexes = [];
                 while(randomIndexes.length < technicals[item].puzzleLength){
-                    let randomIndex = Math.floor(Math.random() * cellIDs.length);
-                    if(!randomIndexes.includes(cellIDs[randomIndex])){
-                        randomIndexes.push(cellIDs[randomIndex]);
+                    let randomIndex = Math.floor(Math.random() * saftey.cellIDs.length);
+                    if(!randomIndexes.includes(saftey.cellIDs[randomIndex])){
+                        randomIndexes.push(saftey.cellIDs[randomIndex]);
                     }
                 }
                 // insert the number order into the cells
 
-                let clickedCells = [];
+                saftey.clickedCells = [];
                 // continuously check if the current time is greater than the start time + the time it takes to hack the item
                 for(i = 0; i < randomIndexes.length; i++){
                     document.getElementById(randomIndexes[i]).innerHTML = i + 1;
@@ -183,10 +186,10 @@
 
                 let timer = setInterval(() => {
                     timeLeft.removeAttribute('class');
-                    timeLeft.innerHTML = `Time left: ${Math.round((technicals[item].timeLimit * 1000 / 125 - (timeMeasuringTicks - startTime)) * 125 / 1000)}`
-                    if(technicals[item].timeLimit * 1000 / 125 <= timeMeasuringTicks - startTime){
-                        paused = false;
-                        hacking = false;
+                    timeLeft.innerHTML = `Time left: ${Math.round((technicals[item].timeLimit * 1000 / 125 - (saftey.timeMeasuringTicks - startTime)) * 125 / 1000)}`
+                    if(technicals[item].timeLimit * 1000 / 125 <= saftey.timeMeasuringTicks - startTime){
+                        saftey.paused = false;
+                        saftey.hacking = false;
                         grid.setAttribute('class', 'hidden');
                         grid.innerHTML = '';
                         timeLeft.setAttribute('class', 'hidden');
@@ -195,21 +198,21 @@
                         return console.log(`Failed to hack ${switcher.StL[item]}.`)
                     }
                 }, 1)
-                for(i = 0; i < cellIDs.length; i++){
-                    document.getElementById(cellIDs[i]).addEventListener('click', () => {
-                        truePaused = false;
+                for(i = 0; i < saftey.cellIDs.length; i++){
+                    document.getElementById(saftey.cellIDs[i]).addEventListener('click', () => {
+                        saftey.truePaused = false;
                         for(i = 0; i < randomIndexes.length; i++){
                             document.getElementById(randomIndexes[i]).innerHTML = '';
                         }
 
-                        clickedCells.push(event.target.id);
-                        if(clickedCells.length == randomIndexes.length){
+                        saftey.clickedCells.push(event.target.id);
+                        if(saftey.clickedCells.length == randomIndexes.length){
                             for(i = 0; i < randomIndexes.length; i++){
-                                if(randomIndexes[i] == clickedCells[i]){
+                                if(randomIndexes[i] == saftey.clickedCells[i]){
                                     correctOrder = true;
                                 } else {
-                                    paused = false;
-                                    hacking = false;
+                                    saftey.paused = false;
+                                    saftey.hacking = false;
                                     grid.setAttribute('class', 'hidden');
                                     grid.innerHTML = '';
                                     timeLeft.setAttribute('class', 'hidden');
@@ -219,16 +222,16 @@
                                 }
                             }
                             if(correctOrder){
-                                paused = false;
-                                hacking = false;
+                                saftey.paused = false;
+                                saftey.hacking = false;
                                 grid.setAttribute('class', 'hidden');
                                 grid.innerHTML = '';
                                 timeLeft.setAttribute('class', 'hidden');
                                 timeLeft.innerHTML = '';
                                 addToInventory('Hacked ' + switcher.StL[item])
-                                let time = Math.round((timeMeasuringTicks - startTime) * 125 / 1000)
+                                let time = Math.round((saftey.timeMeasuringTicks - startTime) * 125 / 1000)
 
-                                currentExp += technicals[item].exp;
+                                saftey.currentExp += technicals[item].exp;
                                 clearInterval(timer)
                                 return console.log(`Successfully hacked ${switcher.StL[item]} in a time span of ${time} second${time == 1 ? '' : 's'}!`)
                             }
@@ -249,6 +252,24 @@
         }
         return `Hacking ${switcher.StL[item]}...`
     }
+
+    function addToInventory(item){
+    if(saftey.inventory[item] == undefined){
+        saftey.inventory[item] = 1
+    } else {
+        saftey.inventory[item] += 1
+    }
+}
+
+function removeFromInventory(item){
+    for(i = 0; i < Object.keys(saftey.inventory).length; i++){
+        if(saftey.inventory[item] > 1){
+            saftey.inventory[item] -= 1
+        } else {
+            delete saftey.inventory[item]
+        }
+    }
+}
 
     // convert ticks to seconds
 
