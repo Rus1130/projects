@@ -15,6 +15,7 @@
 <body>
     <div>type directions() in the console to get started</div>
     <div id="levelDisplay">Level 1 (0/10)</div>
+    <div id='attentionDisplay'>0/100</div>
     <div id="partitionRecordsCount">Partition Records: 0</div>
     <div id='dayCounter'>Day 1</div>
     <div id="nextDayCounter">Seconds Until Day End:</div>
@@ -23,6 +24,7 @@
 </body>
 <script>
 
+    const attentionDisplay = document.getElementById('attentionDisplay');
     const dayCounter = document.getElementById('dayCounter');
     const nextDayCounter = document.getElementById('nextDayCounter');
     const partitionRecordsCount = document.getElementById('partitionRecordsCount');
@@ -47,6 +49,8 @@
         truePaused: false,
         cellIDs: [],
         hacking: false,
+        locked: false,
+        attentionMeter: 0,
         clickedCell: '',
         addToInventory(item){
             if(inventory[item] == undefined){
@@ -68,6 +72,7 @@
     }
 
     let inventory = {}
+    let dayLocked = 0
 
 
 
@@ -81,9 +86,25 @@
     setInterval(() => {
         if(!saftey.paused){
             saftey.ticks++;
+            if(!saftey.locked){
+                if(saftey.attentionMeter >= 100){
+                    saftey.locked = true
+                    dayLocked = saftey.day
+                }
+                if(saftey.attentionMeter > 0){
+                    if(saftey.ticks % 50 == 0) saftey.attentionMeter--
+                }
+            }
+            if(saftey.locked){
+                if(saftey.day == dayLocked + 1){
+                    saftey.locked = false
+                    saftey.attentionMeter--
+                }
+            }
             partitionRecordsCount.innerHTML = `Partition Records: ${saftey.partitionRecords}`;
             if(saftey.ticks % 1200 == 0){
                 saftey.day++;
+                saftey.attentionMeter = 0;
                 dayCounter.innerHTML = `Day ${saftey.day}`;
                 
             } else {
@@ -102,12 +123,13 @@
             saftey.expNeeded = Math.round(Math.pow(saftey.expNeeded, 1.1));
         }
         levelDisplay.innerHTML = `Level ${saftey.level} (${saftey.currentExp}/${saftey.expNeeded})`;
+        attentionDisplay.innerHTML = `${saftey.attentionMeter}/100`;
     }, 125);
 
 
     function buy(item){
-        if(saftey.hacking) return `You cannot do this right now!`
-        if(level < technicals[item].levelReq) return `You need to be level ${technicals[item].levelReq} to buy this!`;
+        if(saftey.hacking || saftey.locked) return `You cannot do this right now!`
+        if(saftey.level < technicals[item].levelReq) return `You need to be level ${technicals[item].levelReq} to buy this!`;
         if(saftey.partitionRecords >= shop[item].price){
             saftey.partitionRecords -= shop[item].price;
             if(inventory[switcher.StL[item]]){
@@ -122,7 +144,7 @@
     }
 
     function sell(item){
-        if(saftey.hacking) return `You cannot do this right now!`
+        if(saftey.hacking || saftey.locked) return `You cannot do this right now!`
         let type = ''
         if(item[0] == 'h'){
             type = "Hacked "
@@ -159,6 +181,7 @@
 
 
     function hack(item){
+        if(saftey.locked) return 'You cannot do this right now!'
         // check if the item is in the inventory
         if(inventory[switcher.StL[item]]){
             if(!saftey.hacking){
@@ -250,6 +273,7 @@
                                 let time = Math.round((saftey.timeMeasuringTicks - startTime) * 125 / 1000)
 
                                 saftey.currentExp += technicals[item].exp;
+                                saftey.attentionMeter += technicals[item].attention
                                 clearInterval(timer)
                                 return console.log(`Successfully hacked ${switcher.StL[item]} in a time span of ${time} second${time == 1 ? '' : 's'}!`)
                             }

@@ -25,6 +25,7 @@ const technicals = {
         puzzleLength: 2,
         exp: 2,
         levelReq: 1,
+        attention: 8,
     },
     ubp2 : {
         timeLimit: 20,
@@ -32,6 +33,7 @@ const technicals = {
         puzzleLength: 3,
         exp: 4,
         levelReq: 2,
+        attention: 10,
     },
     ubp3 : {
         timeLimit: 20,
@@ -39,6 +41,7 @@ const technicals = {
         puzzleLength: 4,
         exp: 6,
         levelReq: 5,
+        attention: 12,
     }
 }
 
@@ -105,6 +108,7 @@ function directions(){
     console.log("To sell your Bitram Partitions, type sell('partition'). Make sure to include an 'h' at the beginning of the abbreviation.")
     console.log("You can also sell normal Bitram Partitions, but they will only be worth half of what you bought them for.")
     console.log("When you sell Partitions, you get Partition Records, which can be used to buy more Partitions.")
+    console.log("Everytime you hack a partition, you draw attention to yourself, shown through the attention meter. If it reaches 100, HackWatch will lock out and cannot do anything until the next day.")
     console.log("To buy Partitions, type buy('partition').")
     console.log("To view the shop, type 'shop'.")
     // console.log("Soon, people will start to offer you contracts. to view your contracts, type 'acceptableContracts'.")
