@@ -107,22 +107,31 @@ function directions(){
     console.log("When you sell Partitions, you get Partition Records, which can be used to buy more Partitions.")
     console.log("To buy Partitions, type buy('partition').")
     console.log("To view the shop, type 'shop'.")
+    console.log("Soon, people will start to offer you contracts. to view your contracts, type 'acceptableContracts'.")
+    console.log("Contracts will have an end day, and a reward. If you complete the contract before the end day, you will get the reward and gain reputation with that contractor.")
+    console.log("But be careful, but if you fail to complete the contract, you will lose reputation instead.")
+    console.log("You can only accept one contract at a time")
     return 'Good Luck!'
 }
 
 
-let relations = {
+let reputations = {
     'Nicholas M.': 0,
-    "Baheer Jamati": -5,
+    "Baheer Jamati": 0,
 }
 
-relationRequirements = {
+let contractTech = {
     'Nicholas M.': {
-        "What's up :)": 0,
-        "What's up :) 2": 1,
+        "What's up :)": {
+            rep: 0,
+            offerDay: 2,
+        },
     },
     "Baheer Jamati": {
-        "I'll give you a chance": -5,
+        "I'll give you a chance": {
+            rep: 0,
+            offerDay: 4,
+        }
     }
 }
 
@@ -131,32 +140,16 @@ const contractList = {
     "Nicholas M." : {
         "What's up :)" : {
             contractor: "Nicholas M.",
-            offerDay: 3,
-            completeBy: 5,
+            completeBy: 3,
             reward: 15,
+            rep: 1,
             requirements: {
                 'ubp2': 1,
             },
             description: {
                 0: "Welcome to the wide world of Bitram Hacking!",
                 1: "I'm Nicholas M., and I'm pretty well known around here (😎😏)." ,
-                2: "I heard you're new to this, so I'll give you a contract to get you started. You have 2 days to complete it.",
-                3: "I need you to hack an Unsecure Bitram Partition Mk. 2.",
-                4: "I'll give you 15 Partition Records for it. You can find it in the shop. Good luck!"
-            }
-        },
-        "What's up :) 2" : {
-            contractor: "Nicholas M.",
-            offerDay: 3,
-            completeBy: 5,
-            reward: 15,
-            requirements: {
-                'ubp3': 1,
-            },
-            description: {
-                0: "Welcome to the wide world of Bitram Hacking!",
-                1: "I'm Nicholas M., and I'm pretty well known around here (😎😏)." ,
-                2: "I heard you're new to this, so I'll give you a contract to get you started. You have 2 days to complete it.",
+                2: "I heard you're new to this, so I'll give you a contract to get you started. You have 1 day to complete it.",
                 3: "I need you to hack an Unsecure Bitram Partition Mk. 2.",
                 4: "I'll give you 15 Partition Records for it. You can find it in the shop. Good luck!"
             }
@@ -166,9 +159,9 @@ const contractList = {
     "Baheer Jamati": {
         "I'll give you a chance" : {
             contractor: "Baheer Jamati",
-            offerDay: 5,
-            completeBy: 6,
+            completeBy: 5,
             reward: 5,
+            rep: 1,
             requirements: {
                 'ubp3': 3,
             },
@@ -188,8 +181,6 @@ function contractCheck(contractor, contractName, d){
     return true;
 
 }
-
-let contractorList = Object.keys(contractList)
 
 
 /*

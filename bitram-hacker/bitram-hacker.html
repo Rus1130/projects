@@ -31,6 +31,9 @@
 
     const grid = document.getElementById('grid');
 
+    let currentContract = {}
+    let acceptableContracts = {}
+
     const saftey = {
         partitionRecords: 0,
         ticks: 0,
@@ -39,16 +42,32 @@
         level: 1,
         currentExp: 0,
         expNeeded: 10,
-        currentContract: {},
-        acceptableContracts: {},
         lastSoldItem: '',
         paused: false,
         truePaused: false,
         cellIDs: [],
         hacking: false,
         clickedCell: '',
-        inventory: {},
+        addToInventory(item){
+            if(inventory[item] == undefined){
+                inventory[item] = 1
+            } else {
+                inventory[item] += 1
+            }
+        },
+
+        removeFromInventory(item){
+            for(i = 0; i < Object.keys(inventory).length; i++){
+                if(inventory[item] > 1){
+                    inventory[item] -= 1
+                } else {
+                    delete inventory[item]
+                }
+            }
+        }
     }
+
+    let inventory = {}
 
 
 
@@ -57,9 +76,6 @@
     let seconds = Math.round((1200 - (saftey.ticks % 1200)) * 125 / 1000);
 
     nextDayCounter.innerHTML = `Day ${saftey.day + 1} in ${seconds} second${seconds == 1 ? '' : 's'}`;
-
-
-
 
 
     setInterval(() => {
@@ -73,6 +89,26 @@
             } else {
                 seconds = Math.round((1200 - (saftey.ticks % 1200)) * 125 / 1000);
                 nextDayCounter.innerHTML = `Day ${saftey.day + 1} in ${seconds} second${seconds == 1 ? '' : 's'}`;
+            }
+        }
+        let contractorList = Object.keys(contractList)
+        for(i = 0; i < contractorList.length; i++){
+            let contractor = contractorList[i]
+            let contracts = Object.keys(contractList[contractor])
+            for(j = 0; j < contracts.length; j++){
+                let contract = contracts[j]
+                if(saftey.day >= contractTech[contractor][contract].offerDay){
+                    if(reputations[contractor] >= contractTech[contractor][contract].rep){
+                        if(acceptableContracts[[contract]] == undefined){
+                            console.log(`New contract available from ${contractor}. Type 'acceptableContracts' to view.`)
+                        }
+                        acceptableContracts[[contract]] = contractList[contractor][contract];
+                    }
+                }
+                if(saftey.day > contractList[contractor][contract].completeBy ||
+                reputations[contractor] < contractTech[contractor][contract].rep){
+                    delete acceptableContracts[[contract]]
+                }
             }
         }
         if(!saftey.truePaused){
@@ -92,10 +128,10 @@
         if(level < technicals[item].levelReq) return `You need to be level ${technicals[item].levelReq} to buy this!`;
         if(saftey.partitionRecords >= shop[item].price){
             saftey.partitionRecords -= shop[item].price;
-            if(saftey.inventory[switcher.StL[item]]){
-                saftey.inventory[switcher.StL[item]]++;
+            if(inventory[switcher.StL[item]]){
+                inventory[switcher.StL[item]]++;
             } else {
-                saftey.inventory[switcher.StL[item]] = 1;
+                inventory[switcher.StL[item]] = 1;
             }
             return `Successfully bought ${item}!`;
         } else {
@@ -120,10 +156,10 @@
         let baseItem = item
         item = `${type}${switcher.StL[item]}`
 
-        if(saftey.inventory[item]){
-            if(saftey.inventory[item] == 0) delete saftey.inventory[item];
-            saftey.inventory[item]--;
-            if(saftey.inventory[item] == 0) delete saftey.inventory[item];
+        if(inventory[item]){
+            if(inventory[item] == 0) delete inventory[item];
+            inventory[item]--;
+            if(inventory[item] == 0) delete inventory[item];
             let sellPrice = 0;
             if(type == 'Hacked '){
                 saftey.partitionRecords += Math.round(shop[baseItem].price * 2);
@@ -142,7 +178,7 @@
 
     function hack(item){
         // check if the item is in the inventory
-        if(saftey.inventory[switcher.StL[item]]){
+        if(inventory[switcher.StL[item]]){
             if(!saftey.hacking){
                 let startTime = saftey.timeMeasuringTicks;
                 saftey.paused = true;
@@ -182,7 +218,7 @@
                     document.getElementById(randomIndexes[i]).innerHTML = i + 1;
                 }
                 grid.removeAttribute('class');
-                removeFromInventory(switcher.StL[item])
+                saftey.removeFromInventory(switcher.StL[item])
 
                 let timer = setInterval(() => {
                     timeLeft.removeAttribute('class');
@@ -228,7 +264,7 @@
                                 grid.innerHTML = '';
                                 timeLeft.setAttribute('class', 'hidden');
                                 timeLeft.innerHTML = '';
-                                addToInventory('Hacked ' + switcher.StL[item])
+                                saftey.addToInventory('Hacked ' + switcher.StL[item])
                                 let time = Math.round((saftey.timeMeasuringTicks - startTime) * 125 / 1000)
 
                                 saftey.currentExp += technicals[item].exp;
@@ -253,25 +289,7 @@
         return `Hacking ${switcher.StL[item]}...`
     }
 
-    function addToInventory(item){
-    if(saftey.inventory[item] == undefined){
-        saftey.inventory[item] = 1
-    } else {
-        saftey.inventory[item] += 1
-    }
-}
-
-function removeFromInventory(item){
-    for(i = 0; i < Object.keys(saftey.inventory).length; i++){
-        if(saftey.inventory[item] > 1){
-            saftey.inventory[item] -= 1
-        } else {
-            delete saftey.inventory[item]
-        }
-    }
-}
-
     // convert ticks to seconds
 
-    addToInventory('Unsecure Bitram Partition Mk. 1')
+    saftey.addToInventory('Unsecure Bitram Partition Mk. 1')
 </script>
