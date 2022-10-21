@@ -98,13 +98,12 @@
             if(saftey.locked){
                 if(saftey.day == dayLocked + 1){
                     saftey.locked = false
-                    saftey.attentionMeter--
+                    saftey.attentionMeter = 0;
                 }
             }
             partitionRecordsCount.innerHTML = `Partition Records: ${saftey.partitionRecords}`;
             if(saftey.ticks % 1200 == 0){
                 saftey.day++;
-                saftey.attentionMeter = 0;
                 dayCounter.innerHTML = `Day ${saftey.day}`;
                 
             } else {
