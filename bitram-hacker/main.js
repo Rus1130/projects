@@ -107,10 +107,11 @@ function directions(){
     console.log("When you sell Partitions, you get Partition Records, which can be used to buy more Partitions.")
     console.log("To buy Partitions, type buy('partition').")
     console.log("To view the shop, type 'shop'.")
-    console.log("Soon, people will start to offer you contracts. to view your contracts, type 'acceptableContracts'.")
-    console.log("Contracts will have an end day, and a reward. If you complete the contract before the end day, you will get the reward and gain reputation with that contractor.")
-    console.log("But be careful, but if you fail to complete the contract, you will lose reputation instead.")
-    console.log("You can only accept one contract at a time")
+    // console.log("Soon, people will start to offer you contracts. to view your contracts, type 'acceptableContracts'.")
+    // console.log("Contracts will have an end day, and a reward. If you complete the contract before the end day, you will get the reward and gain reputation with that contractor.")
+    // console.log("But be careful, but if you fail to complete the contract, you will lose reputation instead.")
+    // console.log("You can only accept one contract at a time. To accept one type accept('contractName').")
+    // console.log("To view your current contract, type 'currentContract'.")
     return 'Good Luck!'
 }
 
@@ -139,6 +140,7 @@ let contractTech = {
 const contractList = {
     "Nicholas M." : {
         "What's up :)" : {
+            contractName: "What's up :)",
             contractor: "Nicholas M.",
             completeBy: 3,
             reward: 15,
@@ -158,6 +160,7 @@ const contractList = {
     },
     "Baheer Jamati": {
         "I'll give you a chance" : {
+            contractName: "I'll give you a chance",
             contractor: "Baheer Jamati",
             completeBy: 5,
             reward: 5,

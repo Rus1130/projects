@@ -92,25 +92,7 @@
             }
         }
         let contractorList = Object.keys(contractList)
-        for(i = 0; i < contractorList.length; i++){
-            let contractor = contractorList[i]
-            let contracts = Object.keys(contractList[contractor])
-            for(j = 0; j < contracts.length; j++){
-                let contract = contracts[j]
-                if(saftey.day >= contractTech[contractor][contract].offerDay){
-                    if(reputations[contractor] >= contractTech[contractor][contract].rep){
-                        if(acceptableContracts[[contract]] == undefined){
-                            console.log(`New contract available from ${contractor}. Type 'acceptableContracts' to view.`)
-                        }
-                        acceptableContracts[[contract]] = contractList[contractor][contract];
-                    }
-                }
-                if(saftey.day > contractList[contractor][contract].completeBy ||
-                reputations[contractor] < contractTech[contractor][contract].rep){
-                    delete acceptableContracts[[contract]]
-                }
-            }
-        }
+        
         if(!saftey.truePaused){
             saftey.timeMeasuringTicks++;
         }
