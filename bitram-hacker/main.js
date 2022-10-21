@@ -15,6 +15,21 @@ const shop = {
         name: 'Unsecure Bitram Partition Mk. 3',
         price: 3,
         levelRequirement: 5,
+    },
+    'wbp1': {
+        name: 'Weak Bitram Partition Mk. 3',
+        price: 6,
+        levelRequirement: 6,
+    },
+    'wbp2': {
+        name: 'Weak Bitram Partition Mk. 3',
+        price: 8,
+        levelRequirement: 8,
+    },
+    'wbp3': {
+        name: 'Weak Bitram Partition Mk. 3',
+        price: 10,
+        levelRequirement: 10,
     }
 }
 
@@ -25,7 +40,7 @@ const technicals = {
         puzzleLength: 2,
         exp: 2,
         levelReq: 1,
-        attention: 8,
+        attention: 3,
     },
     ubp2 : {
         timeLimit: 20,
@@ -33,15 +48,15 @@ const technicals = {
         puzzleLength: 3,
         exp: 4,
         levelReq: 2,
-        attention: 10,
+        attention: 5,
     },
     ubp3 : {
         timeLimit: 20,
         gridSize: 2,
         puzzleLength: 4,
         exp: 6,
-        levelReq: 5,
-        attention: 12,
+        levelReq: 4,
+        attention: 7,
     }
 }
 

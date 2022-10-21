@@ -51,6 +51,7 @@
         hacking: false,
         locked: false,
         attentionMeter: 0,
+        maxAttention: 100,
         clickedCell: '',
         addToInventory(item){
             if(inventory[item] == undefined){
@@ -87,12 +88,12 @@
         if(!saftey.paused){
             saftey.ticks++;
             if(!saftey.locked){
-                if(saftey.attentionMeter >= 100){
+                if(saftey.attentionMeter >= saftey.maxAttention){
                     saftey.locked = true
                     dayLocked = saftey.day
                 }
                 if(saftey.attentionMeter > 0){
-                    if(saftey.ticks % 50 == 0) saftey.attentionMeter--
+                    if(saftey.ticks % 36 == 0) saftey.attentionMeter--
                 }
             }
             if(saftey.locked){
@@ -105,6 +106,8 @@
             if(saftey.ticks % 1200 == 0){
                 saftey.day++;
                 dayCounter.innerHTML = `Day ${saftey.day}`;
+                saftey.attentionMeter -= Math.round(saftey.maxAttention/2);
+                if(saftey.attentionMeter < 0) saftey.attentionMeter = 0
                 
             } else {
                 seconds = Math.round((1200 - (saftey.ticks % 1200)) * 125 / 1000);
@@ -119,10 +122,11 @@
         while(saftey.currentExp >= saftey.expNeeded){
             saftey.level++;
             saftey.currentExp -= saftey.expNeeded;
+            maxAttention += 10;
             saftey.expNeeded = Math.round(Math.pow(saftey.expNeeded, 1.1));
         }
         levelDisplay.innerHTML = `Level ${saftey.level} (${saftey.currentExp}/${saftey.expNeeded})`;
-        attentionDisplay.innerHTML = `${saftey.attentionMeter}/100`;
+        attentionDisplay.innerHTML = `${saftey.attentionMeter}/${saftey.maxAttention}`;
     }, 125);
 
 
