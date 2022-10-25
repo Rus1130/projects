@@ -8,6 +8,20 @@
 .hidden {
     display: none;
 }
+#gui {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+}
+#hackButton, #shopButton {
+    width: 100px;
+    height: 50px;
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 5px;
+}
 </style>
 <head>
     <script src="main.js"></script>
@@ -15,16 +29,20 @@
 <body>
     <div>type directions() in the console to get started</div>
     <div id="levelDisplay">Level 1 (0/10)</div>
-    <div id='attentionDisplay'>0/100</div>
+    <div id='heatDisplay'>0/100</div>
     <div id="partitionRecordsCount">Partition Records: 0</div>
     <div id='dayCounter'>Day 1</div>
     <div id="nextDayCounter">Seconds Until Day End:</div>
     <div id="timer" class="hidden"></div>
     <div id="grid" class="hidden"></div>
+    <div id="gui">
+        <div id="hackButton">Hack</div>
+        <div id="shopButton">Shop</div>
+    </div>
 </body>
 <script>
 
-    const attentionDisplay = document.getElementById('attentionDisplay');
+    const heatDisplay = document.getElementById('heatDisplay');
     const dayCounter = document.getElementById('dayCounter');
     const nextDayCounter = document.getElementById('nextDayCounter');
     const partitionRecordsCount = document.getElementById('partitionRecordsCount');
@@ -50,8 +68,8 @@
         cellIDs: [],
         hacking: false,
         locked: false,
-        attentionMeter: 0,
-        maxAttention: 100,
+        heatMeter: 0,
+        maxHeat: 100,
         clickedCell: '',
         addToInventory(item){
             if(inventory[item] == undefined){
@@ -88,26 +106,26 @@
         if(!saftey.paused){
             saftey.ticks++;
             if(!saftey.locked){
-                if(saftey.attentionMeter >= saftey.maxAttention){
+                if(saftey.heatMeter >= saftey.maxHeat){
                     saftey.locked = true
                     dayLocked = saftey.day
                 }
-                if(saftey.attentionMeter > 0){
-                    if(saftey.ticks % 36 == 0) saftey.attentionMeter--
+                if(saftey.heatMeter > 0){
+                    if(saftey.ticks % 36 == 0) saftey.heatMeter--
                 }
             }
             if(saftey.locked){
                 if(saftey.day == dayLocked + 1){
                     saftey.locked = false
-                    saftey.attentionMeter = 0;
+                    saftey.heatMeter = 0;
                 }
             }
             partitionRecordsCount.innerHTML = `Partition Records: ${saftey.partitionRecords}`;
             if(saftey.ticks % 1200 == 0){
                 saftey.day++;
                 dayCounter.innerHTML = `Day ${saftey.day}`;
-                saftey.attentionMeter -= Math.round(saftey.maxAttention/2);
-                if(saftey.attentionMeter < 0) saftey.attentionMeter = 0
+                saftey.heatMeter -= Math.round(saftey.maxHeat/2);
+                if(saftey.heatMeter < 0) saftey.heatMeter = 0
                 
             } else {
                 seconds = Math.round((1200 - (saftey.ticks % 1200)) * 125 / 1000);
@@ -122,11 +140,11 @@
         while(saftey.currentExp >= saftey.expNeeded){
             saftey.level++;
             saftey.currentExp -= saftey.expNeeded;
-            maxAttention += 10;
+            maxHeat += 10;
             saftey.expNeeded = Math.round(Math.pow(saftey.expNeeded, 1.1));
         }
         levelDisplay.innerHTML = `Level ${saftey.level} (${saftey.currentExp}/${saftey.expNeeded})`;
-        attentionDisplay.innerHTML = `${saftey.attentionMeter}/${saftey.maxAttention}`;
+        heatDisplay.innerHTML = `${saftey.heatMeter}/${saftey.maxHeat}`;
     }, 125);
 
 
@@ -276,7 +294,7 @@
                                 let time = Math.round((saftey.timeMeasuringTicks - startTime) * 125 / 1000)
 
                                 saftey.currentExp += technicals[item].exp;
-                                saftey.attentionMeter += technicals[item].attention
+                                saftey.heatMeter += technicals[item].heat
                                 clearInterval(timer)
                                 return console.log(`Successfully hacked ${switcher.StL[item]} in a time span of ${time} second${time == 1 ? '' : 's'}!`)
                             }
