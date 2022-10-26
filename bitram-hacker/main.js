@@ -46,18 +46,42 @@ const technicals = {
         timeLimit: 20,
         gridSize: 2,
         puzzleLength: 3,
-        exp: 4,
+        exp: 3,
         levelReq: 2,
         heat: 5,
     },
     ubp3 : {
         timeLimit: 20,
         gridSize: 2,
-        puzzleLength: 4,
+        puzzleLength: 3,
+        exp: 4,
+        levelReq: 3,
+        heat: 7,
+    },
+    wbp1 : {
+        timeLimit: 18,
+        gridSize: 3,
+        puzzleLength: 3,
         exp: 6,
         levelReq: 4,
-        heat: 7,
-    }
+        heat: 9,
+    },
+    wbp2 : {
+        timeLimit: 18,
+        gridSize: 3,
+        puzzleLength: 4,
+        exp: 7,
+        levelReq: 5,
+        heat: 9,
+    },
+    wbp3 : {
+        timeLimit: 15,
+        gridSize: 3,
+        puzzleLength: 4,
+        exp: 8,
+        levelReq: 6,
+        heat: 10,
+    },
 }
 
 const switcher = {

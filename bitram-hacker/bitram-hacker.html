@@ -13,7 +13,7 @@
     right: 10px;
     top: 5px;
 }
-#hackButton, #shopButton {
+#inventoryButton, #shopButton {
     width: 100px;
     height: 50px;
     border: 1px solid black;
@@ -21,6 +21,17 @@
     justify-content: center;
     align-items: center;
     margin: 5px;
+}
+#menu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 135px;
+    left: 550px;
+    width: 500px;
+    height: 500px;
+    border: 1px solid black;
 }
 </style>
 <head>
@@ -36,9 +47,10 @@
     <div id="timer" class="hidden"></div>
     <div id="grid" class="hidden"></div>
     <div id="gui">
-        <div id="hackButton">Hack</div>
+        <div id="inventoryButton">Inventory</div>
         <div id="shopButton">Shop</div>
     </div>
+    <div id="menu" style="display: none;"></div>
 </body>
 <script>
 
@@ -50,11 +62,15 @@
     const levelDisplay = document.getElementById('levelDisplay');
 
     const grid = document.getElementById('grid');
+    const menu = document.getElementById('menu');
 
     let currentContract = {}
     let acceptableContracts = {}
 
     const saftey = {
+        guiMenuHidden: true,
+        guiMenuInventory: false,
+        guiMenuShop: false,
         partitionRecords: 0,
         ticks: 0,
         timeMeasuringTicks: 0,
@@ -317,6 +333,7 @@
     }
 
     // convert ticks to seconds
+    
 
     saftey.addToInventory('Unsecure Bitram Partition Mk. 1')
 </script>
