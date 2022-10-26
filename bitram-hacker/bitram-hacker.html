@@ -29,7 +29,7 @@
 <body>
     <div>type directions() in the console to get started</div>
     <div id="levelDisplay">Level 1 (0/10)</div>
-    <div id='heatDisplay'>0/100</div>
+    <div id='heatDisplay'>Heat: 0/100</div>
     <div id="partitionRecordsCount">Partition Records: 0</div>
     <div id='dayCounter'>Day 1</div>
     <div id="nextDayCounter">Seconds Until Day End:</div>
@@ -144,7 +144,7 @@
             saftey.expNeeded = Math.round(Math.pow(saftey.expNeeded, 1.1));
         }
         levelDisplay.innerHTML = `Level ${saftey.level} (${saftey.currentExp}/${saftey.expNeeded})`;
-        heatDisplay.innerHTML = `${saftey.heatMeter}/${saftey.maxHeat}`;
+        heatDisplay.innerHTML = `Heat: ${saftey.heatMeter}/${saftey.maxHeat}`;
     }, 125);
 
 
