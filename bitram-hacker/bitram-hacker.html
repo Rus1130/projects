@@ -47,8 +47,8 @@
     <div id="timer" class="hidden"></div>
     <div id="grid" class="hidden"></div>
     <div id="gui">
-        <div id="inventoryButton">Inventory</div>
-        <div id="shopButton">Shop</div>
+        <div id="inventoryButton" onclick="buttonEvents('inventory')">Inventory</div>
+        <div id="shopButton" onclick="buttonEvents('shop')">Shop</div>
     </div>
     <div id="menu" style="display: none;"></div>
 </body>
@@ -330,6 +330,29 @@
             return `You do not have any ${switcher.StL[item].replace('Partition', 'Partitions')}.`
         }
         return `Hacking ${switcher.StL[item]}...`
+    }
+
+    function buttonEvents(type){
+        if(saftey.locked || saftey.paused) {} else {
+            if(type == 'inventory'){
+                menu.removeAttribute('style', 'display: none');
+                menu.innerHTML = 'inventory';
+                if(saftey.guiMenuInventory){
+                    menu.setAttribute('style', 'display: none');
+                }
+                saftey.guiMenuInventory = !saftey.guiMenuInventory
+
+            }else if(type == 'shop'){
+                menu.removeAttribute('style', 'display: none');
+                menu.innerHTML = 'shop';
+                if(saftey.guiMenuShop){
+                    menu.setAttribute('style', 'display: none');
+                }
+                saftey.guiMenuShop = !saftey.guiMenuShop
+            } 
+            console.log('Inventory: ' + saftey.guiMenuInventory)
+            console.log('Shop: ' + saftey.guiMenuShop)
+        }
     }
 
     // convert ticks to seconds
