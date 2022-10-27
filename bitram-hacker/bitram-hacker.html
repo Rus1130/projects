@@ -17,16 +17,21 @@
     align-items: center;
     margin: 5px;
 }
-#gui {
-    position: absolute;
-    right: 10px;
-    top: 5px;
-}
-#inventoryMenu, #shopMenu {
+#inventoryMenu {
     position: absolute;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    top: 125px;
+    top: 5px;
+    right: 15px;
+    width: 500px;
+    height: 500px;
+    border: 1px solid black;
+}
+##shopMenu {
+    position: absolute;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    top: 505px;
     right: 15px;
     width: 500px;
     height: 500px;
@@ -45,14 +50,8 @@
     <div id="nextDayCounter">Seconds Until Day End:</div>
     <div id="timer" class="hidden"></div>
     <div id="grid" class="hidden"></div>
-    <div id="gui">
-        <div id="inventoryButton" onclick="buttonEvents('inventory')">Inventory</div>
-        <div id="shopButton" onclick="buttonEvents('shop')">Shop</div>
-    </div>
-    <div id="inventoryMenu" style="display: none;">
-        <div id='columnLeft'></div>
-    </div>
-    <div id="shopMenu" style="display: none;"></div>
+    <div id="inventoryMenu"></div>
+    <div id="shopMenu"></div>
 </body>
 <script>
 
@@ -66,7 +65,6 @@
     const grid = document.getElementById('grid');
     const inventoryMenu = document.getElementById('inventoryMenu');
 
-    const inventoryMenuColumnLeft = document.getElementById('columnLeft');
     const shopMenu = document.getElementById('shopMenu');
 
     let currentContract = {}
@@ -351,6 +349,7 @@
                     inventoryButtonClickOne = true;
 
                     inventoryMenu.innerHTML = 'inventory'
+                    shopMenu.innerHTML = ''
                     inventoryMenu.removeAttribute('style', 'display: none;')
 
                     shopButtonClickOne = false;
