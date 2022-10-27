@@ -24,6 +24,8 @@
 }
 #inventoryMenu, #shopMenu {
     position: absolute;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     top: 125px;
     right: 15px;
     width: 500px;
@@ -47,7 +49,9 @@
         <div id="inventoryButton" onclick="buttonEvents('inventory')">Inventory</div>
         <div id="shopButton" onclick="buttonEvents('shop')">Shop</div>
     </div>
-    <div id="inventoryMenu" style="display: none;"></div>
+    <div id="inventoryMenu" style="display: none;">
+        <div id='columnLeft'></div>
+    </div>
     <div id="shopMenu" style="display: none;"></div>
 </body>
 <script>
@@ -61,15 +65,21 @@
 
     const grid = document.getElementById('grid');
     const inventoryMenu = document.getElementById('inventoryMenu');
+
+    const inventoryMenuColumnLeft = document.getElementById('columnLeft');
     const shopMenu = document.getElementById('shopMenu');
 
     let currentContract = {}
     let acceptableContracts = {}
     let inventory = {}
 
+    let shopButtonClickOne = false;
+    let inventoryButtonClickOne = false;
+
+    let shopButtonClickTwo = false;
+    let inventoryButtonClickTwo = false;
+
     const saftey = {
-        menuHistoryPrimary: '',
-        menuHistorySecondary: '',
         partitionRecords: 0,
         ticks: 0,
         timeMeasuringTicks: 0,
@@ -99,7 +109,7 @@
 
         removeFromInventory(item){
             for(i = 0; i < Object.keys(inventory).length; i++){
-                if(inventory[item] > 1){
+                if(inventory[item] > 0){
                     inventory[item] -= 1
                 } else {
                     delete inventory[item]
@@ -334,32 +344,14 @@
 
     function buttonEvents(type){
         if(saftey.locked || saftey.paused) {} else {
-            saftey.menuHistorySecondary = saftey.menuHistoryPrimary;
-            saftey.menuHistoryPrimary = type;
-            let hide = saftey.menuHistorySecondary == saftey.menuHistoryPrimary
-            if(hide){
-                inventoryMenu.innerHTML = '';
-                inventoryMenu.setAttribute('style', 'display: none;');
-
-                shopMenu.innerHTML = '';
-                shopMenu.setAttribute('style', 'display: none;');
-
-                saftey.menuHistoryPrimary = '';
-                saftey.menuHistorySecondary = '';
-            } else {
-                if(type == 'shop'){
-                    inventoryMenu.innerHTML = '';
-                    inventoryMenu.setAttribute('style', 'display: none;');
-
-                    shopMenu.removeAttribute('style', 'display: none;');
-                    shopMenu.innerHTML = 'shop';
-                } else if(type == 'inventory'){
-                    shopMenu.innerHTML = '';
-                 shopMenu.setAttribute('style', 'display: none;');
-
-                    inventoryMenu.removeAttribute('style', 'display: none;');
-                    inventoryMenu.innerHTML = 'inventory';
+            if(type == 'inventory'){
+                if(!shopButtonClickOne){
+                    shopButtonClickOne = true;
                 }
+                if(shopButtonClickOne){
+                    shopButtonClickTwo = true;
+                }
+                console.log('inventory')
             }
         }
     }
@@ -368,4 +360,6 @@
     
 
     saftey.addToInventory('Unsecure Bitram Partition Mk. 1', 2)
+    saftey.addToInventory('Unsecure Bitram Partition Mk. 2', 1)
+    saftey.addToInventory('Unsecure Bitram Partition Mk. 3', 3)
 </script>
