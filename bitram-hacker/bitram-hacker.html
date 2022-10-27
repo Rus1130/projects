@@ -345,13 +345,46 @@
     function buttonEvents(type){
         if(saftey.locked || saftey.paused) {} else {
             if(type == 'inventory'){
-                if(!shopButtonClickOne){
-                    shopButtonClickOne = true;
+                if(inventoryButtonClickOne){
+                    inventoryButtonClickTwo = true;
+                } else {
+                    inventoryButtonClickOne = true;
+
+                    inventoryMenu.innerHTML = 'inventory'
+                    inventoryMenu.removeAttribute('style', 'display: none;')
+
+                    shopButtonClickOne = false;
+                    shopButtonClickTwo = false;
                 }
+                if(inventoryButtonClickOne && inventoryButtonClickTwo){
+
+                    inventoryMenu.innerHTML = ''
+                    inventoryMenu.setAttribute('style', 'display: none;')
+
+                    inventoryButtonClickOne = false;
+                    inventoryButtonClickTwo = false;
+                }
+            }
+            if(type == 'shop'){
                 if(shopButtonClickOne){
                     shopButtonClickTwo = true;
+                } else {
+                    shopButtonClickOne = true;
+
+                    shopMenu.innerHTML = 'shop'
+                    shopMenu.removeAttribute('style', 'display: none;')
+
+                    inventoryButtonClickOne = false;
+                    inventoryButtonClickTwo = false;
                 }
-                console.log('inventory')
+                if(shopButtonClickOne && shopButtonClickTwo){
+
+                    shopMenu.innerHTML = ''
+                    shopMenu.setAttribute('style', 'display: none;')
+
+                    shopButtonClickOne = false;
+                    shopButtonClickTwo = false;
+                }
             }
         }
     }
