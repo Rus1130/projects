@@ -8,41 +8,23 @@
 .hidden {
     display: none;
 }
-#inventoryButton, #shopButton {
-    width: 100px;
-    height: 50px;
-    border: 1px solid black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 5px;
-}
-#inventoryMenu {
+#gui {
+    z-index: 10;
     position: absolute;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    top: 5px;
-    right: 15px;
-    width: 500px;
-    height: 500px;
+    top: 20px;
+    left: 300px;
+    width: 1000px;
+    height: 700px;
+    background-color: white;
     border: 1px solid black;
+    font-size: medium;
 }
-#shopMenu {
-    position: absolute;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    top: 505px;
-    right: 15px;
-    width: 500px;
-    height: 500px;
-    border: 1px solid black;
-}
+
 </style>
 <head>
     <script src="main.js"></script>
 </head>
 <body>
-    <div>type directions() in the console to get started</div>
     <div id="levelDisplay">Level 1 (0/10)</div>
     <div id='heatDisplay'>Heat: 0/100</div>
     <div id="partitionRecordsCount">Partition Records: 0</div>
@@ -50,8 +32,9 @@
     <div id="nextDayCounter">Seconds Until Day End:</div>
     <div id="timer" class="hidden"></div>
     <div id="grid" class="hidden"></div>
-    <div id="inventoryMenu"></div>
-    <div id="shopMenu"></div>
+    <div id="gui" class="hidden">
+
+    </div>
 </body>
 <script>
 
@@ -81,6 +64,7 @@
         partitionRecords: 0,
         ticks: 0,
         timeMeasuringTicks: 0,
+        guiHidden: true,
         day: 1,
         level: 1,
         currentExp: 0,
@@ -226,7 +210,7 @@
 
 
     function hack(item){
-        if(saftey.locked) return 'You cannot do this right now!'
+        if(saftey.locked || !saftey.guiHidden || saftey.hacking) return 'You cannot do this right now!'
         // check if the item is in the inventory
         if(inventory[switcher.StL[item]]){
             if(!saftey.hacking){
@@ -340,53 +324,21 @@
         return `Hacking ${switcher.StL[item]}...`
     }
 
-    function buttonEvents(type){
-        if(saftey.locked || saftey.paused) {} else {
-            if(type == 'inventory'){
-                if(inventoryButtonClickOne){
-                    inventoryButtonClickTwo = true;
-                } else {
-                    inventoryButtonClickOne = true;
-
-                    inventoryMenu.innerHTML = 'inventory'
-                    shopMenu.innerHTML = ''
-                    inventoryMenu.removeAttribute('style', 'display: none;')
-
-                    shopButtonClickOne = false;
-                    shopButtonClickTwo = false;
-                }
-                if(inventoryButtonClickOne && inventoryButtonClickTwo){
-
-                    inventoryMenu.innerHTML = ''
-                    inventoryMenu.setAttribute('style', 'display: none;')
-
-                    inventoryButtonClickOne = false;
-                    inventoryButtonClickTwo = false;
-                }
-            }
-            if(type == 'shop'){
-                if(shopButtonClickOne){
-                    shopButtonClickTwo = true;
-                } else {
-                    shopButtonClickOne = true;
-
-                    shopMenu.innerHTML = 'shop'
-                    shopMenu.removeAttribute('style', 'display: none;')
-
-                    inventoryButtonClickOne = false;
-                    inventoryButtonClickTwo = false;
-                }
-                if(shopButtonClickOne && shopButtonClickTwo){
-
-                    shopMenu.innerHTML = ''
-                    shopMenu.setAttribute('style', 'display: none;')
-
-                    shopButtonClickOne = false;
-                    shopButtonClickTwo = false;
-                }
+    // space event listener
+    document.addEventListener('keydown', () => {
+        if(event.key == ' '){
+            saftey.guiHidden = !saftey.guiHidden;
+            if(saftey.guiHidden){
+                gui.setAttribute('class', 'hidden');
+                saftey.paused = false;
+                saftey.truePaused = false;
+            } else {
+                gui.removeAttribute('class');
+                saftey.paused = true;
+                saftey.truePaused = true;
             }
         }
-    }
+    })
 
     // convert ticks to seconds
     
