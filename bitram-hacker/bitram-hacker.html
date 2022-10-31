@@ -18,6 +18,18 @@
     background-color: white;
     border: 1px solid black;
     font-size: medium;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.guiCell {
+    width: 500px;
+    height: 700px;
+    border-right: 1px solid black;
+}
+.guiCellHeader {
+    font-size: 50px;
+    text-align: center;
 }
 
 </style>
@@ -32,8 +44,13 @@
     <div id="nextDayCounter">Seconds Until Day End:</div>
     <div id="timer" class="hidden"></div>
     <div id="grid" class="hidden"></div>
-    <div id="gui" class="hidden">
-
+    <div id="gui" style="display: none;">
+        <div class="guiCell" id="inventoryCell">
+            <div class='guiCellHeader'>Inventory</div>
+        </div>
+        <div class="guiCell" id="shopCell" style='border: none;'>
+            <div class='guiCellHeader'>Shop</div>
+        </div>
     </div>
 </body>
 <script>
@@ -48,17 +65,11 @@
     const grid = document.getElementById('grid');
     const inventoryMenu = document.getElementById('inventoryMenu');
 
-    const shopMenu = document.getElementById('shopMenu');
+    const gui = document.getElementById('gui');
 
     let currentContract = {}
     let acceptableContracts = {}
     let inventory = {}
-
-    let shopButtonClickOne = false;
-    let inventoryButtonClickOne = false;
-
-    let shopButtonClickTwo = false;
-    let inventoryButtonClickTwo = false;
 
     const saftey = {
         partitionRecords: 0,
@@ -111,6 +122,15 @@
 
 
     setInterval(() => {
+        if(saftey.hacking || saftey.locked){
+            gui.setAttribute('style', 'display: none;');
+        }
+        if(saftey.guiHidden){
+            let shopCell = document.getElementById('shopCell');
+            let inventoryCell = document.getElementById('inventoryCell');
+
+            // continue working here 
+        }
         if(!saftey.paused){
             saftey.ticks++;
             if(!saftey.locked){
@@ -210,7 +230,7 @@
 
 
     function hack(item){
-        if(saftey.locked || !saftey.guiHidden || saftey.hacking) return 'You cannot do this right now!'
+        if(saftey.locked || saftey.hacking) return 'You cannot do this right now!'
         // check if the item is in the inventory
         if(inventory[switcher.StL[item]]){
             if(!saftey.hacking){
@@ -328,12 +348,14 @@
     document.addEventListener('keydown', () => {
         if(event.key == ' '){
             saftey.guiHidden = !saftey.guiHidden;
-            if(saftey.guiHidden){
-                gui.setAttribute('class', 'hidden');
-                saftey.paused = false;
-                saftey.truePaused = false;
+            if(saftey.guiHidden || saftey.hacking){
+                gui.setAttribute('style', 'display: none;');
+                if(!saftey.hacking){
+                    saftey.paused = false;
+                    saftey.truePaused = false;
+                }
             } else {
-                gui.removeAttribute('class');
+                gui.removeAttribute('style', 'display: none;');
                 saftey.paused = true;
                 saftey.truePaused = true;
             }
