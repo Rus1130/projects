@@ -45,8 +45,9 @@
     <div id="timer" class="hidden"></div>
     <div id="grid" class="hidden"></div>
     <div id="gui" style="display: none;">
-        <div class="guiCell" id="inventoryCell">
+        <div class="guiCell" id="inventoryMenu">
             <div class='guiCellHeader'>Inventory</div>
+            <div id="inventoryCellArea"></div>
         </div>
         <div class="guiCell" id="shopCell" style='border: none;'>
             <div class='guiCellHeader'>Shop</div>
@@ -63,7 +64,7 @@
     const levelDisplay = document.getElementById('levelDisplay');
 
     const grid = document.getElementById('grid');
-    const inventoryMenu = document.getElementById('inventoryMenu');
+    const inventoryMenu = document.getElementById('inventoryCellArea');
 
     const gui = document.getElementById('gui');
 
@@ -76,6 +77,7 @@
         ticks: 0,
         timeMeasuringTicks: 0,
         guiHidden: true,
+        inventoryAppend: true,
         day: 1,
         level: 1,
         currentExp: 0,
@@ -100,6 +102,8 @@
             }
         },
 
+
+        // fix
         removeFromInventory(item){
             for(i = 0; i < Object.keys(inventory).length; i++){
                 if(inventory[item] > 0){
@@ -125,12 +129,25 @@
         if(saftey.hacking || saftey.locked){
             gui.setAttribute('style', 'display: none;');
         }
-        if(saftey.guiHidden){
-            let shopCell = document.getElementById('shopCell');
-            let inventoryCell = document.getElementById('inventoryCell');
-
-            // continue working here 
+        let shopCell = document.getElementById('shopCell');
+        let inventoryCell = document.getElementById('inventoryCell');
+        let inventoryItems = Object.keys(inventory)
+        if(inventoryMenu.children.length <= inventoryItems.length){
+            inventoryMenu.innerHTML = ''
+            for(i = 0; i < inventoryItems.length; i++){
+                let item = document.createElement('div');
+                item.id = inventoryItems[i];
+                item.innerHTML = `${inventoryItems[i]}: ${inventory[inventoryItems[i]]}`;
+                inventoryMenu.appendChild(item)
+            }
+        } else {
+            for(i = 0; i < inventoryItems.length; i++){
+                let item = document.getElementById(inventoryItems[i]);
+                item.innerHTML = `${inventoryItems[i]}: ${inventory[inventoryItems[i]]}`;
+            }
         }
+            console.log(inventoryMenu.children.length)
+        
         if(!saftey.paused){
             saftey.ticks++;
             if(!saftey.locked){

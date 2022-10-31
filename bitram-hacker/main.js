@@ -135,7 +135,6 @@ const switcher = {
 
 
 
-
 function directions(){
     console.log("Welcome to Bitram Hacker!")
     console.log("To view your inventory, type 'inventory'. You should already have an Unsecure Bitram Partition Mk. 1 in it.")
