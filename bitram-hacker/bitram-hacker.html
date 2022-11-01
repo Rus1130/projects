@@ -33,10 +33,12 @@
 }
 .inventoryCell {
     display: flex;
-    justify-content: center;
+    justify-content: left;
     align-items: center;
     cursor: pointer;
-    height: 30px;
+    height: 20px;
+    width: 300px;
+    text-align: center;
     transition-duration: 0.1s;
 
 }
@@ -65,7 +67,10 @@
             <div class='guiCellHeader'>Shop</div>
         </div>
     </div>
-    <div id="inventoryHandler" class="hidden"></div>
+    <div id="inventoryHandler" class="hidden">
+        <div id='hackButton'></div>
+        <div id="sellButton"></div>
+    </div>
 </body>
 <script>
 
@@ -78,6 +83,7 @@
 
     const grid = document.getElementById('grid');
     const inventoryMenu = document.getElementById('inventoryCellArea');
+    const inventoryMenuGui = document.getElementById('inventoryMenu');
 
     const gui = document.getElementById('gui');
     const inventoryHandler = document.getElementById('inventoryHandler');
@@ -140,10 +146,10 @@
         inventoryHandler.innerHTML = element.id
         inventoryHandler.setAttribute('style', 
         `position: absolute;
-        top: ${element.offsetTop}px;
-        left: ${element.offsetLeft}px;
-        width: ${element.offsetWidth}px;
-        height: ${element.offsetHeight}px;
+        left: ${inventoryMenuGui.offsetWidth + 100}px;
+        top: ${inventoryMenuGui.offsetTop + element.offsetTop + 21}px;
+        width: 200px;
+        height: 100px;
         z-index: 100;
         background-color: white;
         border: 1px solid black;
@@ -175,6 +181,7 @@
                     let item = document.createElement('div');
                     item.id = inventoryItems[i];
                     item.innerHTML = `${inventoryItems[i]}: ${inventory[inventoryItems[i]]}`;
+                    item.style.border = '1px solid black';
                     item.setAttribute('onclick', 'clickHandler(this.id)');
                     item.setAttribute('class', 'inventoryCell');
                     inventoryMenu.appendChild(item)
