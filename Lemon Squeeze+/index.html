@@ -1,33 +1,118 @@
 <style>
+    #lemon {
+        user-select: none;
+        position: absolute;
+    }
 </style>
 <head>
 
 </head>
 <body>
-<div id="score">Score: 0</div>
-<div id="lives">Lives: 3</div>
+    Click the lemons!
+    <div id="score">Score: 0</div>
+    <div id="lives">Lives: 3</div>
+    <div id="seconds">Time Played: 0s</div>
+    <img id="lemon" src="imgs/lemon.png" onclick="newLemonPos()" style="position: absolute;"></img>
+    <div id="debug"></div>
 </body>
 <script>
-    let score = 0;
-    let lives = 3;
+
     const imgsArray = ['lime']
 
     const scoreDisplay = document.getElementById("score");
     const livesDisplay = document.getElementById("lives");
+    const timeDisplay = document.getElementById("seconds");
+    const debug = document.getElementById("debug");
+    const lemon = document.getElementById("lemon");
 
-    function placeObject(name){
-        if(name == undefined) name = 'any';
+    // plans:
+    // make different size pngs for different size screens
+
+    const settings = {
+        playing: true,
+        time: 0,
+        score: 0,
+        lives: 3,  
+        lowerX: 300,
+        lowerY: 300,
+        upperX: window.innerWidth - 300,
+        upperY: window.innerHeight - 300,
     }
-    
-    // create a setInterval
 
+    function randomNum(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
+
+    function newLemonPos(){
+        let randX = randomNum(settings.lowerX, settings.upperX);
+        let randY = randomNum(settings.lowerY, settings.upperY);
+        lemon.style.top = randY + "px";
+        lemon.style.left = randX + "px";
+        settings.score += 1;
+
+        debug.innerHTML = `${randX}, ${randY}`;
+    }
+
+
+    newLemonPos()
     setInterval(() => {
-        if(lives == 0){
-            alert(`Game Over! Your score is ${score}.`);
+        if(settings.playing){
+            settings.time++;
+            scoreDisplay.innerHTML = `Score: ${settings.score}`;
+            livesDisplay.innerHTML = `Lives: ${settings.lives}`;
+            timeDisplay.innerHTML = `Time Played: ${settings.time / 10}s`;
+
+
+            settings.upperX = window.innerWidth - 300
+            settings.upperY = window.innerHeight - 300
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            if(settings.lives == 0){
+                settings.playing = false;
+            }
         } else {
-            scoreDisplay.innerHTML = `Score: ${score}`;
-            livesDisplay.innerHTML = `Lives: ${lives}`;
+            let gameOverAlert = confirm(`You lost! Your score was ${settings.score}, and you played for ${settings.time / 10} seconds!\nPress 'ok' to play again.`);
+            if(gameOverAlert){
+                settings.playing = true;
+                settings.time = 0;
+                settings.score = 0;
+                settings.lives = 3;
+            } else {
+                let thanksForPlaying = alert(`⢥⢫⡜⢣⡝⢦⡙⢦⣢⣤⣴⢬⣤⣥⣄⣀⣀⣢⣵⣶⣬⣤⣀⡀⠠⠀⢀⠈⠣⡈
+⢎⡳⡜⣣⢞⡣⣽⠟⢩⣿⣿⣶⡄⠀⣹⡿⣿⠁⣴⣿⣿⣧⡉⠻⣶⠀⠀⠂⠄⠱
+⡝⣲⠹⣔⢣⠳⣼⣿⡘⠿⣿⡿⠃⣰⡿⢀⠻⣧⠙⡿⣿⠟⠁⣰⡟⠀⠄⢈⠐⡈
+⡜⢥⡛⣬⢣⡛⣤⢛⠿⢷⡶⣴⣾⡿⢶⡥⣖⣹⣟⠳⠶⠶⠿⠋⠀⡀⠂⡀⠂⠐
+⡜⢣⡓⢦⢣⡝⢢⢏⠞⣰⣿⣿⣿⣿⣿⢾⣵⣾⣻⢿⣆⡀⠐⠀⠂⠀⠀⠄⠁⠂
+⡜⣣⢝⡪⢵⡘⣣⠎⣼⣿⣿⣿⣿⣿⣿⣻⣯⣿⣿⣿⣿⡿⠀⠀⠀⠀⠀⡘⠠⢀
+⡜⢥⢎⡵⢣⢣⡕⢪⠄⡉⠘⠉⠘⠻⠿⡟⠟⠁⠋⠋⠁⠀⠀⠀⠀⠀⠁⠀⢂⠄
+⡜⣊⠞⡴⣋⠶⣘⢣⠚⡄⡁⠂⠡⠀⠄⡀⠄⠂⠁⠀⠀⠀⠀⠀⠀⠀⠄⢁⠂⠄
+im watching you`);
+                if(thanksForPlaying == undefined){
+                    window.close();
+                }
+            }
         }
     }, 100)
+
+    
     
 </script>
