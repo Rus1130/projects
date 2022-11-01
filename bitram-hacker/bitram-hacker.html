@@ -38,10 +38,10 @@
     cursor: pointer;
     height: 30px;
     transition-duration: 0.1s;
+
 }
 .inventoryCell:hover {
     background-color: #e0e0e0;
-    
 }
 
 </style>
@@ -65,6 +65,7 @@
             <div class='guiCellHeader'>Shop</div>
         </div>
     </div>
+    <div id="inventoryHandler" class="hidden"></div>
 </body>
 <script>
 
@@ -79,6 +80,7 @@
     const inventoryMenu = document.getElementById('inventoryCellArea');
 
     const gui = document.getElementById('gui');
+    const inventoryHandler = document.getElementById('inventoryHandler');
 
     let currentContract = {}
     let acceptableContracts = {}
@@ -133,6 +135,23 @@
     }
     let dayLocked = 0
 
+    function clickHandler(id){
+        let element = document.getElementById(id)
+        inventoryHandler.innerHTML = element.id
+        inventoryHandler.setAttribute('style', 
+        `position: absolute;
+        top: ${element.offsetTop}px;
+        left: ${element.offsetLeft}px;
+        width: ${element.offsetWidth}px;
+        height: ${element.offsetHeight}px;
+        z-index: 100;
+        background-color: white;
+        border: 1px solid black;
+        `)
+        
+        inventoryHandler.removeAttribute('class')
+    }
+
 
 
     // calculate the number of seconds until the next day
@@ -156,7 +175,7 @@
                     let item = document.createElement('div');
                     item.id = inventoryItems[i];
                     item.innerHTML = `${inventoryItems[i]}: ${inventory[inventoryItems[i]]}`;
-
+                    item.setAttribute('onclick', 'clickHandler(this.id)');
                     item.setAttribute('class', 'inventoryCell');
                     inventoryMenu.appendChild(item)
                 }
@@ -388,6 +407,8 @@
             saftey.guiHidden = !saftey.guiHidden;
             if(saftey.guiHidden || saftey.hacking || saftey.locked){
                 gui.setAttribute('style', 'display: none;');
+                inventoryHandler.setAttribute('class', 'hidden');
+                inventoryHandler.innerHTML = ''
                 if(!saftey.hacking){
                     saftey.paused = false;
                     saftey.truePaused = false;
