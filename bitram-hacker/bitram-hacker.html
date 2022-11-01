@@ -31,6 +31,18 @@
     font-size: 50px;
     text-align: center;
 }
+.inventoryCell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    height: 30px;
+    transition-duration: 0.1s;
+}
+.inventoryCell:hover {
+    background-color: #e0e0e0;
+    
+}
 
 </style>
 <head>
@@ -78,6 +90,7 @@
         timeMeasuringTicks: 0,
         guiHidden: true,
         inventoryAppend: true,
+        updateMenu: false,
         day: 1,
         level: 1,
         currentExp: 0,
@@ -100,18 +113,22 @@
                     inventory[item] += 1
                 }
             }
+            saftey.updateMenu = true
         },
 
 
         // fix
         removeFromInventory(item){
-            for(i = 0; i < Object.keys(inventory).length; i++){
-                if(inventory[item] > 0){
-                    inventory[item] -= 1
-                } else {
-                    delete inventory[item]
+            let inventoryItems = Object.keys(inventory)
+            for(i = 0; i < inventoryItems.length; i++){
+                if(inventoryItems[i] == item){
+                    inventory[item]--
+                    if(inventory[item] <= 0){
+                        delete inventory[item]
+                    }
                 }
             }
+            saftey.updateMenu = true
         }
     }
     let dayLocked = 0
@@ -132,21 +149,25 @@
         let shopCell = document.getElementById('shopCell');
         let inventoryCell = document.getElementById('inventoryCell');
         let inventoryItems = Object.keys(inventory)
-        if(inventoryMenu.children.length <= inventoryItems.length){
+        if(saftey.updateMenu){
             inventoryMenu.innerHTML = ''
-            for(i = 0; i < inventoryItems.length; i++){
-                let item = document.createElement('div');
-                item.id = inventoryItems[i];
-                item.innerHTML = `${inventoryItems[i]}: ${inventory[inventoryItems[i]]}`;
-                inventoryMenu.appendChild(item)
+            if(inventoryMenu.children.length <= inventoryItems.length){
+                for(i = 0; i < inventoryItems.length; i++){
+                    let item = document.createElement('div');
+                    item.id = inventoryItems[i];
+                    item.innerHTML = `${inventoryItems[i]}: ${inventory[inventoryItems[i]]}`;
+
+                    item.setAttribute('class', 'inventoryCell');
+                    inventoryMenu.appendChild(item)
+                }
+            } else {
+                for(i = 0; i < inventoryItems.length; i++){
+                    let item = document.getElementById(inventoryItems[i]);
+                    item.innerHTML = `${inventoryItems[i]}: ${inventory[inventoryItems[i]]}`;
+                }
             }
-        } else {
-            for(i = 0; i < inventoryItems.length; i++){
-                let item = document.getElementById(inventoryItems[i]);
-                item.innerHTML = `${inventoryItems[i]}: ${inventory[inventoryItems[i]]}`;
-            }
+            saftey.updateMenu = false;
         }
-            console.log(inventoryMenu.children.length)
         
         if(!saftey.paused){
             saftey.ticks++;
@@ -365,7 +386,7 @@
     document.addEventListener('keydown', () => {
         if(event.key == ' '){
             saftey.guiHidden = !saftey.guiHidden;
-            if(saftey.guiHidden || saftey.hacking){
+            if(saftey.guiHidden || saftey.hacking || saftey.locked){
                 gui.setAttribute('style', 'display: none;');
                 if(!saftey.hacking){
                     saftey.paused = false;
