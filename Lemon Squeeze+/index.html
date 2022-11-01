@@ -1,0 +1,33 @@
+<style>
+</style>
+<head>
+
+</head>
+<body>
+<div id="score">Score: 0</div>
+<div id="lives">Lives: 3</div>
+</body>
+<script>
+    let score = 0;
+    let lives = 3;
+    const imgsArray = ['lime']
+
+    const scoreDisplay = document.getElementById("score");
+    const livesDisplay = document.getElementById("lives");
+
+    function placeObject(name){
+        if(name == undefined) name = 'any';
+    }
+    
+    // create a setInterval
+
+    setInterval(() => {
+        if(lives == 0){
+            alert(`Game Over! Your score is ${score}.`);
+        } else {
+            scoreDisplay.innerHTML = `Score: ${score}`;
+            livesDisplay.innerHTML = `Lives: ${lives}`;
+        }
+    }, 100)
+    
+</script>
