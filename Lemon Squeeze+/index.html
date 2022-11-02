@@ -17,7 +17,7 @@
     <div id="points">Points: 0</div>
     <div id="lives">Lives: 3</div>
     <div id="seconds">Time Played: 0s</div>
-    <div id="deathTime">5s left</div>
+    <div id="deathTime" style="display: none;">Game End in 5s</div>
     <div id="gamearea">
         <img id="lemon" src="imgs/lemon.png" onclick="lemonPos()" style="position: absolute;"></img>
     </div>
@@ -52,7 +52,7 @@
         lifeAddThreshold: 40,
         lowerX: edgeClearence,
         lowerY: edgeClearence,
-        timeUntilLoss: 5,
+        deathTime: 5,
         upperX: window.innerWidth - edgeClearence,
         upperY: window.innerHeight - edgeClearence,
         showDebug: false,
@@ -203,6 +203,7 @@
         lemon.style.top = randY + "px";
         lemon.style.left = randX + "px";
         lemon.style.zIndex = randZ;
+        settings.deathTime = 5;
 
 
         if(increaseScore){
@@ -228,6 +229,7 @@
         lemonPos(false)
         settings.lives -= damage
         if(settings.lives <= 0) settings.lives = 0;
+        
     }
 
     function createNewObject(name){
@@ -250,11 +252,21 @@
         if(settings.playing){
             settings.time++;
             if(settings.points > settings.sessionHighScore) settings.sessionHighScore = settings.points;
+            if(settings.score >= 1){
+                deathTimeDisplay.removeAttribute('style', 'display: none;')
+                if(Math.ceil(settings.time) % 10 == 0){
+                    settings.deathTime--;
+                }
+                if(settings.deathTime == 0){
+                    settings.playing = false;
+                }
+            }
 
             sessionHighScoreDisplay.innerHTML = `Session Highscore: ${settings.sessionHighScore}`;
             pointDisplay.innerHTML = `Points: ${settings.points}`;
             livesDisplay.innerHTML = `Lives: ${settings.lives}`;
             timeDisplay.innerHTML = `Time Played: ${settings.time / 10}s`;
+            deathTimeDisplay.innerHTML = `Game End in: ${settings.deathTime}s`;
 
             settings.debug.time++;
             settings.upperX = window.innerWidth - 300
@@ -288,6 +300,8 @@
                 settings.score = 0;
                 settings.points = 0;
                 settings.lives = 3;
+                settings.deathTime = 5;
+                deathTimeDisplay.setAttribute('style', 'display: none;')
                 for(i = 0; i < Object.keys(settings.objects).length; i++){
                     let objects = Object.keys(settings.objects)
                     settings.objects[objects[i]].passed = false
