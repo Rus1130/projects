@@ -1,6 +1,10 @@
 <style>
-    #lemon {
+    img {
+        -webkit-user-drag: none;
         user-select: none;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
         position: absolute;
     }
 </style>
@@ -12,7 +16,10 @@
     <div id="score">Score: 0</div>
     <div id="lives">Lives: 3</div>
     <div id="seconds">Time Played: 0s</div>
-    <img id="lemon" src="imgs/lemon.png" onclick="newLemonPos()" style="position: absolute;"></img>
+    <div id="gamearea">
+        <img id="lemon" src="imgs/lemon.png" onclick="lemonPos()" style="position: absolute;"></img>
+    </div>
+    
     <div id="debug"></div>
 </body>
 <script>
@@ -24,6 +31,8 @@
     const timeDisplay = document.getElementById("seconds");
     const debug = document.getElementById("debug");
     const lemon = document.getElementById("lemon");
+
+    const gameArea = document.getElementById("gamearea");
 
     // plans:
     // make different size pngs for different size screens
@@ -37,6 +46,15 @@
         lowerY: 300,
         upperX: window.innerWidth - 300,
         upperY: window.innerHeight - 300,
+        showDebug: false,
+        debug: {
+            position: '',
+            time: 0,
+        },
+        objects: {
+            lime: 0,
+        },
+        children: 1,
     }
 
     function randomNum(min, max) {
@@ -44,18 +62,44 @@
     }
 
 
-    function newLemonPos(){
+    function lemonPos(increaseScore){
+        if(increaseScore == undefined) increaseScore = true;
         let randX = randomNum(settings.lowerX, settings.upperX);
         let randY = randomNum(settings.lowerY, settings.upperY);
         lemon.style.top = randY + "px";
         lemon.style.left = randX + "px";
-        settings.score += 1;
+        if(increaseScore) settings.score += 1;
+        
+        for(i = 0; i < gameArea.children.length; i++){
+            if(gameArea.children[i].id == 'lemon') continue
+            document.getElementById(gameArea.children[i].id).style.top = randomNum(settings.lowerY, settings.upperY) + "px";
+            document.getElementById(gameArea.children[i].id).style.left = randomNum(settings.lowerX, settings.upperX) + "px";
+        }
 
-        debug.innerHTML = `${randX}, ${randY}`;
+        settings.debug.position = `${randX}, ${randY}`
     }
 
 
-    newLemonPos()
+    function updatePos(name){
+        document.getElementById(name).style.top = randomNum(settings.lowerY, settings.upperY) + "px";
+        document.getElementById(name).style.left = randomNum(settings.lowerX, settings.upperX) + "px";
+        lemonPos(false)
+        settings.lives -= 1
+    }
+
+    function createNewObject(name){
+        let newObject = document.createElement("img");
+        newObject.src = `imgs/${name}.png`;
+        newObject.style.position = "absolute";
+        newObject.style.top = randomNum(settings.lowerY, settings.upperY) + "px";
+        newObject.style.left = randomNum(settings.lowerX, settings.upperX) + "px";
+        newObject.id = `${name}${settings.objects[name]}`
+        settings.objects[name] += 1;
+        gameArea.appendChild(newObject);
+    }
+
+
+    lemonPos()
     setInterval(() => {
         if(settings.playing){
             settings.time++;
@@ -63,12 +107,19 @@
             livesDisplay.innerHTML = `Lives: ${settings.lives}`;
             timeDisplay.innerHTML = `Time Played: ${settings.time / 10}s`;
 
-
+            settings.debug.time++;
             settings.upperX = window.innerWidth - 300
             settings.upperY = window.innerHeight - 300
 
+            if(settings.showDebug) debug.innerHTML = `Lemon Position: ${settings.debug.position}<br>Ticks: ${settings.debug.time}`
 
-
+            if(settings.children != gameArea.children.length){
+                for(i = 0; i < gameArea.children.length; i++){
+                    if(gameArea.children[i].id == 'lemon') continue
+                    document.getElementById(gameArea.children[i].id).setAttribute("onclick", `updatePos('${gameArea.children[i].id}')`)
+                }
+                settings.children++
+            }
 
 
 
