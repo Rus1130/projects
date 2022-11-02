@@ -28,7 +28,7 @@
 
     const imgsArray = ['lime', 'orange', 'mango', 'banana', 'apple']
 
-    const deathTimeDisplay = document.getElementById('deathTime')
+
     const pointDisplay = document.getElementById("points");
     const sessionHighScoreDisplay = document.getElementById("sessionHighscore");
     const livesDisplay = document.getElementById("lives");
@@ -203,7 +203,6 @@
         lemon.style.top = randY + "px";
         lemon.style.left = randX + "px";
         lemon.style.zIndex = randZ;
-        settings.deathTime = 5;
 
 
         if(increaseScore){
@@ -252,15 +251,6 @@
         if(settings.playing){
             settings.time++;
             if(settings.points > settings.sessionHighScore) settings.sessionHighScore = settings.points;
-            if(settings.score >= 1){
-                deathTimeDisplay.removeAttribute('style', 'display: none;')
-                if(Math.ceil(settings.time) % 10 == 0){
-                    settings.deathTime--;
-                }
-                if(settings.deathTime == 0){
-                    settings.playing = false;
-                }
-            }
 
             sessionHighScoreDisplay.innerHTML = `Session Highscore: ${settings.sessionHighScore}`;
             pointDisplay.innerHTML = `Points: ${settings.points}`;
