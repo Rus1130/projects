@@ -37,33 +37,52 @@
     // plans:
     // make different size pngs for different size screens
 
+    const edgeClearence = 300;
     const settings = {
         playing: true,
         time: 0,
         score: 0,
-        lives: 3,  
-        lowerX: 300,
-        lowerY: 300,
-        upperX: window.innerWidth - 300,
-        upperY: window.innerHeight - 300,
+        lives: 3,
+        lowerX: edgeClearence,
+        lowerY: edgeClearence,
+        upperX: window.innerWidth - edgeClearence,
+        upperY: window.innerHeight - edgeClearence,
         showDebug: false,
         debug: {
             position: '',
             time: 0,
         },
-        objects: {
+        objectTracker: {
             lime: 0,
         },
         children: 1,
-        checkpoints: {
-            score5: false,
-            score10: false,
-            score15: false,
+        objects: {
+            0: {
+                passed: false,
+                score: 10,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('lime')
+                        this.passed = true
+                    }
+                },
+            },
+            1: {
+                passed: false,
+                score: 20,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('lime')
+                        this.passed = true
+                    }
+                },
+            },
         }
     }
 
     function randomNum(min, max) {
-        return Math.floor(Math.random() * (max - min + 1) + min);
+        let coordinate = Math.floor(Math.random() * (max - min + 1) + min);
+        return coordinate;
     }
 
 
@@ -71,14 +90,20 @@
         if(increaseScore == undefined) increaseScore = true;
         let randX = randomNum(settings.lowerX, settings.upperX);
         let randY = randomNum(settings.lowerY, settings.upperY);
+        let randZ = randomNum(1, 75);
         lemon.style.top = randY + "px";
         lemon.style.left = randX + "px";
+        lemon.style.zIndex = randZ;
+
+
         if(increaseScore) settings.score += 1;
-        
+        if(settings.score % 10 == 0 && settings.score != 0) settings.lives += 1;
+    
         for(i = 0; i < gameArea.children.length; i++){
             if(gameArea.children[i].id == 'lemon') continue
             document.getElementById(gameArea.children[i].id).style.top = randomNum(settings.lowerY, settings.upperY) + "px";
             document.getElementById(gameArea.children[i].id).style.left = randomNum(settings.lowerX, settings.upperX) + "px";
+            document.getElementById(gameArea.children[i].id).style.zIndex = randomNum(1, 50);
         }
 
         settings.debug.position = `${randX}, ${randY}`
@@ -98,11 +123,13 @@
         newObject.style.position = "absolute";
         newObject.style.top = randomNum(settings.lowerY, settings.upperY) + "px";
         newObject.style.left = randomNum(settings.lowerX, settings.upperX) + "px";
-        newObject.id = `${name}${settings.objects[name]}`
-        settings.objects[name] += 1;
+        newObject.id = `${name}${settings.objectTracker[name]}`
+        settings.objectTracker[name] += 1;
         gameArea.appendChild(newObject);
     }
 
+
+    // make sure there are no overlapping images
 
     lemonPos(false)
     createNewObject('lime')
@@ -117,7 +144,10 @@
             settings.upperX = window.innerWidth - 300
             settings.upperY = window.innerHeight - 300
 
-            if(settings.showDebug) debug.innerHTML = `Lemon Position: ${settings.debug.position}<br>Ticks: ${settings.debug.time}`
+            if(settings.showDebug) debug.innerHTML =
+            `Lemon Position: ${settings.debug.position}<br>` + 
+            `Ticks: ${settings.debug.time}<br>` +
+            `Objects: ${JSON.stringify(settings.objectTracker)}<br>` // make this look pretty
 
             if(settings.children != gameArea.children.length){
                 for(i = 0; i < gameArea.children.length; i++){
@@ -126,9 +156,9 @@
                 }
                 settings.children++
             }
-            if(settings.checkpoints.score5 == false && settings.score >= 5){
-                createNewObject('lime')
-                settings.checkpoints.score5 = true
+            for(i = 0; i < Object.keys(settings.objects).length; i++){
+                let objects = Object.keys(settings.objects)
+                settings.objects[objects[i]].passFunction()
             }
 
 
@@ -143,12 +173,8 @@
 
 
 
-
-
-
-            if(settings.lives == 0){
-                settings.playing = false;
-            }
+            // add one life every time the score is a multiple of 10
+            if(settings.lives == 0) settings.playing = false;
         } else {
             let gameOverAlert = confirm(`You lost! Your score was ${settings.score}, and you played for ${settings.time / 10} seconds!\nPress 'ok' to play again.`);
             if(gameOverAlert){
