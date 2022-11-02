@@ -13,7 +13,7 @@
 </head>
 <body>
     Click the lemons!
-    <div id="score">Score: 0</div>
+    <div id="points">Points: 0</div>
     <div id="lives">Lives: 3</div>
     <div id="seconds">Time Played: 0s</div>
     <div id="gamearea">
@@ -24,9 +24,9 @@
 </body>
 <script>
 
-    const imgsArray = ['lime', 'orange']
+    const imgsArray = ['lime', 'orange', 'mango', 'banana']
 
-    const scoreDisplay = document.getElementById("score");
+    const pointDisplay = document.getElementById("points");
     const livesDisplay = document.getElementById("lives");
     const timeDisplay = document.getElementById("seconds");
     const debug = document.getElementById("debug");
@@ -42,6 +42,7 @@
         playing: true,
         time: 0,
         score: 0,
+        points: 0,
         lives: 3,
         lifeAddThreshold: 40,
         lowerX: edgeClearence,
@@ -56,12 +57,20 @@
         objectTracker: {
             lime: 0,
             orange: 0,
+            mango: 0,
+            banana: 0,
         },
         children: 1,
+        damageDB: {
+            lime: 1,
+            orange: 1,
+            mango: 1,
+            banana: 2,
+        },
         objects: {
             0: {
                 passed: false,
-                score: 15,
+                score: 5,
                 passFunction: function() {
                     if(this.passed == false && settings.score >= this.score){
                         createNewObject('lime')
@@ -71,7 +80,7 @@
             },
             1: {
                 passed: false,
-                score: 28,
+                score: 10,
                 passFunction: function() {
                     if(this.passed == false && settings.score >= this.score){
                         createNewObject('lime')
@@ -81,10 +90,60 @@
             },
             2: {
                 passed: false,
-                score: 40,
+                score: 20,
                 passFunction: function() {
                     if(this.passed == false && settings.score >= this.score){
                         createNewObject('orange')
+                        this.passed = true
+                    }
+                },
+            },
+            3: {
+                passed: false,
+                score: 25,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('orange')
+                        this.passed = true
+                    }
+                },
+            },
+            4: {
+                passed: false,
+                score: 30,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('mango')
+                        this.passed = true
+                    }
+                },
+            },
+            5: {
+                passed: false,
+                score: 35,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('mango')
+                        this.passed = true
+                    }
+                },
+            },
+            6: {
+                passed: false,
+                score: 40,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('banana')
+                        this.passed = true
+                    }
+                },
+            },
+            7: {
+                passed: false,
+                score: 45,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('banana')
                         this.passed = true
                     }
                 },
@@ -108,7 +167,10 @@
         lemon.style.zIndex = randZ;
 
 
-        if(increaseScore) settings.score += 1;
+        if(increaseScore){
+            settings.score += 1;
+            settings.points += 1;
+        }
         if(settings.score % settings.lifeAddThreshold == 0 && settings.score != 0) settings.lives += 1;
     
         for(i = 0; i < gameArea.children.length; i++){
@@ -122,11 +184,12 @@
     }
 
 
-    function updatePos(name){
+    function updatePos(name, damage){
         document.getElementById(name).style.top = randomNum(settings.lowerY, settings.upperY) + "px";
         document.getElementById(name).style.left = randomNum(settings.lowerX, settings.upperX) + "px";
         lemonPos(false)
-        settings.lives -= 1
+        settings.lives -= damage
+        if(settings.lives <= 0) settings.lives = 0;
     }
 
     function createNewObject(name){
@@ -148,7 +211,7 @@
     setInterval(() => {
         if(settings.playing){
             settings.time++;
-            scoreDisplay.innerHTML = `Score: ${settings.score}`;
+            pointDisplay.innerHTML = `Points: ${settings.points}`;
             livesDisplay.innerHTML = `Lives: ${settings.lives}`;
             timeDisplay.innerHTML = `Time Played: ${settings.time / 10}s`;
 
@@ -164,7 +227,8 @@
             if(settings.children != gameArea.children.length){
                 for(i = 0; i < gameArea.children.length; i++){
                     if(gameArea.children[i].id == 'lemon') continue
-                    document.getElementById(gameArea.children[i].id).setAttribute("onclick", `updatePos('${gameArea.children[i].id}')`)
+                    let childDamage = settings.damageDB[gameArea.children[i].id.replaceAll(/[0-9]/g, '')]
+                    document.getElementById(gameArea.children[i].id).setAttribute("onclick", `updatePos('${gameArea.children[i].id}', ${childDamage})`)
                 }
                 settings.children++
             }
@@ -172,18 +236,6 @@
                 let objects = Object.keys(settings.objects)
                 settings.objects[objects[i]].passFunction()
             }
-
-
-
-
-
-
-
-
-
-
-
-
 
             // add one life every time the score is a multiple of 10
             if(settings.lives == 0) settings.playing = false;
@@ -193,7 +245,20 @@
                 settings.playing = true;
                 settings.time = 0;
                 settings.score = 0;
+                settings.points = 0;
                 settings.lives = 3;
+                for(i = 0; i < Object.keys(settings.objects).length; i++){
+                    let objects = Object.keys(settings.objects)
+                    settings.objects[objects[i]].passed = false
+                }
+                // get array of all children
+                let children = Array.from(gameArea.children)
+                children.forEach(child => {
+                    if(child.id == 'lemon') return
+                    gameArea.removeChild(child)
+                    lemonPos(false)
+                })
+
             } else {
                 let thanksForPlaying = alert(`⢥⢫⡜⢣⡝⢦⡙⢦⣢⣤⣴⢬⣤⣥⣄⣀⣀⣢⣵⣶⣬⣤⣀⡀⠠⠀⢀⠈⠣⡈
 ⢎⡳⡜⣣⢞⡣⣽⠟⢩⣿⣿⣶⡄⠀⣹⡿⣿⠁⣴⣿⣿⣧⡉⠻⣶⠀⠀⠂⠄⠱
@@ -210,8 +275,6 @@ im watching you`);
             }
         }
     }, 100)
-
-    settings.showDebug = true
     
     
 </script>
