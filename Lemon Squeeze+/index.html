@@ -55,6 +55,11 @@
             lime: 0,
         },
         children: 1,
+        checkpoints: {
+            score5: false,
+            score10: false,
+            score15: false,
+        }
     }
 
     function randomNum(min, max) {
@@ -99,7 +104,8 @@
     }
 
 
-    lemonPos()
+    lemonPos(false)
+    createNewObject('lime')
     setInterval(() => {
         if(settings.playing){
             settings.time++;
@@ -120,7 +126,10 @@
                 }
                 settings.children++
             }
-
+            if(settings.checkpoints.score5 == false && settings.score >= 5){
+                createNewObject('lime')
+                settings.checkpoints.score5 = true
+            }
 
 
 
