@@ -24,7 +24,7 @@
 </body>
 <script>
 
-    const imgsArray = ['lime']
+    const imgsArray = ['lime', 'orange']
 
     const scoreDisplay = document.getElementById("score");
     const livesDisplay = document.getElementById("lives");
@@ -43,6 +43,7 @@
         time: 0,
         score: 0,
         lives: 3,
+        lifeAddThreshold: 40,
         lowerX: edgeClearence,
         lowerY: edgeClearence,
         upperX: window.innerWidth - edgeClearence,
@@ -54,12 +55,13 @@
         },
         objectTracker: {
             lime: 0,
+            orange: 0,
         },
         children: 1,
         objects: {
             0: {
                 passed: false,
-                score: 10,
+                score: 15,
                 passFunction: function() {
                     if(this.passed == false && settings.score >= this.score){
                         createNewObject('lime')
@@ -69,10 +71,20 @@
             },
             1: {
                 passed: false,
-                score: 20,
+                score: 28,
                 passFunction: function() {
                     if(this.passed == false && settings.score >= this.score){
                         createNewObject('lime')
+                        this.passed = true
+                    }
+                },
+            },
+            2: {
+                passed: false,
+                score: 40,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('orange')
                         this.passed = true
                     }
                 },
@@ -97,7 +109,7 @@
 
 
         if(increaseScore) settings.score += 1;
-        if(settings.score % 10 == 0 && settings.score != 0) settings.lives += 1;
+        if(settings.score % settings.lifeAddThreshold == 0 && settings.score != 0) settings.lives += 1;
     
         for(i = 0; i < gameArea.children.length; i++){
             if(gameArea.children[i].id == 'lemon') continue
@@ -147,7 +159,7 @@
             if(settings.showDebug) debug.innerHTML =
             `Lemon Position: ${settings.debug.position}<br>` + 
             `Ticks: ${settings.debug.time}<br>` +
-            `Objects: ${JSON.stringify(settings.objectTracker)}<br>` // make this look pretty
+            `Objects: ${JSON.stringify(settings.objectTracker)}` // make this look pretty
 
             if(settings.children != gameArea.children.length){
                 for(i = 0; i < gameArea.children.length; i++){
@@ -199,6 +211,7 @@ im watching you`);
         }
     }, 100)
 
+    settings.showDebug = true
     
     
 </script>
