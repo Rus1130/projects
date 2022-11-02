@@ -17,6 +17,7 @@
     <div id="points">Points: 0</div>
     <div id="lives">Lives: 3</div>
     <div id="seconds">Time Played: 0s</div>
+    <div id="deathTime">5s left</div>
     <div id="gamearea">
         <img id="lemon" src="imgs/lemon.png" onclick="lemonPos()" style="position: absolute;"></img>
     </div>
@@ -27,6 +28,7 @@
 
     const imgsArray = ['lime', 'orange', 'mango', 'banana', 'apple']
 
+    const deathTimeDisplay = document.getElementById('deathTime')
     const pointDisplay = document.getElementById("points");
     const sessionHighScoreDisplay = document.getElementById("sessionHighscore");
     const livesDisplay = document.getElementById("lives");
