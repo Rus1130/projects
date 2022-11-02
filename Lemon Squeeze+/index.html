@@ -13,6 +13,7 @@
 </head>
 <body>
     Click the lemons!
+    <div id="sessionHighscore">Session Highscore: 0</div>
     <div id="points">Points: 0</div>
     <div id="lives">Lives: 3</div>
     <div id="seconds">Time Played: 0s</div>
@@ -24,9 +25,10 @@
 </body>
 <script>
 
-    const imgsArray = ['lime', 'orange', 'mango', 'banana']
+    const imgsArray = ['lime', 'orange', 'mango', 'banana', 'apple']
 
     const pointDisplay = document.getElementById("points");
+    const sessionHighScoreDisplay = document.getElementById("sessionHighscore");
     const livesDisplay = document.getElementById("lives");
     const timeDisplay = document.getElementById("seconds");
     const debug = document.getElementById("debug");
@@ -43,10 +45,12 @@
         time: 0,
         score: 0,
         points: 0,
+        sessionHighScore: 0,
         lives: 3,
         lifeAddThreshold: 40,
         lowerX: edgeClearence,
         lowerY: edgeClearence,
+        timeUntilLoss: 5,
         upperX: window.innerWidth - edgeClearence,
         upperY: window.innerHeight - edgeClearence,
         showDebug: false,
@@ -59,6 +63,7 @@
             orange: 0,
             mango: 0,
             banana: 0,
+            apple: 0,
         },
         children: 1,
         damageDB: {
@@ -66,6 +71,7 @@
             orange: 1,
             mango: 1,
             banana: 2,
+            apple: 2,
         },
         objects: {
             0: {
@@ -148,6 +154,36 @@
                     }
                 },
             },
+            8: {
+                passed: false,
+                score: 50,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('apple')
+                        this.passed = true
+                    }
+                },
+            },
+            9: {
+                passed: false,
+                score: 60,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('apple')
+                        this.passed = true
+                    }
+                },
+            },
+            10: {
+                passed: false,
+                score: 70,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('apple')
+                        this.passed = true
+                    }
+                },
+            },
         }
     }
 
@@ -211,6 +247,9 @@
     setInterval(() => {
         if(settings.playing){
             settings.time++;
+            if(settings.points > settings.sessionHighScore) settings.sessionHighScore = settings.points;
+
+            sessionHighScoreDisplay.innerHTML = `Session Highscore: ${settings.sessionHighScore}`;
             pointDisplay.innerHTML = `Points: ${settings.points}`;
             livesDisplay.innerHTML = `Lives: ${settings.lives}`;
             timeDisplay.innerHTML = `Time Played: ${settings.time / 10}s`;
@@ -256,8 +295,8 @@
                 children.forEach(child => {
                     if(child.id == 'lemon') return
                     gameArea.removeChild(child)
-                    lemonPos(false)
                 })
+                createNewObject('lime')
 
             } else {
                 let thanksForPlaying = alert(`⢥⢫⡜⢣⡝⢦⡙⢦⣢⣤⣴⢬⣤⣥⣄⣀⣀⣢⣵⣶⣬⣤⣀⡀⠠⠀⢀⠈⠣⡈
