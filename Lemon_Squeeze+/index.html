@@ -27,7 +27,7 @@
 </body>
 <script>
 
-    const imgsArray = ['lime', 'orange', 'mango', 'banana', 'apple', 'cherry', 'watermelon']
+    const imgsArray = ['lime', 'orange', 'mango', 'banana', 'apple', 'cherry', 'watermelon', 'strawberry']
 
     const pointDisplay = document.getElementById("points");
     const highscoreDisplay = document.getElementById("highscore");
@@ -79,6 +79,7 @@
             apple: 0,
             cherry: 0,
             watermelon: 0,
+            strawberry: 0,
             hardlemon: 0,
         },
         children: 1,
@@ -90,6 +91,7 @@
             apple: 2,
             cherry: 2,
             watermelon: 3,
+            strawberry: 4,
             hardlemon: 1,
         },
         objects: {
@@ -257,6 +259,28 @@
                         createNewObject('apple')
                         createNewObject('cherry')
                         createNewObject('watermelon')
+                        this.passed = true
+                    }
+                },
+            },
+            16: {
+                passed: false,
+                score: 105,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('strawberry')
+                        createNewObject('strawberry')
+                        this.passed = true
+                    }
+                },
+            },
+            17: {
+                passed: false,
+                score: 110,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('strawberry')
+                        createNewObject('strawberry')
                         this.passed = true
                     }
                 },
@@ -489,6 +513,8 @@ im watching you`);
             localStorage.setItem('highscoreHardmode', settings.highscoreHardmode)
         }
     }
+    
+
     
     
 </script>
