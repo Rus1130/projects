@@ -413,7 +413,7 @@
     setInterval(() => {
         if(settings.playing){
             settings.time++;
-            timeLeftDisplay.innerHTML = `Time Left: ${settings.hardmode == true ? settings.hardmodeRoundStart + 60 - settings.time : '∞'}`
+            timeLeftDisplay.innerHTML = `Time Left: ${Math.ceil(10 - (settings.time - settings.hardmodeRoundStart) / 10)}s`
             if(settings.hardmode == true & settings.time >= settings.hardmodeRoundStart + 100){
                 settings.playing = false
             }
@@ -477,6 +477,7 @@
                 settings.time = 0;
                 settings.score = 0;
                 settings.points = 0;
+                settings.hardmodeRoundStart = settings.time;
                 settings.lives = settings.hardmode ? 1 : 3;
                 for(i = 0; i < Object.keys(settings.objectTracker).length; i++){
                     let objectTracker = Object.keys(settings.objectTracker)[i]
