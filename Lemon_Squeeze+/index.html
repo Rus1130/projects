@@ -13,7 +13,7 @@
 </head>
 <body>
     Click the lemons!<br>
-    toggling hardmode (space) will reset highscores
+    toggle hardmode: space
     <div id="highscore">Highscore: 0</div>
     <div id="points">Points: 0</div>
     <div id="lives">Lives: 3</div>
@@ -27,9 +27,7 @@
 </body>
 <script>
 
-    const imgsArray = ['lime', 'orange', 'mango', 'banana', 'apple']
-
-    // fix highscores
+    const imgsArray = ['lime', 'orange', 'mango', 'banana', 'apple', 'cherry', 'watermelon']
 
     const pointDisplay = document.getElementById("points");
     const highscoreDisplay = document.getElementById("highscore");
@@ -50,8 +48,8 @@
         time: 0,
         score: 0,
         points: 0,
-        highscore:0,
-        highscoreHardmode: 0,
+        highscore: localStorage.getItem("highscore") || 0,
+        highscoreHardmode: localStorage.getItem("highscoreHardmode") || 0,
         lives: 3,
         lifeAddThreshold: 40,
         lowerX: edgeClearence,
@@ -71,6 +69,8 @@
             mango: 0,
             banana: 0,
             apple: 0,
+            cherry: 0,
+            watermelon: 0,
             hardlemon: 0,
         },
         children: 1,
@@ -80,6 +80,8 @@
             mango: 1,
             banana: 2,
             apple: 2,
+            cherry: 2,
+            watermelon: 3,
             hardlemon: 1,
         },
         objects: {
@@ -193,6 +195,64 @@
                     }
                 },
             },
+            11: {
+                passed: false,
+                score: 80,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('cherry')
+                        createNewObject('cherry')
+                        this.passed = true
+                    }
+                },
+            },
+            12: {
+                passed: false,
+                score: 85,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('cherry')
+                        createNewObject('cherry')
+                        this.passed = true
+                    }
+                },
+            },
+            13: {
+                passed: false,
+                score: 90,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('watermelon')
+                        this.passed = true
+                    }
+                },
+            },
+            14: {
+                passed: false,
+                score: 95,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('watermelon')
+                        this.passed = true
+                    }
+                },
+            },
+            15: {
+                passed: false,
+                score: 100,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('lime')
+                        createNewObject('orange')
+                        createNewObject('mango')
+                        createNewObject('banana')
+                        createNewObject('apple')
+                        createNewObject('cherry')
+                        createNewObject('watermelon')
+                        this.passed = true
+                    }
+                },
+            },
         }
     }
 
@@ -257,7 +317,7 @@
     }
 
 
-    // make sure there are no overlapping images
+    
     lemonPos(false)
     createNewObject('lime')
 
@@ -327,6 +387,11 @@
                     }
                 }
             }
+            if(settings.hardmode){
+                highscoreDisplay.innerHTML =  `Highscore: ${settings.highscoreHardmode}`
+            } else {
+                highscoreDisplay.innerHTML =  `Highscore: ${settings.highscore}`
+            }
             
 
             pointDisplay.innerHTML = `Points: ${settings.points}`;
@@ -340,7 +405,7 @@
             if(settings.showDebug) debug.innerHTML =
             `Lemon Position: ${settings.debug.position}<br>` + 
             `Ticks: ${settings.debug.time}<br>` +
-            `Objects: ${JSON.stringify(settings.objectTracker)}` // make this look pretty
+            `Objects: ${JSON.stringify(settings.objectTracker)}`
 
             if(settings.children != gameArea.children.length){
                 for(i = 0; i < gameArea.children.length; i++){
@@ -397,6 +462,22 @@ im watching you`);
             }
         }
     }, 100)
+
+    // set the highscores to localstorage before window closes
+    window.onbeforeunload = function(){
+        localStorage.setItem('highscore', settings.highscore)
+        localStorage.setItem('highscoreHardmode', settings.highscoreHardmode)
+    }
+
+    function resetHighscores(){
+        let resetHighscores = confirm('Are you sure you want to reset the highscores?')
+        if(resetHighscores){
+            settings.highscore = 0;
+            settings.highscoreHardmode = 0;
+            localStorage.setItem('highscore', settings.highscore)
+            localStorage.setItem('highscoreHardmode', settings.highscoreHardmode)
+        }
+    }
     
     
 </script>
