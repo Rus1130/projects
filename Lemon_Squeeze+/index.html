@@ -223,7 +223,7 @@
             if(gameArea.children[i].id == 'lemon') continue
             document.getElementById(gameArea.children[i].id).style.top = randomNum(settings.lowerY, settings.upperY) + "px";
             document.getElementById(gameArea.children[i].id).style.left = randomNum(settings.lowerX, settings.upperX) + "px";
-            document.getElementById(gameArea.children[i].id).style.zIndex = randomNum(1, 50);
+            document.getElementById(gameArea.children[i].id).style.zIndex = randomNum(1, settings.hardmode ? 25 : 50);
         }
 
         settings.debug.position = `${randX}, ${randY}`
