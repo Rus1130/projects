@@ -14,7 +14,7 @@
 <body>
     Click the lemons!<br>
     toggling hardmode (space) will reset highscores
-    <div id="sessionHighscore">Session Highscore: 0</div>
+    <div id="highscore">Highscore: 0</div>
     <div id="points">Points: 0</div>
     <div id="lives">Lives: 3</div>
     <div id="seconds">Time Played: 0s</div>
@@ -29,9 +29,10 @@
 
     const imgsArray = ['lime', 'orange', 'mango', 'banana', 'apple']
 
+    // fix highscores
 
     const pointDisplay = document.getElementById("points");
-    const sessionHighScoreDisplay = document.getElementById("sessionHighscore");
+    const highscoreDisplay = document.getElementById("highscore");
     const livesDisplay = document.getElementById("lives");
     const timeDisplay = document.getElementById("seconds");
     const debug = document.getElementById("debug");
@@ -49,8 +50,8 @@
         time: 0,
         score: 0,
         points: 0,
-        sessionHighScore: 0,
-        sessionHighScoreHardmode: 0,
+        highscore:0,
+        highscoreHardmode: 0,
         lives: 3,
         lifeAddThreshold: 40,
         lowerX: edgeClearence,
@@ -303,14 +304,12 @@
         }
     })
 
-
-    
     
     setInterval(() => {
         if(settings.playing){
             settings.time++;
-            if(settings.points > settings.sessionHighScore) settings.sessionHighScore = settings.points;
-            if(settings.points > settings.sessionHighScoreHardmode) settings.sessionHighScoreHardmode = settings.points;
+            if(settings.points > settings.highscore) settings.highscore = settings.points;
+            if(settings.points > settings.highscoreHardmode && settings.hardmode == true) settings.highscoreHardmode = settings.points;
             if(settings.score % 5 == 0 && settings.score != 0) settings.hardmodeAddPer += 1;
             if(settings.hardmode){
                 let lastObject = +Object.keys(settings.objects).reverse()[0]
@@ -330,7 +329,6 @@
             }
             
 
-            sessionHighScoreDisplay.innerHTML = `Session Highscore: ${settings.hardmode ? settings.sessionHighScoreHardmode : settings.sessionHighScore}`
             pointDisplay.innerHTML = `Points: ${settings.points}`;
             livesDisplay.innerHTML = `Lives: ${settings.lives}`;
             timeDisplay.innerHTML = `Time Played: ${settings.time / 10}s`;
