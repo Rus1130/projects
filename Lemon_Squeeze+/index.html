@@ -19,6 +19,7 @@
     <div id="lives">Lives: 3</div>
     <div id="seconds">Time Played: 0s</div>
     <div id="hardmodeDisplay">Hardmode: Off</div>
+    <div id="timeLeft" style="display: none;">Time Left: 10s</div>
     <div id="gamearea">
         <img id="lemon" src="imgs/lemon.png" onclick="lemonPos()" style="position: absolute;"></img>
     </div>
@@ -36,6 +37,7 @@
     const debug = document.getElementById("debug");
     const lemon = document.getElementById("lemon");
     const hardmodeDisplay = document.getElementById("hardmodeDisplay");
+    const timeLeftDisplay = document.getElementById("timeLeft");
 
     const gameArea = document.getElementById("gamearea");
 
@@ -67,6 +69,8 @@
         upperX: window.innerWidth - edgeClearence,
         upperY: window.innerHeight - edgeClearence,
         showDebug: false,
+        hardmodeRoundStart: 0,
+        hardmodeRoundEnd: 0,
         debug: {
             position: '',
             time: 0,
@@ -307,6 +311,9 @@
         if(settings.lemonHardmodeZ > 20 && settings.hardmode == true){
             settings.lemonHardmodeZ -= 1;
         }
+        if(settings.hardmode){
+            settings.hardmodeRoundStart = settings.time
+        }
 
 
         if(increaseScore){
@@ -360,6 +367,7 @@
         settings.hardmode = !settings.hardmode;
         
         if(settings.hardmode){
+            timeLeftDisplay.removeAttribute('style', 'display: none;')
             for(i = 0; i < Object.keys(settings.objectTracker).length; i++){
                 let objectTracker = Object.keys(settings.objectTracker)[i]
                 settings.objectTracker[objectTracker] = 0
@@ -386,6 +394,7 @@
                 },
             }
             edgeClearence = 350;
+            settings.hardmodeRoundStart = settings.time
         } else {
             location.reload();
         }
@@ -404,6 +413,10 @@
     setInterval(() => {
         if(settings.playing){
             settings.time++;
+            timeLeftDisplay.innerHTML = `Time Left: ${settings.hardmode == true ? settings.hardmodeRoundStart + 60 - settings.time : '∞'}`
+            if(settings.hardmode == true & settings.time >= settings.hardmodeRoundStart + 100){
+                settings.playing = false
+            }
             if(settings.points > settings.highscore) settings.highscore = settings.points;
             if(settings.points > settings.highscoreHardmode && settings.hardmode == true) settings.highscoreHardmode = settings.points;
             if(settings.score % 5 == 0 && settings.score != 0) settings.hardmodeAddPer += 1;
