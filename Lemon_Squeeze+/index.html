@@ -42,7 +42,14 @@
     // plans:
     // make different size pngs for different size screens
 
-    const edgeClearence = 200;
+    function updateEdgeClearence(){
+        settings.lowerX = edgeClearence;
+        settings.upperX = window.innerWidth - edgeClearence;
+
+        settings.lowerY = edgeClearence;
+        settings.upperY = window.innerHeight - edgeClearence;
+    }
+    let edgeClearence = 200;
     const settings = {
         playing: true,
         time: 0,
@@ -56,6 +63,7 @@
         lowerY: edgeClearence,
         hardmodeAddPer: 1,
         hardmode: false,
+        lemonHardmodeZ: 75,
         upperX: window.innerWidth - edgeClearence,
         upperY: window.innerHeight - edgeClearence,
         showDebug: false,
@@ -268,10 +276,13 @@
         if(increaseScore == undefined) increaseScore = true;
         let randX = randomNum(settings.lowerX, settings.upperX);
         let randY = randomNum(settings.lowerY, settings.upperY);
-        let randZ = randomNum(1, 75);
+        let randZ = randomNum(1, settings.lemonHardmodeZ);
         lemon.style.top = randY + "px";
         lemon.style.left = randX + "px";
         lemon.style.zIndex = randZ;
+        if(settings.lemonHardmodeZ > 20 && settings.hardmode == true){
+            settings.lemonHardmodeZ -= 1;
+        }
 
 
         if(increaseScore){
@@ -284,7 +295,7 @@
             if(gameArea.children[i].id == 'lemon') continue
             document.getElementById(gameArea.children[i].id).style.top = randomNum(settings.lowerY, settings.upperY) + "px";
             document.getElementById(gameArea.children[i].id).style.left = randomNum(settings.lowerX, settings.upperX) + "px";
-            document.getElementById(gameArea.children[i].id).style.zIndex = randomNum(1, settings.hardmode ? 25 : 50);
+            document.getElementById(gameArea.children[i].id).style.zIndex = randomNum(1, settings.hardmode == true ? 25 : 50);
         }
 
         settings.debug.position = `${randX}, ${randY}`
@@ -350,6 +361,7 @@
                     },
                 },
             }
+            edgeClearence = 350;
         } else {
             location.reload();
         }
@@ -399,8 +411,7 @@
             timeDisplay.innerHTML = `Time Played: ${settings.time / 10}s`;
 
             settings.debug.time++;
-            settings.upperX = window.innerWidth - 300
-            settings.upperY = window.innerHeight - 300
+            updateEdgeClearence()
 
             if(settings.showDebug) debug.innerHTML =
             `Lemon Position: ${settings.debug.position}<br>` + 
