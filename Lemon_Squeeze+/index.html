@@ -356,6 +356,10 @@
         settings.objectTracker[name] += 1;
         gameArea.appendChild(newObject);
         for(i = 0; i < gameArea.children.length; i++){
+            if(settings.hardmode && settings.score >= 200){
+                document.getElementById(gameArea.children[i].id).style.height = 50;
+                document.getElementById(gameArea.children[i].id).style.width = 50;
+            }
             if(gameArea.children[i].id == 'lemon') continue
             let childDamage = settings.damageDB[gameArea.children[i].id.replaceAll(/[0-9]/g, '')]
             document.getElementById(gameArea.children[i].id).setAttribute("onclick", `updatePos('${gameArea.children[i].id}', ${settings.hardmode == true ? settings.damageDB.hardlemon : childDamage})`)
