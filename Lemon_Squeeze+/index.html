@@ -7,10 +7,6 @@
         -ms-user-select: none;
         position: absolute;
     }
-    img:hover {
-        cursor: pointer;
-        outline: 1px solid black;
-    }
 </style>
 <head>
 
@@ -321,7 +317,10 @@
             settings.hardmodeRoundStart = settings.time
         }
 
-
+        lemon.style.outline = "1px solid black";
+        setTimeout(function(){
+            lemon.style.outline = "none";
+        }, 125)
         if(increaseScore){
             settings.score += 1;
             settings.points += 1;
@@ -345,7 +344,6 @@
         lemonPos(false)
         settings.lives -= damage
         if(settings.lives <= 0) settings.lives = 0;
-        
     }
 
     function createNewObject(name){
@@ -536,6 +534,8 @@ im watching you`);
             localStorage.setItem('highscoreHardmode', settings.highscoreHardmode)
         }
     }
+
+    // lemon on mouseover
     
 
     
