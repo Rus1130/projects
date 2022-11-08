@@ -426,7 +426,13 @@
             if(settings.hardmode){
                 document.getElementById(gameArea.children[i].id).style.height = 75;
                 document.getElementById(gameArea.children[i].id).style.width = 75;
+            } else {
+                if(settings.score >= 150){
+                    document.getElementById(gameArea.children[i].id).style.height = 75;
+                    document.getElementById(gameArea.children[i].id).style.width = 75;
+                }
             }
+
             if(gameArea.children[i].id == 'lemon') continue
             let childDamage = settings.damageDB[gameArea.children[i].id.replaceAll(/[0-9]/g, '')]
             document.getElementById(gameArea.children[i].id).setAttribute("onclick", `updatePos('${gameArea.children[i].id}', ${settings.hardmode == true ? settings.damageDB.hardlemon : childDamage})`)
