@@ -424,8 +424,8 @@
         gameArea.appendChild(newObject);
         for(i = 0; i < gameArea.children.length; i++){
             if(settings.hardmode){
-                document.getElementById(gameArea.children[i].id).style.height = 75;
-                document.getElementById(gameArea.children[i].id).style.width = 75;
+                document.getElementById(gameArea.children[i].id).style.height = 90;
+                document.getElementById(gameArea.children[i].id).style.width = 90;
             } else {
                 if(settings.score >= 150){
                     document.getElementById(gameArea.children[i].id).style.height = 75;
@@ -512,6 +512,7 @@
                         score: settings.objects[lastObject].score + 10,
                         passFunction: function() {
                             if(this.passed == false && settings.score >= this.score){
+                                createNewObject('hardlemon')
                                 createNewObject('hardlemon')
                                 createNewObject('hardlemon')
                                 this.passed = true
