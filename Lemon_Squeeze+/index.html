@@ -30,7 +30,7 @@
 
 
     // create a coding language that lets you customize the game
-    const imgsArray = ['lime', 'orange', 'mango', 'banana', 'apple', 'cherry', 'watermelon', 'strawberry']
+    const imgsArray = ['lime', 'orange', 'mango', 'banana', 'apple', 'cherry', 'watermelon', 'strawberry', 'grape', 'blueberry']
 
     const pointDisplay = document.getElementById("points");
     const highscoreDisplay = document.getElementById("highscore");
@@ -86,6 +86,8 @@
             cherry: 0,
             watermelon: 0,
             strawberry: 0,
+            grape: 0,
+            blueberry: 0,
             hardlemon: 0,
         },
         children: 1,
@@ -98,6 +100,8 @@
             cherry: 2,
             watermelon: 3,
             strawberry: 4,
+            grape: 4,
+            blueberry: 5,
             hardlemon: 1,
         },
         objects: {
@@ -291,6 +295,69 @@
                     }
                 },
             },
+            18: {
+                passed: false,
+                score: 115,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('grape')
+                        createNewObject('grape')
+                        this.passed = true
+                    }
+                },
+            },
+            19: {
+                passed: false,
+                score: 125,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('grape')
+                        createNewObject('grape')
+                        this.passed = true
+                    }
+                },
+            },
+            20: {
+                passed: false,
+                score: 135,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('blueberry')
+                        createNewObject('blueberry')
+                        this.passed = true
+                    }
+                },
+            },
+            21: {
+                passed: false,
+                score: 145,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('blueberry')
+                        createNewObject('blueberry')
+                        this.passed = true
+                    }
+                },
+            },
+            22: {
+                passed: false,
+                score: 150,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('lime')
+                        createNewObject('orange')
+                        createNewObject('mango')
+                        createNewObject('banana')
+                        createNewObject('apple')
+                        createNewObject('cherry')
+                        createNewObject('watermelon')
+                        createNewObject('strawberry')
+                        createNewObject('grape')
+                        createNewObject('blueberry')
+                        this.passed = true
+                    }
+                },
+            },
         }
     }
 
@@ -356,9 +423,9 @@
         settings.objectTracker[name] += 1;
         gameArea.appendChild(newObject);
         for(i = 0; i < gameArea.children.length; i++){
-            if(settings.hardmode && settings.score >= 200){
-                document.getElementById(gameArea.children[i].id).style.height = 50;
-                document.getElementById(gameArea.children[i].id).style.width = 50;
+            if(settings.hardmode){
+                document.getElementById(gameArea.children[i].id).style.height = 75;
+                document.getElementById(gameArea.children[i].id).style.width = 75;
             }
             if(gameArea.children[i].id == 'lemon') continue
             let childDamage = settings.damageDB[gameArea.children[i].id.replaceAll(/[0-9]/g, '')]
@@ -401,7 +468,6 @@
                     },
                 },
             }
-            edgeClearence = 350;
             settings.hardmodeRoundStart = settings.time
         } else {
             location.reload();
@@ -431,16 +497,39 @@
             if(settings.points > settings.highscore) settings.highscore = settings.points;
             if(settings.points > settings.highscoreHardmode && settings.hardmode == true) settings.highscoreHardmode = settings.points;
             if(settings.score % 5 == 0 && settings.score != 0) settings.hardmodeAddPer += 1;
+            
+            let lastObject = +Object.keys(settings.objects).reverse()[0]
             if(settings.hardmode){
-                let lastObject = +Object.keys(settings.objects).reverse()[0]
                 if(settings.objects[lastObject].passed){
                     settings.objects[lastObject + 1] = {
                         passed: false,
-                        score: settings.objects[lastObject].score + 5,
+                        score: settings.objects[lastObject].score + 10,
                         passFunction: function() {
                             if(this.passed == false && settings.score >= this.score){
                                 createNewObject('hardlemon')
                                 createNewObject('hardlemon')
+                                this.passed = true
+                            }
+                        }
+                    }
+                }
+            } else {
+                if(settings.objects[lastObject].passed){
+                    settings.objects[lastObject + 1] = {
+                        passed: false,
+                        score: settings.objects[lastObject].score + 15,
+                        passFunction: function() {
+                            if(this.passed == false && settings.score >= this.score){
+                                createNewObject('lime')
+                                createNewObject('orange')
+                                createNewObject('mango')
+                                createNewObject('banana')
+                                createNewObject('apple')
+                                createNewObject('cherry')
+                                createNewObject('watermelon')
+                                createNewObject('strawberry')
+                                createNewObject('grape')
+                                createNewObject('blueberry')
                                 this.passed = true
                             }
                         }
