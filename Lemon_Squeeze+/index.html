@@ -30,7 +30,19 @@
 
 
     // create a coding language that lets you customize the game
-    const imgsArray = ['lime', 'orange', 'mango', 'banana', 'apple', 'cherry', 'watermelon', 'strawberry', 'grape', 'blueberry']
+    const imgsArray = 
+    ['lime',
+    'orange',
+    'mango',
+    'banana',
+    'apple',
+    'cherry',
+    'watermelon',
+    'strawberry',
+    'grape',
+    'blueberry',
+    'pear',
+    'kiwi']
 
     const pointDisplay = document.getElementById("points");
     const highscoreDisplay = document.getElementById("highscore");
@@ -88,6 +100,8 @@
             strawberry: 0,
             grape: 0,
             blueberry: 0,
+            pear: 0,
+            kiwi: 0,
             hardlemon: 0,
         },
         children: 1,
@@ -102,6 +116,8 @@
             strawberry: 4,
             grape: 4,
             blueberry: 5,
+            pear: 5,
+            kiwi: 5,
             hardlemon: 1,
         },
         objects: {
@@ -344,16 +360,41 @@
                 score: 150,
                 passFunction: function() {
                     if(this.passed == false && settings.score >= this.score){
-                        createNewObject('lime')
-                        createNewObject('orange')
-                        createNewObject('mango')
-                        createNewObject('banana')
-                        createNewObject('apple')
-                        createNewObject('cherry')
-                        createNewObject('watermelon')
-                        createNewObject('strawberry')
-                        createNewObject('grape')
-                        createNewObject('blueberry')
+                        createNewObject('pear')
+                        createNewObject('pear')
+                        this.passed = true
+                    }
+                },
+            },
+            23: {
+                passed: false,
+                score: 155,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('pear')
+                        createNewObject('pear')
+                        this.passed = true
+                    }
+                },
+            },
+            24: {
+                passed: false,
+                score: 160,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('kiwi')
+                        createNewObject('kiwi')
+                        this.passed = true
+                    }
+                },
+            },
+            25: {
+                passed: false,
+                score: 165,
+                passFunction: function() {
+                    if(this.passed == false && settings.score >= this.score){
+                        createNewObject('kiwi')
+                        createNewObject('kiwi')
                         this.passed = true
                     }
                 },
@@ -524,7 +565,7 @@
                 if(settings.objects[lastObject].passed){
                     settings.objects[lastObject + 1] = {
                         passed: false,
-                        score: settings.objects[lastObject].score + 15,
+                        score: settings.objects[lastObject].score + 20,
                         passFunction: function() {
                             if(this.passed == false && settings.score >= this.score){
                                 createNewObject('lime')
@@ -537,6 +578,8 @@
                                 createNewObject('strawberry')
                                 createNewObject('grape')
                                 createNewObject('blueberry')
+                                createNewObject('pear')
+                                createNewObject('kiwi')
                                 this.passed = true
                             }
                         }
