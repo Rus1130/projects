@@ -1,0 +1,87 @@
+<style>
+    .button {
+        outline: 1px black solid;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        height: 30px;
+        width: 1fr;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .device {
+        height: 20px;
+        background-color: transparent;
+    }
+    .device:hover {
+        background-color: whitesmoke;
+    }
+    
+    #master-list {
+        display: grid;
+        grid-template-columns: 0.35fr 1.5fr 0.5fr;
+        min-height: 500px;
+    }
+    #device-list, #port-list, #port-dest {
+        border: 1px black solid;
+    }
+    #devices, #ports, #dest {
+        padding-top: 3px;
+        padding-bottom: 3px;
+    }
+</style>
+<head>
+
+</head>
+<body>
+    <!--set up a todo list-->
+    <div id="master-list">
+        <div id="device-list">
+            <div id="devices"></div>
+            <div id="add-new-device-button" class="button" onclick="addNewDevice()">Add New Device</div>
+        </div>
+        <div id="port-list">
+            <div id="ports"></div>
+        </div>
+        <div id="port-dest">
+            <div id="port-dest-editor"></div>
+        </div>
+    </div>
+</body>
+<script>
+    const device = document.getElementById("devices");
+    const port = document.getElementById("ports");
+    const portDest = document.getElementById("port-dest-editor");
+
+
+
+    let devices = {};
+    function addNewDevice(){
+        // append a new device before the last child
+        let newDevice = document.createElement("div");
+        newDevice.id = "device-" + Object.keys(devices).length;
+        newDevice.className = "device";
+        newDevice.onclick = showPorts()
+        newDevice.innerHTML = "Device " + Object.keys(devices).length;
+        devices[newDevice.id] = {
+            name: '',
+            ports: {
+                port1: {
+                    startDevice: newDevice.id,
+                    endDevice: 'unspecified'
+                }
+            }
+        }
+        device.appendChild(newDevice);
+    }
+
+    function showPorts(){
+        // show all ports
+        port.innerHTML = '';
+    }
+
+</script>
