@@ -17,38 +17,153 @@
 
 </head>
 <body>
-    <!--set up a todo list-->
-    <div id="list">
-    </div>
-    <div class="button">Add Device</div>
+    <div id="rootBridgeDisplay"></div>
+    <br>
+    <div class="button" onclick="calculate()">Calculate STP</div>
 </body>
 <script>
-    const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-    const list = document.getElementById('list');
+    const rootBridgeDisplay = document.getElementById('rootBridgeDisplay');
     let devices = {
-        A: {
-            priority: 32768,
-            MACaddress: '0000.0000.0000',
-            0: {
-                connectedTo: 'B1',
+        SW1: {
+            priority: 32769,
+            MACaddress: '014A.38F1.BA81',
+            ports: {
+                'g0/0': {
+                    thisDevice: 'SW1',
+                    thisPort: 'g0/0',
+
+                    connectedDevice: 'SW2',
+                    connectedPort: 'g0/1'
+                },
+                'g0/1': {
+                    thisDevice: 'SW1',
+                    thisPort: 'g0/1',
+
+                    connectedDevice: 'SW3',
+                    connectedPort: 'g0/0'
+                }
             }
         },
-        B: {
-            priority: 32768,
-            MACaddress: '0000.0000.0000',
-            1: {
-                connectedTo: 'A0',
+        SW2: {
+            priority: 12289,
+            MACaddress: '193D.72DE.36E1',
+            ports: {
+                'g0/0': {
+                    thisDevice: 'SW2',
+                    thisPort: 'g0/0',
+
+                    connectedDevice: 'SW4',
+                    connectedPort: 'g0/1'
+                },
+                'g0/1': {
+                    thisDevice: 'SW2',
+                    thisPort: 'g0/1',
+
+                    connectedDevice: 'SW1',
+                    connectedPort: 'g0/0'
+                }	
+            }
+        },
+        SW3: {
+            priority: 32769,
+            MACaddress: '014A.3821.2981',
+            ports: {
+                'g0/0': {
+                    thisDevice: 'SW3',
+                    thisPort: 'g0/0',
+
+                    connectedDevice: 'SW1',
+                    connectedPort: 'g0/1'
+                },
+                'g0/1': {
+                    thisDevice: 'SW3',
+                    thisPort: 'g0/1',
+
+                    connectedDevice: 'SW4',
+                    connectedPort: 'g0/0'
+                }	
+            }
+        },
+        SW4: {
+            priority: 32769,
+            MACaddress: '83F1.2846.392F',
+            ports: {
+                'g0/0': {
+                    thisDevice: 'SW4',
+                    thisPort: 'g0/0',
+
+                    connectedDevice: 'SW3',
+                    connectedPort: 'g0/1'
+                },
+                'g0/1': {
+                    thisDevice: 'SW4',
+                    thisPort: 'g0/1',
+
+                    connectedDevice: 'SW2',
+                    connectedPort: 'g0/0'
+                }	
             }
         }
     }
 
-    function addDevice(){
+    // get the device with the lowest priority, if all priorities are the same, get the device with the lowest MAC address
+    function getRootDevice() {
+        let rootDevice = null;
+        let rootPriority = 65535;
+        let rootMAC = 'FFFF.FFFF.FFFF';
 
+        for (let device in devices) {
+            if (devices[device].priority < rootPriority) {
+                rootDevice = device;
+                rootPriority = devices[device].priority;
+                rootMAC = devices[device].MACaddress;
+            } else if (devices[device].priority == rootPriority) {
+                if (devices[device].MACaddress < rootMAC) {
+                    rootDevice = device;
+                    rootPriority = devices[device].priority;
+                    rootMAC = devices[device].MACaddress;
+                }
+            }
+        }
+
+        return rootDevice;
     }
+
+    function calculate(){
+        let rootBridge = getRootDevice();
+
+        for (let device in devices) {
+            let rootPort = null;
+            let rootPriority = 65535;
+            let rootMAC = 'FFFF.FFFF.FFFF';
+
+            for (let port in devices[device].ports) {
+                let connectedDevice = devices[device].ports[port].connectedDevice;
+                let connectedPriority = devices[connectedDevice].priority;
+                let connectedMAC = devices[connectedDevice].MACaddress;
+
+                if (connectedPriority < rootPriority) {
+                    rootPort = port;
+                    rootPriority = connectedPriority;
+                    rootMAC = connectedMAC;
+                } else if (connectedPriority == rootPriority) {
+                    if (connectedMAC < rootMAC) {
+                        rootPort = port;
+                        rootPriority = connectedPriority;
+                        rootMAC = connectedMAC;
+                    }
+                }
+            }
+
+            devices[device].rootPort = rootPort;
+        }
+        rootBridgeDisplay.innerHTML = `The root bridge is ${rootBridge}.`;
+    }
+
+
+
+
     // file:///C:/Users/aarogozin2026/Downloads/STP_Spanning_Tree_Protocol.pdf
     // https://techhub.hpe.com/eginfolib/networking/docs/switches/7500/5200-1938a_l2-lan_cg/content/495503520.htm
-    setInterval(() => {
-        
-    }, 1);
 
 </script>
