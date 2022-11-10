@@ -73,23 +73,18 @@
 
         return rootDevice;
     }
-
+    
     function generatePortModel(thisDevice, thisPort, connectedDevice, connectedPort) {
-        let portModel = {
+
+        return {[thisPort] : {
             thisDevice: thisDevice,
             thisPort: thisPort,
             thisPortType: null,
 
             connectedDevice: connectedDevice,
             connectedPort: connectedPort,
-        }
-
-        return {thisPort : portModel};
+        }};
     }
-    /*
-    port model
-    [generatePortModel(...), generatePortModel(...)]
-    */
 
 
     function addDevice(device, priority, MACaddress, ports) {
@@ -97,8 +92,9 @@
             priority: priority,
             rootBridge: false,
             MACaddress: MACaddress,
-            // add the ports to the device using the model above, and as little user input as possible
-            ports: ports
+            ports: ports.reduce((acc, port) => {
+                return {...acc, ...port};
+            }, {})
         }
         
         
@@ -116,7 +112,7 @@
             let rootPriority = 65535;
             let rootMAC = 'FFFF.FFFF.FFFF';
 
-            // calculate the root port for each device
+            // calculate the root port for each device using the lowest root cost, low
             for (let port in devices[device].ports) {
                 let connectedDevice = devices[device].ports[port].connectedDevice;
                 let connectedPort = devices[device].ports[port].connectedPort;
@@ -133,14 +129,35 @@
                     }
                 }
             }
+            
+
+
             rootPorts[device] = rootPort
 
         }
         rootBridgeDisplay.innerHTML = `The root bridge is ${rootBridge}.`;
         console.log(rootPorts)
     }
-
-
+    // this device, this port, connected device, connected port
+    addDevice('SW1', 32769, '014A.38F1.B8A1', [
+        generatePortModel("SW1", "g0/0", 'SW2', "g0/2"), 
+        generatePortModel("SW1", "g0/1", "SW3", "g0/0"),
+        generatePortModel("SW1", "g0/2", "SW2", "g0/1"),
+    ]);
+    addDevice('SW2', 32769, '193D.72DE.36E1', [
+        generatePortModel("SW2", "g0/0", 'SW4', "g0/1"), 
+        generatePortModel("SW2", "g0/1", "SW1", "g0/2"),
+        generatePortModel("SW2", "g0/2", "SW1", "g0/0"),
+    ]);
+    addDevice('SW3', 32769, '014A.3821.2981', [
+        generatePortModel("SW3", "g0/0", 'SW1', "g0/1"), 
+        generatePortModel("SW3", "g0/1", "SW4", "g0/0"),
+    ]);
+    addDevice('SW4', 32769, '83F1.2846.392F', [
+        generatePortModel("SW4", "g0/0", 'SW3', "g0/1"), 
+        generatePortModel("SW4", "g0/1", "SW2", "g0/0")
+    ]);	
+    console.log(devices)
 
 
     // file:///C:/Users/aarogozin2026/Downloads/STP_Spanning_Tree_Protocol.pdf
