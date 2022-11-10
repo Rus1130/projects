@@ -112,30 +112,12 @@
             let rootPriority = 65535;
             let rootMAC = 'FFFF.FFFF.FFFF';
 
-            // calculate the root port for each device using the lowest root cost, low
-            for (let port in devices[device].ports) {
-                let connectedDevice = devices[device].ports[port].connectedDevice;
-                let connectedPort = devices[device].ports[port].connectedPort;
-
-                if (devices[connectedDevice].priority < rootPriority) {
-                    rootPort = port;
-                    rootPriority = devices[connectedDevice].priority;
-                    rootMAC = devices[connectedDevice].MACaddress;
-                } else if (devices[connectedDevice].priority == rootPriority) {
-                    if (devices[connectedDevice].MACaddress < rootMAC) {
-                        rootPort = port;
-                        rootPriority = devices[connectedDevice].priority;
-                        rootMAC = devices[connectedDevice].MACaddress;
-                    }
-                }
-                rootPorts[device] = rootPort
-            }
-            
+            // calculate the root port for each device using the lowest root cost, lowest neighbor priority (Both neighbors), lowest neighbor port id (both neighbors), ONLY SKIP ROOT BRIDGE
 
 
-            
-
+            rootPorts[device] = rootPort;
         }
+
         rootBridgeDisplay.innerHTML = `The root bridge is ${rootBridge}.`;
         console.log(rootPorts)
     }
