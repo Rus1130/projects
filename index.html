@@ -54,6 +54,7 @@
         <meta property="og:description" content="Rus' random projects">
     </head>
     <body>
+        <button style="height: 100px; width: 100px; background-color: transparent; position: absolute; top: 0px; right: 0px; border: none;" onclick="unhide()"></button>
         <div class="container">
             <div class='grid'>
                 <div><h1>Rus1130/projects/index.html</h1></div>
@@ -64,20 +65,16 @@
                 <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/computers/scrambler'">Scrambler</button>
                 <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/computers/HDD'">HDD</button>
                 <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/misc/shooter'">Shooter</button>
+                <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/index-cisco-stuff'">Cisco Stuff ></button>
                 <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/index-esolangs'">Esolangs (Esoteric Programming Laguages) ></button>
-                <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/index-conlangs'">Conlangs (Constructed Laguages) ></button>
+                <button class="button" id="conlangs" onclick="location.href = 'https://rus1130.github.io/projects/index-conlangs'" style="display: none;">Conlangs (Constructed Laguages) ></button>
             </div>
         </div>
     </body>
     
     
     <script>
-        // function that gets the unicode of each caracter in a string
-        function getUnicode(str) {
-            var result = [];
-            for (var i = 0; i < str.length; i++) {
-                result.push(str.charCodeAt(i));
-            }
-            return result;
+        function unhide(){
+            document.getElementById("conlangs").removeAttribute("style", 'display: none;');
         }
     </script>
