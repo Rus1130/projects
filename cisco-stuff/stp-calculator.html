@@ -23,7 +23,7 @@
     
     #master-list {
         display: grid;
-        grid-template-columns: 0.35fr 1.5fr 0.5fr;
+        grid-template-columns: 200px 200px 200px;
         min-height: 500px;
     }
     #device-list, #port-list, #port-dest {
@@ -65,23 +65,18 @@
         let newDevice = document.createElement("div");
         newDevice.id = "device-" + Object.keys(devices).length;
         newDevice.className = "device";
-        newDevice.onclick = showPorts()
+        newDevice.onclick = function(){console.log(newDevice.id)};
         newDevice.innerHTML = "Device " + Object.keys(devices).length;
         devices[newDevice.id] = {
             name: '',
             ports: {
-                port1: {
+                port0: {
                     startDevice: newDevice.id,
                     endDevice: 'unspecified'
                 }
             }
         }
         device.appendChild(newDevice);
-    }
-
-    function showPorts(){
-        // show all ports
-        port.innerHTML = '';
     }
 
 </script>
