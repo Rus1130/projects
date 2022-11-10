@@ -5,12 +5,16 @@
         column-gap: 2px;
         font-size: 32px;
     }
-    textarea:focus {
+    textarea:focus, select:focus {
         outline: none;
     }
     select {
         font-family: monospace;
         font-size: 32px;
+    }
+    div {
+        font-family: monospace;
+        font-size: 24px;
     }
 </style>
 <head>
@@ -60,6 +64,7 @@
 <div id="errorOutput" style="display: none;"></div>
 <div id="output">
     <div id="ip"></div>
+    <div id="networkAddress"></div>
     <div id="mask"></div>
     <div id="wildcard"></div>
     <div id="numberOfHosts"></div>
@@ -75,6 +80,7 @@
 
     const output = document.getElementById('output');
     const ip = document.getElementById('ip');
+    const networkAddress = document.getElementById('networkAddress');
     const mask = document.getElementById('mask');
     const wildcard = document.getElementById('wildcard');
     const numberOfHosts = document.getElementById('numberOfHosts');
@@ -95,7 +101,6 @@
     }
 
     function update(ipValue, maskValue){
-        maskValue = +maskValue
         let ipAddressArray = ipValue.split('.');
 
         if (ipAddressArray.some((index) => index === '')) {
@@ -112,6 +117,7 @@
 
             let innerIp = ipValue
             let innerMask = ''
+            let innerMaskValue = maskValue
             let innerWildcard = []
 
             while(maskValue > 0){
@@ -138,9 +144,14 @@
                 innerWildcard.push(255 - innerMask.split('.')[i])
             }
 
+            let hosts = Math.pow(2, 32 - innerMaskValue)
+
             ip.innerHTML = 'IP Address: ' + ipValue
+            networkAddress.innerHTML = 'Network Address: ' + ipValue.replaceAll(/\.\d{1,3}$/g, '.0')
             mask.innerHTML = 'Subnet Mask: ' + innerMask
             wildcard.innerHTML = 'Wildcard Mask: ' + innerWildcard.join('.')
+            numberOfHosts.innerHTML = 'Number of Hosts: ' + hosts.toLocaleString()
+            numberOfUsableHosts.innerHTML = 'Number of Usable Hosts: ' + (hosts - 2 <= 0 ? hosts : hosts - 2).toLocaleString()
 
 
         }      
@@ -148,14 +159,14 @@
 
 
     subnetSelector.addEventListener('change', function() {
-        update(ipInput.value, subnetSelector.value)
+        update(ipInput.value, +subnetSelector.value)
     });
 
     ipInput.addEventListener('input', function() {
-        update(ipInput.value, subnetSelector.value)
+        update(ipInput.value, +subnetSelector.value)
     });
 
     window.onload = function() {
-        update(ipInput.value, subnetSelector.value)
+        update(ipInput.value, +subnetSelector.value)
     };
 </script>
