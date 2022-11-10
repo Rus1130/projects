@@ -128,18 +128,19 @@
                         rootMAC = devices[connectedDevice].MACaddress;
                     }
                 }
+                rootPorts[device] = rootPort
             }
             
 
 
-            rootPorts[device] = rootPort
+            
 
         }
         rootBridgeDisplay.innerHTML = `The root bridge is ${rootBridge}.`;
         console.log(rootPorts)
     }
     // this device, this port, connected device, connected port
-    addDevice('SW1', 32769, '014A.38F1.B8A1', [
+    addDevice('SW1', 32769, '014A.38F1.BA81', [
         generatePortModel("SW1", "g0/0", 'SW2', "g0/2"), 
         generatePortModel("SW1", "g0/1", "SW3", "g0/0"),
         generatePortModel("SW1", "g0/2", "SW2", "g0/1"),
