@@ -46,6 +46,7 @@
         </div>
         <div id="port-list">
             <div id="ports"></div>
+            <div id="add-new-port-button" class="button" onclick="addNewPort()">Add New Port</div>
         </div>
         <div id="port-dest">
             <div id="port-dest-editor"></div>
@@ -57,22 +58,35 @@
     const port = document.getElementById("ports");
     const portDest = document.getElementById("port-dest-editor");
 
+    let selectedDevice = null;
 
 
     let devices = {};
+    
+    function displayPorts(deviceID){
+        port.innerHTML = "";
+        selectedDevice = deviceID;
+        let ports = Object.keys(devices[deviceID].ports);
+        for(i = 0; i < ports.length; i++){
+            let newPort = document.createElement("div");
+            newPort.innerHTML = ports[i];
+            port.appendChild(newPort);
+        }
+    }
+
+
     function addNewDevice(){
         // append a new device before the last child
         let newDevice = document.createElement("div");
         newDevice.id = "device-" + Object.keys(devices).length;
         newDevice.className = "device";
-        newDevice.onclick = function(){console.log(newDevice.id)};
+        newDevice.onclick = function(){displayPorts(newDevice.id)};
         newDevice.innerHTML = "Device " + Object.keys(devices).length;
         devices[newDevice.id] = {
-            name: '',
             ports: {
                 port0: {
                     startDevice: newDevice.id,
-                    endDevice: 'unspecified'
+                    endPort: 'unspecified'
                 }
             }
         }
