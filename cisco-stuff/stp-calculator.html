@@ -16,8 +16,8 @@
         position: absolute;
         right: 20px;
         top: 20px;
-        width: 500px;
-        height: 500px;
+        width: 600px;
+        height: 600px;
         outline: 1px solid black;
     }
     .point {
@@ -26,6 +26,11 @@
         border-radius: 100%;
         position: fixed;
         background-color: black;
+    }
+    .draggable {
+        cursor: move;
+        position: absolute;
+        user-select: none;
     }
 </style>
 <head>
@@ -181,21 +186,25 @@
         rootBridgeDisplay.innerHTML = `The root bridge is ${rootBridge}.`;
         portsDisplay.innerHTML = ports
 
-        distributeDiagramDevices(Object.keys(devices).length);
+        distributeDiagramDevices(Object.keys(devices).length, Object.keys(devices));
 
         console.log(devices)
         devices = {};
     }
 
-
-    function distributeDiagramDevices(n) {
-        let r = 125;
-        let step = 360 / n;
-        let angle = 0;
+    function distributeDiagramDevices(n, labels) {
         for(i = 0; i < n; i++){
-
+            let deviceDiv = document.createElement('div');
+            deviceDiv.classList.add('draggable');
+            deviceDiv.id = labels[i];
+            deviceDiv.style.height = '50px';
+            deviceDiv.style.width = '50px';
+            deviceDiv.style.border = '2px solid black';
+            diagram.appendChild(deviceDiv);
         }
     }
+
+    
 
     /*
 
