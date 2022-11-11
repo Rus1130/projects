@@ -43,7 +43,7 @@
 
     <br>
     <div class="button" onclick="calculate()">Calculate STP</div>
-    <div id="diagram" class="diagram" style="background-color: transparent; z-index: 100;"></div>
+    <div id="diagram" class="diagram" style="background-color: transparent; z-index: 20;"></div>
     <canvas id="lineDrawer" class="diagram"></canvas>
 </body>
 <script>
@@ -51,8 +51,6 @@
     const portsDisplay = document.getElementById('portsDisplay');
     const diagram = document.getElementById('diagram');
 
-    const lineDrawer = document.getElementById('lineDrawer');
-    const lineDrawerContext = lineDrawer.getContext('2d');
     let devices = {};
 
     // get the device with the lowest priority, if all priorities are the same, get the device with the lowest MAC address
@@ -266,7 +264,7 @@
             }
             // set the element's new position:
             elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-            elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";    
+            elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
             
         }
 
