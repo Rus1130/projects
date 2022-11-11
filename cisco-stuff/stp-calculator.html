@@ -24,32 +24,6 @@
 <script>
     const rootBridgeDisplay = document.getElementById('rootBridgeDisplay');
     let devices = {};
-    /*
-        SW4: {
-            priority: 32769,
-            rootBridge: false,
-            MACaddress: '83F1.2846.392F',
-            ports: {
-                'g0/0': {
-                    thisDevice: 'SW4',
-                    thisPort: 'g0/0',
-                    thisPortType: null,
-
-                    connectedDevice: 'SW3',
-                    connectedPort: 'g0/1'
-                },
-                'g0/1': {
-                    thisDevice: 'SW4',
-                    thisPort: 'g0/1',
-                    thisPortType: null,
-
-                    connectedDevice: 'SW2',
-                    connectedPort: 'g0/0'
-                }	
-            }
-        }
-        addDevice('SW4', 32769, '83F1.2846.392F', [generatePortModel("SW4", "g0/0", 'SW3', "g0/1"), generatePortModel("SW4", "g0/1", "SW2", "g0/0")]);
-    */
 
     // get the device with the lowest priority, if all priorities are the same, get the device with the lowest MAC address
     function getRootDevice() {
@@ -111,15 +85,49 @@
             let rootPort = null;
             let rootPriority = 65535;
             let rootMAC = 'FFFF.FFFF.FFFF';
+            let rootPortID = 255;
 
-            // calculate the root port for each device using the lowest root cost, lowest neighbor priority (Both neighbors), lowest neighbor port id (both neighbors), ONLY SKIP ROOT BRIDGE
+            // calculate the root port for each device using the lowest root cost AND lowest neighbor priority (Both neighbors) AND lowest neighbor port id (both neighbors)
+            for (let port in devices[device].ports) {
+                let connectedDevice = devices[device].ports[port].connectedDevice;
+                let connectedPort = devices[device].ports[port].connectedPort;
+                let connectedPortID = devices[device].ports[port].connectedPort.slice(-1);
+                let connectedPriority = devices[connectedDevice].priority;
+                let connectedMAC = devices[connectedDevice].MACaddress;
 
+                if (connectedPriority < rootPriority) {
+                    rootPort = port;
+                    rootPriority = connectedPriority;
+                    rootMAC = connectedMAC;
+                } else if (connectedPriority == rootPriority) {
+                    if (connectedMAC < rootMAC) {
+                        rootPort = port;
+                        rootPriority = connectedPriority;
+                        rootMAC = connectedMAC;
+                    } else if (connectedMAC == rootMAC) {
+                        if (connectedPortID < rootPortID) {
+                            rootPort = port;
+                            rootPriority = connectedPriority;
+                            rootMAC = connectedMAC;
+                        }
+                    }
+                }
+                
+            }
 
+            let connectedDevice = devices[device].ports[rootPort].connectedDevice;
+            let connectedPort = devices[device].ports[rootPort].connectedPort;
+
+            devices[connectedDevice].ports[connectedPort].thisPortType = 'designated';
+            devices[device].ports[rootPort].thisPortType = 'root';
             rootPorts[device] = rootPort;
+
         }
 
+
+
         rootBridgeDisplay.innerHTML = `The root bridge is ${rootBridge}.`;
-        console.log(rootPorts)
+        return console.log(devices)
     }
     // this device, this port, connected device, connected port
     addDevice('SW1', 32769, '014A.38F1.BA81', [
