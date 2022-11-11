@@ -44,12 +44,13 @@
     <br>
     <div class="button" onclick="calculate()">Calculate STP</div>
     <div id="diagram" class="diagram" style="background-color: transparent; z-index: 20;"></div>
-    <canvas id="lineDrawer" class="diagram"></canvas>
+    <div id="lineDrawer" class="diagram"></div>
 </body>
 <script>
     const rootBridgeDisplay = document.getElementById('rootBridgeDisplay');
     const portsDisplay = document.getElementById('portsDisplay');
     const diagram = document.getElementById('diagram');
+    const lineDrawer = document.getElementById('lineDrawer');
 
     let devices = {};
 
@@ -265,6 +266,21 @@
             // set the element's new position:
             elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
             elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+
+            let deviceArray = document.getElementsByClassName('draggable');
+            for(i = 0; i < deviceArray.length; i++){
+                for(j = 0; j < deviceArray.length; j++){
+                    if(i != j){
+                        lineDrawer.innerHTML = ''
+                        let device1 = deviceArray[i];
+                        let device2 = deviceArray[j];
+
+                        
+
+                       // lineDrawer.appendChild(line);
+                    }
+                }
+            }
             
         }
 
@@ -273,6 +289,7 @@
             document.onmouseup = null;
             document.onmousemove = null;
         }
+        
     }
 
 
