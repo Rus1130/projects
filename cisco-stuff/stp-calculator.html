@@ -5,24 +5,38 @@
         text-decoration: none;
         display: inline-block;
         font-size: 16px;
-        height: 30px;
-        width: 100px;
+        height: 50px;
+        width: 130px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
+    }
+    .diagram {
+        position: absolute;
+        right: 200px;
+        width: 500px;
+        height: 500px;
+        outline: 1px solid black;
+    }
+    .point {
+        height: 50px;
+        width: 50px;
     }
 </style>
 <head>
 
 </head>
 <body>
-    <div id="rootBridgeDisplay"></div>
+    <div id="rootBridgeDisplay"></div><br>
+    <div id="portsDisplay"></div>
     <br>
     <div class="button" onclick="calculate()">Calculate STP</div>
+    <div id="diagram" class="diagram"></div>
 </body>
 <script>
     const rootBridgeDisplay = document.getElementById('rootBridgeDisplay');
+    const portsDisplay = document.getElementById('portsDisplay');
     let devices = {};
 
     // get the device with the lowest priority, if all priorities are the same, get the device with the lowest MAC address
@@ -70,11 +84,31 @@
                 return {...acc, ...port};
             }, {})
         }
-        
-        
+    }
+
+    function generateDeviceModel(){
+        addDevice('SW1', 32769, '014A.38F1.BA81', [
+            generatePortModel("SW1", "g0/0", 'SW2', "g0/2"), 
+            generatePortModel("SW1", "g0/1", "SW3", "g0/0"),
+            generatePortModel("SW1", "g0/2", "SW2", "g0/1"),
+        ]);
+        addDevice('SW2', 32769, '193D.72DE.36E1', [
+            generatePortModel("SW2", "g0/0", 'SW4', "g0/1"), 
+            generatePortModel("SW2", "g0/1", "SW1", "g0/2"),
+            generatePortModel("SW2", "g0/2", "SW1", "g0/0"),
+        ]);
+        addDevice('SW3', 32769, '014A.3821.2981', [
+            generatePortModel("SW3", "g0/0", 'SW1', "g0/1"), 
+            generatePortModel("SW3", "g0/1", "SW4", "g0/0"),
+        ]);
+        addDevice('SW4', 32769, '83F1.2846.392F', [
+            generatePortModel("SW4", "g0/0", 'SW3', "g0/1"), 
+            generatePortModel("SW4", "g0/1", "SW2", "g0/0")
+        ]);	
     }
 
     function calculate(){
+        generateDeviceModel()
         let rootBridge = getRootDevice();
         devices[rootBridge].rootBridge = true;
 
@@ -125,30 +159,38 @@
         }
 
 
-
+        let ports = ``;
+        for(i = 0; i < Object.keys(devices).length; i++){
+            let devicesArray = Object.keys(devices);
+            for(j = 0; j < Object.keys(devices[devicesArray[i]].ports).length; j++){
+                let portsArray = Object.keys(devices[devicesArray[i]].ports);
+                ports += `<div>Port ${portsArray[j]} on ${devicesArray[i]} should be a ${devices[devicesArray[i]].ports[portsArray[j]].thisPortType} port. (dest: ${devices[devicesArray[i]].ports[portsArray[j]].connectedDevice} port ${devices[devicesArray[i]].ports[portsArray[j]].connectedPort})</div>`
+                if(j == Object.keys(devices[devicesArray[i]].ports).length - 1){
+                    ports += `<br>`
+                }
+            }
+            
+        }
         rootBridgeDisplay.innerHTML = `The root bridge is ${rootBridge}.`;
-        return console.log(devices)
+        portsDisplay.innerHTML = ports
+
+        console.log(devices)
+        devices = {};
     }
-    // this device, this port, connected device, connected port
-    addDevice('SW1', 32769, '014A.38F1.BA81', [
-        generatePortModel("SW1", "g0/0", 'SW2', "g0/2"), 
-        generatePortModel("SW1", "g0/1", "SW3", "g0/0"),
-        generatePortModel("SW1", "g0/2", "SW2", "g0/1"),
-    ]);
-    addDevice('SW2', 32769, '193D.72DE.36E1', [
-        generatePortModel("SW2", "g0/0", 'SW4', "g0/1"), 
-        generatePortModel("SW2", "g0/1", "SW1", "g0/2"),
-        generatePortModel("SW2", "g0/2", "SW1", "g0/0"),
-    ]);
-    addDevice('SW3', 32769, '014A.3821.2981', [
-        generatePortModel("SW3", "g0/0", 'SW1', "g0/1"), 
-        generatePortModel("SW3", "g0/1", "SW4", "g0/0"),
-    ]);
-    addDevice('SW4', 32769, '83F1.2846.392F', [
-        generatePortModel("SW4", "g0/0", 'SW3', "g0/1"), 
-        generatePortModel("SW4", "g0/1", "SW2", "g0/0")
-    ]);	
-    console.log(devices)
+
+
+    function distributeDevices() {
+
+    }
+
+    /*
+
+
+
+
+
+
+    */
 
 
     // file:///C:/Users/aarogozin2026/Downloads/STP_Spanning_Tree_Protocol.pdf
