@@ -43,12 +43,16 @@
 
     <br>
     <div class="button" onclick="calculate()">Calculate STP</div>
-    <div id="diagram" class="diagram"></div>
+    <div id="diagram" class="diagram" style="background-color: transparent; z-index: 100;"></div>
+    <canvas id="lineDrawer" class="diagram"></canvas>
 </body>
 <script>
     const rootBridgeDisplay = document.getElementById('rootBridgeDisplay');
     const portsDisplay = document.getElementById('portsDisplay');
     const diagram = document.getElementById('diagram');
+
+    const lineDrawer = document.getElementById('lineDrawer');
+    const lineDrawerContext = lineDrawer.getContext('2d');
     let devices = {};
 
     // get the device with the lowest priority, if all priorities are the same, get the device with the lowest MAC address
@@ -200,20 +204,79 @@
             deviceDiv.style.height = '50px';
             deviceDiv.style.width = '50px';
             deviceDiv.style.border = '2px solid black';
+            deviceDiv.style.top = '300px';
+            deviceDiv.style.left = '300px';
+            deviceDiv.style.borderRadius = '100%';
+            deviceDiv.style.display = 'flex';
+            deviceDiv.style.justifyContent = 'center';
+            deviceDiv.style.alignItems = 'center';
+
+            
+            deviceDiv.innerHTML = labels[i];
             diagram.appendChild(deviceDiv);
+            dragElement(document.getElementById(labels[i]));
+
+            // draw lines between all of the devices
         }
     }
 
-    
+    // make a function that makes each device with the 'draggable' class that is a child of the diagram div draggable, make it so that the device can only be dragged within the diagram div
+    function dragElement(elmnt) {
+        var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        if (document.getElementById(elmnt.id + "header")) {
+            // if present, the header is where you move the DIV from:
+            document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+        } else {
+            // otherwise, move the DIV from anywhere inside the DIV:
+            elmnt.onmousedown = dragMouseDown;
+        }
 
-    /*
+        function dragMouseDown(e) {
+            e = e || window.event;
+            e.preventDefault();
+            // get the mouse cursor position at startup:
+            pos3 = e.clientX;
+            pos4 = e.clientY;
 
+            document.onmouseup = closeDragElement;
+            // call a function whenever the cursor moves:
+            document.onmousemove = elementDrag;
+        }
 
+        function elementDrag(e) {
+            e = e || window.event;
+            e.preventDefault();
+            // calculate the new cursor position:
+            pos1 = pos3 - e.clientX;
+            pos2 = pos4 - e.clientY;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
 
+            if(elmnt.offsetTop - pos2 <= 0){
+                elmnt.style.top = '0px';
+            }
+            if(elmnt.offsetTop - pos2 >= 546){
+                elmnt.style.top = '546px';
+            }
+            if(elmnt.offsetLeft - pos1 <= 0){
+                elmnt.style.left = '0px';
+            }
+            if(elmnt.offsetLeft - pos1 >= 546){
+                elmnt.style.left = '546px';
+            }
+            // set the element's new position:
+            elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+            elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";    
+            
+        }
 
+        function closeDragElement() {
+            // stop moving when mouse button is released:
+            document.onmouseup = null;
+            document.onmousemove = null;
+        }
+    }
 
-
-    */
 
 
     // file:///C:/Users/aarogozin2026/Downloads/STP_Spanning_Tree_Protocol.pdf
