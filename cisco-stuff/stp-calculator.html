@@ -20,17 +20,13 @@
         height: 600px;
         outline: 1px solid black;
     }
-    .point {
-        height: 10px;
-        width: 10px;
-        border-radius: 100%;
-        position: fixed;
-        background-color: black;
-    }
     .draggable {
         cursor: move;
         position: absolute;
         user-select: none;
+    }
+    svg {
+        overflow: visible;
     }
 </style>
 <head>
@@ -44,7 +40,7 @@
     <br>
     <div class="button" onclick="calculate()">Calculate STP</div>
     <div id="diagram" class="diagram" style="background-color: transparent; z-index: 20;"></div>
-    <div id="lineDrawer" class="diagram"></div>
+    <div id="lineDrawer" class="diagram" style="z-index: -20"></div>
 </body>
 <script>
     const rootBridgeDisplay = document.getElementById('rootBridgeDisplay');
@@ -101,7 +97,27 @@
         }
     }
 
+
     function generateDeviceModel(){
+        /*
+        addDevice('SW1', 32769, '014A.38F1.BA81', [
+            generatePortModel('SW1', 'g0/0', 'SW2', 'g0/1'),
+            generatePortModel('SW1', 'g0/1', 'SW3', 'g0/0'),
+        ]);
+        addDevice('SW2', 12289, '193D.72DE.36E1', [
+            generatePortModel('SW2', 'g0/1', 'SW1', 'g0/0'),
+            generatePortModel('SW2', 'g0/2', 'SW4', 'g0/1'),
+        ]);
+        addDevice('SW3', 32769, '014A.3821.2981', [
+            generatePortModel('SW3', 'g0/0', 'SW1', 'g0/1'),
+            generatePortModel('SW3', 'g0/1', 'SW4', 'g0/0'),
+        ]);
+        addDevice('SW4', 32769, '83F1.2846.392F', [
+            generatePortModel('SW4', 'g0/0', 'SW3', 'g0/1'),
+            generatePortModel('SW4', 'g0/1', 'SW2', 'g0/2'),
+        ]);
+        */
+        
         addDevice('SW1', 32769, '014A.38F1.BA81', [
             generatePortModel("SW1", "g0/0", 'SW2', "g0/2"), 
             generatePortModel("SW1", "g0/1", "SW3", "g0/0"),
@@ -120,14 +136,20 @@
             generatePortModel("SW4", "g0/0", 'SW3', "g0/1"), 
             generatePortModel("SW4", "g0/1", "SW2", "g0/0")
         ]);	
+        
     }
 
+    let rootPorts = {}
+
     function calculate(){
+        devices = {};
+        diagram.innerHTML = '';
+        lineDrawer.innerHTML = '';
         generateDeviceModel()
         let rootBridge = getRootDevice();
         devices[rootBridge].rootBridge = true;
 
-        let rootPorts = {}
+        rootPorts = {}
 
         for (let device in devices) {
             if(devices[device].rootBridge) continue;
@@ -190,9 +212,7 @@
         portsDisplay.innerHTML = ports
 
         distributeDiagramDevices(Object.keys(devices).length, Object.keys(devices));
-
-        console.log(devices)
-        devices = {};
+        
     }
 
     function distributeDiagramDevices(n, labels) {
@@ -202,33 +222,42 @@
             deviceDiv.id = labels[i];
             deviceDiv.style.height = '50px';
             deviceDiv.style.width = '50px';
-            deviceDiv.style.border = '2px solid black';
-            deviceDiv.style.top = '300px';
-            deviceDiv.style.left = '300px';
-            deviceDiv.style.borderRadius = '100%';
+            // check if it is the root device
+            deviceDiv.style.border = '3px solid black';
+            if(devices[labels[i]].rootBridge){
+                deviceDiv.style.border = '3px solid gold';
+            }
+            deviceDiv.style.borderRadius = '10%';
             deviceDiv.style.display = 'flex';
             deviceDiv.style.justifyContent = 'center';
             deviceDiv.style.alignItems = 'center';
+            deviceDiv.style.fontFamily = 'Monospace';
 
+            deviceDiv.style.backgroundColor = 'white'
+            deviceDiv.style.fontSize = '20px';
+
+            // deviceDiv.style.backgroundColor = 'transparent'
+            // deviceDiv.style.fontSize = '10px';
             
+
+            // place the device so they are evenly distributed in a circle, with the first device in the top right
+            let x = 200 * -Math.cos(2 * Math.PI * i / n) + 250;
+            let y = 200 * Math.sin(2 * Math.PI * i / n) + 250;
+            deviceDiv.style.left = x + 'px';
+            deviceDiv.style.top = y + 'px';
+
             deviceDiv.innerHTML = labels[i];
             diagram.appendChild(deviceDiv);
             dragElement(document.getElementById(labels[i]));
-
-            // draw lines between all of the devices
+            
         }
+        drawConnections()
     }
 
     // make a function that makes each device with the 'draggable' class that is a child of the diagram div draggable, make it so that the device can only be dragged within the diagram div
     function dragElement(elmnt) {
         var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-        if (document.getElementById(elmnt.id + "header")) {
-            // if present, the header is where you move the DIV from:
-            document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
-        } else {
-            // otherwise, move the DIV from anywhere inside the DIV:
-            elmnt.onmousedown = dragMouseDown;
-        }
+        elmnt.onmousedown = dragMouseDown;
 
         function dragMouseDown(e) {
             e = e || window.event;
@@ -267,21 +296,7 @@
             elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
             elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
 
-            let deviceArray = document.getElementsByClassName('draggable');
-            for(i = 0; i < deviceArray.length; i++){
-                for(j = 0; j < deviceArray.length; j++){
-                    if(i != j){
-                        lineDrawer.innerHTML = ''
-                        let device1 = deviceArray[i];
-                        let device2 = deviceArray[j];
-
-                        
-
-                       // lineDrawer.appendChild(line);
-                    }
-                }
-            }
-            
+            drawConnections()  
         }
 
         function closeDragElement() {
@@ -290,6 +305,80 @@
             document.onmousemove = null;
         }
         
+    }
+
+    function drawConnections(){
+        lineDrawer.innerHTML = '';
+        let deviceArray = document.getElementsByClassName('draggable');
+        let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        let connections = []
+        for(i = 0; i < deviceArray.length; i++){
+            let device = deviceArray[i].id;
+            let ports = Object.keys(devices[device].ports);
+            for(j = 0; j < ports.length; j++){
+                let port = ports[j];
+                connections.push([`${devices[device].ports[port].thisDevice} ${devices[device].ports[port].thisPort}`,`${devices[device].ports[port].connectedDevice} ${devices[device].ports[port].connectedPort}`])
+            }
+        }
+        // check for duplicate connections
+        for(i = 0; i < connections.length; i++){
+            for(j = 0; j < connections.length; j++){
+                if(connections[i][0] == connections[j][1] && connections[i][1] == connections[j][0]){
+                    connections.splice(j, 1);
+                }
+            }
+        }
+
+        // create the lines based on the connections array, the lines start and end in the center of the device
+        for(i = 0; i < connections.length; i++){
+            let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            let startDevice = connections[i][0].split(' ')[0];
+            let startPort = connections[i][0].split(' ')[1];
+
+            let endDevice = connections[i][1].split(' ')[0];
+            let endPort = connections[i][1].split(' ')[1];
+
+            
+            let startDeviceX = document.getElementById(startDevice).offsetLeft + 25;
+            let startDeviceY = document.getElementById(startDevice).offsetTop + 25;
+
+            let endDeviceX = document.getElementById(endDevice).offsetLeft + 25;
+            let endDeviceY = document.getElementById(endDevice).offsetTop + 25;
+
+            
+            let angle = Math.atan2(endDeviceY - startDeviceY, endDeviceX - startDeviceX) * 180 / Math.PI;
+            let overlap = false;
+            let lines = svg.getElementsByTagName('line');
+            // check if the line overlaps with another line
+            for(j = 0; j < lines.length; j++){
+                let lineX1 = lines[j].getAttribute('x1');
+                let lineY1 = lines[j].getAttribute('y1');
+                let lineX2 = lines[j].getAttribute('x2');
+                let lineY2 = lines[j].getAttribute('y2');
+                let lineAngle = Math.atan2(lineY2 - lineY1, lineX2 - lineX1) * 180 / Math.PI;
+                if(angle == lineAngle){
+                    overlap = true;
+                }
+            }
+
+            if(overlap){
+                startDeviceY -= 15;
+                endDeviceY -= 15;
+            }
+            
+            line.setAttribute('x1', startDeviceX);
+            line.setAttribute('y1', startDeviceY);
+            line.setAttribute('x2', endDeviceX);
+            line.setAttribute('y2', endDeviceY);
+            line.setAttribute('stroke', 'black');
+            line.setAttribute('stroke-width', '2');
+            svg.appendChild(line);
+        }
+
+        // check all lines for overlapping, if they are overlapping, move the end point of the line to the side
+
+        console.log(connections)
+        lineDrawer.appendChild(svg);
     }
 
 
