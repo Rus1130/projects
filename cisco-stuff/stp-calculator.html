@@ -233,11 +233,11 @@
             deviceDiv.style.alignItems = 'center';
             deviceDiv.style.fontFamily = 'Monospace';
 
-            deviceDiv.style.backgroundColor = 'white'
-            deviceDiv.style.fontSize = '20px';
+            //deviceDiv.style.backgroundColor = 'white'
+            //deviceDiv.style.fontSize = '20px';
 
-            // deviceDiv.style.backgroundColor = 'transparent'
-            // deviceDiv.style.fontSize = '10px';
+            deviceDiv.style.backgroundColor = 'transparent'
+            deviceDiv.style.fontSize = '10px';
             
 
             // place the device so they are evenly distributed in a circle, with the first device in the top right
@@ -361,18 +361,89 @@
                 }
             }
 
+
+
+
             if(overlap){
-                startDeviceY -= 15;
-                endDeviceY -= 15;
+                startDeviceX = startDeviceX + 15;
+                endDeviceX = endDeviceX + 15;
             }
-            
+
             line.setAttribute('x1', startDeviceX);
             line.setAttribute('y1', startDeviceY);
             line.setAttribute('x2', endDeviceX);
             line.setAttribute('y2', endDeviceY);
+
+            
             line.setAttribute('stroke', 'black');
             line.setAttribute('stroke-width', '2');
             svg.appendChild(line);
+
+            // put a circle at each end of the line, just outside of the device
+            // get the angle of the line
+
+
+            let startCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            startCircle.setAttribute('cx', startDeviceX + 50 * Math.cos(angle * Math.PI / 180));
+            startCircle.setAttribute('cy', startDeviceY + 50 * Math.sin(angle * Math.PI / 180));
+            startCircle.setAttribute('r', '5');
+            startCircle.setAttribute('fill', 'black');
+            svg.appendChild(startCircle);
+
+            let endCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            endCircle.setAttribute('cx', endDeviceX - 50 * Math.cos(angle * Math.PI / 180));
+            endCircle.setAttribute('cy', endDeviceY - 50 * Math.sin(angle * Math.PI / 180));
+            endCircle.setAttribute('r', '5');
+            endCircle.setAttribute('fill', 'black');
+            svg.appendChild(endCircle);
+
+            // remove duplicate circles
+            let circles = svg.getElementsByTagName('circle');
+            for(j = 0; j < circles.length; j++){
+                for(k = 0; k < circles.length; k++){
+                    if(j != k){
+                        if(circles[j].getAttribute('cx') == circles[k].getAttribute('cx') && circles[j].getAttribute('cy') == circles[k].getAttribute('cy')){
+                            circles[k].remove();
+                        }
+                    }
+                }
+            }
+
+            // let each circle have the ID of `port ${startDevice} ${startPort}` or `port ${endDevice} ${endPort}`
+            let startCircleID = `port ${startDevice} ${startPort}`;
+            let endCircleID = `port ${endDevice} ${endPort}`;
+
+            startCircle.setAttribute('id', startCircleID);
+            endCircle.setAttribute('id', endCircleID);
+
+            // label the circles with the port name
+            let startLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            startLabel.setAttribute('x', startDeviceX + 50 * Math.cos(angle * Math.PI / 180));
+            startLabel.setAttribute('y', startDeviceY + 50 * Math.sin(angle * Math.PI / 180));
+            startLabel.setAttribute('text-anchor', 'middle');
+            startLabel.setAttribute('alignment-baseline', 'middle');
+            startLabel.setAttribute('font-size', '12');
+            startLabel.innerHTML = startPort;
+            svg.appendChild(startLabel);
+
+            let endLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            endLabel.setAttribute('x', endDeviceX - 50 * Math.cos(angle * Math.PI / 180));
+            endLabel.setAttribute('y', endDeviceY - 50 * Math.sin(angle * Math.PI / 180));
+            endLabel.setAttribute('text-anchor', 'middle');
+            endLabel.setAttribute('alignment-baseline', 'middle');
+            endLabel.setAttribute('font-size', '12');
+            endLabel.innerHTML = endPort;
+            svg.appendChild(endLabel);
+            
+
+
+
+
+
+
+            
+        
+        
         }
 
         // check all lines for overlapping, if they are overlapping, move the end point of the line to the side
