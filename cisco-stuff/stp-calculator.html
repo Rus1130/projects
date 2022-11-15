@@ -89,7 +89,7 @@ device SW4 32769 83F1.2846.392F
 SW1 g0/2 SW2 g0/1
 SW1 g0/0 SW2 g0/2
 SW1 g0/1 SW3 g0/0
-SW2 g0/0 SW4 g0/0
+SW2 g0/0 SW4 g0/1
 SW3 g0/1 SW4 g0/0`
     let devices = {};
 
@@ -122,6 +122,7 @@ SW3 g0/1 SW4 g0/0`
             thisDevice: thisDevice,
             thisPort: thisPort,
             thisPortType: null,
+            cost: thisPort[0] == 'g' ? 4 : 19,
 
             connectedDevice: connectedDevice,
             connectedPort: connectedPort,
@@ -163,8 +164,10 @@ SW3 g0/1 SW4 g0/0`
                 let temp2 = portStatement[1];	
                 let newStatement = [portStatement[2], portStatement[3], temp1, temp2];
                 ports.push(newStatement)
+                
             }
         }
+        
         // get all device names
         let deviceNames = model.map(x => x.device);
         let grouped = {}
@@ -177,7 +180,6 @@ SW3 g0/1 SW4 g0/0`
             }
             grouped[deviceNames[i]] = port;
         }
-        
         for(i = 0; i < deviceNames.length; i++){
             let device = model[i].device;
             let priority = model[i].priority;
@@ -186,6 +188,8 @@ SW3 g0/1 SW4 g0/0`
             ports = ports.map(x => generatePortModel(x[0], x[1], x[2], x[3]));
             addDevice(device, priority, MACaddress, ports);
         }
+
+        console.log(devices)
         
         /*
         addDevice('SW1', 32769, '014A.38F1.BA81', [
@@ -220,8 +224,110 @@ SW3 g0/1 SW4 g0/0`
         generateDeviceModel()
         let rootBridge = getRootDevice();
         devices[rootBridge].rootBridge = true;
-
         rootPorts = {}
+
+        // on each device, choose the port with the lowest cost to the root bridge
+        // if there is a tie, choose the port with the lowest neighbor bridge ID
+        // if there is a tie, choose the port with the lowest port ID (port #)
+        for (let device in devices) {
+            if (device == rootBridge) {
+                continue;
+            }
+
+            let lowestCost = 65535;
+            let lowestNeighborBridgeID = 'FFFF.FFFF.FFFF';
+            let lowestPortID = 'FFFF.FFFF.FFFF';
+            let lowestPort = null;
+
+            for (let port in devices[device].ports) {
+                let thisPort = devices[device].ports[port];
+
+                if (thisPort.cost < lowestCost) {
+                    lowestCost = thisPort.cost;
+                    lowestNeighborBridgeID = devices[thisPort.connectedDevice].MACaddress;
+                    lowestPortID = thisPort.connectedPort;
+                    lowestPort = port;
+                } else if (thisPort.cost == lowestCost) {
+                    if (devices[thisPort.connectedDevice].MACaddress < lowestNeighborBridgeID) {
+                        lowestCost = thisPort.cost;
+                        lowestNeighborBridgeID = devices[thisPort.connectedDevice].MACaddress;
+                        lowestPortID = thisPort.connectedPort;
+                        lowestPort = port;
+                    } else if (devices[thisPort.connectedDevice].MACaddress == lowestNeighborBridgeID) {
+                        if (thisPort.connectedPort < lowestPortID) {
+                            lowestCost = thisPort.cost;
+                            lowestNeighborBridgeID = devices[thisPort.connectedDevice].MACaddress;
+                            lowestPortID = thisPort.connectedPort;
+                            lowestPort = port;
+                        }
+                    }
+                }
+            }
+
+            rootPorts[device] = lowestPort;
+        }
+
+        
+        for (let port in devices[rootBridge].ports) {
+            devices[rootBridge].ports[port].thisPortType = 'designated';
+        }
+
+        // on each device, choose one port with the lowest cost, lowest neighbor bridge id, and lowest port id (port #)
+        // this port is the root port
+        // make sure there is only one root port per device
+        for (let device in devices) {
+            if (device == rootBridge) {
+                continue;
+            }
+
+            let lowestCost = 65535;
+            let lowestNeighborBridgeID = 'FFFF.FFFF.FFFF';
+            let lowestPortID = 'FFFF.FFFF.FFFF';
+            let lowestPort = null;
+
+            for (let port in devices[device].ports) {
+                let thisPort = devices[device].ports[port];
+
+                if (thisPort.cost < lowestCost) {
+                    lowestCost = thisPort.cost;
+                    lowestNeighborBridgeID = devices[thisPort.connectedDevice].MACaddress;
+                    lowestPortID = thisPort.connectedPort;
+                    lowestPort = port;
+                } else if (thisPort.cost == lowestCost) {
+                    if (devices[thisPort.connectedDevice].MACaddress < lowestNeighborBridgeID) {
+                        lowestCost = thisPort.cost;
+                        lowestNeighborBridgeID = devices[thisPort.connectedDevice].MACaddress;
+                        lowestPortID = thisPort.connectedPort;
+                        lowestPort = port;
+                    } else if (devices[thisPort.connectedDevice].MACaddress == lowestNeighborBridgeID) {
+                        if (thisPort.connectedPort < lowestPortID) {
+                            lowestCost = thisPort.cost;
+                            lowestNeighborBridgeID = devices[thisPort.connectedDevice].MACaddress;
+                            lowestPortID = thisPort.connectedPort;
+                            lowestPort = port;
+                        }
+                    }
+                }
+            }
+
+            devices[device].ports[lowestPort].thisPortType = 'root';
+        }
+
+        // each port opposite the root port is designated
+        for (let device in devices) {
+            if (device == rootBridge) {
+                continue;
+            }
+
+            let rootPort = rootPorts[device];
+            let connectedDevice = devices[device].ports[rootPort].connectedDevice;
+            let connectedPort = devices[device].ports[rootPort].connectedPort;
+
+            devices[connectedDevice].ports[connectedPort].thisPortType = 'designated';
+        }
+
+
+
 
 
 
