@@ -28,6 +28,12 @@
     svg {
         overflow: visible;
     }
+    textarea {
+        resize: none;
+    }
+    textarea:focus {
+        outline: none;
+    }
     .color-display {
         width: 20px;
         height: 20px;
@@ -36,7 +42,17 @@
         font-size: 18px;
         /* remove auto line break*/
         white-space: nowrap;
-
+    }
+    #code-input {
+        border-radius: 0%;
+        position: absolute;
+        right: 20px;
+        top: 625px;
+        width: 601px;
+        height: 150px;
+        font-family: monospace;
+        font-size: 18px;
+        resize: none;
     }
 </style>
 <head>
@@ -54,7 +70,8 @@
     <br>
     <div class="color-display" style="background-color: gold">&nbsp;&nbsp;&nbsp;Root&nbsp;Port</div><br>
     <div class="color-display" style="background-color: cornflowerblue">&nbsp;&nbsp;&nbsp;Designated&nbsp;Port</div><br>
-    <div class="color-display" style="background-color: red">&nbsp;&nbsp;&nbsp;Non-Designated&nbsp;Port</div>
+    <div class="color-display" style="background-color: red">&nbsp;&nbsp;&nbsp;Non-Designated&nbsp;Port</div><br>
+    <textarea id="code-input"></textarea>
 </body>
 <script>
     const rootBridgeDisplay = document.getElementById('rootBridgeDisplay');
@@ -113,6 +130,7 @@
 
 
     function generateDeviceModel(){
+        
         addDevice('SW1', 32769, '014A.38F1.BA81', [
             generatePortModel("SW1", "g0/0", 'SW2', "g0/2"), 
             generatePortModel("SW1", "g0/1", "SW3", "g0/0"),
@@ -131,6 +149,7 @@
             generatePortModel("SW4", "g0/0", 'SW3', "g0/1"), 
             generatePortModel("SW4", "g0/1", "SW2", "g0/0")
         ]);	
+        
         
     }
 
@@ -470,6 +489,7 @@
             startLabel.setAttribute('text-anchor', 'middle');
             startLabel.setAttribute('alignment-baseline', 'middle');
             startLabel.setAttribute('font-size', '12');
+            startLabel.setAttribute('font-family', 'monospace');
             startLabel.innerHTML = startPort;
 
             let endLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -478,6 +498,7 @@
             endLabel.setAttribute('text-anchor', 'middle');
             endLabel.setAttribute('alignment-baseline', 'middle');
             endLabel.setAttribute('font-size', '12');
+            endLabel.setAttribute('font-family', 'monospace');
             endLabel.innerHTML = endPort;
             
 
