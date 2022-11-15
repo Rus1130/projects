@@ -376,11 +376,13 @@ SW3 g0/1 SW4 g0/0`
             // deviceDiv.style.fontSize = '10px';
             
 
-            // place the device so they are evenly distributed in a circle, with the first device in the top right
-            let x = 200 * -Math.cos(2 * Math.PI * i / n) + 250;
-            let y = 200 * Math.sin(2 * Math.PI * i / n) + 250;
-            deviceDiv.style.left = x + 'px';
-            deviceDiv.style.top = y + 'px';
+            // place the devices so they the lowest device is at the top, evenly spaced, and 
+            let angle = 360 / n;
+            let x = 50 + 200 * Math.cos(angle * i * Math.PI / 180);
+            let y = 50 + 200 * Math.sin(angle * i * Math.PI / 180);
+            deviceDiv.style.left = `${x + 200}px`;
+            deviceDiv.style.top = `${y + 200}px`;
+
 
             deviceDiv.innerHTML = labels[i];
             diagram.appendChild(deviceDiv);
