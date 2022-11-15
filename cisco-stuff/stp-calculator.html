@@ -11,6 +11,7 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
+        font-family: monospace;
     }
     .diagram {
         position: absolute;
@@ -72,13 +73,21 @@
     <div class="color-display" style="background-color: cornflowerblue">&nbsp;&nbsp;&nbsp;Designated&nbsp;Port</div><br>
     <div class="color-display" style="background-color: red">&nbsp;&nbsp;&nbsp;Non-Designated&nbsp;Port</div><br>
     <textarea id="code-input"></textarea>
+    <div class="button" onclick="window.open('stp-calc-docs.txt','_blank')">Open Docs</div>
 </body>
 <script>
     const rootBridgeDisplay = document.getElementById('rootBridgeDisplay');
     const portsDisplay = document.getElementById('portsDisplay');
     const diagram = document.getElementById('diagram');
     const lineDrawer = document.getElementById('lineDrawer');
+    const codeInput = document.getElementById('code-input');
 
+    codeInput.value = "device SW1 32769 AAAA.AAAA.AAAA\n" + 
+    "device SW2 32769 BBBB.BBBB.BBBB\n" +
+    "device SW3 32769 CCCC.CCCC.CCCC\n" +
+    "SW1 fa0/14 SW2 fa0/14\n" +
+    "SW1 fa0/17 SW3 fa0/14\n" +
+    "SW2 fa0/16 SW3 fa0/16"
     let devices = {};
 
     // get the device with the lowest priority, if all priorities are the same, get the device with the lowest MAC address
@@ -130,7 +139,36 @@
 
 
     function generateDeviceModel(){
+        let input = codeInput.value;
+        let lines = input.trim().split('\n');
+        lines = lines.map(x => x.trim().split(' '))
+        let model = [];
+        let ports = [];
+        for(i = 0; i < lines.length; i++){
+            if(lines[i][0] == 'device'){
+                model[i] = {
+                    device: lines[i][1],
+                    priority: lines[i][2],
+                    MACaddress: lines[i][3]
+                }
+            } else {
+                ports.push(lines[i]);
+                // copy lines[i]
+                portStatement = [...lines[i]];
+                let temp1 = portStatement[0];
+                let temp2 = portStatement[1];	
+                let newStatement = [portStatement[2], portStatement[3], temp1, temp2];
+                ports.push(newStatement)
+            }
+        }
+        // get all device names
+        let deviceNames = model.map(x => x.device);
+        f
+        console.log(deviceNames)
+        console.log(model)
+        console.log(ports)
         
+        /*
         addDevice('SW1', 32769, '014A.38F1.BA81', [
             generatePortModel("SW1", "g0/0", 'SW2', "g0/2"), 
             generatePortModel("SW1", "g0/1", "SW3", "g0/0"),
@@ -149,7 +187,7 @@
             generatePortModel("SW4", "g0/0", 'SW3', "g0/1"), 
             generatePortModel("SW4", "g0/1", "SW2", "g0/0")
         ]);	
-        
+        */
         
     }
 
@@ -159,7 +197,7 @@
         devices = {};
         diagram.innerHTML = '';
         lineDrawer.innerHTML = '';
-        generateDeviceModel()
+        return generateDeviceModel()
         let rootBridge = getRootDevice();
         devices[rootBridge].rootBridge = true;
 
