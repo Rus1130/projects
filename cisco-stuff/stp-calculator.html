@@ -82,12 +82,15 @@
     const lineDrawer = document.getElementById('lineDrawer');
     const codeInput = document.getElementById('code-input');
 
-    codeInput.value = "device SW1 32769 AAAA.AAAA.AAAA\n" + 
-    "device SW2 32769 BBBB.BBBB.BBBB\n" +
-    "device SW3 32769 CCCC.CCCC.CCCC\n" +
-    "SW1 fa0/14 SW2 fa0/14\n" +
-    "SW1 fa0/17 SW3 fa0/14\n" +
-    "SW2 fa0/16 SW3 fa0/16"
+    codeInput.value = `device SW1 32769 014A.38F1.BA81
+device SW2 32769 193D.72DE.36E1
+device SW3 32769 014A.3821.2981
+device SW4 32769 83F1.2846.392F
+SW1 g0/2 SW2 g0/1
+SW1 g0/0 SW2 g0/2
+SW1 g0/1 SW3 g0/0
+SW2 g0/0 SW4 g0/0
+SW3 g0/1 SW4 g0/0`
     let devices = {};
 
     // get the device with the lowest priority, if all priorities are the same, get the device with the lowest MAC address
@@ -220,55 +223,8 @@
 
         rootPorts = {}
 
-        for (let device in devices) {
-            if(devices[device].rootBridge) continue;
-            let rootPort = null;
-            let rootPriority = 65535;
-            let rootMAC = 'FFFF.FFFF.FFFF';
-            let rootPortID = 255;
-
-            // calculate the root port for each device using the lowest root cost AND lowest neighbor priority (Both neighbors) AND lowest neighbor port id (both neighbors), prioritize g over f ports
-            for (let port in devices[device].ports) {
-                let connectedDevice = devices[device].ports[port].connectedDevice;
-                let connectedPort = devices[device].ports[port].connectedPort;
-                let connectedDevicePriority = devices[connectedDevice].priority;
-                let connectedDeviceMAC = devices[connectedDevice].MACaddress;
-                let connectedPortID = parseInt(connectedPort.slice(1));
-
-                if (connectedDevicePriority < rootPriority) {
-                    rootPort = port;
-                    rootPriority = connectedDevicePriority;
-                    rootMAC = connectedDeviceMAC;
-                    rootPortID = connectedPortID;
-                } else if (connectedDevicePriority == rootPriority) {
-                    if (connectedDeviceMAC < rootMAC) {
-                        rootPort = port;
-                        rootPriority = connectedDevicePriority;
-                        rootMAC = connectedDeviceMAC;
-                        rootPortID = connectedPortID;
-                    } else if (connectedDeviceMAC == rootMAC) {
-                        if (connectedPortID < rootPortID) {
-                            rootPort = port;
-                            rootPriority = connectedDevicePriority;
-                            rootMAC = connectedDeviceMAC;
-                            rootPortID = connectedPortID;
-                        }
-                    }
-                }
-            }
 
 
-            let connectedDevice = devices[device].ports[rootPort].connectedDevice;
-            let connectedPort = devices[device].ports[rootPort].connectedPort;
-
-            devices[connectedDevice].ports[connectedPort].thisPortType = 'designated';
-            devices[device].ports[rootPort].thisPortType = 'root';
-            rootPorts[device] = rootPort;
-
-        }
-        // fix extra designated and non-designated ports
-        // between the null ports, decide which one is the designated port using lowest port cost and lowest bridge id, non-designated will be the connected port
-        
 
         let ports = ``;
         for(i = 0; i < Object.keys(devices).length; i++){
