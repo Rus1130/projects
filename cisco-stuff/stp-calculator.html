@@ -267,6 +267,8 @@
 
         }
         // fix extra designated and non-designated ports
+        // between the null ports, decide which one is the designated port using lowest port cost and lowest bridge id, non-designated will be the connected port
+        
 
         let ports = ``;
         for(i = 0; i < Object.keys(devices).length; i++){
