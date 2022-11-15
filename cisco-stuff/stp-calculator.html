@@ -51,7 +51,7 @@
         width: 601px;
         height: 150px;
         font-family: monospace;
-        font-size: 18px;
+        font-size: 12px;
         resize: none;
     }
 </style>
@@ -119,7 +119,7 @@
 
     function addDevice(device, priority, MACaddress, ports) {
         devices[device] = {
-            priority: priority,
+            priority: (priority / 4096) * 4096,
             rootBridge: false,
             MACaddress: MACaddress,
             ports: ports.reduce((acc, port) => {
@@ -172,33 +172,36 @@
             let rootMAC = 'FFFF.FFFF.FFFF';
             let rootPortID = 255;
 
-            // calculate the root port for each device using the lowest root cost AND lowest neighbor priority (Both neighbors) AND lowest neighbor port id (both neighbors)
+            // calculate the root port for each device using the lowest root cost AND lowest neighbor priority (Both neighbors) AND lowest neighbor port id (both neighbors), prioritize g over f ports
             for (let port in devices[device].ports) {
                 let connectedDevice = devices[device].ports[port].connectedDevice;
                 let connectedPort = devices[device].ports[port].connectedPort;
-                let connectedPortID = devices[device].ports[port].connectedPort.slice(-1);
-                let connectedPriority = devices[connectedDevice].priority;
-                let connectedMAC = devices[connectedDevice].MACaddress;
+                let connectedDevicePriority = devices[connectedDevice].priority;
+                let connectedDeviceMAC = devices[connectedDevice].MACaddress;
+                let connectedPortID = parseInt(connectedPort.slice(1));
 
-                if (connectedPriority < rootPriority) {
+                if (connectedDevicePriority < rootPriority) {
                     rootPort = port;
-                    rootPriority = connectedPriority;
-                    rootMAC = connectedMAC;
-                } else if (connectedPriority == rootPriority) {
-                    if (connectedMAC < rootMAC) {
+                    rootPriority = connectedDevicePriority;
+                    rootMAC = connectedDeviceMAC;
+                    rootPortID = connectedPortID;
+                } else if (connectedDevicePriority == rootPriority) {
+                    if (connectedDeviceMAC < rootMAC) {
                         rootPort = port;
-                        rootPriority = connectedPriority;
-                        rootMAC = connectedMAC;
-                    } else if (connectedMAC == rootMAC) {
+                        rootPriority = connectedDevicePriority;
+                        rootMAC = connectedDeviceMAC;
+                        rootPortID = connectedPortID;
+                    } else if (connectedDeviceMAC == rootMAC) {
                         if (connectedPortID < rootPortID) {
                             rootPort = port;
-                            rootPriority = connectedPriority;
-                            rootMAC = connectedMAC;
+                            rootPriority = connectedDevicePriority;
+                            rootMAC = connectedDeviceMAC;
+                            rootPortID = connectedPortID;
                         }
                     }
                 }
-                
             }
+
 
             let connectedDevice = devices[device].ports[rootPort].connectedDevice;
             let connectedPort = devices[device].ports[rootPort].connectedPort;

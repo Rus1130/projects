@@ -1,0 +1,8 @@
+to add a device:
+device deviceName devicePriority deviceMAC
+
+put all port statements under the device its on
+deviceName portName connectedDevice connectedPort
+
+to model this network (https://networklessons.com/wp-content/uploads/2014/10/spanning-tree-example-designated-ports.png), you would have something like this:
+
