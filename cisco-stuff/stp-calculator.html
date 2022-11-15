@@ -139,6 +139,7 @@
 
 
     function generateDeviceModel(){
+        
         let input = codeInput.value;
         let lines = input.trim().split('\n');
         lines = lines.map(x => x.trim().split(' '))
@@ -163,10 +164,25 @@
         }
         // get all device names
         let deviceNames = model.map(x => x.device);
-        f
-        console.log(deviceNames)
-        console.log(model)
-        console.log(ports)
+        let grouped = {}
+        for(i = 0; i < deviceNames.length; i++){
+            let port = []
+            for(j = 0; j < ports.length; j++){
+                if(ports[j][0] == deviceNames[i]){
+                    port.push(ports[j])
+                }
+            }
+            grouped[deviceNames[i]] = port;
+        }
+        
+        for(i = 0; i < deviceNames.length; i++){
+            let device = model[i].device;
+            let priority = model[i].priority;
+            let MACaddress = model[i].MACaddress;
+            let ports = grouped[device];
+            ports = ports.map(x => generatePortModel(x[0], x[1], x[2], x[3]));
+            addDevice(device, priority, MACaddress, ports);
+        }
         
         /*
         addDevice('SW1', 32769, '014A.38F1.BA81', [
@@ -189,6 +205,7 @@
         ]);	
         */
         
+        
     }
 
     let rootPorts = {}
@@ -197,7 +214,7 @@
         devices = {};
         diagram.innerHTML = '';
         lineDrawer.innerHTML = '';
-        return generateDeviceModel()
+        generateDeviceModel()
         let rootBridge = getRootDevice();
         devices[rootBridge].rootBridge = true;
 
@@ -249,32 +266,7 @@
             rootPorts[device] = rootPort;
 
         }
-        // out of all the ports with the type of 'null', on each device find the lowest port cost and set it to 'designated'
-        for (let device in devices) {
-            let lowestPortCost = 65535;
-            let lowestPort = null;
-            for (let port in devices[device].ports) {
-                if(devices[device].ports[port].thisPortType == 'designated') continue;
-                if(devices[device].ports[port].thisPortType == 'root') continue;
-                let connectedDevice = devices[device].ports[port].connectedDevice;
-                let connectedPort = devices[device].ports[port].connectedPort;
-                let connectedPortID = devices[device].ports[port].connectedPort.slice(-1);
-                let connectedPriority = devices[connectedDevice].priority;
-                let connectedMAC = devices[connectedDevice].MACaddress;
-                let connectedPortCost = devices[connectedDevice].ports[connectedPort].thisPortType == 'designated' ? 20000 : 10000;
-                if (connectedPortCost < lowestPortCost) {
-                    lowestPort = port;
-                    lowestPortCost = connectedPortCost;
-                }
-            }
-            if(lowestPort) {
-                devices[device].ports[lowestPort].thisPortType = 'designated';
-                // get the connected device and port and set it to non-designated
-                let connectedDevice = devices[device].ports[lowestPort].connectedDevice;
-                let connectedPort = devices[device].ports[lowestPort].connectedPort;
-                devices[connectedDevice].ports[connectedPort].thisPortType = 'non-designated';
-            }
-        }
+        // fix extra designated and non-designated ports
 
         let ports = ``;
         for(i = 0; i < Object.keys(devices).length; i++){
