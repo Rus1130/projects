@@ -346,7 +346,6 @@ SW3 g0/1 SW4 g0/0`
 
         // on each device, choose a null port with the lowest cost, lowest neighbor bridge id, and lowest port id (port #)
         // this port is a designated port
-        let nullPorts = [];
         for (let device in devices) {
             if (device == rootBridge) {
                 continue;
@@ -386,18 +385,14 @@ SW3 g0/1 SW4 g0/0`
                 }
             }
 
-            // get all of the ports that have a type of null
-            
-            for (let port in devices[device].ports) {
-                if (devices[device].ports[port].thisPortType == null) {
-                    nullPorts.push(`${device} ${port}`);
-                }
-            }
+            // for each null port, choose the port whos device has the lowest root cost and lowest bridge id 
+            // the bridge id is the bridge priority and the mac address
+            // this port is a designated port
+
+
+
+
         }
-        console.log(nullPorts)
-        // for each null port, get the closest root port
-        // if there is a tie, choose the port with the lowest neighbor bridge ID
-        // if there is a tie, choose the port with the lowest port ID (port #)
 
 
 
