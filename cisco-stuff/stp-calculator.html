@@ -226,6 +226,34 @@ SW3 g0/1 SW4 g0/0`
         devices[rootBridge].rootBridge = true;
         rootPorts = {}
 
+
+        for (let device in devices) {
+            if (devices[device].MACaddress.length != 14) {
+                return alert(`Error: Invalid MAC address for ${device}`);
+            } else {
+                let mac = devices[device].MACaddress
+                let line = mac.split('.');
+
+                for (let i = 0; i < line.length; i++) {
+                    if (line[i].length != 4) {
+                        return alert(`Error: Invalid MAC address for ${device}`);
+                    } else {
+                        // use this regex: !/^[0-9A-F]{4}\.[0-9A-F]{4}\.[0-9A-F]{4}$/i.test(devices[device].MACaddress)     
+                        if (!/^[0-9A-F]{4}$/i.test(line[i])) {
+                            return alert(`Error: Invalid MAC address for ${device}`);
+                        }              
+                    }
+                }
+            }
+        }
+
+        for (let device in devices) {
+            if (!/^[0-9A-F]{4}\.[0-9A-F]{4}\.[0-9A-F]{4}$/i.test(devices[device].MACaddress)) {
+                alert('Invalid MAC address');
+                return;
+            }
+        }
+
         // on each device, choose the port with the lowest cost to the root bridge
         // if there is a tie, choose the port with the lowest neighbor bridge ID
         // if there is a tie, choose the port with the lowest port ID (port #)
