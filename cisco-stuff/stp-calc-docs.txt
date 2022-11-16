@@ -25,3 +25,5 @@ SW1 g0/1 SW3 g0/0
 SW2 g0/0 SW4 g0/1
 SW3 g0/1 SW4 g0/0
 
+another example: https://niktips.files.wordpress.com/2012/07/stp.jpg
+
