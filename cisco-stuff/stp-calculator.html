@@ -346,6 +346,7 @@ SW3 g0/1 SW4 g0/0`
 
         // on each device, choose a null port with the lowest cost, lowest neighbor bridge id, and lowest port id (port #)
         // this port is a designated port
+        let nullPorts = [];
         for (let device in devices) {
             if (device == rootBridge) {
                 continue;
@@ -385,31 +386,18 @@ SW3 g0/1 SW4 g0/0`
                 }
             }
 
-            devices[device].ports[lowestPort].thisPortType = 'designated';
-        }
-
-        // each port opposite a designated port is a backup port
-        for (let device in devices) {
-            if (device == rootBridge) {
-                continue;
-            }
-
+            // get all of the ports that have a type of null
+            
             for (let port in devices[device].ports) {
-                let thisPort = devices[device].ports[port];
-
-                if (thisPort.thisPortType == 'designated') {
-                    let connectedDevice = thisPort.connectedDevice;
-                    let connectedPort = thisPort.connectedPort;
-
-                    if(devices[connectedDevice].ports[connectedPort].thisPortType != 'root'){
-                        devices[connectedDevice].ports[connectedPort].thisPortType = 'non-designated';
-                    }
-                    
+                if (devices[device].ports[port].thisPortType == null) {
+                    nullPorts.push(`${device} ${port}`);
                 }
             }
         }
-
-
+        console.log(nullPorts)
+        // for each null port, get the closest root port
+        // if there is a tie, choose the port with the lowest neighbor bridge ID
+        // if there is a tie, choose the port with the lowest port ID (port #)
 
 
 

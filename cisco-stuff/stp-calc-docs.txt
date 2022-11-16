@@ -4,16 +4,7 @@ device deviceName devicePriority deviceMAC
 to add a port:
 deviceName portName connectedDevice connectedPort
 
-to model this network (https://networklessons.com/wp-content/uploads/2014/10/spanning-tree-example-designated-ports.png), you would have something like this:
-
-device SW1 32769 AAAA.AAAA.AAAA
-device SW2 32769 BBBB.BBBB.BBBB
-device SW3 32769 CCCC.CCCC.CCCC
-SW1 fa0/14 SW2 fa0/14
-SW1 fa0/17 SW3 fa0/14
-SW2 fa0/16 SW3 fa0/16
-
-another example (from the STP powerpoint):
+example (from the STP powerpoint):
 device SW1 32769 014A.38F1.BA81
 device SW2 32769 193D.72DE.36E1
 device SW3 32769 014A.3821.2981
@@ -25,4 +16,13 @@ SW2 g0/0 SW4 g0/1
 SW3 g0/1 SW4 g0/0
 
 another example (https://niktips.files.wordpress.com/2012/07/stp.jpg):
+device SWA 32769 0000.0000.0001
+device SWB 32769 0000.0000.0002
+device SWC 32769 0000.0000.0003
+device SWD 32769 0000.0000.0004
+SWA g0/1 SWD g0/1
+SWA g0/2 SWC g0/2
+SWA g0/3 SWB g0/2
+SWB g0/1 SWC g0/3
+SWD g0/2 SWC g0/1
 
