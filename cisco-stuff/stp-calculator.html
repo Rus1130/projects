@@ -238,25 +238,31 @@ SW3 g0/1 SW4 g0/0`
         diagram.innerHTML = '';
         lineDrawer.innerHTML = '';
 
-        for (let device in devices) {
-            if (devices[device].MACaddress.length != 14) {
-                return alert(`Error: Invalid MAC address for ${device} (line ${i + 1})`);
-            } else {
-                // what line is the device on?
-                let i = 0;
-                for (let line of codeInput.value.split('\n')) {
-                    if (line.includes(device)) {
-                        break;
-                    }
-                    i++;
+        let lines = codeInput.value.trim().split('\n');
+        let devicePorts = {}
+        for(i = 0; i < lines.length; i++){
+            let line = lines[i].trim();
+            // get all device lines
+            if(line.startsWith('device')){
+                // check if the mac address is valid
+                let mac = line.split(' ')[3];
+                if(!mac.match(/^[0-9A-F]{4}\.[0-9A-F]{4}\.[0-9A-F]{4}$/i)){
+                    alert(`Invalid MAC address on device ${line.split(' ')[1]}`);
+                    return;
                 }
-                if (!/^[0-9A-F]{4}\.[0-9A-F]{4}\.[0-9A-F]{4}$/i.test(devices[device].MACaddress)) {
-                    alert(`Invalid MAC address for device ${device} (line ${i + 1})`);
+            } else {
+                let devicePortKey = line.split(' ')[0] + line.split(' ')[1];
+                if(devicePorts[devicePortKey] == undefined){
+                    devicePorts[devicePortKey] = 1;
+                } else {
+                    alert(`Duplicate ports (${line.split(' ')[1]}) on device ${line.split(' ')[0]}`);
                     return;
                 }
             }
+            
         }
         generateDeviceModel()
+
         let rootBridge = getRootDevice();
         devices[rootBridge].rootBridge = true;
         rootPorts = {}
