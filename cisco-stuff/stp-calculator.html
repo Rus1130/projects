@@ -43,6 +43,7 @@
         font-size: 18px;
         /* remove auto line break*/
         white-space: nowrap;
+        cursor: pointer;
     }
     #code-input {
         border-radius: 0%;
@@ -81,6 +82,19 @@
     const diagram = document.getElementById('diagram');
     const lineDrawer = document.getElementById('lineDrawer');
     const codeInput = document.getElementById('code-input');
+    
+    const portSpace = 60
+    const labelSpace = 60
+    const portRadius = 7;
+
+
+    let colors = {
+        root: '#ffd700',
+        des: '#6495ed',
+        nondes: '#ff0000'
+    }
+
+    let size = 10
 
     codeInput.value = `device SW1 32769 014A.38F1.BA81
 device SW2 32769 193D.72DE.36E1
@@ -326,7 +340,70 @@ SW3 g0/1 SW4 g0/0`
             devices[connectedDevice].ports[connectedPort].thisPortType = 'designated';
         }
 
+        // on each device, choose a null port with the lowest cost, lowest neighbor bridge id, and lowest port id (port #)
+        // this port is a designated port
+        for (let device in devices) {
+            if (device == rootBridge) {
+                continue;
+            }
 
+            let lowestCost = 65535;
+            let lowestNeighborBridgeID = 'FFFF.FFFF.FFFF';
+            let lowestPortID = 'FFFF.FFFF.FFFF';
+            let lowestPort = null;
+
+            for (let port in devices[device].ports) {
+                let thisPort = devices[device].ports[port];
+
+                if (thisPort.thisPortType != null) {
+                    continue;
+                }
+
+                if (thisPort.cost < lowestCost) {
+                    lowestCost = thisPort.cost;
+                    lowestNeighborBridgeID = devices[thisPort.connectedDevice].MACaddress;
+                    lowestPortID = thisPort.connectedPort;
+                    lowestPort = port;
+                } else if (thisPort.cost == lowestCost) {
+                    if (devices[thisPort.connectedDevice].MACaddress < lowestNeighborBridgeID) {
+                        lowestCost = thisPort.cost;
+                        lowestNeighborBridgeID = devices[thisPort.connectedDevice].MACaddress;
+                        lowestPortID = thisPort.connectedPort;
+                        lowestPort = port;
+                    } else if (devices[thisPort.connectedDevice].MACaddress == lowestNeighborBridgeID) {
+                        if (thisPort.connectedPort < lowestPortID) {
+                            lowestCost = thisPort.cost;
+                            lowestNeighborBridgeID = devices[thisPort.connectedDevice].MACaddress;
+                            lowestPortID = thisPort.connectedPort;
+                            lowestPort = port;
+                        }
+                    }
+                }
+            }
+
+            devices[device].ports[lowestPort].thisPortType = 'designated';
+        }
+
+        // each port opposite a designated port is a backup port
+        for (let device in devices) {
+            if (device == rootBridge) {
+                continue;
+            }
+
+            for (let port in devices[device].ports) {
+                let thisPort = devices[device].ports[port];
+
+                if (thisPort.thisPortType == 'designated') {
+                    let connectedDevice = thisPort.connectedDevice;
+                    let connectedPort = thisPort.connectedPort;
+
+                    if(devices[connectedDevice].ports[connectedPort].thisPortType != 'root'){
+                        devices[connectedDevice].ports[connectedPort].thisPortType = 'non-designated';
+                    }
+                    
+                }
+            }
+        }
 
 
 
@@ -376,12 +453,21 @@ SW3 g0/1 SW4 g0/0`
             // deviceDiv.style.fontSize = '10px';
             
 
-            // place the devices so they the lowest device is at the top, evenly spaced, and 
-            let angle = 360 / n;
-            let x = 50 + 200 * Math.cos(angle * i * Math.PI / 180);
-            let y = 50 + 200 * Math.sin(angle * i * Math.PI / 180);
-            deviceDiv.style.left = `${x + 200}px`;
-            deviceDiv.style.top = `${y + 200}px`;
+            // place the devices so they the lowest device is at the top, and they are evenly distributed in a circle
+            let radius = 200;
+            let step = 2 * Math.PI / n;
+            for(let angle = -step; angle <= 2 * Math.PI; angle += 2 * Math.PI){
+                let x = radius * Math.cos(angle + i * step);
+                let y = radius * Math.sin(angle + i * step);
+
+                // center the devices
+                x += 250;
+                y += 250;
+
+
+                deviceDiv.style.left = x + 'px';
+                deviceDiv.style.top = y + 'px';
+            }
 
 
             deviceDiv.innerHTML = labels[i];
@@ -524,26 +610,26 @@ SW3 g0/1 SW4 g0/0`
 
 
             let startCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            startCircle.setAttribute('cx', startDeviceX + 50 * Math.cos(angle * Math.PI / 180));
-            startCircle.setAttribute('cy', startDeviceY + 50 * Math.sin(angle * Math.PI / 180));
-            startCircle.setAttribute('r', '5');
+            startCircle.setAttribute('cx', startDeviceX + portSpace * Math.cos(angle * Math.PI / 180));
+            startCircle.setAttribute('cy', startDeviceY + portSpace * Math.sin(angle * Math.PI / 180));
+            startCircle.setAttribute('r', `${portRadius}`);
 
 
             let endCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            endCircle.setAttribute('cx', endDeviceX - 50 * Math.cos(angle * Math.PI / 180));
-            endCircle.setAttribute('cy', endDeviceY - 50 * Math.sin(angle * Math.PI / 180));
-            endCircle.setAttribute('r', '5');
+            endCircle.setAttribute('cx', endDeviceX - portSpace * Math.cos(angle * Math.PI / 180));
+            endCircle.setAttribute('cy', endDeviceY - portSpace * Math.sin(angle * Math.PI / 180));
+            endCircle.setAttribute('r', `${portRadius}`);
 
 
 
             let portType = devices[startDevice].ports[startPort].thisPortType
 
             if(portType == 'designated'){
-                startCircle.setAttribute('fill', 'cornflowerblue');
+                startCircle.setAttribute('fill', colors.des);
             } else if(portType == 'root'){
-                startCircle.setAttribute('fill', 'gold');
+                startCircle.setAttribute('fill', colors.root);
             } else if(portType == 'non-designated'){
-                startCircle.setAttribute('fill', 'red');
+                startCircle.setAttribute('fill', colors.nondes);
             } else {
                 startCircle.setAttribute('fill', 'black');
             }
@@ -552,11 +638,11 @@ SW3 g0/1 SW4 g0/0`
 
             portType = devices[endDevice].ports[endPort].thisPortType;
             if(portType == 'designated'){
-                endCircle.setAttribute('fill', 'cornflowerblue');
+                endCircle.setAttribute('fill', colors.des);
             } else if(portType == 'root'){
-                endCircle.setAttribute('fill', 'gold');
+                endCircle.setAttribute('fill', colors.root);
             } else if(portType == 'non-designated'){
-                endCircle.setAttribute('fill', 'red');
+                endCircle.setAttribute('fill', colors.nondes);
             } else {
                 endCircle.setAttribute('fill', 'black');
             }
@@ -583,21 +669,23 @@ SW3 g0/1 SW4 g0/0`
 
             // label the circles with the port name
             let startLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            startLabel.setAttribute('x', startDeviceX + 50 * Math.cos(angle * Math.PI / 180));
-            startLabel.setAttribute('y', startDeviceY + 50 * Math.sin(angle * Math.PI / 180));
+            startLabel.setAttribute('x', startDeviceX + labelSpace * Math.cos(angle * Math.PI / 180));
+            startLabel.setAttribute('y', startDeviceY + labelSpace * Math.sin(angle * Math.PI / 180));
             startLabel.setAttribute('text-anchor', 'middle');
             startLabel.setAttribute('alignment-baseline', 'middle');
             startLabel.setAttribute('font-size', '12');
             startLabel.setAttribute('font-family', 'monospace');
+            startLabel.setAttribute('port-type', portType);
             startLabel.innerHTML = startPort;
 
             let endLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            endLabel.setAttribute('x', endDeviceX - 50 * Math.cos(angle * Math.PI / 180));
-            endLabel.setAttribute('y', endDeviceY - 50 * Math.sin(angle * Math.PI / 180));
+            endLabel.setAttribute('x', endDeviceX - labelSpace * Math.cos(angle * Math.PI / 180));
+            endLabel.setAttribute('y', endDeviceY - labelSpace * Math.sin(angle * Math.PI / 180));
             endLabel.setAttribute('text-anchor', 'middle');
             endLabel.setAttribute('alignment-baseline', 'middle');
             endLabel.setAttribute('font-size', '12');
             endLabel.setAttribute('font-family', 'monospace');
+            endLabel.setAttribute('port-type', portType);
             endLabel.innerHTML = endPort;
             
 
