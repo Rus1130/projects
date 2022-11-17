@@ -1,24 +1,28 @@
 to add a device:
 device deviceName devicePriority deviceMAC
 
+g0/0 = g0/0
+Fe0/0 = f0/0
+
 to add a port:
 deviceName portName connectedDevice connectedPort
 
 example (from the STP powerpoint):
-device SW1 32769 014A.38F1.BA81
-device SW2 32769 193D.72DE.36E1
-device SW3 32769 014A.3821.2981
-device SW4 32769 83F1.2846.392F
+device SW1 32768 014A.38F1.BA81
+device SW2 32768 193D.72DE.36E1
+device SW3 32768 014A.3821.2981
+device SW4 32768 83F1.2846.392F
 SW1 g0/2 SW2 g0/1
 SW1 g0/0 SW2 g0/2
 SW1 g0/1 SW3 g0/0
 SW2 g0/0 SW4 g0/1
 SW3 g0/1 SW4 g0/0
 
-another example: https://mrncciew.files.wordpress.com/2013/07/stp-root-021.png
+another example: https://www.9tut.com/images/ccna_self_study/STP/Root_port_election_topology_RP_elected.jpg (?)
 
 
 resources:
 https://networklessons.com/spanning-tree/spanning-tree-cost-calculation
 https://mrncciew.com/2013/07/07/stp-root-port-selection/
+https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst4000/8-2glx/configuration/guide/spantree.html#wp1193557
 
