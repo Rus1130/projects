@@ -121,11 +121,9 @@ SW3 g0/1 SW4 g0/0`
         return {[thisPort] : {
             thisDevice: thisDevice,
             thisPort: thisPort,
-            thisPortType: 'none',
-            cost: costs[thisPort[0]],
-
             connectedDevice: connectedDevice,
             connectedPort: connectedPort,
+            thisPortType: 'undefined',
         }};
     }
 
@@ -241,6 +239,8 @@ SW3 g0/1 SW4 g0/0`
         }
 
         devices[rootBridge].rootBridge = true;
+
+        // for each device, calculate the shortest path to the root bridge
 
         
 
