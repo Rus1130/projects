@@ -109,6 +109,11 @@ SW2 g0/0 SW4 g0/1
 SW3 g0/1 SW4 g0/0`
     let devices = {};
 
+    const costs = {
+        'F': 19,
+        'g': 4
+    }
+
     
     function generatePortModel(thisDevice, thisPort, connectedDevice, connectedPort) {
 
@@ -116,8 +121,7 @@ SW3 g0/1 SW4 g0/0`
             thisDevice: thisDevice,
             thisPort: thisPort,
             thisPortType: 'none',
-            cost: 0,
-            path: [`${thisDevice} ${thisPort}`],
+            cost: costs[thisPort[0]],
 
             connectedDevice: connectedDevice,
             connectedPort: connectedPort,
@@ -237,12 +241,14 @@ SW3 g0/1 SW4 g0/0`
 
         devices[rootBridge].rootBridge = true;
 
-        // for each device
-        for(device in devices){
-            for(port in devices[device].ports){
-                   console.log(devices[device].ports[port])
-            }
-        }
+       
+
+
+
+
+
+        
+                    
 
 
 
