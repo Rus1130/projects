@@ -15,16 +15,8 @@ SW1 g0/1 SW3 g0/0
 SW2 g0/0 SW4 g0/1
 SW3 g0/1 SW4 g0/0
 
-another example (https://niktips.files.wordpress.com/2012/07/stp.jpg):
-device SWA 32769 0000.0000.0001
-device SWB 32769 0000.0000.0002
-device SWC 32769 0000.0000.0003
-device SWD 32769 0000.0000.0004
-SWA g0/1 SWD g0/1
-SWA g0/2 SWC g0/2
-SWA g0/3 SWB g0/2
-SWB g0/1 SWC g0/3
-SWD g0/2 SWC g0/1
+another example: https://mrncciew.files.wordpress.com/2013/07/stp-root-021.png
+
 
 resources:
 https://networklessons.com/spanning-tree/spanning-tree-cost-calculation
