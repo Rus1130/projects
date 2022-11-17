@@ -116,7 +116,8 @@ SW3 g0/1 SW4 g0/0`
             thisDevice: thisDevice,
             thisPort: thisPort,
             thisPortType: 'none',
-            cost: thisPort[0] == 'g' ? 4 : 19,
+            cost: 0,
+            path: [`${thisDevice} ${thisPort}`],
 
             connectedDevice: connectedDevice,
             connectedPort: connectedPort,
@@ -217,31 +218,35 @@ SW3 g0/1 SW4 g0/0`
         generateDeviceModel()
         let rootBridge = undefined;
 
-        // the device with the lowest bridge ID becomes root bridge (bridge ID is the bridge priority and MAC address)
+        // the device with the lowest priority is the root bridge
+        // if there are multiple devices with the same priority, the device with the lowest MAC address is the root bridge
+        let lowestPriority = 65535;
+        let lowestMAC = 'FFFF.FFFF.FFFF';
         for(device in devices){
-            if(rootBridge == undefined){
+            if(devices[device].priority < lowestPriority){
+                lowestPriority = devices[device].priority;
+                lowestMAC = devices[device].MACaddress;
                 rootBridge = device;
-            } else {
-                if(devices[device].priority < devices[rootBridge].priority){
+            } else if(devices[device].priority == lowestPriority){
+                if(devices[device].MACaddress < lowestMAC){
+                    lowestMAC = devices[device].MACaddress;
                     rootBridge = device;
-                } else if(devices[device].priority == devices[rootBridge].priority){
-                    if(devices[device].MACaddress < devices[rootBridge].MACaddress){
-                        rootBridge = device;
-                    }
                 }
             }
         }
+
         devices[rootBridge].rootBridge = true;
-        // all ports on the root bridge set to designated
-        for(port in devices[rootBridge].ports){
-            devices[rootBridge].ports[port].thisPortType = 'designated';
-            let connectedDevice = devices[rootBridge].ports[port].connectedDevice;
-            let connectedPort = devices[rootBridge].ports[port].connectedPort;
-            devices[connectedDevice].ports[connectedPort].thisPortType = 'root';
+
+        // for each device
+        for(device in devices){
+            for(port in devices[device].ports){
+                   console.log(devices[device].ports[port])
+            }
         }
 
-        // on each device, find the port with the lowest root cost AND lowest neighbor bridge ID AND lowest port number
-        // set that port to designated
+
+
+
 
 
 
