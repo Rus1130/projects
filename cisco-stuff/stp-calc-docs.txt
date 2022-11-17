@@ -26,3 +26,7 @@ SWA g0/3 SWB g0/2
 SWB g0/1 SWC g0/3
 SWD g0/2 SWC g0/1
 
+resources:
+https://networklessons.com/spanning-tree/spanning-tree-cost-calculation
+https://mrncciew.com/2013/07/07/stp-root-port-selection/
+
