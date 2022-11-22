@@ -62,7 +62,7 @@
 
 </head>
 <body>
-    <div style="font-size: 50px">ALMOST WORKS</div>
+    <div style="font-size: 50px">NEED MORE TEST CASES</div>
     <div id="rootBridgeDisplay" style="width:max-content"></div><br>
     <div id="portsDisplay" style="width:max-content"></div>
 
@@ -353,7 +353,24 @@ SW3 g0/1 SW4 g0/0`
                     let connectedDevice = devices[device].ports[port].connectedDevice;
                     let connectedPort = devices[device].ports[port].connectedPort;
                     if(!(devices[device].bestPort == port && devices[connectedDevice].bestPort == connectedPort)){
+                        // check if at least one best port with type 'undefined' is connected to a 'undefined' port
+                        let undefinedPort = false;
+                        for(port in devices[device].ports){
+                            if(devices[device].ports[port].thisPortType == 'undefined'){
+                                undefinedPort = true;
+                                break;
+                            }
+                        }
 
+                        if(undefinedPort){
+                            if(+devices[device].ports[port].thisPort.slice(-1) > devices[connectedDevice].ports[connectedPort].thisPort.slice(-1)){
+                                devices[device].ports[port].thisPortType = 'designated';
+                                devices[connectedDevice].ports[connectedPort].thisPortType = 'non-designated';
+                            }
+                        } else {
+                            devices[device].ports[port].thisPortType = 'designated';
+                            devices[connectedDevice].ports[connectedPort].thisPortType = 'non-designated';
+                        }
                     } else {
                         devices[device].ports[port].thisPortType = 'designated';
                         devices[connectedDevice].ports[connectedPort].thisPortType = 'non-designated';
