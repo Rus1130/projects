@@ -84,8 +84,8 @@
     const lineDrawer = document.getElementById('lineDrawer');
     const codeInput = document.getElementById('code-input');
     
-    const portSpace = 60
-    const labelSpace = 60
+    const portSpace = 60;
+    const labelSpace = 60;
     const portRadius = 6;
 
 
@@ -298,26 +298,8 @@ SW3 g0/1 SW4 g0/0`
             let lowestBridgeID = 'FFFF.FFFF.FFFF';
             let lowestPort = undefined;
             for(port in devices[device].ports){
-                if(devices[device].ports[port].thisPortType == 'root' || devices[device].ports[port].thisPortType == 'designated') continue;
-                let connectedDevice = devices[device].ports[port].connectedDevice;
-                let connectedPort = devices[device].ports[port].connectedPort;
-                let connectedDevicePriority = devices[connectedDevice].priority;
-                let connectedDeviceMAC = devices[connectedDevice].MACaddress;
-                let connectedDevicePortPriority = devices[connectedDevice].ports[connectedPort].thisPortType == 'f' ? 128 : 0;
-                let rootCost = connectedDevicePriority + connectedDevicePortPriority;
-                if(rootCost < lowestRootCost){
-                    lowestRootCost = rootCost;
-                    lowestBridgeID = connectedDeviceMAC;
-                    lowestPort = port;
-                } else if(rootCost == lowestRootCost){
-                    lowestBridgeID = getLowestMACAddresses(connectedDeviceMAC, lowestBridgeID);
-                    if(lowestBridgeID == connectedDeviceMAC){
-                        lowestPort = port;
-                    }
-                }
+                // only run this the amount of times there are 'none' ports divided by 2
             }
-            devices[device].ports[lowestPort].thisPortType = 'designated';
-            devices[devices[device].ports[lowestPort].connectedDevice].ports[devices[device].ports[lowestPort].connectedPort].thisPortType = 'non-designated';
         }
 
 
