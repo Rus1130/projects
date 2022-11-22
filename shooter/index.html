@@ -1,0 +1,176 @@
+<style>
+    #area {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+    }
+    svg {
+        overflow: visible;
+    }
+    #player {
+        position: absolute;
+        top: calc(50% - 33px);
+        left: calc(50% - 26px);
+    }
+</style>
+<head>
+
+</head>
+<body>
+    <div id="area">
+        <svg width="50" height="50" id='player' viewBox="0 0 50 50" transformOrigin="24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="50" height="50" fill="#FF0000"/>
+            <rect x="24" y="24" id="cannonCenterer" width="2" height="2" fill="yellow"/>
+            <g id="cannon">
+                <rect x="16" y="18" width="50" height="15" fill="black"/>
+            </g>
+        </svg>
+    </div>
+</body>
+<script>
+    const area = document.getElementById('area');
+
+    const playerData = {
+        x: 0,
+        y: 0,
+        interval: null,
+        up: 'w',
+        down: 's',
+        left: 'a',
+        right: 'd',
+        cannonRotation: 0,
+        speed: 1,
+        xp: 0,
+        levels: {
+            1: {
+                svg: '<path d="M15 15H34.6078V35H15V15Z" fill="black"/>',
+                xp: 10,
+            }
+        }
+    }
+
+    function move(x, y){
+        const player = document.getElementById('player');
+        const playerRect = player.getBoundingClientRect();
+        const areaRect = area.getBoundingClientRect();
+        const newX = playerRect.left + x;
+        const newY = playerRect.top + y;
+        if(newX >= areaRect.left && newX <= areaRect.right - playerRect.width){
+            player.style.left = newX + 'px';
+        }
+        if(newY >= areaRect.top && newY <= areaRect.bottom - playerRect.height){
+            player.style.top = newY + 'px';
+        }
+    }
+
+
+    // add a player controler that has smooth movement, multiple keys, friction, and rotates the player based on the direction they are moving
+    function playerController(){
+        const player = document.getElementById('player');
+        const playerRect = player.getBoundingClientRect();
+        const areaRect = area.getBoundingClientRect();
+        const keys = {};
+        const friction = 0.9;
+        window.addEventListener('keydown', function(e){
+            keys[e.key] = true;
+        });
+        window.addEventListener('keyup', function(e){
+            keys[e.key] = false;
+        });
+        function movePlayer(){
+            if(keys[playerData.up]){
+                playerData.y -= playerData.speed;
+            }
+            if(keys[playerData.down]){
+                playerData.y += playerData.speed;
+            }
+            if(keys[playerData.left]){
+                playerData.x -= playerData.speed;
+            }
+            if(keys[playerData.right]){
+                playerData.x += playerData.speed;
+            }
+            
+            playerData.x *= friction;
+            playerData.y *= friction;
+            
+            move(playerData.x, playerData.y);
+        }
+        playerData.interval = setInterval(movePlayer, 1000/60);
+
+        
+    }
+
+    function rotate_point(pointX,pointY,originX,originY,angle) {
+        angle = angle * Math.PI / 180.0;
+        return {
+            x: Math.cos(angle) * (pointX-originX) - Math.sin(angle) * (pointY-originY) + originX,
+            y: Math.sin(angle) * (pointX-originX) + Math.cos(angle) * (pointY-originY) + originY
+        };
+    }
+
+
+    // rotate the cannon around the center of the player based on the mouse position, make sure the barrel of the cannon is always pointing at the mouse
+    function cannonController(){
+        // console log the mouse position
+        window.addEventListener('mousemove', function(e){
+            const player = document.getElementById('player');
+            const playerRect = player.getBoundingClientRect();
+            const cannon = document.getElementById('cannon');
+            const cannonCenterer = document.getElementById('cannonCenterer');
+            const cannonCentererRect = cannonCenterer.getBoundingClientRect();
+            const cannonRect = cannon.getBoundingClientRect();
+            const cannonCentererX = cannonCentererRect.left + cannonCentererRect.width/2;
+            const cannonCentererY = cannonCentererRect.top + cannonCentererRect.height/2;
+            const mouseX = e.clientX
+            const mouseY = e.clientY
+            const angle = (Math.atan2(mouseY - cannonCentererY, mouseX - cannonCentererX)) * 180 / Math.PI;
+            const newPoint = rotate_point(cannonRect.left, cannonRect.top, cannonCentererX, cannonCentererY, angle);
+
+            cannon.style.transformOrigin = `${cannonCentererX - playerRect.left}px ${cannonCentererY - playerRect.top}px`;
+            cannon.style.transform = `rotate(${angle}deg)`;
+
+            
+
+
+        });
+    }
+
+    // on click, create a bullet that is placed at the end of the barrel and moves in the direction of the cannon, and when it hits anything that is an svg, console log the id of the svg
+    function bulletController(){
+        window.addEventListener('click', function(e){
+            // get the x and y coordinates of the end of the barrel
+            const player = document.getElementById('player');
+            const playerRect = player.getBoundingClientRect();
+            const cannon = document.getElementById('cannon');
+            const cannonRect = cannon.getBoundingClientRect();
+            const cannonCenterer = document.getElementById('cannonCenterer');
+            const cannonCentererRect = cannonCenterer.getBoundingClientRect();
+            // place the bullet in the center of the player
+            const bullet = document.createElement('div');
+            bullet.style.position = 'absolute';
+            bullet.style.left = playerRect.left + playerRect.width/2 + 'px';
+            bullet.style.top = playerRect.top + playerRect.height/2 + 'px';
+            bullet.style.width = '10px';
+            bullet.style.height = '10px';
+            bullet.style.backgroundColor = 'black';
+            bullet.style.borderRadius = '50%';
+
+            // offset the bullet so it is at the end of the barrel
+            const angle = (Math.atan2(e.clientY - cannonCentererRect.top, e.clientX - cannonCentererRect.left)) * 180 / Math.PI;
+            const newPoint = rotate_point(cannonRect.left, cannonRect.top, cannonCentererRect.left, cannonCentererRect.top, angle);
+            bullet.style.left = newPoint.x + 'px';
+            bullet.style.top = newPoint.y + 'px';
+            area.appendChild(bullet);
+
+        });
+    }
+
+
+    bulletController();
+    playerController();
+    cannonController();
+</script>
