@@ -288,15 +288,24 @@ SW3 g0/1 SW4 g0/0`
             devices[device].bestPort = bestPort;
         }
 
-        // the best port of a device is the port with the lowest root cost
+        // the best port of a device is the port with the lowest root cost and lowest port id
+        // if there are multiple ports with the same root cost and port id, the port with the lowest MAC address is the best port
         for(device in devices){
+            let bestPort = undefined;
             for(port in devices[device].ports){
-                if(devices[device].ports[port].connectedDevice == rootBridge){
-                    devices[device].ports[port].bestPort = true;
+                if(bestPort == undefined){
+                    bestPort = port;
                 } else {
-                    devices[device].ports[port].bestPort = devices[devices[device].ports[port].connectedDevice].bestPort == devices[device].ports[port].connectedPort;
+                    if(devices[device].ports[port].rootCost < devices[device].ports[bestPort].rootCost){
+                        bestPort = port;
+                    } else if(devices[device].ports[port].rootCost == devices[device].ports[bestPort].rootCost){
+                        if(devices[device].ports[port].portID < devices[device].ports[bestPort].portID){
+                            bestPort = port;
+                        }
+                    }
                 }
             }
+            devices[device].bestPort = bestPort;
         }
 
         // the best port of a device is the port with the lowest root cost
@@ -343,13 +352,11 @@ SW3 g0/1 SW4 g0/0`
                 if(devices[device].ports[port].thisPortType == 'undefined'){
                     let connectedDevice = devices[device].ports[port].connectedDevice;
                     let connectedPort = devices[device].ports[port].connectedPort;
-                    // if the devices best port is connected to another devices best port, the port is designated
-                    if(devices[device].bestPort == port && devices[connectedDevice].bestPort == connectedPort){
+                    if(!(devices[device].bestPort == port && devices[connectedDevice].bestPort == connectedPort)){
+
+                    } else {
                         devices[device].ports[port].thisPortType = 'designated';
                         devices[connectedDevice].ports[connectedPort].thisPortType = 'non-designated';
-                    } else {
-                        devices[device].ports[port].thisPortType = 'non-designated';
-                        devices[connectedDevice].ports[connectedPort].thisPortType = 'designated';
                     }
                 }
             }

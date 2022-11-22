@@ -18,7 +18,19 @@ SW1 g0/1 SW3 g0/0
 SW2 g0/0 SW4 g0/1
 SW3 g0/1 SW4 g0/0
 
-another example: https://www.9tut.com/images/ccna_self_study/STP/Root_port_election_topology_RP_elected.jpg (?)
+another example: (https://ptgmedia.pearsoncmg.com/images/chap3_9781587145230/elementLinks/03fig01_alt.jpg):
+device SW1 32768 0062.EC9D.C500
+device SW2 32768 0081.C4FF.8B00
+device SW3 32768 189C.5D11.9980
+device SW4 32768 70DF.2F22.B880
+device SW5 32768 BC67.1C5C.9300
+SW1 g0/2 SW2 g0/1
+SW1 g0/3 SW3 g0/1
+SW2 g0/3 SW3 g0/2
+SW2 g0/4 SW4 g0/2
+SW3 g0/5 SW5 g0/3
+SW4 g0/5 SW5 g0/4
+SW4 g0/6 SW5 g0/5
 
 
 resources:
