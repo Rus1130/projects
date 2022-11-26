@@ -33,7 +33,7 @@
 <script>
     const area = document.getElementById('area');
 
-    const playerData = {
+    const gameData = {
         x: 0,
         y: 0,
         interval: null,
@@ -41,15 +41,21 @@
         down: 's',
         left: 'a',
         right: 'd',
-        cannonRotation: 0,
+        cannonAngle: 0,
         speed: 1,
+        bulletSpeed: 0.9,
+        friction: 0.95,
         xp: 0,
         levels: {
             1: {
                 svg: '<path d="M15 15H34.6078V35H15V15Z" fill="black"/>',
                 xp: 10,
             }
-        }
+        },
+        mouseX: 0,
+        mouseX: 0,
+        intervalLength: 1000/60,
+        
     }
 
     function move(x, y){
@@ -66,14 +72,36 @@
         }
     }
 
+    function moveBullet(x, y, bullet){
+        const bulletRect = bullet.getBoundingClientRect();
+        const areaRect = area.getBoundingClientRect();
+        const newX = bulletRect.left + x;
+        const newY = bulletRect.top + y;
+        if(newX >= areaRect.left && newX <= areaRect.right - bulletRect.width){
+            bullet.style.left = newX + 'px';
+        }
+        if(newY >= areaRect.top && newY <= areaRect.bottom - bulletRect.height){
+            bullet.style.top = newY + 'px';
+        }
+    }
+
 
     // add a player controler that has smooth movement, multiple keys, friction, and rotates the player based on the direction they are moving
+    function mouseController(e){
+        document.addEventListener('mousemove', onMouseUpdate, false);
+        document.addEventListener('mouseenter', onMouseUpdate, false);
+            
+        function onMouseUpdate(e) {
+            gameData.mouseX = e.pageX;
+            gameData.mouseY = e.pageY;
+        }
+    }
+
     function playerController(){
         const player = document.getElementById('player');
         const playerRect = player.getBoundingClientRect();
         const areaRect = area.getBoundingClientRect();
         const keys = {};
-        const friction = 0.9;
         window.addEventListener('keydown', function(e){
             keys[e.key] = true;
         });
@@ -81,27 +109,44 @@
             keys[e.key] = false;
         });
         function movePlayer(){
-            if(keys[playerData.up]){
-                playerData.y -= playerData.speed;
+            if(keys[gameData.up]){
+                gameData.y -= gameData.speed;
             }
-            if(keys[playerData.down]){
-                playerData.y += playerData.speed;
+            if(keys[gameData.down]){
+                gameData.y += gameData.speed;
             }
-            if(keys[playerData.left]){
-                playerData.x -= playerData.speed;
+            if(keys[gameData.left]){
+                gameData.x -= gameData.speed;
             }
-            if(keys[playerData.right]){
-                playerData.x += playerData.speed;
+            if(keys[gameData.right]){
+                gameData.x += gameData.speed;
             }
             
-            playerData.x *= friction;
-            playerData.y *= friction;
+            gameData.x *= gameData.friction;
+            gameData.y *= gameData.friction;
             
-            move(playerData.x, playerData.y);
+            move(gameData.x, gameData.y);
         }
-        playerData.interval = setInterval(movePlayer, 1000/60);
+        gameData.interval = setInterval(movePlayer, 1000/60);
 
-        
+        function updateCannonAngle(){
+            const cannon = document.getElementById('cannon');
+            const cannonCenterer = document.getElementById('cannonCenterer');
+            const cannonCentererRect = cannonCenterer.getBoundingClientRect();
+            const playerRect = player.getBoundingClientRect();
+            const areaRect = area.getBoundingClientRect();
+            const mouseX = gameData.mouseX;
+            const mouseY = gameData.mouseY;
+            const cannonCentererX = cannonCentererRect.left + (cannonCentererRect.width / 2);
+            const cannonCentererY = cannonCentererRect.top + (cannonCentererRect.height / 2);
+            const playerX = playerRect.left + (playerRect.width / 2);
+            const playerY = playerRect.top + (playerRect.height / 2);
+            const angle = Math.atan2(mouseY - cannonCentererY, mouseX - cannonCentererX) * 180 / Math.PI;
+            gameData.cannonAngle = angle;
+        }
+
+        setInterval(updateCannonAngle, 1000/60);
+        setInterval(mouseController, 1000/60);
     }
 
     function rotate_point(pointX,pointY,originX,originY,angle) {
@@ -111,12 +156,8 @@
             y: Math.sin(angle) * (pointX-originX) + Math.cos(angle) * (pointY-originY) + originY
         };
     }
-
-
-    // rotate the cannon around the center of the player based on the mouse position, make sure the barrel of the cannon is always pointing at the mouse
     function cannonController(){
-        // console log the mouse position
-        window.addEventListener('mousemove', function(e){
+        function rotateCannon(){
             const player = document.getElementById('player');
             const playerRect = player.getBoundingClientRect();
             const cannon = document.getElementById('cannon');
@@ -125,18 +166,18 @@
             const cannonRect = cannon.getBoundingClientRect();
             const cannonCentererX = cannonCentererRect.left + cannonCentererRect.width/2;
             const cannonCentererY = cannonCentererRect.top + cannonCentererRect.height/2;
-            const mouseX = e.clientX
-            const mouseY = e.clientY
+            const mouseX = gameData.mouseX
+            const mouseY = gameData.mouseY
             const angle = (Math.atan2(mouseY - cannonCentererY, mouseX - cannonCentererX)) * 180 / Math.PI;
             const newPoint = rotate_point(cannonRect.left, cannonRect.top, cannonCentererX, cannonCentererY, angle);
 
             cannon.style.transformOrigin = `${cannonCentererX - playerRect.left}px ${cannonCentererY - playerRect.top}px`;
-            cannon.style.transform = `rotate(${angle}deg)`;
-
-            
-
-
-        });
+            cannon.style.transform = `rotate(${gameData.cannonAngle}deg)`;
+        }
+       
+        
+        setInterval(rotateCannon, 1000/60);
+        
     }
 
     // on click, create a bullet that is placed at the end of the barrel and moves in the direction of the cannon, and when it hits anything that is an svg, console log the id of the svg
@@ -158,18 +199,38 @@
             bullet.style.height = '10px';
             bullet.style.backgroundColor = 'black';
             bullet.style.borderRadius = '50%';
-
-            // offset the bullet so it is at the end of the barrel
-            const angle = (Math.atan2(e.clientY - cannonCentererRect.top, e.clientX - cannonCentererRect.left)) * 180 / Math.PI;
-            const newPoint = rotate_point(cannonRect.left, cannonRect.top, cannonCentererRect.left, cannonCentererRect.top, angle);
-            bullet.style.left = newPoint.x + 'px';
-            bullet.style.top = newPoint.y + 'px';
             area.appendChild(bullet);
-
+            const angle = gameData.cannonAngle;
+            const bulletData = {
+                x: 0,
+                y: 0,
+                speed: 0.5,
+                angle: angle,
+                interval: null
+            }
+            function updateBulletPos(){
+                bulletData.x += bulletData.speed * Math.cos(bulletData.angle * Math.PI / 180);
+                bulletData.y += bulletData.speed * Math.sin(bulletData.angle * Math.PI / 180);
+                moveBullet(bulletData.x, bulletData.y, bullet);
+                // if the bullet hits an svg, console log the id of the svg
+                const bulletRect = bullet.getBoundingClientRect();
+                const areaRect = area.getBoundingClientRect();
+                const svgElements = document.getElementsByTagName('svg');
+                for(let i = 0; i < svgElements.length; i++){
+                    const svgRect = svgElements[i].getBoundingClientRect();
+                    if(bulletRect.left > svgRect.left && bulletRect.left < svgRect.left + svgRect.width && bulletRect.top > svgRect.top && bulletRect.top < svgRect.top + svgRect.height && svgElements[i].id != 'player'){
+                        console.log(svgElements[i].id);
+                        clearInterval(bulletData.interval);
+                        bullet.remove();
+                    }
+                }
+            }
+            bulletData.interval = setInterval(updateBulletPos, 1000/60);
         });
     }
 
 
+    // onload event
     bulletController();
     playerController();
     cannonController();
