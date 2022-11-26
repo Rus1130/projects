@@ -85,8 +85,72 @@
         }
     }
 
+    function outlineScreen(){
+        const svgOutlines = {
+            top: document.createElementNS('http://www.w3.org/2000/svg', 'rect'),
+            bottom: document.createElementNS('http://www.w3.org/2000/svg', 'rect'),
+            left: document.createElementNS('http://www.w3.org/2000/svg', 'rect'),
+            right: document.createElementNS('http://www.w3.org/2000/svg', 'rect'),
+        }
+        const outlineSize = 25;
+        const outlineColor = 'grey';
 
-    // add a player controler that has smooth movement, multiple keys, friction, and rotates the player based on the direction they are moving
+        svgOutlines.top.setAttribute('width', '100%');
+        svgOutlines.top.setAttribute('height', `${outlineSize}px`);
+        svgOutlines.top.setAttribute('fill', outlineColor);
+        svgOutlines.top.setAttribute('x', '0');
+        svgOutlines.top.setAttribute('y', '0');
+
+        svgOutlines.bottom.setAttribute('width', '100%');
+        svgOutlines.bottom.setAttribute('height', `${outlineSize}px`);
+        svgOutlines.bottom.setAttribute('fill', outlineColor);
+        svgOutlines.bottom.setAttribute('x', '0');
+        svgOutlines.bottom.setAttribute('y', `calc(100% - ${outlineSize}px)`);
+
+        svgOutlines.left.setAttribute('width', `${outlineSize}px`);
+        svgOutlines.left.setAttribute('height', '100%');
+        svgOutlines.left.setAttribute('fill', outlineColor);
+        svgOutlines.left.setAttribute('x', '0');
+        svgOutlines.left.setAttribute('y', '0');
+
+        svgOutlines.right.setAttribute('width', `${outlineSize}px`);
+        svgOutlines.right.setAttribute('height', '100%')
+        svgOutlines.right.setAttribute('fill', outlineColor);
+        svgOutlines.right.setAttribute('x', `calc(100% - ${outlineSize}px)`);
+
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+
+        svg.style.zIndex = '-1';
+
+        svg.appendChild(svgOutlines.top);
+        svg.appendChild(svgOutlines.bottom);
+        svg.appendChild(svgOutlines.left);
+        svg.appendChild(svgOutlines.right);
+
+        
+        svgOutlines.top.setAttribute('collider', 'true');
+        svgOutlines.bottom.setAttribute('collider', 'true');
+        svgOutlines.left.setAttribute('collider', 'true');
+        svgOutlines.right.setAttribute('collider', 'true');
+
+        svg.style.position = 'absolute';
+        svg.style.width = '100%';
+        svg.style.height = '100%';
+
+        area.appendChild(svg);
+
+    }
+
+
+    window.addEventListener('resize', () => {
+        const player = document.getElementById('player');
+        const playerRect = player.getBoundingClientRect();
+        const areaRect = area.getBoundingClientRect();
+        player.style.left = (areaRect.width / 2) - (playerRect.width / 2) + 'px';
+        player.style.top = (areaRect.height / 2) - (playerRect.height / 2) + 'px';
+        outlineScreen()
+    });
+
     function mouseController(e){
         document.addEventListener('mousemove', onMouseUpdate, false);
         document.addEventListener('mouseenter', onMouseUpdate, false);
@@ -95,6 +159,18 @@
             gameData.mouseX = e.pageX;
             gameData.mouseY = e.pageY;
         }
+    }
+
+    // get all elements that have the property 'collideable'
+    function getColliders(){
+        const collideables = [];
+        const allElements = document.getElementsByTagName('*');
+        for(let i = 0; i < allElements.length; i++){
+            if(allElements[i].hasAttribute('collider')){
+                collideables.push(allElements[i]);
+            }
+        }
+        return collideables;
     }
 
     function playerController(){
@@ -216,12 +292,14 @@
                 const bulletRect = bullet.getBoundingClientRect();
                 const areaRect = area.getBoundingClientRect();
                 const svgElements = document.getElementsByTagName('svg');
-                for(let i = 0; i < svgElements.length; i++){
-                    const svgRect = svgElements[i].getBoundingClientRect();
-                    if(bulletRect.left > svgRect.left && bulletRect.left < svgRect.left + svgRect.width && bulletRect.top > svgRect.top && bulletRect.top < svgRect.top + svgRect.height && svgElements[i].id != 'player'){
-                        console.log(svgElements[i].id);
-                        clearInterval(bulletData.interval);
+                let colliders = getColliders();
+                // if the bullet hits a collideables, remove the bullet
+                for(let i = 0; i < colliders.length; i++){
+                    const collideable = colliders[i];
+                    const colliderRect = collideable.getBoundingClientRect();
+                    if(bulletRect.left + bulletRect.width > colliderRect.left && bulletRect.left < colliderRect.left + colliderRect.width && bulletRect.top + bulletRect.height > colliderRect.top && bulletRect.top < colliderRect.top + colliderRect.height){
                         bullet.remove();
+                        clearInterval(bulletData.interval);
                     }
                 }
             }
@@ -230,7 +308,7 @@
     }
 
 
-    // onload event
+    outlineScreen();
     bulletController();
     playerController();
     cannonController();
