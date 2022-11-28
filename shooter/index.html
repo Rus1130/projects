@@ -70,20 +70,29 @@
     const enemies = {
         0: {
             level: 1,
-            name: 'basic',
+            name: 'Grunt',
             lock: false,
+            xp: 2,
             lockFunction: function(i) {
-                spawnBasic(i)
-                spawnBasic(i)
-                spawnBasic(i)
-                spawnBasic(i)
-                spawnBasic(i)
+                spawnGrunt(i)
+                spawnGrunt(i)
+                spawnGrunt(i)
+                spawnGrunt(i)
+                spawnGrunt(i)
             },
         },
         1: {
             level: 2,
-            name: 'advanced',
+            name: 'Soldier',
             lock: false,
+            xp: 3,
+            lockFunction: function(i) {
+                spawnSoldier(i)
+                spawnSoldier(i)
+                spawnSoldier(i)
+                spawnSoldier(i)
+                spawnSoldier(i)
+            },
         },
     }
 
@@ -376,12 +385,14 @@
                         // get attribute value
                         let attribute = collideable.getAttribute('collider');
                         if(attribute == 'true'){
-                            collideable.remove();
-                            // get the id of the collider
                             let id = collideable.getAttribute('id').split('-')[0];
-                            if(id == 'basic'){
-                                addXp(2);
+                            if(id == 'Grunt'){
+                                addXp(2)
                             }
+                            if(id == 'Soldier'){
+                                addXp(4)
+                            }
+                            collideable.remove();
                         }
 
                     }
@@ -427,7 +438,7 @@
             enemyController()
             if(gameData.xp >= gameData.xpToNextLevel){
                 gameData.xp -= gameData.xpToNextLevel;
-                gameData.xpToNextLevel *= 1.2;
+                gameData.xpToNextLevel *= 1.5;
                 gameData.level++;
                 for(let i = 0; i < xpBar.children.length; i++){
                     xpBar.children[i].style.backgroundColor = 'white';
@@ -443,14 +454,27 @@
         gameData.xp += amnt;
     }
 
-    function spawnBasic(i){
+    function spawnGrunt(i){
         const enemy = document.createElement('div');
         enemy.style.position = 'absolute';
-        enemy.style.left = Math.random() * (area.getBoundingClientRect().width - 100) + 'px';
-        enemy.style.top = Math.random() * (area.getBoundingClientRect().height - 100) + 'px';
+        enemy.style.left = Math.random() * (area.getBoundingClientRect().width - 200) + 'px';
+        enemy.style.top = Math.random() * (area.getBoundingClientRect().height - 200) + 'px';
         enemy.style.width = '20px';
         enemy.style.height = '20px';
         enemy.style.backgroundColor = 'black';
+        enemy.style.zIndex = '1';
+        enemy.id = `${enemies[i].name}-${i}`;
+        enemy.setAttribute('collider', 'true');
+        area.appendChild(enemy);
+    }
+    function spawnSoldier(i){
+        const enemy = document.createElement('div');
+        enemy.style.position = 'absolute';
+        enemy.style.left = Math.random() * (area.getBoundingClientRect().width - 200) + 'px';
+        enemy.style.top = Math.random() * (area.getBoundingClientRect().height - 200) + 'px';
+        enemy.style.width = '20px';
+        enemy.style.height = '20px';
+        enemy.style.backgroundColor = 'blue';
         enemy.style.zIndex = '1';
         enemy.id = `${enemies[i].name}-${i}`;
         enemy.setAttribute('collider', 'true');
