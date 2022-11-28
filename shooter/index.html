@@ -86,7 +86,6 @@
         },
         1: {
             wave: 2,
-            name: 'Grunt',
             lock: false,
             lockFunction: function(i) {
                 spawnGrunt(i)
@@ -99,7 +98,6 @@
         },
         2: {
             wave: 3,
-            name: 'Soldier',
             lock: false,
             lockFunction: function(i) {
                 spawnSoldier(i)
@@ -424,7 +422,10 @@
 
     function removeHeart(amnt){
         for(i = 0; i < amnt; i++){
-            document.getElementById(`health-pip${(gameData.currentHealth - 1) - i}`).style.backgroundColor = 'white';
+            // remove the child
+            const heart =  document.getElementById(`health-pip${(gameData.currentHealth - 1) - i}`)
+            heart.remove();
+           
         }
         gameData.currentHealth -= amnt;
     }
@@ -482,6 +483,7 @@
         enemy.style.zIndex = '1';
         enemy.id = `${enemies[i].name}-${i}`;
         enemy.setAttribute('collider', 'true');
+        enemy.setAttribute('enemyName', 'Grunt');
         gameData.enemyCount++;
         area.appendChild(enemy);
     }
@@ -495,6 +497,7 @@
         enemy.style.backgroundColor = 'blue';
         enemy.style.zIndex = '1';
         enemy.id = `${enemies[i].name}-${i}`;
+        enemy.setAttribute('enemyName', 'Grunt');
         enemy.setAttribute('collider', 'true');
         gameData.enemyCount++;
         area.appendChild(enemy);
@@ -516,6 +519,60 @@
         }, 1000/60);
     }
 
+    // make the grunt enemies follow the player
+    function gruntController(){
+        // get the players x and y position
+        setInterval(function(){
+            if(!gameData.playing) return;
+            let playerX = player.getBoundingClientRect().left;
+            let playerY = player.getBoundingClientRect().top;
+            let enemies = document.querySelectorAll('[collider="true"]');
+            for(let i = 0; i < enemies.length; i++){
+                let enemyX = enemies[i].getBoundingClientRect().left;
+                let enemyY = enemies[i].getBoundingClientRect().top;
+                if(enemies[i].id.split('-')[0] == 'Grunt'){
+                    if(enemyX < playerX){
+                        enemies[i].style.left = enemyX + 1 + 'px';
+                    }
+                    if(enemyX > playerX){
+                        enemies[i].style.left = enemyX - 1 + 'px';
+                    }
+                    if(enemyY < playerY){
+                        enemies[i].style.top = enemyY + 1 + 'px';
+                    }
+                    if(enemyY > playerY){
+                        enemies[i].style.top = enemyY - 1 + 'px';
+                    }
+                }
+            }	
+
+
+        }, 1000/60);
+    }
+
+    // if an enemy collides with the player, console log the enemy id
+    function enemyCollisionController(){
+        setInterval(function(){
+            if(!gameData.playing) return;
+            let enemies = document.querySelectorAll('[collider="true"]');
+            for(let i = 0; i < enemies.length; i++){
+                let enemyX = enemies[i].getBoundingClientRect().left;
+                let enemyY = enemies[i].getBoundingClientRect().top;
+                let enemyWidth = enemies[i].getBoundingClientRect().width;
+                let enemyHeight = enemies[i].getBoundingClientRect().height;
+                let playerX = player.getBoundingClientRect().left;
+                let playerY = player.getBoundingClientRect().top;
+                let playerWidth = player.getBoundingClientRect().width;
+                let playerHeight = player.getBoundingClientRect().height;
+                if(enemyX < playerX + playerWidth && enemyX + enemyWidth > playerX && enemyY < playerY + playerHeight && enemyY + enemyHeight > playerY){
+                    removeHeart(1);
+                    enemies[i].remove();
+                    gameData.enemyCount--;
+                }
+            }
+        }, 1000/60);
+    }
+
     // 300000
 
     screenSetup();
@@ -526,4 +583,6 @@
     playerController();
     enemyController();
     cannonController();
+    gruntController();
+    enemyCollisionController();
 </script>
