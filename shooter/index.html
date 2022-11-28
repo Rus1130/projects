@@ -15,15 +15,32 @@
         top: calc(50% - 33px);
         left: calc(50% - 26px);
     }
+    #healthbar {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 300px;
+        height: 40px;
+        outline: 1px solid black;
+        display: grid;
+        grid-template-columns: repeat(20, 15px);
+        grid-template-rows: 40px;
+    }
+    .health-pip {
+        outline: 1px solid black;
+        width: 15px;
+        height: 40px;
+        background-color: red;
+    }
 </style>
 <head>
 
 </head>
 <body>
+    <div id= 'healthbar'></div>
     <div id="area">
         <svg width="50" id='player' height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect  width="50" height="50" fill="#FF0000"/>
-            <rect x="45" y="0" width="5" height="50" fill="yellow"/>
             <rect x="24" y="24" id="cannonCenterer" width="2" height="2" fill="yellow"/>
             <g id="cannon">
                 <rect x="16" y="18" width="50" height="15" fill="black"/>
@@ -34,6 +51,7 @@
 <script>
     const area = document.getElementById('area');
     const player = document.getElementById('player');
+    const heathbar = document.getElementById('healthbar');
 
     const gameData = {
         x: 0,
@@ -59,26 +77,29 @@
         mouseX: 0,
         mouseX: 0,
         intervalLength: 1000/60,
-        
+        currentHealth: 20,
+        maxHealth: 20,
+        playing: true,
     }
 
-    function move({ x, y, xVelocity, yVelocity }, bounds) {
-        const newX = x + xVelocity;
-        const newY = y + yVelocity;
-        const { width, height } = player.getBoundingClientRect();
-
-        if (newX >= bounds.left && newX <= bounds.right - width) {
-            gameData.x = newX;
-            player.style.left = `${gameData.x}px`;
+    function move(x, y){
+        if(!gameData.playing) return;
+        const player = document.getElementById('player');
+        const playerRect = player.getBoundingClientRect();
+        const areaRect = area.getBoundingClientRect();
+        const newX = playerRect.left + x;
+        const newY = playerRect.top + y;
+        if(newX >= areaRect.left && newX <= areaRect.right - playerRect.width){
+            player.style.left = newX + 'px';
         }
-        if (newY >= bounds.top && newY <= bounds.bottom - height) {
-            gameData.y = newY;
-            player.style.top = `${gameData.y}px`;
+        if(newY >= areaRect.top && newY <= areaRect.bottom - playerRect.height){
+            player.style.top = newY + 'px';
         }
     }
 
 
     function moveBullet(x, y, bullet){
+        if(!gameData.playing) return;
         const bulletRect = bullet.getBoundingClientRect();
         const areaRect = area.getBoundingClientRect();
         const newX = bulletRect.left + x;
@@ -91,15 +112,15 @@
         }
     }
 
-    function outlineScreen(){
+    function screenSetup(){
         const svgOutlines = {
             top: document.createElementNS('http://www.w3.org/2000/svg', 'rect'),
             bottom: document.createElementNS('http://www.w3.org/2000/svg', 'rect'),
             left: document.createElementNS('http://www.w3.org/2000/svg', 'rect'),
             right: document.createElementNS('http://www.w3.org/2000/svg', 'rect'),
         }
-        const outlineSize = 25;
-        const outlineColor = 'grey';
+        const outlineSize = 20;
+        const outlineColor = 'white';
 
         svgOutlines.top.setAttribute('width', '100%');
         svgOutlines.top.setAttribute('height', `${outlineSize}px`);
@@ -144,7 +165,15 @@
         svg.style.height = '100%';
 
         area.appendChild(svg);
+    }
 
+    function healthbarSetup(){
+        for(i = 0; i < gameData.maxHealth; i++){
+            const heart = document.createElement('div');
+            heart.id = `health-pip${i}`;
+            heart.classList.add('health-pip');
+            heathbar.appendChild(heart);
+        }
     }
 
 
@@ -154,10 +183,11 @@
         const areaRect = area.getBoundingClientRect();
         player.style.left = (areaRect.width / 2) - (playerRect.width / 2) + 'px';
         player.style.top = (areaRect.height / 2) - (playerRect.height / 2) + 'px';
-        outlineScreen()
+        screenSetup()
     });
 
     function mouseController(e){
+        if(!gameData.playing) return;
         document.addEventListener('mousemove', onMouseUpdate, false);
         document.addEventListener('mouseenter', onMouseUpdate, false);
             
@@ -179,46 +209,42 @@
         return collideables;
     }
 
-    function playerController() {
-        const bounds = area.getBoundingClientRect();
-        const { left, top } = player.getBoundingClientRect();
-        gameData.x = left;
-        gameData.y = top;
-
+    function playerController(){
+        if(!gameData.playing) return;
+        const player = document.getElementById('player');
+        const playerRect = player.getBoundingClientRect();
+        const areaRect = area.getBoundingClientRect();
         const keys = {};
         const friction = 0.9;
-        window.addEventListener('keydown', function (e) {
+        window.addEventListener('keydown', function(e){
             keys[e.key] = true;
         });
-        window.addEventListener('keyup', function (e) {
+        window.addEventListener('keyup', function(e){
             keys[e.key] = false;
         });
-        function movePlayer() {
-            if (keys[gameData.left]) {
-                gameData.xVelocity -= gameData.speed;
-                gameData.playerRotation = 180;
+        function movePlayer(){
+            if(!gameData.playing) return;
+            if(keys[gameData.up]){
+                gameData.y -= gameData.speed;
             }
-            if (keys[gameData.right]) {
-                gameData.xVelocity += gameData.speed;
-                gameData.playerRotation = 0;
+            if(keys[gameData.down]){
+                gameData.y += gameData.speed;
             }
-            if (keys[gameData.up]) {
-                gameData.yVelocity -= gameData.speed;
-                gameData.playerRotation = -90;
+            if(keys[gameData.left]){
+                gameData.x -= gameData.speed;
             }
-            if (keys[gameData.down]) {
-                gameData.yVelocity += gameData.speed;
-                gameData.playerRotation = 90;
+            if(keys[gameData.right]){
+                gameData.x += gameData.speed;
             }
-
-            player.style.transform = `rotate(${gameData.playerRotation}deg)`;
-            gameData.xVelocity *= friction;
-            gameData.yVelocity *= friction;
-
-            move(gameData, bounds);
+            
+            gameData.x *= friction;
+            gameData.y *= friction;
+            
+            move(gameData.x, gameData.y);
         }
 
         function updateCannonAngle(){
+            if(!gameData.playing) return;
             const cannon = document.getElementById('cannon');
             const cannonCenterer = document.getElementById('cannonCenterer');
             const cannonCentererRect = cannonCenterer.getBoundingClientRect();
@@ -248,6 +274,7 @@
     }
     function cannonController(){
         function rotateCannon(){
+            if(!gameData.playing) return;
             const player = document.getElementById('player');
             const playerRect = player.getBoundingClientRect();
             const cannon = document.getElementById('cannon');
@@ -274,6 +301,7 @@
     function bulletController(){
         window.addEventListener('click', function(e){
             // get the x and y coordinates of the end of the barrel
+            if(!gameData.playing) return;
             const player = document.getElementById('player');
             const playerRect = player.getBoundingClientRect();
             const cannon = document.getElementById('cannon');
@@ -299,6 +327,7 @@
                 interval: null
             }
             function updateBulletPos(){
+                if(!gameData.playing) return;
                 bulletData.x += bulletData.speed * Math.cos(bulletData.angle * Math.PI / 180);
                 bulletData.y += bulletData.speed * Math.sin(bulletData.angle * Math.PI / 180);
                 moveBullet(bulletData.x, bulletData.y, bullet);
@@ -321,8 +350,11 @@
         });
     }
 
+    function removeHeart(amnt){
+    }
 
-    outlineScreen();
+    screenSetup();
+    healthbarSetup();
     bulletController();
     playerController();
     cannonController();
