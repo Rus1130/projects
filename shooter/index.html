@@ -1,4 +1,7 @@
 <style>
+    body {
+        cursor: crosshair;
+    }
     #area {
         width: 100%;
         height: 100%;
@@ -69,34 +72,35 @@
 
     const enemies = {
         0: {
-            level: 1,
+            wave: 1,
             name: 'Grunt',
             lock: false,
-            xp: 2,
             lockFunction: function(i) {
                 spawnGrunt(i)
                 spawnGrunt(i)
                 spawnGrunt(i)
                 spawnGrunt(i)
                 spawnGrunt(i)
+                gameData.currentWave++
             },
         },
         1: {
-            level: 2,
-            name: 'Soldier',
+            wave: 2,
+            name: 'Grunt',
             lock: false,
-            xp: 3,
             lockFunction: function(i) {
-                spawnSoldier(i)
-                spawnSoldier(i)
-                spawnSoldier(i)
-                spawnSoldier(i)
-                spawnSoldier(i)
+                spawnGrunt(i)
+                spawnGrunt(i)
+                spawnGrunt(i)
+                spawnGrunt(i)
+                spawnGrunt(i)
+                gameData.currentWave++
             },
         },
     }
 
     const gameData = {
+        currentWave: 1,
         x: 0,
         y: 0,
         xVelocity: 0,
@@ -119,6 +123,8 @@
         currentHealth: 20,
         maxHealth: 20,
         playing: true,
+        waveStart: Date.now(),
+        enemyCount: 0,
     }
 
     function move(x, y){
@@ -393,6 +399,7 @@
                                 addXp(4)
                             }
                             collideable.remove();
+                            gameData.enemyCount--;
                         }
 
                     }
@@ -435,16 +442,12 @@
                     xpBar.children[i].style.backgroundColor = 'black';
                 }
             }
-            enemyController()
             if(gameData.xp >= gameData.xpToNextLevel){
                 gameData.xp -= gameData.xpToNextLevel;
                 gameData.xpToNextLevel *= 1.5;
                 gameData.level++;
                 for(let i = 0; i < xpBar.children.length; i++){
                     xpBar.children[i].style.backgroundColor = 'white';
-                }
-                for(i = 0; i < Object.keys(enemies).length; i++){
-                    enemies[i].lock = false;
                 }
             }
         }, 1000/60);
@@ -465,6 +468,7 @@
         enemy.style.zIndex = '1';
         enemy.id = `${enemies[i].name}-${i}`;
         enemy.setAttribute('collider', 'true');
+        gameData.enemyCount++;
         area.appendChild(enemy);
     }
     function spawnSoldier(i){
@@ -478,19 +482,27 @@
         enemy.style.zIndex = '1';
         enemy.id = `${enemies[i].name}-${i}`;
         enemy.setAttribute('collider', 'true');
+        gameData.enemyCount++;
         area.appendChild(enemy);
     }
 
     function enemyController(){
-        for(i = 0; i < Object.keys(enemies).length; i++){
-            if(gameData.level >= enemies[i].level){
-                if(enemies[i].lock == false){
-                    enemies[i].lockFunction(i);
-                    enemies[i].lock = true;
+        setInterval(function(){
+            if(!gameData.playing) return;
+            // excecute the lock functin in the enemy object when the current wave is equal to the wave the enemy is in
+            for(let i = 0; i < Object.keys(enemies).length; i++){
+                if(gameData.enemyCount == 0 && enemies[i].wave == gameData.currentWave){
+                    if(!enemies[i].lock){
+                        enemies[i].lock = true;
+                        enemies[i].lockFunction(i);
+                    }
                 }
             }
-        }
+
+        }, 1000/60);
     }
+
+    // 300000
 
     screenSetup();
     gameoverController();
@@ -498,5 +510,6 @@
     healthbarSetup();
     bulletController();
     playerController();
+    enemyController();
     cannonController();
 </script>
