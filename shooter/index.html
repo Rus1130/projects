@@ -14,22 +14,33 @@
         position: absolute;
         top: calc(50% - 33px);
         left: calc(50% - 26px);
+        z-index: 1;
     }
     #healthbar {
         position: absolute;
-        top: 20px;
-        left: 20px;
+        top: 20x;
+        left: 26px;
         width: 300px;
-        height: 40px;
+        height: 50px;
         outline: 1px solid black;
         display: grid;
         grid-template-columns: repeat(20, 15px);
-        grid-template-rows: 40px;
+        grid-template-rows: 50px;
+        z-index: -1;
+    }
+    #xpbar {
+        position: absolute;
+        top: 70px;
+        left: 26px;
+        width: 300px;
+        height: 5px;
+        outline: 1px solid black;
+        z-index: -1;
     }
     .health-pip {
         outline: 1px solid black;
         width: 15px;
-        height: 40px;
+        height: 50px;
         background-color: red;
     }
 </style>
@@ -38,6 +49,7 @@
 </head>
 <body>
     <div id= 'healthbar'></div>
+    <div id = 'xpbar'></div>
     <div id="area">
         <svg width="50" id='player' height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect  width="50" height="50" fill="#FF0000"/>
@@ -45,6 +57,7 @@
             <g id="cannon">
                 <rect x="16" y="18" width="50" height="15" fill="black"/>
             </g>
+            <!--'<path d="M15 15H34.6078V35H15V15Z" fill="black"/>'-->
         </svg>
     </div>
 </body>
@@ -52,6 +65,7 @@
     const area = document.getElementById('area');
     const player = document.getElementById('player');
     const heathbar = document.getElementById('healthbar');
+    const xpBar = document.getElementById('xpbar');
 
     const gameData = {
         x: 0,
@@ -68,12 +82,8 @@
         bulletSpeed: 0.9,
         friction: 0.95,
         xp: 0,
-        levels: {
-            1: {
-                svg: '<path d="M15 15H34.6078V35H15V15Z" fill="black"/>',
-                xp: 10,
-            }
-        },
+        xpToNextLevel: 10,
+        level: 1,
         mouseX: 0,
         mouseX: 0,
         intervalLength: 1000/60,
@@ -119,7 +129,7 @@
             left: document.createElementNS('http://www.w3.org/2000/svg', 'rect'),
             right: document.createElementNS('http://www.w3.org/2000/svg', 'rect'),
         }
-        const outlineSize = 20;
+        const outlineSize = 25;
         const outlineColor = 'white';
 
         svgOutlines.top.setAttribute('width', '100%');
@@ -351,9 +361,57 @@
     }
 
     function removeHeart(amnt){
+        for(i = 0; i < amnt; i++){
+            document.getElementById(`health-pip${(gameData.currentHealth - 1) - i}`).style.backgroundColor = 'white';
+        }
+        gameData.currentHealth -= amnt;
+    }
+
+    function gameoverController(){
+        setInterval(function(){
+            if(gameData.currentHealth <= 0){
+                gameData.playing = false;
+                alert('game over');
+            }
+        }, 1000/60);
+    }
+
+    function updateXPBar(){
+        setInterval(function(){
+            if(!gameData.playing) return;
+            gameData.xpToNextLevel = Math.round(gameData.xpToNextLevel);
+            xpBar.style.display = 'grid';
+            xpBar.style.gridTemplateColumns = `repeat(${gameData.xpToNextLevel}, 1fr)`;
+            for(let i = 0; i < gameData.xpToNextLevel; i++){
+                if(!xpBar.children[i]){
+                    const xpBarChild = document.createElement('div');
+                    xpBarChild.id = `xpBarChild${i}`;
+                    xpBarChild.style.backgroundColor = 'white';
+                    xpBar.appendChild(xpBarChild);
+                }
+                if(gameData.xp > i){
+                    xpBar.children[i].style.backgroundColor = 'black';
+                }
+            }
+            if(gameData.xp >= gameData.xpToNextLevel){
+                gameData.xp -= gameData.xpToNextLevel;
+                gameData.xpToNextLevel *= 1.5;
+                gameData.level++;
+                // reset child background color
+                for(let i = 0; i < xpBar.children.length; i++){
+                    xpBar.children[i].style.backgroundColor = 'white';
+                }
+            }
+        }, 1000/60);
+    }
+
+    function addXp(amnt){
+        gameData.xp += amnt;
     }
 
     screenSetup();
+    gameoverController();
+    updateXPBar();
     healthbarSetup();
     bulletController();
     playerController();
