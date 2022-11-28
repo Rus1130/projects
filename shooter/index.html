@@ -67,6 +67,26 @@
     const heathbar = document.getElementById('healthbar');
     const xpBar = document.getElementById('xpbar');
 
+    const enemies = {
+        0: {
+            level: 1,
+            name: 'basic',
+            lock: false,
+            lockFunction: function(i) {
+                spawnBasic(i)
+                spawnBasic(i)
+                spawnBasic(i)
+                spawnBasic(i)
+                spawnBasic(i)
+            },
+        },
+        1: {
+            level: 2,
+            name: 'advanced',
+            lock: false,
+        },
+    }
+
     const gameData = {
         x: 0,
         y: 0,
@@ -165,10 +185,10 @@
         svg.appendChild(svgOutlines.right);
 
         
-        svgOutlines.top.setAttribute('collider', 'true');
-        svgOutlines.bottom.setAttribute('collider', 'true');
-        svgOutlines.left.setAttribute('collider', 'true');
-        svgOutlines.right.setAttribute('collider', 'true');
+        svgOutlines.top.setAttribute('collider', 'false');
+        svgOutlines.bottom.setAttribute('collider', 'false');
+        svgOutlines.left.setAttribute('collider', 'false');
+        svgOutlines.right.setAttribute('collider', 'false');
 
         svg.style.position = 'absolute';
         svg.style.width = '100%';
@@ -353,6 +373,17 @@
                     if(bulletRect.left + bulletRect.width > colliderRect.left && bulletRect.left < colliderRect.left + colliderRect.width && bulletRect.top + bulletRect.height > colliderRect.top && bulletRect.top < colliderRect.top + colliderRect.height){
                         bullet.remove();
                         clearInterval(bulletData.interval);
+                        // get attribute value
+                        let attribute = collideable.getAttribute('collider');
+                        if(attribute == 'true'){
+                            collideable.remove();
+                            // get the id of the collider
+                            let id = collideable.getAttribute('id').split('-')[0];
+                            if(id == 'basic'){
+                                addXp(2);
+                            }
+                        }
+
                     }
                 }
             }
@@ -393,13 +424,16 @@
                     xpBar.children[i].style.backgroundColor = 'black';
                 }
             }
+            enemyController()
             if(gameData.xp >= gameData.xpToNextLevel){
                 gameData.xp -= gameData.xpToNextLevel;
-                gameData.xpToNextLevel *= 1.5;
+                gameData.xpToNextLevel *= 1.2;
                 gameData.level++;
-                // reset child background color
                 for(let i = 0; i < xpBar.children.length; i++){
                     xpBar.children[i].style.backgroundColor = 'white';
+                }
+                for(i = 0; i < Object.keys(enemies).length; i++){
+                    enemies[i].lock = false;
                 }
             }
         }, 1000/60);
@@ -407,6 +441,31 @@
 
     function addXp(amnt){
         gameData.xp += amnt;
+    }
+
+    function spawnBasic(i){
+        const enemy = document.createElement('div');
+        enemy.style.position = 'absolute';
+        enemy.style.left = Math.random() * (area.getBoundingClientRect().width - 100) + 'px';
+        enemy.style.top = Math.random() * (area.getBoundingClientRect().height - 100) + 'px';
+        enemy.style.width = '20px';
+        enemy.style.height = '20px';
+        enemy.style.backgroundColor = 'black';
+        enemy.style.zIndex = '1';
+        enemy.id = `${enemies[i].name}-${i}`;
+        enemy.setAttribute('collider', 'true');
+        area.appendChild(enemy);
+    }
+
+    function enemyController(){
+        for(i = 0; i < Object.keys(enemies).length; i++){
+            if(gameData.level >= enemies[i].level){
+                if(enemies[i].lock == false){
+                    enemies[i].lockFunction(i);
+                    enemies[i].lock = true;
+                }
+            }
+        }
     }
 
     screenSetup();
