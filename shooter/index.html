@@ -97,6 +97,19 @@
                 gameData.currentWave++
             },
         },
+        2: {
+            wave: 3,
+            name: 'Soldier',
+            lock: false,
+            lockFunction: function(i) {
+                spawnSoldier(i)
+                spawnGrunt(i)
+                spawnGrunt(i)
+                spawnGrunt(i)
+                spawnGrunt(i)
+                gameData.currentWave++
+            },
+        }
     }
 
     const gameData = {
@@ -460,6 +473,7 @@
     function spawnGrunt(i){
         const enemy = document.createElement('div');
         enemy.style.position = 'absolute';
+        // inclusive random number
         enemy.style.left = Math.random() * (area.getBoundingClientRect().width - 200) + 'px';
         enemy.style.top = Math.random() * (area.getBoundingClientRect().height - 200) + 'px';
         enemy.style.width = '20px';
