@@ -21,8 +21,9 @@
 </head>
 <body>
     <div id="area">
-        <svg width="50" height="50" id='player' viewBox="0 0 50 50" transformOrigin="24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="50" height="50" fill="#FF0000"/>
+        <svg width="50" id='player' height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect  width="50" height="50" fill="#FF0000"/>
+            <rect x="45" y="0" width="5" height="50" fill="yellow"/>
             <rect x="24" y="24" id="cannonCenterer" width="2" height="2" fill="yellow"/>
             <g id="cannon">
                 <rect x="16" y="18" width="50" height="15" fill="black"/>
@@ -32,10 +33,13 @@
 </body>
 <script>
     const area = document.getElementById('area');
+    const player = document.getElementById('player');
 
     const gameData = {
         x: 0,
         y: 0,
+        xVelocity: 0,
+        yVelocity: 0,
         interval: null,
         up: 'w',
         down: 's',
@@ -58,19 +62,21 @@
         
     }
 
-    function move(x, y){
-        const player = document.getElementById('player');
-        const playerRect = player.getBoundingClientRect();
-        const areaRect = area.getBoundingClientRect();
-        const newX = playerRect.left + x;
-        const newY = playerRect.top + y;
-        if(newX >= areaRect.left && newX <= areaRect.right - playerRect.width){
-            player.style.left = newX + 'px';
+    function move({ x, y, xVelocity, yVelocity }, bounds) {
+        const newX = x + xVelocity;
+        const newY = y + yVelocity;
+        const { width, height } = player.getBoundingClientRect();
+
+        if (newX >= bounds.left && newX <= bounds.right - width) {
+            gameData.x = newX;
+            player.style.left = `${gameData.x}px`;
         }
-        if(newY >= areaRect.top && newY <= areaRect.bottom - playerRect.height){
-            player.style.top = newY + 'px';
+        if (newY >= bounds.top && newY <= bounds.bottom - height) {
+            gameData.y = newY;
+            player.style.top = `${gameData.y}px`;
         }
     }
+
 
     function moveBullet(x, y, bullet){
         const bulletRect = bullet.getBoundingClientRect();
@@ -173,37 +179,44 @@
         return collideables;
     }
 
-    function playerController(){
-        const player = document.getElementById('player');
-        const playerRect = player.getBoundingClientRect();
-        const areaRect = area.getBoundingClientRect();
+    function playerController() {
+        const bounds = area.getBoundingClientRect();
+        const { left, top } = player.getBoundingClientRect();
+        gameData.x = left;
+        gameData.y = top;
+
         const keys = {};
-        window.addEventListener('keydown', function(e){
+        const friction = 0.9;
+        window.addEventListener('keydown', function (e) {
             keys[e.key] = true;
         });
-        window.addEventListener('keyup', function(e){
+        window.addEventListener('keyup', function (e) {
             keys[e.key] = false;
         });
-        function movePlayer(){
-            if(keys[gameData.up]){
-                gameData.y -= gameData.speed;
+        function movePlayer() {
+            if (keys[gameData.left]) {
+                gameData.xVelocity -= gameData.speed;
+                gameData.playerRotation = 180;
             }
-            if(keys[gameData.down]){
-                gameData.y += gameData.speed;
+            if (keys[gameData.right]) {
+                gameData.xVelocity += gameData.speed;
+                gameData.playerRotation = 0;
             }
-            if(keys[gameData.left]){
-                gameData.x -= gameData.speed;
+            if (keys[gameData.up]) {
+                gameData.yVelocity -= gameData.speed;
+                gameData.playerRotation = -90;
             }
-            if(keys[gameData.right]){
-                gameData.x += gameData.speed;
+            if (keys[gameData.down]) {
+                gameData.yVelocity += gameData.speed;
+                gameData.playerRotation = 90;
             }
-            
-            gameData.x *= gameData.friction;
-            gameData.y *= gameData.friction;
-            
-            move(gameData.x, gameData.y);
+
+            player.style.transform = `rotate(${gameData.playerRotation}deg)`;
+            gameData.xVelocity *= friction;
+            gameData.yVelocity *= friction;
+
+            move(gameData, bounds);
         }
-        gameData.interval = setInterval(movePlayer, 1000/60);
 
         function updateCannonAngle(){
             const cannon = document.getElementById('cannon');
@@ -223,6 +236,7 @@
 
         setInterval(updateCannonAngle, 1000/60);
         setInterval(mouseController, 1000/60);
+        setInterval(movePlayer, 1000/60);
     }
 
     function rotate_point(pointX,pointY,originX,originY,angle) {
