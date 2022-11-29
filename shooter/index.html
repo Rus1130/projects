@@ -75,12 +75,7 @@
             wave: 1,
             lock: false,
             lockFunction: function(i) {
-                spawnEnemy(i, 'Soldier');
-                // spawnEnemy(i, 'Grunt')
-                // spawnEnemy(i, 'Grunt')
-                // spawnEnemy(i, 'Grunt')
-                // spawnEnemy(i, 'Grunt')
-                // spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt');
                 gameData.currentWave++
             },
         },
@@ -90,14 +85,44 @@
             lockFunction: function(i) {
                 spawnEnemy(i, 'Grunt')
                 spawnEnemy(i, 'Grunt')
+                gameData.currentWave++
+            },
+        },
+        2: {
+            wave: 3,
+            lock: false,
+            lockFunction: function(i) {
                 spawnEnemy(i, 'Grunt')
                 spawnEnemy(i, 'Grunt')
                 spawnEnemy(i, 'Grunt')
                 gameData.currentWave++
             },
         },
-        2: {
-            wave: 3,
+        3: {
+            wave: 4,
+            lock: false,
+            lockFunction: function(i) {
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                gameData.currentWave++
+            },
+        },
+        4: {
+            wave: 5,
+            lock: false,
+            lockFunction: function(i) {
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                gameData.currentWave++
+            },
+        },
+        5: {
+            wave: 6,
             lock: false,
             lockFunction: function(i) {
                 spawnEnemy(i, 'Footman')
@@ -107,7 +132,55 @@
                 spawnEnemy(i, 'Grunt')
                 gameData.currentWave++
             },
-        }
+        },
+        6: {
+            wave: 7,
+            lock: false,
+            lockFunction: function(i) {
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                gameData.currentWave++
+            },
+        },
+        7: {
+            wave: 8,
+            lock: false,
+            lockFunction: function(i) {
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                gameData.currentWave++
+            },
+        },
+        8: {
+            wave: 9,
+            lock: false,
+            lockFunction: function(i) {
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Grunt')
+                gameData.currentWave++
+            },
+        },
+        9: {
+            wave: 10,
+            lock: false,
+            lockFunction: function(i) {
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Footman')
+                gameData.currentWave++
+            },
+        },
     }
 
 
@@ -528,6 +601,7 @@
     }
 
     // make the grunt enemies follow the player
+    
     function gruntController(){
         enemyTemplate('Grunt', function(){
             let playerX = arguments[0];
@@ -538,6 +612,56 @@
             // get all the enemies
             let enemyList = document.querySelectorAll('[enemyName="Grunt"]');
             if(enemyList[i].id.split('-')[0] == 'Grunt'){
+                // move randomly if it is 200 pixels away from the player (cooldown of 1000 ms before switching directions)
+                if(Math.abs(enemyX - playerX) > 300 || Math.abs(enemyY - playerY) > 300){
+                    if(!enemyList[i].cooldown){
+                        enemyList[i].cooldown = true;
+                        enemyList[i].direction = Math.floor(Math.random() * 4);
+                        setTimeout(function(){
+                            enemyList[i].cooldown = false;
+                        }, 1000);
+                    }
+                    if(enemyList[i].direction == 0){
+                        enemyList[i].style.left = enemyX + 1 + 'px';
+                    }
+                    if(enemyList[i].direction == 1){
+                        enemyList[i].style.left = enemyX - 1 + 'px';
+                    }
+                    if(enemyList[i].direction == 2){
+                        enemyList[i].style.top = enemyY + 1 + 'px';
+                    }
+                    if(enemyList[i].direction == 3){
+                        enemyList[i].style.top = enemyY - 1 + 'px';
+                    }
+                } else {
+                    // make it move towards the player
+                    if(enemyX < playerX){
+                        enemyList[i].style.left = enemyX + 1 + 'px';
+                    }
+                    if(enemyX > playerX){
+                        enemyList[i].style.left = enemyX - 1 + 'px';
+                    }
+                    if(enemyY < playerY){
+                        enemyList[i].style.top = enemyY + 1 + 'px';
+                    }
+                    if(enemyY > playerY){
+                        enemyList[i].style.top = enemyY - 1 + 'px';
+                    }
+                }
+            }
+        })
+    }
+
+    function footmanController(){
+        enemyTemplate('Footman', function(){
+            let playerX = arguments[0];
+            let playerY = arguments[1];
+            let enemyX = arguments[2];
+            let enemyY = arguments[3];
+            let i = arguments[4];
+            // get all the enemies
+            let enemyList = document.querySelectorAll('[enemyName="Footman"]');
+            if(enemyList[i].id.split('-')[0] == 'Footman'){
                 if(enemyX < playerX){
                     enemyList[i].style.left = enemyX + 1 + 'px';
                 }
@@ -554,52 +678,6 @@
         })
     }
 
-    function footmanController(){
-        enemyTemplate('Footman', function(){
-            let playerX = arguments[0];
-            let playerY = arguments[1];
-            let enemyX = arguments[2];
-            let enemyY = arguments[3];
-            let i = arguments[4];
-            // get all the enemies
-            let enemyList = document.querySelectorAll('[enemyName="Footman"]');
-            if(enemyList[i].id.split('-')[0] == 'Footman'){
-                console.log(`Enemy above player: ${enemyY < playerY}`);
-                console.log(`Enemy below player: ${enemyY > playerY}`);
-                console.log(`Enemy left of player: ${enemyX < playerX}`);
-                console.log(`Enemy right of player: ${enemyX > playerX}`);
-                // if the enemy is within 200px of the player, move towards the player, otherwise move randomly
-                if(enemyX < playerX && enemyX > playerX - 200){
-                    enemyList[i].style.left = enemyX + 1 + 'px';
-                }
-                if(enemyX > playerX && enemyX < playerX + 200){
-                    enemyList[i].style.left = enemyX - 1 + 'px';
-                }
-                if(enemyY < playerY && enemyY > playerY - 200){
-                    enemyList[i].style.top = enemyY + 1 + 'px';
-                }
-                if(enemyY > playerY && enemyY < playerY + 200){
-                    enemyList[i].style.top = enemyY - 1 + 'px';
-                }
-
-                if(enemyX < playerX && enemyX < playerX - 200){
-                    enemyList[i].style.top = enemyY + gameData.oscillator + 'px';
-                }
-                if(enemyX > playerX && enemyX > playerX + 200){
-                    enemyList[i].style.top = enemyY - gameData.oscillator + 'px';
-                }
-                if(enemyY < playerY && enemyY < playerY - 200){
-                    enemyList[i].style.left = enemyX + gameData.oscillator + 'px';
-                }
-                if(enemyY > playerY && enemyY > playerY + 200){
-                    enemyList[i].style.left = enemyX - gameData.oscillator + 'px';
-                }
-
-                
-            }
-        })
-    }
-
     function soldierController(){
         enemyTemplate('Soldier', function(){
             let playerX = arguments[0];
@@ -610,19 +688,37 @@
             // get all the enemies
             let enemyList = document.querySelectorAll('[enemyName="Soldier"]');
             if(enemyList[i].id.split('-')[0] == 'Soldier'){
-                if(enemyX < playerX && enemyX < playerX){
-                    enemyList[i].style.top = enemyY + gameData.oscillator + 'px';
+                if(enemyX < playerX && enemyX > playerX - 200){
+                    enemyList[i].style.left = enemyX + 2 + 'px';
                 }
-                if(enemyX > playerX && enemyX > playerX){
-                    enemyList[i].style.top = enemyY + gameData.oscillator + 'px';
+                if(enemyX > playerX && enemyX < playerX + 200){
+                    enemyList[i].style.left = enemyX - 2 + 'px';
                 }
-                if(enemyY < playerY && enemyY < playerY){
-                    enemyList[i].style.left = enemyX + gameData.oscillator + 'px';
+                if(enemyY < playerY && enemyY > playerY - 200){
+                    enemyList[i].style.top = enemyY + 2 + 'px';
                 }
-                if(enemyY > playerY && enemyY > playerY){
-                    enemyList[i].style.left = enemyX + gameData.oscillator + 'px';
+                if(enemyY > playerY && enemyY < playerY + 200){
+                    enemyList[i].style.top = enemyY - 2 + 'px';
                 }
 
+
+                
+                if(enemyX < playerX && enemyX < playerX - 200){
+                    enemyList[i].style.top = enemyY + gameData.oscillator + 'px';
+                    enemyList[i].style.left = enemyX + 1 + 'px';
+                }
+                if(enemyX > playerX && enemyX > playerX + 200){
+                    enemyList[i].style.top = enemyY - gameData.oscillator + 'px';
+                    enemyList[i].style.left = enemyX - 1 + 'px';
+                }
+                if(enemyY < playerY && enemyY < playerY - 200){
+                    enemyList[i].style.left = enemyX + gameData.oscillator + 'px';
+                    enemyList[i].style.top = enemyY + 1 + 'px';
+                }
+                if(enemyY > playerY && enemyY > playerY + 200){
+                    enemyList[i].style.left = enemyX - gameData.oscillator + 'px';
+                    enemyList[i].style.top = enemyY - 1 + 'px';
+                }
                 
             }
         })
@@ -646,6 +742,19 @@
                     removeHeart(1);
                     enemies[i].remove();
                     gameData.enemyCount--;
+                }
+                // if the enemy collides with the outer walls, stop it from moving
+                if(enemyX < 0){
+                    enemies[i].style.left = 0 + 'px';
+                }
+                if(enemyX + enemyWidth > gameData.width){
+                    enemies[i].style.left = gameData.width - enemyWidth + 'px';
+                }
+                if(enemyY < 0){
+                    enemies[i].style.top = 0 + 'px';
+                }
+                if(enemyY + enemyHeight > gameData.height){
+                    enemies[i].style.top = gameData.height - enemyHeight + 'px';
                 }
             }
         }, 1000/60);
