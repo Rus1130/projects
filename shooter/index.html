@@ -73,14 +73,13 @@
     const enemies = {
         0: {
             wave: 1,
-            name: 'Grunt',
             lock: false,
             lockFunction: function(i) {
-                spawnGrunt(i)
-                spawnGrunt(i)
-                spawnGrunt(i)
-                spawnGrunt(i)
-                spawnGrunt(i)
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
                 gameData.currentWave++
             },
         },
@@ -88,11 +87,11 @@
             wave: 2,
             lock: false,
             lockFunction: function(i) {
-                spawnGrunt(i)
-                spawnGrunt(i)
-                spawnGrunt(i)
-                spawnGrunt(i)
-                spawnGrunt(i)
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
                 gameData.currentWave++
             },
         },
@@ -100,16 +99,18 @@
             wave: 3,
             lock: false,
             lockFunction: function(i) {
-                spawnSoldier(i)
-                spawnGrunt(i)
-                spawnGrunt(i)
-                spawnGrunt(i)
-                spawnGrunt(i)
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
                 gameData.currentWave++
             },
         }
     }
 
+
+    
     const gameData = {
         currentWave: 1,
         x: 0,
@@ -136,6 +137,10 @@
         playing: true,
         waveStart: Date.now(),
         enemyCount: 0,
+        enemyColors: {
+            'Grunt': 'black',
+            'Footman': 'blue',
+        }
     }
 
     function move(x, y){
@@ -406,7 +411,7 @@
                             if(id == 'Grunt'){
                                 addXp(2)
                             }
-                            if(id == 'Soldier'){
+                            if(id == 'Footman'){
                                 addXp(4)
                             }
                             collideable.remove();
@@ -471,7 +476,7 @@
         gameData.xp += amnt;
     }
 
-    function spawnGrunt(i){
+    function spawnEnemy(i, enemyName){
         const enemy = document.createElement('div');
         enemy.style.position = 'absolute';
         // inclusive random number
@@ -479,26 +484,11 @@
         enemy.style.top = Math.random() * (area.getBoundingClientRect().height - 200) + 'px';
         enemy.style.width = '20px';
         enemy.style.height = '20px';
-        enemy.style.backgroundColor = 'black';
+        enemy.style.backgroundColor = gameData.enemyColors[enemyName];
         enemy.style.zIndex = '1';
-        enemy.id = `${enemies[i].name}-${i}`;
+        enemy.id = `${enemyName}-${i}`;
         enemy.setAttribute('collider', 'true');
-        enemy.setAttribute('enemyName', 'Grunt');
-        gameData.enemyCount++;
-        area.appendChild(enemy);
-    }
-    function spawnSoldier(i){
-        const enemy = document.createElement('div');
-        enemy.style.position = 'absolute';
-        enemy.style.left = Math.random() * (area.getBoundingClientRect().width - 200) + 'px';
-        enemy.style.top = Math.random() * (area.getBoundingClientRect().height - 200) + 'px';
-        enemy.style.width = '20px';
-        enemy.style.height = '20px';
-        enemy.style.backgroundColor = 'blue';
-        enemy.style.zIndex = '1';
-        enemy.id = `${enemies[i].name}-${i}`;
-        enemy.setAttribute('enemyName', 'Grunt');
-        enemy.setAttribute('collider', 'true');
+        enemy.setAttribute('enemyName', enemyName);
         gameData.enemyCount++;
         area.appendChild(enemy);
     }
@@ -515,39 +505,77 @@
                     }
                 }
             }
-
+            gruntController();
+            footmanController();
         }, 1000/60);
+    }
+
+    // FIX ALL OF THIS
+
+    function enemyTemplate(enemyName, fn){
+        if(!gameData.playing) return;
+        let playerX = player.getBoundingClientRect().left;
+        let playerY = player.getBoundingClientRect().top;
+        let enemyList = document.querySelectorAll(`[enemyName="${enemyName}"]`);
+        for(let i = 0; i < enemies.length; i++){
+            let enemyX = enemyList[i].getBoundingClientRect().left;
+            let enemyY = enemyList[i].getBoundingClientRect().top;
+            // run the function in the parameter
+            fn(playerX, playerY, enemyX, enemyY, i);
+        }
     }
 
     // make the grunt enemies follow the player
     function gruntController(){
-        // get the players x and y position
-        setInterval(function(){
-            if(!gameData.playing) return;
-            let playerX = player.getBoundingClientRect().left;
-            let playerY = player.getBoundingClientRect().top;
-            let enemies = document.querySelectorAll('[collider="true"]');
-            for(let i = 0; i < enemies.length; i++){
-                let enemyX = enemies[i].getBoundingClientRect().left;
-                let enemyY = enemies[i].getBoundingClientRect().top;
-                if(enemies[i].id.split('-')[0] == 'Grunt'){
-                    if(enemyX < playerX){
-                        enemies[i].style.left = enemyX + 1 + 'px';
-                    }
-                    if(enemyX > playerX){
-                        enemies[i].style.left = enemyX - 1 + 'px';
-                    }
-                    if(enemyY < playerY){
-                        enemies[i].style.top = enemyY + 1 + 'px';
-                    }
-                    if(enemyY > playerY){
-                        enemies[i].style.top = enemyY - 1 + 'px';
-                    }
+        enemyTemplate('Grunt', function(){
+            let playerX = arguments[0];
+            let playerY = arguments[1];
+            let enemyX = arguments[2];
+            let enemyY = arguments[3];
+            let i = arguments[4];
+            // get all the enemies
+            let enemyList = document.querySelectorAll('[enemyName="Grunt"]');
+            if(enemyList[i].id.split('-')[0] == 'Grunt'){
+                if(enemyX < playerX){
+                    enemyList[i].style.left = enemyX + 1 + 'px';
                 }
-            }	
+                if(enemyX > playerX){
+                    enemyList[i].style.left = enemyX - 1 + 'px';
+                }
+                if(enemyY < playerY){
+                    enemyList[i].style.top = enemyY + 1 + 'px';
+                }
+                if(enemyY > playerY){
+                    enemyList[i].style.top = enemyY - 1 + 'px';
+                }
+            }
+        })
+    }
 
-
-        }, 1000/60);
+    function footmanController(){
+        enemyTemplate('Footman', function(){
+            let playerX = arguments[0];
+            let playerY = arguments[1];
+            let enemyX = arguments[2];
+            let enemyY = arguments[3];
+            let i = arguments[4];
+            // get all the enemies
+            let enemyList = document.querySelectorAll('[enemyName="Footman"]');
+            if(enemyList[i].id.split('-')[0] == 'Footman'){
+                if(enemyX < playerX){
+                    enemyList[i].style.left = enemyX + 1 + 'px';
+                }
+                if(enemyX > playerX){
+                    enemyList[i].style.left = enemyX - 1 + 'px';
+                }
+                if(enemyY < playerY){
+                    enemyList[i].style.top = enemyY + 1 + 'px';
+                }
+                if(enemyY > playerY){
+                    enemyList[i].style.top = enemyY - 1 + 'px';
+                }
+            }
+        })
     }
 
     // if an enemy collides with the player, console log the enemy id
@@ -573,6 +601,15 @@
         }, 1000/60);
     }
 
+    // space key listener
+    document.addEventListener('keydown', function(e){
+        if(e.key == ' '){
+            gameData.playing = !gameData.playing;
+        }
+    });
+
+    
+
     // 300000
 
     screenSetup();
@@ -583,6 +620,5 @@
     playerController();
     enemyController();
     cannonController();
-    gruntController();
     enemyCollisionController();
 </script>
