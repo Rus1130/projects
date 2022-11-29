@@ -141,7 +141,7 @@
             'Grunt': 'black',
             'Footman': 'blue',
         },
-        oscillatorValue: 0,
+        oscillator: 0,
         oscillatorDirection: false,
     }
 
@@ -561,17 +561,22 @@
             // get all the enemies
             let enemyList = document.querySelectorAll('[enemyName="Footman"]');
             if(enemyList[i].id.split('-')[0] == 'Footman'){
+                // fix!!
                 if(enemyX < playerX){
                     enemyList[i].style.left = enemyX + 1 + 'px';
+                    enemyList[i].style.top = enemyY + gameData.oscillator + 'px';
                 }
                 if(enemyX > playerX){
                     enemyList[i].style.left = enemyX - 1 + 'px';
+                    enemyList[i].style.top = enemyY + gameData.oscillator + 'px';
                 }
                 if(enemyY < playerY){
                     enemyList[i].style.top = enemyY + 1 + 'px';
+                    enemyList[i].style.left = enemyX + gameData.oscillator + 'px';
                 }
                 if(enemyY > playerY){
                     enemyList[i].style.top = enemyY - 1 + 'px';
+                    enemyList[i].style.left = enemyX + gameData.oscillator + 'px';
                 }
             }
         })
@@ -608,16 +613,16 @@
     });
 
     setInterval(function(){
-        if(gameData.oscillatorValue == 8){
+        if(gameData.oscillator == 8){
             gameData.oscillatorDirection = true;
-        } else if(gameData.oscillatorValue == -8){
+        } else if(gameData.oscillator == -8){
             gameData.oscillatorDirection = false;
         }
 
         if(!gameData.oscillatorDirection){
-            gameData.oscillatorValue++;
+            gameData.oscillator++;
         } else {
-            gameData.oscillatorValue--;
+            gameData.oscillator--;
         }
 
     }, 1000/60);
