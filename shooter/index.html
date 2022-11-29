@@ -140,7 +140,9 @@
         enemyColors: {
             'Grunt': 'black',
             'Footman': 'blue',
-        }
+        },
+        oscillatorValue: 0,
+        oscillatorDirection: false,
     }
 
     function move(x, y){
@@ -355,7 +357,6 @@
        
         
         setInterval(rotateCannon, 1000/60);
-        
     }
 
     // on click, create a bullet that is placed at the end of the barrel and moves in the direction of the cannon, and when it hits anything that is an svg, console log the id of the svg
@@ -510,14 +511,12 @@
         }, 1000/60);
     }
 
-    // FIX ALL OF THIS
-
     function enemyTemplate(enemyName, fn){
         if(!gameData.playing) return;
         let playerX = player.getBoundingClientRect().left;
         let playerY = player.getBoundingClientRect().top;
         let enemyList = document.querySelectorAll(`[enemyName="${enemyName}"]`);
-        for(let i = 0; i < enemies.length; i++){
+        for(let i = 0; i < enemyList.length; i++){
             let enemyX = enemyList[i].getBoundingClientRect().left;
             let enemyY = enemyList[i].getBoundingClientRect().top;
             // run the function in the parameter
@@ -608,7 +607,20 @@
         }
     });
 
-    
+    setInterval(function(){
+        if(gameData.oscillatorValue == 8){
+            gameData.oscillatorDirection = true;
+        } else if(gameData.oscillatorValue == -8){
+            gameData.oscillatorDirection = false;
+        }
+
+        if(!gameData.oscillatorDirection){
+            gameData.oscillatorValue++;
+        } else {
+            gameData.oscillatorValue--;
+        }
+
+    }, 1000/60);
 
     // 300000
 
