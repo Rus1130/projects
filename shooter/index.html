@@ -40,6 +40,14 @@
         outline: 1px solid black;
         z-index: -1;
     }
+    #wave-counter {
+        position: absolute;
+        top: 25px;
+        left: 330px;
+        z-index: -1;
+        font-size: 30px;
+
+    }
     .health-pip {
         outline: 1px solid black;
         width: 15px;
@@ -51,8 +59,9 @@
 
 </head>
 <body>
-    <div id= 'healthbar'></div>
-    <div id = 'xpbar'></div>
+    <div id='healthbar'></div>
+    <div id='xpbar'></div>
+    <div id="wave-counter">Wave: 1</div>
     <div id="area">
         <svg width="50" id='player' height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect  width="50" height="50" fill="#FF0000"/>
@@ -71,6 +80,25 @@
     const xpBar = document.getElementById('xpbar');
 
     const enemies = {
+        /*
+        0: {
+            wave: 1,
+            lock: false,
+            lockFunction: function(i) {
+                spawnEnemy(i, 'Grunt');
+                enemies[enemies[Object.keys(enemies).length - 1]] = {
+                    wave: Object.keys(enemies).length,
+                    lock: false,
+                    lockFunction: function(i) {
+                        spawnEnemy(i, 'Grunt');
+                        gameData.currentWave++
+                    }
+                }
+                
+                gameData.currentWave++
+            },
+        },
+        */
         0: {
             wave: 1,
             lock: false,
@@ -181,6 +209,67 @@
                 gameData.currentWave++
             },
         },
+        10: {
+            wave: 11,
+            lock: false,
+            lockFunction: function(i) {
+                spawnEnemy(i, 'Soldier')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Footman')
+                gameData.currentWave++
+            },
+        },
+        11: {
+            wave: 12,
+            lock: false,
+            lockFunction: function(i) {
+                spawnEnemy(i, 'Soldier')
+                spawnEnemy(i, 'Soldier')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Footman')
+                gameData.currentWave++
+            },
+        },
+        12: {
+            wave: 13,
+            lock: false,
+            lockFunction: function(i) {
+                spawnEnemy(i, 'Soldier')
+                spawnEnemy(i, 'Soldier')
+                spawnEnemy(i, 'Soldier')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Footman')
+                gameData.currentWave++
+            },
+        },
+        13: {
+            wave: 14,
+            lock: false,
+            lockFunction: function(i) {
+                spawnEnemy(i, 'Soldier')
+                spawnEnemy(i, 'Soldier')
+                spawnEnemy(i, 'Soldier')
+                spawnEnemy(i, 'Soldier')
+                spawnEnemy(i, 'Footman')
+                gameData.currentWave++
+            },
+        },
+        14: {
+            wave: 15,
+            lock: false,
+            lockFunction: function(i) {
+                spawnEnemy(i, 'Soldier')
+                spawnEnemy(i, 'Soldier')
+                spawnEnemy(i, 'Soldier')
+                spawnEnemy(i, 'Soldier')
+                spawnEnemy(i, 'Soldier')
+                gameData.currentWave++
+            },
+        },
+        
     }
 
 
@@ -779,6 +868,8 @@
         } else {
             gameData.oscillator--;
         }
+
+        document.getElementById('wave-counter').innerHTML = `Wave: ${gameData.currentWave - 1}`;
 
     }, 1000/60);
 
