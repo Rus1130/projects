@@ -21,7 +21,7 @@
     }
     #healthbar {
         position: absolute;
-        top: 20x;
+        top: 2px;
         left: 26px;
         width: 300px;
         height: 50px;
@@ -80,26 +80,6 @@
     const xpBar = document.getElementById('xpbar');
 
     const enemies = {
-        /*
-        0: {
-            wave: 1,
-            lock: false,
-            lockFunction: function(i) {
-                spawnEnemy(i, 'Grunt');
-                enemies[Object.keys(enemies).length] = {
-                    wave: Object.keys(enemies).length,
-                    lock: false,
-                    lockFunction: function(i) {
-                        enemies[Object.keys(enemies).length - 1].lockFunction(i);
-                    }
-                    
-                    
-                }
-                gameData.currentWave++
-            },
-        },
-        */
-        
         0: {
             wave: 1,
             lock: false,
@@ -593,7 +573,7 @@
     function removeHeart(amnt){
         for(i = 0; i < amnt; i++){
             // remove the child
-            const heart =  document.getElementById(`health-pip${(gameData.currentHealth - 1) - i}`)
+            const heart = document.getElementById(`health-pip${(gameData.currentHealth - 1) - i}`)
             heart.remove();
            
         }
