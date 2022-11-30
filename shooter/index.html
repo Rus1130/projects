@@ -280,10 +280,20 @@
         playing: true,
         waveStart: Date.now(),
         enemyCount: 0,
-        enemyColors: {
-            'Grunt': 'black',
-            'Footman': 'blue',
-            "Soldier": 'green',
+        gameOver: false,
+        enemyData: {
+            'Grunt': {
+                color: 'black',
+                damage: 5,
+            },
+            'Footman': {
+                color: 'blue',
+                damage: 1,
+            },
+            "Soldier": {
+                color: 'green',
+                damage: 1,
+            }
         },
         oscillator: 0,
         oscillatorDirection: false,
@@ -584,7 +594,12 @@
         setInterval(function(){
             if(gameData.currentHealth <= 0){
                 gameData.playing = false;
-                alert('game over');
+                if(!gameData.gameOver) gameoverAlert = alert('game over');
+                gameData.gameOver = true;
+                if(gameoverAlert == undefined){
+                    window.location.reload();
+                }
+                
             }
         }, 1000/60);
     }
@@ -629,7 +644,7 @@
         enemy.style.top = Math.random() * (area.getBoundingClientRect().height - 200) + 'px';
         enemy.style.width = '20px';
         enemy.style.height = '20px';
-        enemy.style.backgroundColor = gameData.enemyColors[enemyName];
+        enemy.style.backgroundColor = gameData.enemyData[enemyName].color;
         enemy.style.zIndex = '1';
         enemy.id = `${enemyName}-${i}`;
         enemy.setAttribute('collider', 'true');
@@ -816,7 +831,10 @@
                 let playerWidth = player.getBoundingClientRect().width;
                 let playerHeight = player.getBoundingClientRect().height;
                 if(enemyX < playerX + playerWidth && enemyX + enemyWidth > playerX && enemyY < playerY + playerHeight && enemyY + enemyHeight > playerY){
-                    removeHeart(1);
+                    // get the enemy name
+                    let enemyName = enemies[i].id.split('-')[0];
+
+                    removeHeart(gameData.enemyData[enemyName].damage);
                     enemies[i].remove();
                     gameData.enemyCount--;
                 }
@@ -840,7 +858,9 @@
     // space key listener
     document.addEventListener('keydown', function(e){
         if(e.key == ' '){
-            gameData.playing = !gameData.playing;
+            if(!gameData.gameOver){
+                gameData.playing = !gameData.playing;
+            }
         }
     });
 
