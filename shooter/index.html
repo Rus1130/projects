@@ -644,6 +644,14 @@
             // excecute the lock functin in the enemy object when the current wave is equal to the wave the enemy is in
             for(let i = 0; i < Object.keys(enemies).length; i++){
                 if(gameData.enemyCount == 0 && enemies[i].wave == gameData.currentWave){
+                    // if it is the last index in the enemies object, add a new wave that is the same as the last wave and its lock function is the same as the last wave
+                    if(i == Object.keys(enemies).length - 1){
+                        enemies[i + 1] = {
+                            wave: enemies[i].wave + 1,
+                            lock: false,
+                            lockFunction: enemies[i].lockFunction
+                        }
+                    }
                     if(!enemies[i].lock){
                         enemies[i].lock = true;
                         enemies[i].lockFunction(i);
