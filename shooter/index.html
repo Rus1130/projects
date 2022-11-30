@@ -93,6 +93,15 @@
             wave: 1,
             lock: false,
             lockFunction: function(i) {
+                spawnEnemy(i, 'Swarmer');
+                gameData.currentWave++
+            },
+        },
+        /*
+        0: {
+            wave: 1,
+            lock: false,
+            lockFunction: function(i) {
                 spawnEnemy(i, 'Grunt');
                 gameData.currentWave++
             },
@@ -239,6 +248,54 @@
                 gameData.currentWave++
             },
         },
+        15: {
+            wave: 16,
+            lock: false,
+            lockFunction: function(i) {
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Soldier')
+                gameData.currentWave++
+            },
+        },
+        16: {
+            wave: 17,
+            lock: false,
+            lockFunction: function(i) {
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Soldier')
+                gameData.currentWave++
+            },
+        },
+        17: {
+            wave: 18,
+            lock: false,
+            lockFunction: function(i) {
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Soldier')
+                spawnEnemy(i, 'Soldier')
+                gameData.currentWave++
+            },
+        },
+        18: {
+            wave: 19,
+            lock: false,
+            lockFunction: function(i) {
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Grunt')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Footman')
+                spawnEnemy(i, 'Soldier')
+                spawnEnemy(i, 'Soldier')
+                gameData.currentWave++
+            },
+        },
+        */
     }
 
 
@@ -263,7 +320,7 @@
         level: 1,
         mouseX: 0,
         mouseX: 0,
-        intervalLength: 1000/60,
+        intervalLength: 20,
         currentHealth: 20,
         maxHealth: 20,
         playing: true,
@@ -285,6 +342,11 @@
                 color: 'green',
                 damage: 1,
                 xp: 3,
+            },
+            "Swarmer": {
+                color: 'orange',
+                damage: 0,
+                xp: 1,
             }
         },
         oscillator: 0,
@@ -470,9 +532,9 @@
             gameData.cannonAngle = angle;
         }
 
-        setInterval(updateCannonAngle, 1000/60);
-        setInterval(mouseController, 1000/60);
-        setInterval(movePlayer, 1000/60);
+        setInterval(updateCannonAngle, gameData.intervalLength);
+        setInterval(mouseController, gameData.intervalLength);
+        setInterval(movePlayer, gameData.intervalLength);
     }
 
     function rotate_point(pointX,pointY,originX,originY,angle) {
@@ -503,7 +565,7 @@
         }
        
         
-        setInterval(rotateCannon, 1000/60);
+        setInterval(rotateCannon, gameData.intervalLength);
     }
 
     // on click, create a bullet that is placed at the end of the barrel and moves in the direction of the cannon, and when it hits anything that is an svg, console log the id of the svg
@@ -564,7 +626,7 @@
                     }
                 }
             }
-            bulletData.interval = setInterval(updateBulletPos, 1000/60);
+            bulletData.interval = setInterval(updateBulletPos, gameData.intervalLength);
         });
     }
 
@@ -589,7 +651,7 @@
                 }
                 
             }
-        }, 1000/60);
+        }, gameData.intervalLength);
     }
 
     function updateXPBar(){
@@ -617,7 +679,7 @@
                     xpBar.children[i].style.backgroundColor = 'white';
                 }
             }
-        }, 1000/60);
+        }, gameData.intervalLength);
     }
 
     function addXp(amnt){
@@ -664,7 +726,8 @@
             gruntController();
             footmanController();
             soldierController();
-        }, 1000/60);
+            swarmerController();
+        }, gameData.intervalLength);
     }
 
     function enemyTemplate(enemyName, fn){
@@ -804,6 +867,34 @@
         })
     }
 
+    function swarmerController(){
+        enemyTemplate('Swarmer', function(){
+            let playerX = arguments[0];
+            let playerY = arguments[1];
+            let enemyX = arguments[2];
+            let enemyY = arguments[3];
+            let i = arguments[4];
+            // get the players mouse coordinates
+            let mouseX = gameData.mouseX;
+            let mouseY = gameData.mouseY;
+            let enemyList = document.querySelectorAll('[enemyName="Swarmer"]');
+            if(enemyList[i].id.split('-')[0] == 'Swarmer'){
+                if(enemyX < mouseX){
+                    enemyList[i].style.left = enemyX + 3 + 'px';
+                }
+                if(enemyX > mouseX){
+                    enemyList[i].style.left = enemyX - 3 + 'px';
+                }
+                if(enemyY < mouseY){
+                    enemyList[i].style.top = enemyY + 3 + 'px';
+                }
+                if(enemyY > mouseY){
+                    enemyList[i].style.top = enemyY - 3 + 'px';
+                }
+            }
+        })
+    }
+
     // if an enemy collides with the player, console log the enemy id
     function enemyCollisionController(){
         setInterval(function(){
@@ -840,7 +931,7 @@
                     enemies[i].style.top = gameData.height - enemyHeight + 'px';
                 }
             }
-        }, 1000/60);
+        }, gameData.intervalLength);
     }
 
     // space key listener
@@ -868,7 +959,7 @@
         
         waveDisplay.innerHTML = `Wave: ${gameData.currentWave - 1}`;
         levelDisplay.innerHTML = `Level: ${gameData.level}`;
-    }, 1000/60);
+    }, gameData.intervalLength);
 
     // 300000
 
