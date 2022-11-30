@@ -86,19 +86,20 @@
             lock: false,
             lockFunction: function(i) {
                 spawnEnemy(i, 'Grunt');
-                enemies[enemies[Object.keys(enemies).length - 1]] = {
+                enemies[Object.keys(enemies).length] = {
                     wave: Object.keys(enemies).length,
                     lock: false,
                     lockFunction: function(i) {
-                        spawnEnemy(i, 'Grunt');
-                        gameData.currentWave++
+                        enemies[Object.keys(enemies).length - 1].lockFunction(i);
                     }
+                    
+                    
                 }
-                
                 gameData.currentWave++
             },
         },
         */
+        
         0: {
             wave: 1,
             lock: false,
@@ -269,7 +270,6 @@
                 gameData.currentWave++
             },
         },
-        
     }
 
 
