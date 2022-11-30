@@ -42,11 +42,17 @@
     }
     #wave-counter {
         position: absolute;
-        top: 25px;
+        top: 22px;
         left: 330px;
         z-index: -1;
         font-size: 30px;
-
+    }
+    #level-counter {
+        position: absolute;
+        top: 63px;
+        left: 330px;
+        z-index: -1;
+        font-size: 15px;
     }
     .health-pip {
         outline: 1px solid black;
@@ -62,6 +68,7 @@
     <div id='healthbar'></div>
     <div id='xpbar'></div>
     <div id="wave-counter">Wave: 1</div>
+    <div id='level-counter'>Level: 1</div>
     <div id="area">
         <svg width="50" id='player' height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect  width="50" height="50" fill="#FF0000"/>
@@ -78,6 +85,8 @@
     const player = document.getElementById('player');
     const heathbar = document.getElementById('healthbar');
     const xpBar = document.getElementById('xpbar');
+    const levelDisplay = document.getElementById('level-counter');
+    const waveDisplay = document.getElementById('wave-counter');
 
     const enemies = {
         0: {
@@ -135,10 +144,6 @@
             lock: false,
             lockFunction: function(i) {
                 spawnEnemy(i, 'Footman')
-                spawnEnemy(i, 'Grunt')
-                spawnEnemy(i, 'Grunt')
-                spawnEnemy(i, 'Grunt')
-                spawnEnemy(i, 'Grunt')
                 gameData.currentWave++
             },
         },
@@ -148,9 +153,6 @@
             lockFunction: function(i) {
                 spawnEnemy(i, 'Footman')
                 spawnEnemy(i, 'Footman')
-                spawnEnemy(i, 'Grunt')
-                spawnEnemy(i, 'Grunt')
-                spawnEnemy(i, 'Grunt')
                 gameData.currentWave++
             },
         },
@@ -161,8 +163,6 @@
                 spawnEnemy(i, 'Footman')
                 spawnEnemy(i, 'Footman')
                 spawnEnemy(i, 'Footman')
-                spawnEnemy(i, 'Grunt')
-                spawnEnemy(i, 'Grunt')
                 gameData.currentWave++
             },
         },
@@ -174,7 +174,6 @@
                 spawnEnemy(i, 'Footman')
                 spawnEnemy(i, 'Footman')
                 spawnEnemy(i, 'Footman')
-                spawnEnemy(i, 'Grunt')
                 gameData.currentWave++
             },
         },
@@ -195,10 +194,6 @@
             lock: false,
             lockFunction: function(i) {
                 spawnEnemy(i, 'Soldier')
-                spawnEnemy(i, 'Footman')
-                spawnEnemy(i, 'Footman')
-                spawnEnemy(i, 'Footman')
-                spawnEnemy(i, 'Footman')
                 gameData.currentWave++
             },
         },
@@ -208,9 +203,6 @@
             lockFunction: function(i) {
                 spawnEnemy(i, 'Soldier')
                 spawnEnemy(i, 'Soldier')
-                spawnEnemy(i, 'Footman')
-                spawnEnemy(i, 'Footman')
-                spawnEnemy(i, 'Footman')
                 gameData.currentWave++
             },
         },
@@ -221,8 +213,6 @@
                 spawnEnemy(i, 'Soldier')
                 spawnEnemy(i, 'Soldier')
                 spawnEnemy(i, 'Soldier')
-                spawnEnemy(i, 'Footman')
-                spawnEnemy(i, 'Footman')
                 gameData.currentWave++
             },
         },
@@ -234,7 +224,6 @@
                 spawnEnemy(i, 'Soldier')
                 spawnEnemy(i, 'Soldier')
                 spawnEnemy(i, 'Soldier')
-                spawnEnemy(i, 'Footman')
                 gameData.currentWave++
             },
         },
@@ -284,15 +273,18 @@
         enemyData: {
             'Grunt': {
                 color: 'black',
-                damage: 5,
+                damage: 1,
+                xp: 1,
             },
             'Footman': {
                 color: 'blue',
                 damage: 1,
+                xp: 2,
             },
             "Soldier": {
                 color: 'green',
                 damage: 1,
+                xp: 3,
             }
         },
         oscillator: 0,
@@ -412,6 +404,7 @@
             gameData.mouseX = e.pageX;
             gameData.mouseY = e.pageY;
         }
+
     }
 
     // get all elements that have the property 'collideable'
@@ -563,12 +556,7 @@
                         let attribute = collideable.getAttribute('collider');
                         if(attribute == 'true'){
                             let id = collideable.getAttribute('id').split('-')[0];
-                            if(id == 'Grunt'){
-                                addXp(2)
-                            }
-                            if(id == 'Footman'){
-                                addXp(4)
-                            }
+                            addXp(gameData.enemyData[id].xp);
                             collideable.remove();
                             gameData.enemyCount--;
                         }
@@ -705,7 +693,7 @@
             let enemyList = document.querySelectorAll('[enemyName="Grunt"]');
             if(enemyList[i].id.split('-')[0] == 'Grunt'){
                 // move randomly if it is 200 pixels away from the player (cooldown of 1000 ms before switching directions)
-                if(Math.abs(enemyX - playerX) > 300 || Math.abs(enemyY - playerY) > 300){
+                if(Math.abs(enemyX - playerX) > 200 || Math.abs(enemyY - playerY) > 200){
                     if(!enemyList[i].cooldown){
                         enemyList[i].cooldown = true;
                         enemyList[i].direction = Math.floor(Math.random() * 4);
@@ -876,9 +864,10 @@
         } else {
             gameData.oscillator--;
         }
-
-        document.getElementById('wave-counter').innerHTML = `Wave: ${gameData.currentWave - 1}`;
-
+        
+        
+        waveDisplay.innerHTML = `Wave: ${gameData.currentWave - 1}`;
+        levelDisplay.innerHTML = `Level: ${gameData.level}`;
     }, 1000/60);
 
     // 300000
