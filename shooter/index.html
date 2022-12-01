@@ -679,7 +679,7 @@
                         }
                     }
                 }
-                bulletData.interval = setInterval(updateBulletPos, gameData.intervalLength);
+                bulletData.interval = setInterval(updateBulletPos, 10);
             }
         });
     }
@@ -754,6 +754,10 @@
         gameData.enemyCount++;
         enemy.setAttribute('collider', 'true');
         enemy.setAttribute('enemyName', enemyName);
+
+        if(enemyName == 'Spiraler'){
+            enemy.setAttribute('radius', '350');
+        }
         
         area.appendChild(enemy);
     }
@@ -973,7 +977,6 @@
             let enemyY;
 
             try{
-                enemyList[i].radius = 350;
                 enemyX = enemyList[i].getBoundingClientRect().left;
                 enemyY = enemyList[i].getBoundingClientRect().top;
             } catch {
@@ -985,16 +988,15 @@
             let angle = Math.atan2(enemyY - playerY, enemyX - playerX);
             angle += 0.01;
 
-            enemyX = playerX + Math.cos(angle) * enemyList[i].radius;
-            enemyY = playerY + Math.sin(angle) * enemyList[i].radius ;
+            let x = playerX + Math.cos(angle) * +enemyList[i].getAttribute('radius');
+            let y = playerY + Math.sin(angle) * +enemyList[i].getAttribute('radius');
 
-            // slowly make the enemy spiral inward towards the player
-            
+            enemyList[i].style.left = x + 'px';
+            enemyList[i].style.top = y + 'px';
 
-            enemyList[i].style.left = enemyX + 'px';
-            enemyList[i].style.top = enemyY + 'px';
+            enemyList[i].setAttribute('radius', +enemyList[i].getAttribute('radius') - 0.25);
 
-            enemyList[i].radius -= 10;
+
 
             
 
@@ -1075,8 +1077,6 @@
         let enemies = document.querySelectorAll('[enemyName]');
         return enemies;
     }
-
-    // 300000
 
     screenSetup();
     gameoverController();
