@@ -1,13 +1,46 @@
 <style>
+    #chart {
+        border: 1px solid black;
+        /*
+        make the width and height always the same
+        */
+        width: 500px;
+        height: 500px;
+        position: absolute;
+        left: 5px;
+        top: 25%;
 
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        grid-template-rows: repeat(10, 1fr);  
+
+
+    }
+    #input {
+        resize: none;
+        width: 500px;
+        height: 170px;
+        position: absolute;
+        left: 5px;
+    }
+    #input:focus {
+        outline: none;
+    }
 </style>
 <head>
 
 </head>
 <body>
-
+    <textarea id="input"></textarea>
+    <div id="chart"></div>
 </body>
 <script>
+    const chart = document.getElementById("chart");
+    // on window load
+    window.onload = function() {
+        let y = 10;
+        let x = 1;
+    }
     function parse(str) {
         return Function(`'use strict'; return (${str})`)()
     }
