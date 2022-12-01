@@ -93,6 +93,15 @@
             wave: 1,
             lock: false,
             lockFunction: function() {
+                spawnEnemy('Spiraler');
+                gameData.currentWave++
+            },
+        },
+        /*
+        0: {
+            wave: 1,
+            lock: false,
+            lockFunction: function() {
                 spawnEnemy('Grunt');
                 gameData.currentWave++
             },
@@ -333,7 +342,7 @@
                 gameData.currentWave++
             },
         },
-        
+        */
     }
 
 
@@ -385,6 +394,11 @@
                 color: 'orange',
                 damage: 0,
                 xp: 1,
+            },
+            "Spiraler": {
+                color: 'gold',
+                damage: 2,
+                xp: 4,
             }
         },
         oscillator: 0,
@@ -768,22 +782,9 @@
             footmanController();
             soldierController();
             swarmerController();
+            spiralerController();
         }, gameData.intervalLength);
     }
-
-    function enemyTemplate(enemyName, fn){
-        if(!gameData.playing) return;
-        let playerX = player.getBoundingClientRect().left;
-        let playerY = player.getBoundingClientRect().top;
-        let enemyList = document.querySelectorAll(`[enemyName="${enemyName}"]`);
-        for(let i = 0; i < enemyList.length; i++){
-            let enemyX = enemyList[i].getBoundingClientRect().left;
-            let enemyY = enemyList[i].getBoundingClientRect().top;
-            // run the function in the parameter
-            fn(playerX, playerY, enemyX, enemyY, i);
-        }
-    }
-
     // make the grunt enemies follow the player
     
     function gruntController(){
@@ -955,6 +956,52 @@
             if(enemyY > mouseY){
                 enemyList[i].style.top = enemyY - 3 + 'px';
             }
+        }
+    }
+
+    function spiralerController(){
+        let mouseX = gameData.mouseX;
+        let mouseY = gameData.mouseY;
+
+        let playerX = player.getBoundingClientRect().left;
+        let playerY = player.getBoundingClientRect().top;
+        let enemyList = document.querySelectorAll(`[enemyName="Spiraler"]`);
+
+        for(let i = 0; enemyList.length; i++){
+            // FIX!!! ===================
+            let enemyX;
+            let enemyY;
+
+            try{
+                enemyList[i].radius = 350;
+                enemyX = enemyList[i].getBoundingClientRect().left;
+                enemyY = enemyList[i].getBoundingClientRect().top;
+            } catch {
+                return;
+            };
+
+
+            // rotate around the player
+            let angle = Math.atan2(enemyY - playerY, enemyX - playerX);
+            angle += 0.01;
+
+            enemyX = playerX + Math.cos(angle) * enemyList[i].radius;
+            enemyY = playerY + Math.sin(angle) * enemyList[i].radius ;
+
+            // slowly make the enemy spiral inward towards the player
+            
+
+            enemyList[i].style.left = enemyX + 'px';
+            enemyList[i].style.top = enemyY + 'px';
+
+            enemyList[i].radius -= 10;
+
+            
+
+
+            
+            
+
         }
     }
 
