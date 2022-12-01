@@ -93,12 +93,10 @@
             wave: 1,
             lock: false,
             lockFunction: function() {
-                spawnEnemy('Swarmer');
-                spawnEnemy('Swarmer');
+                spawnEnemy('Grunt');
                 gameData.currentWave++
             },
         },
-        /*
         1: {
             wave: 2,
             lock: false,
@@ -288,7 +286,54 @@
                 gameData.currentWave++
             },
         },
-        */
+        19: {
+            wave: 20,
+            lock: false,
+            lockFunction: function() {
+                spawnEnemy('Grunt')
+                spawnEnemy('Grunt')
+                spawnEnemy('Swarmer')
+                gameData.currentWave++
+            },
+        },
+        20: {
+            wave: 21,
+            lock: false,
+            lockFunction: function() {
+                spawnEnemy('Grunt')
+                spawnEnemy('Grunt')
+                spawnEnemy('Swarmer')
+                spawnEnemy('Swarmer')
+                gameData.currentWave++
+            },
+        },
+        21: {
+            wave: 22,
+            lock: false,
+            lockFunction: function() {
+                spawnEnemy('Grunt')
+                spawnEnemy('Footman')
+                spawnEnemy('Swarmer')
+                spawnEnemy('Swarmer')
+                spawnEnemy('Swarmer')
+                gameData.currentWave++
+            },
+        },
+        22: {
+            wave: 23,
+            lock: false,
+            lockFunction: function() {
+                spawnEnemy('Grunt')
+                spawnEnemy('Grunt')
+                spawnEnemy('Footman')
+                spawnEnemy('Soldier')
+                spawnEnemy('Swarmer')
+                spawnEnemy('Swarmer')
+                spawnEnemy('Swarmer')
+                gameData.currentWave++
+            },
+        },
+        
     }
 
 
@@ -564,63 +609,64 @@
 
     // on click, create a bullet that is placed at the end of the barrel and moves in the direction of the cannon, and when it hits anything that is an svg, console log the id of the svg
     function bulletController(){
-        window.addEventListener('click', function(e){
-            // get the x and y coordinates of the end of the barrel
-            if(!gameData.playing) return;
-            const player = document.getElementById('player');
-            const playerRect = player.getBoundingClientRect();
-            const cannon = document.getElementById('cannon');
-            const cannonRect = cannon.getBoundingClientRect();
-            const cannonCenterer = document.getElementById('cannonCenterer');
-            const cannonCentererRect = cannonCenterer.getBoundingClientRect();
-            // place the bullet in the center of the player
-            const bullet = document.createElement('div');
-            bullet.style.position = 'absolute';
-            bullet.style.left = playerRect.left + playerRect.width/2 + 'px';
-            bullet.style.top = playerRect.top + playerRect.height/2 + 'px';
-            bullet.style.width = '10px';
-            bullet.style.height = '10px';
-            bullet.style.backgroundColor = 'black';
-            bullet.style.borderRadius = '50%';
-            area.appendChild(bullet);
-            const angle = gameData.cannonAngle;
-            const bulletData = {
-                x: 0,
-                y: 0,
-                speed: 0.5,
-                angle: angle,
-                interval: null
-            }
-            function updateBulletPos(){
+        document.addEventListener('keyup', function(e){
+            if(e.key == ' '){
+                // get the x and y coordinates of the end of the barrel
                 if(!gameData.playing) return;
-                bulletData.x += bulletData.speed * Math.cos(bulletData.angle * Math.PI / 180);
-                bulletData.y += bulletData.speed * Math.sin(bulletData.angle * Math.PI / 180);
-                moveBullet(bulletData.x, bulletData.y, bullet);
-                // if the bullet hits an svg, console log the id of the svg
-                const bulletRect = bullet.getBoundingClientRect();
-                const areaRect = area.getBoundingClientRect();
-                const svgElements = document.getElementsByTagName('svg');
-                let colliders = getColliders();
-                // if the bullet hits a collideables, remove the bullet
-                for(let i = 0; i < colliders.length; i++){
-                    const collideable = colliders[i];
-                    const colliderRect = collideable.getBoundingClientRect();
-                    if(bulletRect.left + bulletRect.width > colliderRect.left && bulletRect.left < colliderRect.left + colliderRect.width && bulletRect.top + bulletRect.height > colliderRect.top && bulletRect.top < colliderRect.top + colliderRect.height){
-                        bullet.remove();
-                        clearInterval(bulletData.interval);
-                        // get attribute value
-                        let attribute = collideable.getAttribute('collider');
-                        if(attribute == 'true'){
-                            let id = collideable.getAttribute('id').split('-')[0];
-                            addXp(gameData.enemyData[id].xp);
-                            collideable.remove();
-                            gameData.enemyCount--;
+                const player = document.getElementById('player');
+                const playerRect = player.getBoundingClientRect();
+                const cannon = document.getElementById('cannon');
+                const cannonRect = cannon.getBoundingClientRect();
+                const cannonCenterer = document.getElementById('cannonCenterer');
+                const cannonCentererRect = cannonCenterer.getBoundingClientRect();
+                // place the bullet in the center of the player
+                const bullet = document.createElement('div');
+                bullet.style.position = 'absolute';
+                bullet.style.left = playerRect.left + playerRect.width/2 + 'px';
+                bullet.style.top = playerRect.top + playerRect.height/2 + 'px';
+                bullet.style.width = '10px';
+                bullet.style.height = '10px';
+                bullet.style.backgroundColor = 'black';
+                bullet.style.borderRadius = '50%';
+                area.appendChild(bullet);
+                const angle = gameData.cannonAngle;
+                const bulletData = {
+                    x: 0,
+                    y: 0,
+                    speed: 0.5,
+                    angle: angle,
+                    interval: null
+                }
+                function updateBulletPos(){
+                    if(!gameData.playing) return;
+                    bulletData.x += bulletData.speed * Math.cos(bulletData.angle * Math.PI / 180);
+                    bulletData.y += bulletData.speed * Math.sin(bulletData.angle * Math.PI / 180);
+                    moveBullet(bulletData.x, bulletData.y, bullet);
+                    // if the bullet hits an svg, console log the id of the svg
+                    const bulletRect = bullet.getBoundingClientRect();
+                    const areaRect = area.getBoundingClientRect();
+                    const svgElements = document.getElementsByTagName('svg');
+                    let colliders = getColliders();
+                    // if the bullet hits a collideables, remove the bullet
+                    for(let i = 0; i < colliders.length; i++){
+                        const collideable = colliders[i];
+                        const colliderRect = collideable.getBoundingClientRect();
+                        if(bulletRect.left + bulletRect.width > colliderRect.left && bulletRect.left < colliderRect.left + colliderRect.width && bulletRect.top + bulletRect.height > colliderRect.top && bulletRect.top < colliderRect.top + colliderRect.height){
+                            bullet.remove();
+                            clearInterval(bulletData.interval);
+                            // get attribute value
+                            let attribute = collideable.getAttribute('collider');
+                            if(attribute == 'true'){
+                                let id = collideable.getAttribute('id').split('-')[0];
+                                addXp(gameData.enemyData[id].xp);
+                                collideable.remove();
+                                gameData.enemyCount--;
+                            }
                         }
-
                     }
                 }
+                bulletData.interval = setInterval(updateBulletPos, gameData.intervalLength);
             }
-            bulletData.interval = setInterval(updateBulletPos, gameData.intervalLength);
         });
     }
 
@@ -757,7 +803,7 @@
                 return;
             };
     
-            if(Math.abs(enemyX - playerX) > 250 || Math.abs(enemyY - playerY) > 250){
+            if(Math.abs(enemyX - playerX) > 350 || Math.abs(enemyY - playerY) > 350){
                 if(!enemyList[i].cooldown){
                     enemyList[i].cooldown = true;
                     enemyList[i].direction = Math.floor(Math.random() * 4);
@@ -897,9 +943,6 @@
                 return;
             };
 
-            // check if the enemy is + or - 20px from any enemy
-
-            
             if(enemyX < mouseX){
                 enemyList[i].style.left = enemyX + 3 + 'px';
             }
@@ -912,8 +955,6 @@
             if(enemyY > mouseY){
                 enemyList[i].style.top = enemyY - 3 + 'px';
             }
-
-
         }
     }
 
@@ -958,7 +999,7 @@
 
     // space key listener
     document.addEventListener('keydown', function(e){
-        if(e.key == ' '){
+        if(e.key == 'p'){
             if(!gameData.gameOver){
                 gameData.playing = !gameData.playing;
             }
