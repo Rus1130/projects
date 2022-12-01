@@ -11,8 +11,8 @@
         top: 25%;
 
         display: grid;
-        grid-template-columns: repeat(10, 1fr);
-        grid-template-rows: repeat(10, 1fr);  
+        grid-template-columns: repeat(100, 1fr);
+        grid-template-rows: repeat(100, 1fr);  
 
 
     }
@@ -36,12 +36,39 @@
 </body>
 <script>
     const chart = document.getElementById("chart");
+
+    const gradient = {
+        lowest: '#0000FF',
+        highest: '#FF0000'
+    }
     // on window load
     window.onload = function() {
-        let y = 10;
+        let y = 100;
         let x = 1;
+        for(y = 100; y > 0; y--) {
+            for(x = 1; x < 101; x++) {
+                let div = document.createElement("div");
+                div.style.backgroundColor = "white";
+                div.setAttribute('chart-x', x);
+                div.setAttribute('chart-y', y);
+                chart.appendChild(div);
+            }
+        }
     }
     function parse(str) {
         return Function(`'use strict'; return (${str})`)()
     }
+
+    const equation = 'x=1';
+    
+    function draw() {
+        let equaler = equation.split('=')[0]
+        let equ = parse(equation.split('=')[1])
+
+        let answer = document.querySelectorAll(`[chart-${equaler}=${equ}]`);
+        console.log(answer)
+
+    }
+
+    draw()
 </script>
