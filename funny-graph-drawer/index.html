@@ -11,10 +11,8 @@
         top: 25%;
 
         display: grid;
-        grid-template-columns: repeat(60, 1fr);
-        grid-template-rows: repeat(60, 1fr);  
-
-
+        grid-template-columns: repeat(100, 1fr);
+        grid-template-rows: repeat(100, 1fr);  
     }
     #input {
         resize: none;
@@ -25,6 +23,19 @@
     }
     #input:focus {
         outline: none;
+    }
+    #blocker {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        font-size: 100px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 </style>
 <head>
@@ -37,6 +48,7 @@
 <script>
     // make this a module
     const chart = document.getElementById("chart");
+    const input = document.getElementById("input");
 
     const gradient = {
         lowest: {
@@ -51,81 +63,72 @@
         }
     }
 
-    const cellMax = 60;
-    // on window load
-    window.onload = function() {
-        for(y = cellMax; y > 0; y--) {
-            for(x = 1; x < cellMax + 1; x++) {
+    const cellMax = 100;
+    const equation = 'min(1,max(0,20+20*((0.5+0.5*cos(5*atan2(column-50.5,row-50.5)))^0.3)-sqrt((column-50)^2+(row-50.5)^2)))+ min(1,max(0,19-sqrt((column-50.5)^2+(row-50.5)^2))) - 2*min(1,max(0,46-row))*min(1,max(0,2-abs(4-sqrt((row-45)^2+(abs(column-50)-6)^2)))) - 2*min(1,max(0,row-50))*min(1,max(0,2-abs(8-sqrt((column-50)^2+(row-50.5)^2))))';
+
+
+    window.onload = function (){
+        for(row = 1; row < cellMax + 1; row++) {
+            for(column = 1; column < cellMax + 1; column++) {
                 let div = document.createElement("div");
-                div.style.backgroundColor = "white";
-                div.setAttribute('chart-x', x);
-                div.setAttribute('chart-y', y);
-                div.setAttribute('answer', 'null');
-                div.id = `${x},${y}`
+                div.setAttribute('column', column);
+                div.setAttribute('row', row);
                 chart.appendChild(div);
             }
         }
         draw()
     }
+    
 
-    const equation = 'y = 2x'
-
-    function getAnswers(){
-
-        return new Promise(resolve => {
-            let answers = {}
-
-            for(y = cellMax; y > 0; y--) {
-                for(x = 1; x < cellMax + 1; x++) {
-                    // for every div, check if the equation is true (y should correspond to the div's chart-y attribute, and x should correspond to the div's chart-x attribute)
-                    let div = document.querySelector(`div[chart-x="${x}"][chart-y="${y}"]`);
-                    let answer = math.evaluate(equation, {x: x, y: y});
-                    div.setAttribute('answer', answer);
-                    answers[`${x},${y}`] = answer;
-                }
+    function draw(){
+        for(row = 1; row < cellMax + 1; row++) {
+            for(column = 1; column < cellMax + 1; column++) {
+                let div = document.querySelector(`div[column="${column}"][row="${row}"]`);
+                div.setAttribute('answer', math.evaluate(equation, {column: column, row: row}));
             }
-            resolve(answers);
-        })
-        draw()
-    }
+        }
 
-    async function draw(){
-        let answers = await getAnswers();
-
-        // color the background of each cell using a gradient and based on the answer
-        for(y = cellMax; y > 0; y--) {
-            for(x = 1; x < cellMax + 1; x++) {
-                let div = document.querySelector(`div[chart-x="${x}"][chart-y="${y}"]`);
-                let answer = div.getAttribute('answer');
-                let color = getColor(answer);
-                div.style.backgroundColor = color;
+        // get all the answers and the amount they appear
+        let answers = {};
+        let answerElements = document.querySelectorAll('[answer]');
+        for(let i = 0; i < answerElements.length; i++) {
+            let answer = answerElements[i].getAttribute('answer');
+            if(answers[answer] == undefined) {
+                answers[answer] = 1;
+            } else {
+                answers[answer]++;
+            }
+        }
+        // using the gradient, get the color for each answer and color it's cell
+        let answerKeys = Object.keys(answers);
+        for(let i = 0; i < answerKeys.length; i++) {
+            let answer = answerKeys[i];
+            let color = getColor(answer, answerKeys[0], answerKeys[answerKeys.length - 1]);
+            let elements = document.querySelectorAll(`[answer="${answer}"]`);
+            for(let i = 0; i < elements.length; i++) {
+                elements[i].style.backgroundColor = `rgb(${color.r}, ${color.g}, ${color.b})`;
             }
         }
     }
 
-    function getColor(input){
+    function getColor(answer, lowest, highest) {
         let color = {
             r: 0,
             g: 0,
             b: 0
         }
-
-        let lowest = gradient.lowest;
-        let highest = gradient.highest;
-
-        let range = {
-            r: highest.r - lowest.r,
-            g: highest.g - lowest.g,
-            b: highest.b - lowest.b
-        }
-
-        let percent = input / cellMax;
-
-        color.r = lowest.r + (range.r * percent);
-        color.g = lowest.g + (range.g * percent);
-        color.b = lowest.b + (range.b * percent);
-
-        return `rgb(${color.r}, ${color.g}, ${color.b})`;
+        let answerRange = highest - lowest;
+        let answerPercent = (answer - lowest) / answerRange;
+        let gradientRange = gradient.highest.r - gradient.lowest.r;
+        color.r = math.round(gradient.lowest.r + (gradientRange * answerPercent));
+        gradientRange = gradient.highest.g - gradient.lowest.g;
+        color.g = math.round(gradient.lowest.g + (gradientRange * answerPercent));
+        gradientRange = gradient.highest.b - gradient.lowest.b;
+        color.b = math.round(gradient.lowest.b + (gradientRange * answerPercent));
+        return color;
     }
+
+
+    // https://www.youtube.com/watch?v=JnCkF62gkOY
 
 </script>
