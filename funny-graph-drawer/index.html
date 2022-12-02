@@ -11,8 +11,8 @@
         top: 25%;
 
         display: grid;
-        grid-template-columns: repeat(100, 1fr);
-        grid-template-rows: repeat(100, 1fr);  
+        grid-template-columns: repeat(50, 1fr);
+        grid-template-rows: repeat(50, 1fr);  
 
 
     }
@@ -28,47 +28,63 @@
     }
 </style>
 <head>
-
+    <script src="https://unpkg.com/mathjs@11.4.0/lib/browser/math.js"></script>
 </head>
 <body>
     <textarea id="input"></textarea>
     <div id="chart"></div>
 </body>
 <script>
+    // make this a module
     const chart = document.getElementById("chart");
 
     const gradient = {
-        lowest: '#0000FF',
-        highest: '#FF0000'
+        lowest: {
+            r: 0,
+            g: 0,
+            b: 0
+        },
+        highest: {
+            r: 255,
+            g: 255,
+            b: 255
+        }
     }
+
+    const cellMax = 50;
     // on window load
     window.onload = function() {
-        let y = 100;
-        let x = 1;
-        for(y = 100; y > 0; y--) {
-            for(x = 1; x < 101; x++) {
+        for(y = cellMax; y > 0; y--) {
+            for(x = 1; x < cellMax + 1; x++) {
                 let div = document.createElement("div");
                 div.style.backgroundColor = "white";
                 div.setAttribute('chart-x', x);
                 div.setAttribute('chart-y', y);
+                div.id = `${x},${y}`
                 chart.appendChild(div);
             }
         }
     }
-    function parse(str) {
-        return Function(`'use strict'; return (${str})`)()
+
+    const equation = 'y = 2x'
+
+    async function getAnswers(){
+
+        let promise1 = new Promise(function(resolve, reject){
+            let answers = {}
+
+            for(y = cellMax; y > 0; y--) {
+                for(x = 1; x < cellMax + 1; x++) {
+                    // for every div, check if the equation is true (y should correspond to the div's chart-y attribute, and x should correspond to the div's chart-x attribute)
+                    let div = document.querySelector(`div[chart-x="${x}"][chart-y="${y}"]`);
+                    let answer = math.evaluate(equation, {x: x, y: y});
+
+                    answers[`${x},${y}`] = answer;
+                }
+            }
+            resolve(answers);
+        });
     }
 
-    const equation = 'x=1';
-    
-    function draw() {
-        let equaler = equation.split('=')[0]
-        let equ = parse(equation.split('=')[1])
-
-        let answer = document.querySelectorAll(`[chart-${equaler}=${equ}]`);
-        console.log(answer)
-
-    }
-
-    draw()
+    getAnswers();
 </script>
