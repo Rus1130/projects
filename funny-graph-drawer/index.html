@@ -11,8 +11,8 @@
         top: 25%;
 
         display: grid;
-        grid-template-columns: repeat(50, 1fr);
-        grid-template-rows: repeat(50, 1fr);  
+        grid-template-columns: repeat(60, 1fr);
+        grid-template-rows: repeat(60, 1fr);  
 
 
     }
@@ -51,7 +51,7 @@
         }
     }
 
-    const cellMax = 50;
+    const cellMax = 60;
     // on window load
     window.onload = function() {
         for(y = cellMax; y > 0; y--) {
@@ -60,17 +60,19 @@
                 div.style.backgroundColor = "white";
                 div.setAttribute('chart-x', x);
                 div.setAttribute('chart-y', y);
+                div.setAttribute('answer', 'null');
                 div.id = `${x},${y}`
                 chart.appendChild(div);
             }
         }
+        draw()
     }
 
-    const equation = 'y = 2x'
+    const equation = 'y = (2x + 5)/3'
 
-    async function getAnswers(){
+    function getAnswers(){
 
-        let promise1 = new Promise(function(resolve, reject){
+        return new Promise(resolve => {
             let answers = {}
 
             for(y = cellMax; y > 0; y--) {
@@ -78,13 +80,23 @@
                     // for every div, check if the equation is true (y should correspond to the div's chart-y attribute, and x should correspond to the div's chart-x attribute)
                     let div = document.querySelector(`div[chart-x="${x}"][chart-y="${y}"]`);
                     let answer = math.evaluate(equation, {x: x, y: y});
-
+                    div.setAttribute('answer', answer);
                     answers[`${x},${y}`] = answer;
                 }
             }
             resolve(answers);
-        });
+        })
+        draw()
     }
 
-    getAnswers();
+    async function draw(){
+        let answers = await getAnswers();
+        for(i = 0; i < Object.keys(answers).length; i++){
+            let id = Object.keys(answers)[i];
+            let div = document.getElementById(id);
+            let answer = answers[id];
+        }
+    }
+
+
 </script>
