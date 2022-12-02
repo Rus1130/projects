@@ -40,14 +40,14 @@
 
     const gradient = {
         lowest: {
-            r: 0,
+            r: 255,
             g: 0,
             b: 0
         },
         highest: {
             r: 255,
             g: 255,
-            b: 255
+            b: 255,
         }
     }
 
@@ -68,7 +68,7 @@
         draw()
     }
 
-    const equation = 'y = (2x + 5)/3'
+    const equation = 'y = 2x'
 
     function getAnswers(){
 
@@ -91,12 +91,41 @@
 
     async function draw(){
         let answers = await getAnswers();
-        for(i = 0; i < Object.keys(answers).length; i++){
-            let id = Object.keys(answers)[i];
-            let div = document.getElementById(id);
-            let answer = answers[id];
+
+        // color the background of each cell using a gradient and based on the answer
+        for(y = cellMax; y > 0; y--) {
+            for(x = 1; x < cellMax + 1; x++) {
+                let div = document.querySelector(`div[chart-x="${x}"][chart-y="${y}"]`);
+                let answer = div.getAttribute('answer');
+                let color = getColor(answer);
+                div.style.backgroundColor = color;
+            }
         }
     }
 
+    function getColor(input){
+        let color = {
+            r: 0,
+            g: 0,
+            b: 0
+        }
+
+        let lowest = gradient.lowest;
+        let highest = gradient.highest;
+
+        let range = {
+            r: highest.r - lowest.r,
+            g: highest.g - lowest.g,
+            b: highest.b - lowest.b
+        }
+
+        let percent = input / cellMax;
+
+        color.r = lowest.r + (range.r * percent);
+        color.g = lowest.g + (range.g * percent);
+        color.b = lowest.b + (range.b * percent);
+
+        return `rgb(${color.r}, ${color.g}, ${color.b})`;
+    }
 
 </script>
