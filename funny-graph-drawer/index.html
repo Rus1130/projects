@@ -48,13 +48,15 @@
     const graph = document.getElementById("graph");
     const input = document.getElementById("input");
 
+
     const cellMax = 50;
-    const iterator = 1;
-    const equation = 'y = 2/1x + 5';
+    const precision = 2;
+    const iterator = 1 / (precision / 2);
+    const equation = 'x = y^2';
 
     // get the graph style
-    graph.style.gridTemplateColumns = `repeat(${cellMax*2+1}, 1fr)`;
-    graph.style.gridTemplateRows = `repeat(${cellMax*2+1}, 1fr)`;
+    graph.style.gridTemplateColumns = `repeat(${cellMax * precision + 1}, 1fr)`;
+    graph.style.gridTemplateRows = `repeat(${cellMax * precision + 1}, 1fr)`;
 
 
     function clean(string){
@@ -62,44 +64,25 @@
     }
 
     window.onload = function(){
-        for(y = cellMax; y > -cellMax - 1; y -= iterator) {
-            for(x = -cellMax; x < cellMax + 1; x += iterator) {
+        let yMin = -cellMax;
+        let yMax = cellMax;
+        let xMin = -cellMax;
+        let xMax = cellMax;
+
+        for(let y = yMax; y >= yMin; y -= iterator){
+            for(let x = xMin; x <= xMax; x += iterator){
                 let div = document.createElement("div");
-                div.setAttribute('plotted', 'false')
-                div.id = `${x},${y}`
-                if((x == 0 && y % 2.5 == 0) ||
-                        (y == 0 && x % 2.5 == 0)){
-                    div.style.backgroundColor = `black`;
+                div.id = `${x},${y}`;
+                div.setAttribute('plot', 'false')
+                if((y == 0 && x % 5 == 0) || (x == 0 && y % 5 == 0)){
+                    div.style.backgroundColor = 'black';
                 }
                 graph.appendChild(div);
             }
         }
-        draw(equation)
     }
 
-    function draw(input){
-        for(y = cellMax; y > -cellMax - 1; y -= iterator) {
-            for(x = -cellMax; x < cellMax + 1; x += iterator) {
-                let div = document.getElementById(`${x},${y}`);
-                let solvingSide = clean(input.split('=')[0])
-                let equ = math.evaluate(clean(input.split('=')[1]), {x: x, y: y})
-                if(clean(input.split('=')[0]) == 'x'){
-                    if(x == equ){
-                        div.setAttribute('plotted', 'true')
-                        div.style.backgroundColor = `black`;
-                    }
-                } else {
-                    if(y == equ){
-                        div.setAttribute('plotted', 'true')
-                        div.style.backgroundColor = `black`;
-                    }
-                }
-            }
-        }
-
-        let plottedPoints = document.querySelectorAll('[plotted="true"]')
-        console.log(plottedPoints)
-    }
+    function draw(input){}
 
 
     // https://www.youtube.com/watch?v=JnCkF62gkOY
