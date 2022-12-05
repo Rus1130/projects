@@ -75,7 +75,7 @@
         for(y = cellMax; y > -cellMax - 1; y--) {
             for(x = -cellMax; x < cellMax + 1; x++) {
                 let div = document.createElement("div");
-                div.setAttribute('connectorNode', 'false')
+                div.setAttribute('plotted', 'false')
                 div.id = `${x},${y}`
                 if((x == 0 && y % 5 == 0) ||
                         (y == 0 && x % 5 == 0)){
@@ -95,43 +95,23 @@
                 let equ = math.evaluate(clean(input.split('=')[1]), {x: x, y: y})
                 if(clean(input.split('=')[0]) == 'x'){
                     if(x == equ){
-                        div.setAttribute('connectorNode', 'true')
+                        div.setAttribute('plotted', 'true')
                         div.style.backgroundColor = `black`;
                     }
                 } else {
                     if(y == equ){
-                        div.setAttribute('connectorNode', 'true')
+                        div.setAttribute('plotted', 'true')
                         div.style.backgroundColor = `black`;
                     }
                 }
             }
         }
+
+        let plottedPoints = document.querySelectorAll('[plotted="true"]')
+        console.log(plottedPoints)
     }
 
 
     // https://www.youtube.com/watch?v=JnCkF62gkOY
-    /*
-
-
-
-
-
-
-                let equ = math.evaluate(clean(equation.split('=')[1]), {x: x, y: y})
-                if(clean(equation.split('=')[0]) == 'x'){
-                    if(x == equ){
-                        div.style.backgroundColor = `black`;
-                    }
-                } else {
-                    if(y == equ){
-                        div.style.backgroundColor = `black`;
-                    }
-                }
-
-
-
-
-
-    */
 
 </script>
