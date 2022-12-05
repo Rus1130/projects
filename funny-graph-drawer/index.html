@@ -11,8 +11,8 @@
         top: 25%;
 
         display: grid;
-        grid-template-columns: repeat(100, 1fr);
-        grid-template-rows: repeat(100, 1fr);  
+        grid-template-columns: repeat(101, 1fr);
+        grid-template-rows: repeat(101, 1fr);  
     }
     #input {
         resize: none;
@@ -63,72 +63,75 @@
         }
     }
 
-    const cellMax = 100;
-    const equation = 'min(1,max(0,20+20*((0.5+0.5*cos(5*atan2(column-50.5,row-50.5)))^0.3)-sqrt((column-50)^2+(row-50.5)^2)))+ min(1,max(0,19-sqrt((column-50.5)^2+(row-50.5)^2))) - 2*min(1,max(0,46-row))*min(1,max(0,2-abs(4-sqrt((row-45)^2+(abs(column-50)-6)^2)))) - 2*min(1,max(0,row-50))*min(1,max(0,2-abs(8-sqrt((column-50)^2+(row-50.5)^2))))';
+    const cellMax = 50;
+    const equation = 'x = y^2';
 
 
-    window.onload = function (){
-        for(row = 1; row < cellMax + 1; row++) {
-            for(column = 1; column < cellMax + 1; column++) {
+    function clean(string){
+        return Array(Array(string.trim()).reverse().join().trim()).reverse().join();
+    }
+
+    window.onload = function(){
+        for(y = cellMax; y > -cellMax - 1; y--) {
+            for(x = -cellMax; x < cellMax + 1; x++) {
                 let div = document.createElement("div");
-                div.setAttribute('column', column);
-                div.setAttribute('row', row);
+                div.setAttribute('connectorNode', 'false')
+                div.id = `${x},${y}`
+                if((x == 0 && y % 5 == 0) ||
+                        (y == 0 && x % 5 == 0)){
+                    div.style.backgroundColor = `black`;
+                }
                 chart.appendChild(div);
             }
         }
-        draw()
-    }
-    
-
-    function draw(){
-        for(row = 1; row < cellMax + 1; row++) {
-            for(column = 1; column < cellMax + 1; column++) {
-                let div = document.querySelector(`div[column="${column}"][row="${row}"]`);
-                div.setAttribute('answer', math.evaluate(equation, {column: column, row: row}));
-            }
-        }
-
-        // get all the answers and the amount they appear
-        let answers = {};
-        let answerElements = document.querySelectorAll('[answer]');
-        for(let i = 0; i < answerElements.length; i++) {
-            let answer = answerElements[i].getAttribute('answer');
-            if(answers[answer] == undefined) {
-                answers[answer] = 1;
-            } else {
-                answers[answer]++;
-            }
-        }
-        // using the gradient, get the color for each answer and color it's cell
-        let answerKeys = Object.keys(answers);
-        for(let i = 0; i < answerKeys.length; i++) {
-            let answer = answerKeys[i];
-            let color = getColor(answer, answerKeys[0], answerKeys[answerKeys.length - 1]);
-            let elements = document.querySelectorAll(`[answer="${answer}"]`);
-            for(let i = 0; i < elements.length; i++) {
-                elements[i].style.backgroundColor = `rgb(${color.r}, ${color.g}, ${color.b})`;
-            }
-        }
+        draw(equation)
     }
 
-    function getColor(answer, lowest, highest) {
-        let color = {
-            r: 0,
-            g: 0,
-            b: 0
+    function draw(input){
+        for(y = cellMax; y > -cellMax - 1; y--) {
+            for(x = -cellMax; x < cellMax + 1; x++) {
+                let div = document.getElementById(`${x},${y}`);
+                let solvingSide = clean(input.split('=')[0])
+                let equ = math.evaluate(clean(input.split('=')[1]), {x: x, y: y})
+                if(clean(input.split('=')[0]) == 'x'){
+                    if(x == equ){
+                        div.setAttribute('connectorNode', 'true')
+                        div.style.backgroundColor = `black`;
+                    }
+                } else {
+                    if(y == equ){
+                        div.setAttribute('connectorNode', 'true')
+                        div.style.backgroundColor = `black`;
+                    }
+                }
+            }
         }
-        let answerRange = highest - lowest;
-        let answerPercent = (answer - lowest) / answerRange;
-        let gradientRange = gradient.highest.r - gradient.lowest.r;
-        color.r = math.round(gradient.lowest.r + (gradientRange * answerPercent));
-        gradientRange = gradient.highest.g - gradient.lowest.g;
-        color.g = math.round(gradient.lowest.g + (gradientRange * answerPercent));
-        gradientRange = gradient.highest.b - gradient.lowest.b;
-        color.b = math.round(gradient.lowest.b + (gradientRange * answerPercent));
-        return color;
     }
 
 
     // https://www.youtube.com/watch?v=JnCkF62gkOY
+    /*
+
+
+
+
+
+
+                let equ = math.evaluate(clean(equation.split('=')[1]), {x: x, y: y})
+                if(clean(equation.split('=')[0]) == 'x'){
+                    if(x == equ){
+                        div.style.backgroundColor = `black`;
+                    }
+                } else {
+                    if(y == equ){
+                        div.style.backgroundColor = `black`;
+                    }
+                }
+
+
+
+
+
+    */
 
 </script>
