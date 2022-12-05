@@ -1,5 +1,5 @@
 <style>
-    #chart {
+    #graph {
         border: 1px solid black;
         /*
         make the width and height always the same
@@ -11,8 +11,6 @@
         top: 25%;
 
         display: grid;
-        grid-template-columns: repeat(101, 1fr);
-        grid-template-rows: repeat(101, 1fr);  
     }
     #input {
         resize: none;
@@ -43,28 +41,20 @@
 </head>
 <body>
     <textarea id="input"></textarea>
-    <div id="chart"></div>
+    <div id="graph"></div>
 </body>
 <script>
     // make this a module
-    const chart = document.getElementById("chart");
+    const graph = document.getElementById("graph");
     const input = document.getElementById("input");
 
-    const gradient = {
-        lowest: {
-            r: 255,
-            g: 0,
-            b: 0
-        },
-        highest: {
-            r: 255,
-            g: 255,
-            b: 255,
-        }
-    }
-
     const cellMax = 50;
-    const equation = 'x = y^2';
+    const iterator = 1;
+    const equation = 'y = 2/1x + 5';
+
+    // get the graph style
+    graph.style.gridTemplateColumns = `repeat(${cellMax*2+1}, 1fr)`;
+    graph.style.gridTemplateRows = `repeat(${cellMax*2+1}, 1fr)`;
 
 
     function clean(string){
@@ -72,24 +62,24 @@
     }
 
     window.onload = function(){
-        for(y = cellMax; y > -cellMax - 1; y--) {
-            for(x = -cellMax; x < cellMax + 1; x++) {
+        for(y = cellMax; y > -cellMax - 1; y -= iterator) {
+            for(x = -cellMax; x < cellMax + 1; x += iterator) {
                 let div = document.createElement("div");
                 div.setAttribute('plotted', 'false')
                 div.id = `${x},${y}`
-                if((x == 0 && y % 5 == 0) ||
-                        (y == 0 && x % 5 == 0)){
+                if((x == 0 && y % 2.5 == 0) ||
+                        (y == 0 && x % 2.5 == 0)){
                     div.style.backgroundColor = `black`;
                 }
-                chart.appendChild(div);
+                graph.appendChild(div);
             }
         }
         draw(equation)
     }
 
     function draw(input){
-        for(y = cellMax; y > -cellMax - 1; y--) {
-            for(x = -cellMax; x < cellMax + 1; x++) {
+        for(y = cellMax; y > -cellMax - 1; y -= iterator) {
+            for(x = -cellMax; x < cellMax + 1; x += iterator) {
                 let div = document.getElementById(`${x},${y}`);
                 let solvingSide = clean(input.split('=')[0])
                 let equ = math.evaluate(clean(input.split('=')[1]), {x: x, y: y})
