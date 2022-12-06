@@ -1,0 +1,81 @@
+<style>
+    .sidenav {
+        height: 100%;
+        width: 160px;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        background-color: #999;
+        overflow-x: hidden;
+        padding-top: 20px;
+    }
+
+    .sidenav a {
+        padding: 6px 8px 6px 26.5px;
+        text-decoration: none;
+        font-size: 20px;
+    }
+
+    .main {
+        margin-left: 160px;
+        font-size: 28px;
+    }
+
+    @media screen and (max-height: 450px) {
+        .sidenav {
+            padding-top: 15px;
+        }
+        .sidenav a {
+            font-size: 18px;
+        }
+    }
+</style>
+
+<head>
+    <title>Home / Bit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    <!-- Logo goes here -->
+    <div id="center-table">
+        <center>
+            <h1 style="font-family:Arial">Bit</h1>
+        </center>
+        <center>
+            <table width="550" border="2" noshade cellpadding="4" cellspacing="0" color="CCEFFO">
+                <tbody>
+                    <tr>
+                        <td valign="TOP" align="LEFT">
+                            <p style="font-family:Arial"><a href="test23.html">@test23</a>&nbsp time to go home... anything fun going on? ping me.</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Bit © 2022</p>
+        </center>
+    </div>
+
+
+    <div class="sidenav" id="sidenav">
+        <a href="home.html">Home</a>
+        <a href="posts.html">Browse posts</a>
+        <a href="login.html">Login</a>
+    </div>
+</body>
+<script>
+    addEventListener('resize', () => {
+        let sidenav = document.getElementById('sidenav');
+        let table = document.getElementById('center-table');
+        let width = window.innerWidth;
+
+        if(width < 600) {
+            sidenav.style.display = 'none';
+            table.style.width = '100%';
+        } else {
+            sidenav.style.display = 'block';
+            table.style.width = '550px';
+        }
+    });
+</script>
