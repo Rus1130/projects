@@ -158,7 +158,7 @@
         totalY: (yCellMax * precision)
     }
 
-    let starttime = 0;
+    let startTime = 0;
 
     function templateDraw(x, y, input){
         let div = document.getElementById(`${x},${y}`);
@@ -181,12 +181,15 @@
         }
     }
 
+    function generateTimestamp(startTime){
+        return math.round(Date.now() - startTime, 4) / 1000 + 's';
+    }
+
     const drawFunctions = {
         top: {
             left: {
                 top: {
-                    left: function(input){
-                        starttime = Date.now();
+                    left: function(input){;
                         for(let y = yMax; y >= yMin; y -= iterator){
                             for(let x = xMin; x <= xMax; x += iterator){
                                 if(x >= -xCellMax && x <= -xCellMax/2 && y >= yCellMax/2){
@@ -194,7 +197,7 @@
                                 }
                             }
                         }
-                        console.log(`top left top left done (${parser.evaluate(`${math.round(Date.now() - startTime, 4)} ms to s`)})`);
+                        console.log(`top left top right done (${generateTimestamp(startTime)})`);
                     },
                     right: function(input){
                         for(let y = yMax; y >= yMin; y -= iterator){
@@ -204,7 +207,7 @@
                                 }
                             }
                         }
-                        console.log(`top left top right done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 5})} ms to s`)})`);
+                        console.log(`top left top right done (${generateTimestamp(startTime)})`);
                     },
                 },
                 bottom: {
@@ -216,7 +219,7 @@
                                 }
                             }
                         }
-                        console.log(`top left bottom left done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 5})} ms to s`)})`);
+                        console.log(`top left bottom left done (${generateTimestamp(startTime)})`);
                     },
                     right: function(input){
                         for(let y = yMax; y >= yMin; y -= iterator){
@@ -226,7 +229,7 @@
                                 }
                             }
                         }
-                        console.log(`top left bottom right done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 5})} ms to s`)})`);
+                        console.log(`top left bottom right done (${generateTimestamp(startTime)})`);
                     }
                 }
             },
@@ -240,7 +243,7 @@
                                 }
                             }
                         }
-                        console.log(`top right top left done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 5})} ms to s`)})`);
+                        console.log(`top right top left done (${generateTimestamp(startTime)})`);
                     },
                     right: function(input){
                         for(let y = yMax; y >= yMin; y -= iterator){
@@ -250,7 +253,7 @@
                                 }
                             }
                         }
-                        console.log(`top right top right done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 5})} ms to s`)})`);
+                        console.log(`top right top right done (${generateTimestamp(startTime)})`);
                     }
                 },
                 bottom: {
@@ -263,7 +266,7 @@
                                 }
                             }
                         }
-                        console.log(`top right bottom left done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 5})} ms to s`)})`);
+                        console.log(`top right bottom left done (${generateTimestamp(startTime)})`);
                     },
                     right: function(input){
                         for(let y = yMax; y >= yMin; y -= iterator){
@@ -273,7 +276,7 @@
                                 }
                             }
                         }
-                        console.log(`top right bottom right done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 5})} ms to s`)})`);
+                        console.log(`top right bottom right done (${generateTimestamp(startTime)})`);
 
                     }
                 }
@@ -283,36 +286,92 @@
             left: {
                 top: {
                     left: function(input){
-
+                        for(let y = yMax; y >= yMin; y -= iterator){
+                            for(let x = xMin; x <= xMax; x += iterator){
+                                if(x >= -xCellMax && x < -xCellMax/2 && y <= 0 && y >= -yCellMax/2){
+                                    templateDraw(x, y, input);
+                                }
+                            }
+                        }
+                        console.log(`bottom left top left done (${generateTimestamp(startTime)})`);
                     },
                     right: function(input){
-
+                        for(let y = yMax; y >= yMin; y -= iterator){
+                            for(let x = xMin; x <= xMax; x += iterator){
+                                if(x >= -xCellMax/2 && x <= 0 && y <= 0 && y >= -yCellMax/2){
+                                    templateDraw(x, y, input);
+                                }
+                            }
+                        }
+                        console.log(`bottom left top right done (${generateTimestamp(startTime)})`);
                     }
                 },
                 bottom: {
                     left: function(input){
-
+                        for(let y = yMax; y >= yMin; y -= iterator){
+                            for(let x = xMin; x <= xMax; x += iterator){
+                                if(x >= -xCellMax && x < -xCellMax/2 && y < 0 && y >= -yCellMax){
+                                    templateDraw(x, y, input);
+                                }
+                            }
+                        }
+                        console.log(`bottom left bottom left done (${generateTimestamp(startTime)})`);
                     },
                     right: function(input){
-
+                        for(let y = yMax; y >= yMin; y -= iterator){
+                            for(let x = xMin; x <= xMax; x += iterator){
+                                if(x >= -xCellMax/2 && x <= 0 && y < 0 && y >= -yCellMax){
+                                    templateDraw(x, y, input);
+                                }
+                            }
+                        }
+                        console.log(`bottom left bottom right done (${generateTimestamp(startTime)})`);
                     }
                 }
             },
             right: {
                 top: {
                     left: function(input){
-
+                        for(let y = yMax; y >= yMin; y -= iterator){
+                            for(let x = xMin; x <= xMax; x += iterator){
+                                if(x >= 0 && x <= xCellMax/2 && y <= 0 && y >= -yCellMax/2){
+                                    templateDraw(x, y, input);
+                                }
+                            }
+                        }
+                        console.log(`bottom right top left done (${generateTimestamp(startTime)})`);
                     },
                     right: function(input){
-
+                        for(let y = yMax; y >= yMin; y -= iterator){
+                            for(let x = xMin; x <= xMax; x += iterator){
+                                if(x >= xCellMax/2 && x <= xCellMax && y <= 0 && y >= -yCellMax/2){
+                                    templateDraw(x, y, input);
+                                }
+                            }
+                        }
+                        console.log(`bottom right top right done (${generateTimestamp(startTime)})`);
                     }
                 },
                 bottom: {
                     left: function(input){
-
+                        for(let y = yMax; y >= yMin; y -= iterator){
+                            for(let x = xMin; x <= xMax; x += iterator){
+                                if(x >= 0 && x <= xCellMax/2 && y < 0 && y >= -yCellMax){
+                                    templateDraw(x, y, input);
+                                }
+                            }
+                        }
+                        console.log(`bottom right bottom left done (${generateTimestamp(startTime)})`);
                     },
                     right: function(input){
-
+                        for(let y = yMax; y >= yMin; y -= iterator){
+                            for(let x = xMin; x <= xMax; x += iterator){
+                                if(x >= xCellMax/2 && x <= xCellMax && y < 0 && y >= -yCellMax){
+                                    templateDraw(x, y, input);
+                                }
+                            }
+                        }
+                        console.log(`bottom right bottom right done (${generateTimestamp(startTime)})`);
                     }
                 }
             }
@@ -329,6 +388,7 @@
                 previouslyDrawn[i].style.backgroundColor = previouslyDrawn[i].getAttribute('previousColor');
                 previouslyDrawn[i].setAttribute('plot', 'false');
             }
+            console.warn('starting...')
             startTime = Date.now();
 
             const p = new Parallel([
@@ -341,11 +401,22 @@
                 drawFunctions.top.right.top.right(input),
                 drawFunctions.top.right.bottom.left(input),
                 drawFunctions.top.right.bottom.right(input),
+
+                drawFunctions.bottom.left.top.left(input),
+                drawFunctions.bottom.left.top.right(input),
+                drawFunctions.bottom.left.bottom.left(input),
+                drawFunctions.bottom.left.bottom.right(input),
+
+                drawFunctions.bottom.right.top.left(input),
+                drawFunctions.bottom.right.top.right(input),
+                drawFunctions.bottom.right.bottom.left(input),
+                drawFunctions.bottom.right.bottom.right(input)
             ]);
             try {
                 p.spawn()
             } catch {
-                console.warn(`done in ${parser.evaluate(`${Date.now() - startTime} ms to s`)}`);
+                console.warn(`done!`)
+                console.log(`elapsed time: ${generateTimestamp(startTime)}`);
                 return
             }
         }
