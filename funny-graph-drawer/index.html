@@ -60,9 +60,9 @@
     const colors = ['#000000', '#0000FF', '#00FF00', '#FF0000', '#00FFFF', '#FF00FF', '#FFFF00', "#6042A6"];
 
 
-    const xCellMax = 50;
-    const yCellMax = 50;
-    const precision = 4;
+    const xCellMax = 25;
+    const yCellMax = 25;
+    const precision = 8;
     const iterator = 1 / (precision / 2);
 
     const parser = math.parser()
@@ -95,19 +95,48 @@
                 let div = document.createElement('div');
                 div.id = `${x},${y}`;
                 if(sectors){
-                    if(x <= 0 && y > 0){ // top left top left
+                    if((x >= -xCellMax && x <= -xCellMax/2 && y >= yCellMax/2)){ // top left top left
+                        div.style.backgroundColor = '#C74440'
+                    } else if((x >= 0 && x <= xCellMax/2 && y >= yCellMax/2)){ // top right top left
+                        div.style.backgroundColor = '#C74440'
+                    } else if((x >= -xCellMax && x <= -xCellMax/2 && y >= -yCellMax/2 && y <= 0)){ // bottom left top left
+                        div.style.backgroundColor = '#C74440'
+                    } else if((x >= 0 && x <= xCellMax/2 && y >= -yCellMax/2 && y <= 0)){ // bottom right top left
                         div.style.backgroundColor = '#C74440'
                     }
-                    if(x > 0 && y > 0){
+
+
+                    if((x >= -xCellMax/2 && x <= 0 && y >= yCellMax/2)){ // top left top right
+                        div.style.backgroundColor = '#2D70B3'
+                    } else if((x >= xCellMax/2 && x <= xCellMax && y >= yCellMax/2)){ // top right top right
+                        div.style.backgroundColor = '#2D70B3'
+                    } else if((x >= -xCellMax/2 && x <= 0 && y >= -yCellMax/2 && y <= 0)){ // bottom left top right
+                        div.style.backgroundColor = '#2D70B3'
+                    } else if((x >= xCellMax/2 && x <= xCellMax && y >= -yCellMax/2 && y <= 0)){ // bottom right top right
                         div.style.backgroundColor = '#2D70B3'
                     }
-                    if(x <= 0 && y <= 0){
+
+                    if((x >= -xCellMax && x < -xCellMax/2 && y < yCellMax/2 && y > 0)){ // top left bottom left
+                        div.style.backgroundColor = '#388C46'
+                    } else if((x > 0 && x < xCellMax/2 && y < yCellMax/2 && y > 0)){ // top right bottom left
+                        div.style.backgroundColor = '#388C46'
+                    } else if((x >= -xCellMax && x < -xCellMax/2 && y <= -yCellMax/2 && y < -yCellMax/2)){ // bottom left bottom left
+                        div.style.backgroundColor = '#388C46'
+                    } else if((x > 0 && x < xCellMax/2 && y <= -yCellMax/2 && y < -yCellMax/2)){ // bottom right bottom left
                         div.style.backgroundColor = '#388C46'
                     }
-                    if(x > 0 && y <= 0){
+
+                    if((x >= -xCellMax/2 && x <= 0 && y < yCellMax/2 && y > 0)){ // top left bottom right
+                        div.style.backgroundColor = '#FA7E19'
+                    } else if((x >= xCellMax/2 && x <= xCellMax && y < yCellMax/2 && y > 0)){ // top right bottom right
+                        div.style.backgroundColor = '#FA7E19'
+                    } else if((x >= -xCellMax/2 && x <= 0 && y <= -yCellMax/2 && y < -yCellMax/2)){ // bottom left bottom right
+                        div.style.backgroundColor = '#FA7E19'
+                    } else if((x >= xCellMax/2 && x <= xCellMax && y <= -yCellMax/2 && y < -yCellMax/2)){ // bottom right bottom right
                         div.style.backgroundColor = '#FA7E19'
                     }
                 }
+
 
 
 
@@ -137,12 +166,10 @@
 
         if(left == 'x'){
             if(x == right){
-                div.style.backgroundColor = colors[0];
                 div.setAttribute('plot', 'true');
             }
         } else if(left == 'y'){
             if(y == right){
-                div.style.backgroundColor = colors[0];
                 div.setAttribute('plot', 'true');
             }
         }
@@ -152,44 +179,34 @@
         for(let y = yMax; y >= 0; y -= iterator){
             for(let x = xMin; x <= 0; x += iterator){
                 templateDraw(x, y, input);
-                iterations.x++;
-
-                
             }
-            iterations.y++;
         }
         console.log('top left done');
     }
+
     function drawTopRight(input){
         for(let y = yMax; y >= 0; y -= iterator){
             for(let x = 0; x <= xMax; x += iterator){
                 templateDraw(x, y, input);
-                iterations.x++;
-                
             }
-            iterations.y++;
         }
         console.log('top right done');
     }
+
     function drawBottomLeft(input){
         for(let y = 0; y >= yMin; y -= iterator){
             for(let x = xMin; x <= 0; x += iterator){
                 templateDraw(x, y, input);
-                iterations.x++;
-                
             }
-            iterations.y++;
         }
         console.log('bottom left done');
     }
+
     function drawBottomRight(input){
         for(let y = 0; y >= yMin; y -= iterator){
             for(let x = 0; x <= xMax; x += iterator){
                 templateDraw(x, y, input);
-                iterations.x++;
-                
             }
-            iterations.y++;
         }
         console.log('bottom right done');
     }
@@ -197,15 +214,21 @@
 
 
     async function draw(input){
-        if(!setupComplete) return console.warn('setup not complete!')
-        let startTime = Date.now();
+        if(!setupComplete){
+            return console.warn('setup not complete!')
+        } else {
+            let startTime = Date.now();
 
-        const p = new Parallel([drawTopLeft(input), drawTopRight(input), drawBottomLeft(input), drawBottomRight(input)]);
-        try {
-            p.spawn()
-        } catch {
-            console.warn(`done in ${parser.evaluate(`${Date.now() - startTime} ms to s`)}`);
-            return
+            const p = new Parallel([drawTopLeft(input),
+            drawTopRight(input),
+            drawBottomLeft(input),
+            drawBottomRight(input)]);
+            try {
+                p.spawn()
+            } catch {
+                console.warn(`done in ${parser.evaluate(`${Date.now() - startTime} ms to s`)}`);
+                return
+            }
         }
         
 
