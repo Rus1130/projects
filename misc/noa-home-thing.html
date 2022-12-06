@@ -2,20 +2,13 @@
     .sidenav {
         height: 100%;
         width: 160px;
-        position: fixed;
         z-index: 1;
+        position: fixed;
         top: 0;
         left: 0;
         background-color: #999;
         overflow-x: hidden;
         padding-top: 20px;
-    }
-
-    #wrapper {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
     }
 
     .sidenav a {
@@ -37,6 +30,20 @@
             font-size: 18px;
         }
     }
+
+    #grid {
+        display: grid;
+        height: 100%;
+        width: 100%;
+        grid-template-columns: 160px calc(100% - 160px);
+    }
+
+    #wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
 </style>
 
 <head>
@@ -45,38 +52,25 @@
 </head>
 
 <body>
-    <!-- Logo goes here -->
-    <div class="sidenav" id="sidenav">
-        <a href="home.html">Home</a>
-        <a href="posts.html">Browse posts</a>
-        <a href="login.html">Login</a>
-    </div>
-
-    <div id="wrapper">
-        <h1 style="font-family:Arial">Bit</h1>
-        <table id="table" width="550" border="2" noshade cellpadding="4" cellspacing="0" color="CCEFFO">
-            <tbody>
-                <tr>
-                    <td valign="TOP" align="LEFT">
-                        <p style="font-family:Arial"><a href="test23.html">@test23</a>&nbsp time to go home... anything fun going on? ping me.</p>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <p>Bit © 2022</p>
+    <div>
+        <div class="sidenav" id="sidenav">
+            <a href="home.html">Home</a>
+            <a href="posts.html">Browse posts</a>
+            <a href="login.html">Login</a>
+        </div>
+    
+        <div id="wrapper">
+            <h1 style="font-family:Arial">Bit</h1>
+            <table id="table" width="550" border="2" noshade cellpadding="4" cellspacing="0" color="CCEFFO">
+                <tbody>
+                    <tr>
+                        <td valign="TOP" align="LEFT">
+                            <p style="font-family:Arial"><a href="test23.html">@test23</a>&nbsp time to go home... anything fun going on? ping me.</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Bit © 2022</p>
+        </div>
     </div>
 </body>
-<script>
-    const table = document.getElementById("table");
-    const sidenav = document.getElementById("sidenav");
-
-    addEventListener('resize', () => {
-        // if table is overlapping sidenav
-        if(-(table.width - window.innerWidth) / 2 < 160){
-            table.style.marginLeft = "160px";
-        } else {
-            
-        }
-    });
-
-</script>
