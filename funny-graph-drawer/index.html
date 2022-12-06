@@ -194,7 +194,7 @@
                                 }
                             }
                         }
-                        console.log(`top left top left done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 10})} ms to s`)})`);
+                        console.log(`top left top left done (${parser.evaluate(`${math.round(Date.now() - startTime, 4)} ms to s`)})`);
                     },
                     right: function(input){
                         for(let y = yMax; y >= yMin; y -= iterator){
@@ -216,7 +216,7 @@
                                 }
                             }
                         }
-                        console.log(`top left bottom left done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 10})} ms to s`)})`);
+                        console.log(`top left bottom left done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 5})} ms to s`)})`);
                     },
                     right: function(input){
                         for(let y = yMax; y >= yMin; y -= iterator){
@@ -226,7 +226,7 @@
                                 }
                             }
                         }
-                        console.log(`top left bottom right done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 10})} ms to s`)})`);
+                        console.log(`top left bottom right done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 5})} ms to s`)})`);
                     }
                 }
             },
@@ -240,7 +240,7 @@
                                 }
                             }
                         }
-                        console.log(`top right top left done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 10})} ms to s`)})`);
+                        console.log(`top right top left done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 5})} ms to s`)})`);
                     },
                     right: function(input){
                         for(let y = yMax; y >= yMin; y -= iterator){
@@ -250,14 +250,30 @@
                                 }
                             }
                         }
-                        console.log(`top right top right done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 10})} ms to s`)})`);
+                        console.log(`top right top right done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 5})} ms to s`)})`);
                     }
                 },
                 bottom: {
                     left: function(input){
-
+                        for(let y = yMax; y >= yMin; y -= iterator){
+                            for(let x = xMin; x <= xMax; x += iterator){
+                                
+                                if(x >= 0 && x <= xCellMax/2 && y < yCellMax/2 && y > 0){
+                                    templateDraw(x, y, input);
+                                }
+                            }
+                        }
+                        console.log(`top right bottom left done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 5})} ms to s`)})`);
                     },
                     right: function(input){
+                        for(let y = yMax; y >= yMin; y -= iterator){
+                            for(let x = xMin; x <= xMax; x += iterator){
+                                if(x >= xCellMax/2 && x <= xCellMax && y < yCellMax/2 && y > 0){
+                                    templateDraw(x, y, input);
+                                }
+                            }
+                        }
+                        console.log(`top right bottom right done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 5})} ms to s`)})`);
 
                     }
                 }
@@ -323,6 +339,8 @@
                 
                 drawFunctions.top.right.top.left(input),
                 drawFunctions.top.right.top.right(input),
+                drawFunctions.top.right.bottom.left(input),
+                drawFunctions.top.right.bottom.right(input),
             ]);
             try {
                 p.spawn()
