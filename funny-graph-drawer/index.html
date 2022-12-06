@@ -48,21 +48,21 @@
     <script src='https://unpkg.com/paralleljs@1.0/lib/parallel.js'></script>
 </head>
 <body>
-    <textarea id="input">x = -20</textarea>
+    <textarea id="input">x = y^2</textarea>
     <div id="graph"></div>
     <div id="draw-button" onclick="draw(input.value)"></div>
 </body>
 <script>
-    // make this a module
     const graph = document.getElementById("graph");
     const input = document.getElementById("input");
 
     const colors = ['#000000', '#0000FF', '#00FF00', '#FF0000', '#00FFFF', '#FF00FF', '#FFFF00', "#6042A6"];
 
+    // x iterations per y iteration: xCellMax * 2 / iterator + 1
 
     const xCellMax = 25;
     const yCellMax = 25;
-    const precision = 8;
+    const precision = 4;
     const iterator = 1 / (precision / 2);
 
     const parser = math.parser()
@@ -87,76 +87,100 @@
 
     let setupComplete = false;
 
-    const sectors = true;
-
-    function setup(){
-        for(let y = yMax; y >= yMin; y -= iterator){
-            for(let x = xMin; x <= xMax; x += iterator){
-                let div = document.createElement('div');
-                div.id = `${x},${y}`;
-                if(sectors){
-                    if(x >= -xCellMax && x <= -xCellMax/2 && y >= yCellMax/2){ // top left top left
-                        div.style.backgroundColor = '#C74440'
-                    } else if(x >= 0 && x <= xCellMax/2 && y >= yCellMax/2){ // top right top left
-                        div.style.backgroundColor = '#C74440'
-                    } else if(x >= -xCellMax && x <= -xCellMax/2 && y >= -yCellMax/2 && y <= 0){ // bottom left top left
-                        div.style.backgroundColor = '#C74440'
-                    } else if(x >= 0 && x <= xCellMax/2 && y >= -yCellMax/2 && y <= 0){ // bottom right top left
-                        div.style.backgroundColor = '#C74440'
-                    }
-
-
-                    if(x >= -xCellMax/2 && x <= 0 && y >= yCellMax/2){ // top left top right
-                        div.style.backgroundColor = '#2D70B3'
-                    } else if(x >= xCellMax/2 && x <= xCellMax && y >= yCellMax/2){ // top right top right
-                        div.style.backgroundColor = '#2D70B3'
-                    } else if(x >= -xCellMax/2 && x <= 0 && y >= -yCellMax/2 && y <= 0){ // bottom left top right
-                        div.style.backgroundColor = '#2D70B3'
-                    } else if(x >= xCellMax/2 && x <= xCellMax && y >= -yCellMax/2 && y <= 0){ // bottom right top right
-                        div.style.backgroundColor = '#2D70B3'
-                    }
-
-                    if(x >= -xCellMax && x < -xCellMax/2 && y < yCellMax/2 && y > 0){ // top left bottom left
-                        div.style.backgroundColor = '#388C46'
-                    } else if(x > 0 && x < xCellMax/2 && y < yCellMax/2 && y > 0){ // top right bottom left
-                        div.style.backgroundColor = '#388C46'
-                    } else if(x >= -xCellMax && x < -xCellMax/2 && y <= -yCellMax/2 && y < -yCellMax/2){ // bottom left bottom left
-                        div.style.backgroundColor = '#388C46'
-                    } else if(x > 0 && x < xCellMax/2 && y <= -yCellMax/2 && y < -yCellMax/2){ // bottom right bottom left
-                        div.style.backgroundColor = '#388C46'
-                    }
-
-                    if(x >= -xCellMax/2 && x <= 0 && y < yCellMax/2 && y > 0){ // top left bottom right
-                        div.style.backgroundColor = '#FA7E19'
-                    } else if(x >= xCellMax/2 && x <= xCellMax && y < yCellMax/2 && y > 0){ // top right bottom right
-                        div.style.backgroundColor = '#FA7E19'
-                    } else if(x >= -xCellMax/2 && x <= 0 && y <= -yCellMax/2 && y < -yCellMax/2){ // bottom left bottom right
-                        div.style.backgroundColor = '#FA7E19'
-                    } else if(x >= xCellMax/2 && x <= xCellMax && y <= -yCellMax/2 && y < -yCellMax/2){ // bottom right bottom right
-                        div.style.backgroundColor = '#FA7E19'
-                    }
-                }
-
-
-
-
-
-
-                if((y == 0 && x % 2 == 0) || (x == 0 && y % 2 == 0)){
-                    div.style.backgroundColor = 'black';
-                }
-                graph.appendChild(div);
-            }
-        }
-        setupComplete = true;
-    }
+    const debug = true;
 
     const iterations = {
         x: 0,
         y: 0,
         totalX: ((xCellMax * precision) * (yCellMax * precision)) + (yCellMax * precision * 2) + 1,
-        totalY: (yCellMax * precision)
+        totalY: (yCellMax * precision) + 1
     }
+
+    function setup(){
+        let startTime = Date.now();
+        console.warn('starting setup...')
+        for(let y = yMax; y >= yMin; y -= iterator){
+            for(let x = xMin; x <= xMax; x += iterator){
+                let div = document.createElement('div');
+                div.id = `${x},${y}`;
+                if(debug){
+                    if(x >= -xCellMax && x <= -xCellMax/2 && y >= yCellMax/2){ // top left top left
+                        div.style.backgroundColor = '#C74440'
+                        div.setAttribute('startingColor', '#C74440')
+                    } else if(x >= 0 && x <= xCellMax/2 && y >= yCellMax/2){ // top right top left
+                        div.style.backgroundColor = '#C74440'
+                        div.setAttribute('startingColor', '#C74440')
+                    } else if(x >= -xCellMax && x <= -xCellMax/2 && y >= -yCellMax/2 && y <= 0){ // bottom left top left
+                        div.style.backgroundColor = '#C74440'
+                        div.setAttribute('startingColor', '#C74440')
+                    } else if(x >= 0 && x <= xCellMax/2 && y >= -yCellMax/2 && y <= 0){ // bottom right top left
+                        div.style.backgroundColor = '#C74440'
+                        div.setAttribute('startingColor', '#C74440')
+                    } else
+
+
+                    if(x >= -xCellMax/2 && x <= 0 && y >= yCellMax/2){ // top left top right
+                        div.style.backgroundColor = '#2D70B3'
+                        div.setAttribute('startingColor', '#2D70B3')
+                    } else if(x >= xCellMax/2 && x <= xCellMax && y >= yCellMax/2){ // top right top right
+                        div.style.backgroundColor = '#2D70B3'
+                        div.setAttribute('startingColor', '#2D70B3')
+                    } else if(x >= -xCellMax/2 && x <= 0 && y >= -yCellMax/2 && y <= 0){ // bottom left top right
+                        div.style.backgroundColor = '#2D70B3'
+                        div.setAttribute('startingColor', '#2D70B3')
+                    } else if(x >= xCellMax/2 && x <= xCellMax && y >= -yCellMax/2 && y <= 0){ // bottom right top right
+                        div.style.backgroundColor = '#2D70B3'
+                        div.setAttribute('startingColor', '#2D70B3')
+                    } else
+
+                    if(x >= -xCellMax && x < -xCellMax/2 && y < yCellMax/2 && y > 0){ // top left bottom left
+                        div.style.backgroundColor = '#388C46'
+                        div.setAttribute('startingColor', '#388C46')
+                    } else if(x > 0 && x < xCellMax/2 && y < yCellMax/2 && y > 0){ // top right bottom left
+                        div.style.backgroundColor = '#388C46'
+                        div.setAttribute('startingColor', '#388C46')
+                    } else if(x >= -xCellMax && x < -xCellMax/2 && y <= -yCellMax/2 && y < -yCellMax/2){ // bottom left bottom left
+                        div.style.backgroundColor = '#388C46'
+                        div.setAttribute('startingColor', '#388C46')
+                    } else if(x > 0 && x < xCellMax/2 && y <= -yCellMax/2 && y < -yCellMax/2){ // bottom right bottom left
+                        div.style.backgroundColor = '#388C46'
+                        div.setAttribute('startingColor', '#388C46')
+                    } else
+
+                    if(x >= -xCellMax/2 && x <= 0 && y < yCellMax/2 && y > 0){ // top left bottom right
+                        div.style.backgroundColor = '#FA7E19'
+                        div.setAttribute('startingColor', '#FA7E19')
+                    } else if(x >= xCellMax/2 && x <= xCellMax && y < yCellMax/2 && y > 0){ // top right bottom right
+                        div.style.backgroundColor = '#FA7E19'
+                        div.setAttribute('startingColor', '#FA7E19')
+                    } else if(x >= -xCellMax/2 && x <= 0 && y <= -yCellMax/2 && y < -yCellMax/2){ // bottom left bottom right
+                        div.style.backgroundColor = '#FA7E19'
+                        div.setAttribute('startingColor', '#FA7E19')
+                    } else if(x >= xCellMax/2 && x <= xCellMax && y <= -yCellMax/2 && y < -yCellMax/2){ // bottom right bottom right
+                        div.style.backgroundColor = '#FA7E19'
+                        div.setAttribute('startingColor', '#FA7E19')
+                    }
+                }
+
+
+
+
+
+
+                if((y == 0 && x % 4 == 0) || (x == 0 && y % 4 == 0)){
+                    div.style.backgroundColor = 'black';
+                }
+                graph.appendChild(div);
+                iterations.x++;
+            }
+            
+            iterations.y++;
+        }
+        console.warn(`setup complete in ${(Date.now() - startTime) / 1000}s.`)
+        setupComplete = true;
+    }
+
+
 
     let startTime = 0;
 
@@ -169,13 +193,11 @@
         if(left == 'x'){
             if(x == right){
                 div.setAttribute('plot', 'true');
-                div.setAttribute('previousColor', div.style.backgroundColor);
                 div.style.backgroundColor = colors[0];
             }
         } else if(left == 'y'){
             if(y == right){
                 div.setAttribute('plot', 'true');
-                div.setAttribute('previousColor', div.style.backgroundColor);
                 div.style.backgroundColor = colors[0];
             }
         }
@@ -190,6 +212,7 @@
             left: {
                 top: {
                     left: function(input){;
+                        let thisStartTime = Date.now();
                         for(let y = yMax; y >= yMin; y -= iterator){
                             for(let x = xMin; x <= xMax; x += iterator){
                                 if(x >= -xCellMax && x <= -xCellMax/2 && y >= yCellMax/2){
@@ -197,9 +220,10 @@
                                 }
                             }
                         }
-                        console.log(`top left top right done (${generateTimestamp(startTime)})`);
+                        console.log(`top left top right done (${generateTimestamp(thisStartTime)}) (1/16)`);
                     },
                     right: function(input){
+                        let thisStartTime = Date.now();
                         for(let y = yMax; y >= yMin; y -= iterator){
                             for(let x = xMin; x <= xMax; x += iterator){
                                 if(x >= -xCellMax/2 && x <= 0 && y >= yCellMax/2){
@@ -207,11 +231,12 @@
                                 }
                             }
                         }
-                        console.log(`top left top right done (${generateTimestamp(startTime)})`);
+                        console.log(`top left top right done (${generateTimestamp(thisStartTime)}) (2/16)`);
                     },
                 },
                 bottom: {
                     left: function(input){
+                        let thisStartTime = Date.now();
                         for(let y = yMax; y >= yMin; y -= iterator){
                             for(let x = xMin; x <= xMax; x += iterator){
                                 if(x >= -xCellMax && x < -xCellMax/2 && y < yCellMax/2 && y > 0){
@@ -219,9 +244,10 @@
                                 }
                             }
                         }
-                        console.log(`top left bottom left done (${generateTimestamp(startTime)})`);
+                        console.log(`top left bottom left done (${generateTimestamp(thisStartTime)}) (3/16)`);
                     },
                     right: function(input){
+                        let thisStartTime = Date.now();
                         for(let y = yMax; y >= yMin; y -= iterator){
                             for(let x = xMin; x <= xMax; x += iterator){
                                 if(x >= -xCellMax/2 && x <= 0 && y < yCellMax/2 && y > 0){
@@ -229,13 +255,14 @@
                                 }
                             }
                         }
-                        console.log(`top left bottom right done (${generateTimestamp(startTime)})`);
+                        console.log(`top left bottom right done (${generateTimestamp(thisStartTime)}) (4/16)`);
                     }
                 }
             },
             right: {
                 top: {
                     left: function(input){
+                        let thisStartTime = Date.now();
                         for(let y = yMax; y >= yMin; y -= iterator){
                             for(let x = xMin; x <= xMax; x += iterator){
                                 if(x >= 0 && x <= xCellMax/2 && y >= yCellMax/2){
@@ -243,9 +270,10 @@
                                 }
                             }
                         }
-                        console.log(`top right top left done (${generateTimestamp(startTime)})`);
+                        console.log(`top right top left done (${generateTimestamp(thisStartTime)}) (5/16)`);
                     },
                     right: function(input){
+                        let thisStartTime = Date.now();
                         for(let y = yMax; y >= yMin; y -= iterator){
                             for(let x = xMin; x <= xMax; x += iterator){
                                 if(x >= xCellMax/2 && x <= xCellMax && y >= yCellMax/2){
@@ -253,11 +281,12 @@
                                 }
                             }
                         }
-                        console.log(`top right top right done (${generateTimestamp(startTime)})`);
+                        console.log(`top right top right done (${generateTimestamp(thisStartTime)}) (6/16)`);
                     }
                 },
                 bottom: {
                     left: function(input){
+                        let thisStartTime = Date.now();
                         for(let y = yMax; y >= yMin; y -= iterator){
                             for(let x = xMin; x <= xMax; x += iterator){
                                 
@@ -266,9 +295,10 @@
                                 }
                             }
                         }
-                        console.log(`top right bottom left done (${generateTimestamp(startTime)})`);
+                        console.log(`top right bottom left done (${generateTimestamp(thisStartTime)}) (7/16)`);
                     },
                     right: function(input){
+                        let thisStartTime = Date.now();
                         for(let y = yMax; y >= yMin; y -= iterator){
                             for(let x = xMin; x <= xMax; x += iterator){
                                 if(x >= xCellMax/2 && x <= xCellMax && y < yCellMax/2 && y > 0){
@@ -276,7 +306,7 @@
                                 }
                             }
                         }
-                        console.log(`top right bottom right done (${generateTimestamp(startTime)})`);
+                        console.log(`top right bottom right done (${generateTimestamp(thisStartTime)}) (8/16)`);
 
                     }
                 }
@@ -286,6 +316,7 @@
             left: {
                 top: {
                     left: function(input){
+                        let thisStartTime = Date.now();
                         for(let y = yMax; y >= yMin; y -= iterator){
                             for(let x = xMin; x <= xMax; x += iterator){
                                 if(x >= -xCellMax && x < -xCellMax/2 && y <= 0 && y >= -yCellMax/2){
@@ -293,9 +324,10 @@
                                 }
                             }
                         }
-                        console.log(`bottom left top left done (${generateTimestamp(startTime)})`);
+                        console.log(`bottom left top left done (${generateTimestamp(thisStartTime)}) (9/16)`);
                     },
                     right: function(input){
+                        let thisStartTime = Date.now();
                         for(let y = yMax; y >= yMin; y -= iterator){
                             for(let x = xMin; x <= xMax; x += iterator){
                                 if(x >= -xCellMax/2 && x <= 0 && y <= 0 && y >= -yCellMax/2){
@@ -303,11 +335,12 @@
                                 }
                             }
                         }
-                        console.log(`bottom left top right done (${generateTimestamp(startTime)})`);
+                        console.log(`bottom left top right done (${generateTimestamp(thisStartTime)}) (10/16)`);
                     }
                 },
                 bottom: {
                     left: function(input){
+                        let thisStartTime = Date.now();
                         for(let y = yMax; y >= yMin; y -= iterator){
                             for(let x = xMin; x <= xMax; x += iterator){
                                 if(x >= -xCellMax && x < -xCellMax/2 && y < 0 && y >= -yCellMax){
@@ -315,9 +348,10 @@
                                 }
                             }
                         }
-                        console.log(`bottom left bottom left done (${generateTimestamp(startTime)})`);
+                        console.log(`bottom left bottom left done (${generateTimestamp(thisStartTime)}) (11/16)`);
                     },
                     right: function(input){
+                        let thisStartTime = Date.now();
                         for(let y = yMax; y >= yMin; y -= iterator){
                             for(let x = xMin; x <= xMax; x += iterator){
                                 if(x >= -xCellMax/2 && x <= 0 && y < 0 && y >= -yCellMax){
@@ -325,13 +359,14 @@
                                 }
                             }
                         }
-                        console.log(`bottom left bottom right done (${generateTimestamp(startTime)})`);
+                        console.log(`bottom left bottom right done (${generateTimestamp(thisStartTime)}) (12/16)`);
                     }
                 }
             },
             right: {
                 top: {
                     left: function(input){
+                        let thisStartTime = Date.now();
                         for(let y = yMax; y >= yMin; y -= iterator){
                             for(let x = xMin; x <= xMax; x += iterator){
                                 if(x >= 0 && x <= xCellMax/2 && y <= 0 && y >= -yCellMax/2){
@@ -339,9 +374,10 @@
                                 }
                             }
                         }
-                        console.log(`bottom right top left done (${generateTimestamp(startTime)})`);
+                        console.log(`bottom right top left done (${generateTimestamp(thisStartTime)}) (13/16)`);
                     },
                     right: function(input){
+                        let thisStartTime = Date.now();
                         for(let y = yMax; y >= yMin; y -= iterator){
                             for(let x = xMin; x <= xMax; x += iterator){
                                 if(x >= xCellMax/2 && x <= xCellMax && y <= 0 && y >= -yCellMax/2){
@@ -349,11 +385,12 @@
                                 }
                             }
                         }
-                        console.log(`bottom right top right done (${generateTimestamp(startTime)})`);
+                        console.log(`bottom right top right done (${generateTimestamp(thisStartTime)}) (14/16)`);
                     }
                 },
                 bottom: {
                     left: function(input){
+                        let thisStartTime = Date.now();
                         for(let y = yMax; y >= yMin; y -= iterator){
                             for(let x = xMin; x <= xMax; x += iterator){
                                 if(x >= 0 && x <= xCellMax/2 && y < 0 && y >= -yCellMax){
@@ -361,9 +398,10 @@
                                 }
                             }
                         }
-                        console.log(`bottom right bottom left done (${generateTimestamp(startTime)})`);
+                        console.log(`bottom right bottom left done (${generateTimestamp(thisStartTime)}) (15/16)`);
                     },
                     right: function(input){
+                        let thisStartTime = Date.now();
                         for(let y = yMax; y >= yMin; y -= iterator){
                             for(let x = xMin; x <= xMax; x += iterator){
                                 if(x >= xCellMax/2 && x <= xCellMax && y < 0 && y >= -yCellMax){
@@ -371,7 +409,7 @@
                                 }
                             }
                         }
-                        console.log(`bottom right bottom right done (${generateTimestamp(startTime)})`);
+                        console.log(`bottom right bottom right done (${generateTimestamp(thisStartTime)}) (16/16)`);
                     }
                 }
             }
@@ -383,13 +421,17 @@
         if(!setupComplete){
             return console.warn('setup not complete!')
         } else {
-            let previouslyDrawn = document.querySelectorAll('[plot="true"]');
-            for(i = 0; i < previouslyDrawn.length; i++){
-                previouslyDrawn[i].style.backgroundColor = previouslyDrawn[i].getAttribute('previousColor');
-                previouslyDrawn[i].setAttribute('plot', 'false');
-            }
             console.warn('starting...')
             startTime = Date.now();
+            
+            for(i = 0; i < graph.children.length; i++){
+                let child = graph.children[i];
+                if(child.getAttribute('plot') == 'true'){
+                    child.style.backgroundColor = child.getAttribute('startingColor');
+                    child.setAttribute('plot', 'false');
+                }
+            }
+
 
             const p = new Parallel([
                 drawFunctions.top.left.top.left(input),
@@ -402,13 +444,13 @@
                 drawFunctions.top.right.bottom.left(input),
                 drawFunctions.top.right.bottom.right(input),
 
-                drawFunctions.bottom.left.top.left(input),
-                drawFunctions.bottom.left.top.right(input),
+                drawFunctions.bottom.left.top.left(input), // check
+                drawFunctions.bottom.left.top.right(input), // check
                 drawFunctions.bottom.left.bottom.left(input),
                 drawFunctions.bottom.left.bottom.right(input),
 
-                drawFunctions.bottom.right.top.left(input),
-                drawFunctions.bottom.right.top.right(input),
+                drawFunctions.bottom.right.top.left(input), // check
+                drawFunctions.bottom.right.top.right(input), // check
                 drawFunctions.bottom.right.bottom.left(input),
                 drawFunctions.bottom.right.bottom.right(input)
             ]);
@@ -416,7 +458,7 @@
                 p.spawn()
             } catch {
                 console.warn(`done!`)
-                console.log(`elapsed time: ${generateTimestamp(startTime)}`);
+                console.log(`total elapsed time: ${generateTimestamp(startTime)}`);
                 return
             }
         }
