@@ -48,7 +48,7 @@
     <script src='https://unpkg.com/paralleljs@1.0/lib/parallel.js'></script>
 </head>
 <body>
-    <textarea id="input">x = y^2</textarea>
+    <textarea id="input">x = -20</textarea>
     <div id="graph"></div>
     <div id="draw-button" onclick="draw(input.value)"></div>
 </body>
@@ -167,49 +167,62 @@
         if(left == 'x'){
             if(x == right){
                 div.setAttribute('plot', 'true');
+                div.style.backgroundColor = colors[0];
             }
         } else if(left == 'y'){
             if(y == right){
                 div.setAttribute('plot', 'true');
+                div.style.backgroundColor = colors[0];
             }
         }
     }
 
-    function drawTopLeft(input){
-        for(let y = yMax; y >= 0; y -= iterator){
-            for(let x = xMin; x <= 0; x += iterator){
-                templateDraw(x, y, input);
+    function drawTopLeftTopLeft(input){
+        for(let y = yMax; y >= yMin; y -= iterator){
+            for(let x = xMin; x <= xMax; x += iterator){
+                if((x >= -xCellMax && x <= -xCellMax/2 && y >= yCellMax/2)){
+                    templateDraw(x, y, input);
+                }
             }
         }
-        console.log('top left done');
+        console.log('top left top left done');
     }
 
-    function drawTopRight(input){
-        for(let y = yMax; y >= 0; y -= iterator){
-            for(let x = 0; x <= xMax; x += iterator){
-                templateDraw(x, y, input);
-            }
-        }
-        console.log('top right done');
-    }
+    // function drawTopLeft(input){
+    //     for(let y = yMax; y >= 0; y -= iterator){
+    //         for(let x = xMin; x <= 0; x += iterator){
+    //             templateDraw(x, y, input);
+    //         }
+    //     }
+    //     console.log('top left done');
+    // }
 
-    function drawBottomLeft(input){
-        for(let y = 0; y >= yMin; y -= iterator){
-            for(let x = xMin; x <= 0; x += iterator){
-                templateDraw(x, y, input);
-            }
-        }
-        console.log('bottom left done');
-    }
+    // function drawTopRight(input){
+    //     for(let y = yMax; y >= 0; y -= iterator){
+    //         for(let x = 0; x <= xMax; x += iterator){
+    //             templateDraw(x, y, input);
+    //         }
+    //     }
+    //     console.log('top right done');
+    // }
 
-    function drawBottomRight(input){
-        for(let y = 0; y >= yMin; y -= iterator){
-            for(let x = 0; x <= xMax; x += iterator){
-                templateDraw(x, y, input);
-            }
-        }
-        console.log('bottom right done');
-    }
+    // function drawBottomLeft(input){
+    //     for(let y = 0; y >= yMin; y -= iterator){
+    //         for(let x = xMin; x <= 0; x += iterator){
+    //             templateDraw(x, y, input);
+    //         }
+    //     }
+    //     console.log('bottom left done');
+    // }
+
+    // function drawBottomRight(input){
+    //     for(let y = 0; y >= yMin; y -= iterator){
+    //         for(let x = 0; x <= xMax; x += iterator){
+    //             templateDraw(x, y, input);
+    //         }
+    //     }
+    //     console.log('bottom right done');
+    // }
 
 
 
@@ -219,10 +232,9 @@
         } else {
             let startTime = Date.now();
 
-            const p = new Parallel([drawTopLeft(input),
-            drawTopRight(input),
-            drawBottomLeft(input),
-            drawBottomRight(input)]);
+            const p = new Parallel([
+                drawTopLeftTopLeft(input),
+            ]);
             try {
                 p.spawn()
             } catch {
