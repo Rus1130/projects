@@ -94,44 +94,16 @@
                 let div = document.createElement('div');
                 div.id = `${x},${y}`;
                 if(sectors){
-                    if((x >= -xCellMax && x <= -xCellMax/2 && y >= yCellMax/2)){ // top left top left
-                        div.style.backgroundColor = '#C74440'
-                    } else if((x >= 0 && x <= xCellMax/2 && y >= yCellMax/2)){ // top right top left
-                        div.style.backgroundColor = '#C74440'
-                    } else if((x >= -xCellMax && x <= -xCellMax/2 && y >= -yCellMax/2 && y <= 0)){ // bottom left top left
-                        div.style.backgroundColor = '#C74440'
-                    } else if((x >= 0 && x <= xCellMax/2 && y >= -yCellMax/2 && y <= 0)){ // bottom right top left
+                    if(x <= 0 && y > 0){ // top left top left
                         div.style.backgroundColor = '#C74440'
                     }
-
-
-                    if((x >= -xCellMax/2 && x <= 0 && y >= yCellMax/2)){ // top left top right
-                        div.style.backgroundColor = '#2D70B3'
-                    } else if((x >= xCellMax/2 && x <= xCellMax && y >= yCellMax/2)){ // top right top right
-                        div.style.backgroundColor = '#2D70B3'
-                    } else if((x >= -xCellMax/2 && x <= 0 && y >= -yCellMax/2 && y <= 0)){ // bottom left top right
-                        div.style.backgroundColor = '#2D70B3'
-                    } else if((x >= xCellMax/2 && x <= xCellMax && y >= -yCellMax/2 && y <= 0)){ // bottom right top right
+                    if(x > 0 && y > 0){
                         div.style.backgroundColor = '#2D70B3'
                     }
-
-                    if((x >= -xCellMax && x < -xCellMax/2 && y < yCellMax/2 && y > 0)){ // top left bottom left
-                        div.style.backgroundColor = '#388C46'
-                    } else if((x > 0 && x < xCellMax/2 && y < yCellMax/2 && y > 0)){ // top right bottom left
-                        div.style.backgroundColor = '#388C46'
-                    } else if((x >= -xCellMax && x < -xCellMax/2 && y <= -yCellMax/2 && y < -yCellMax/2)){ // bottom left bottom left
-                        div.style.backgroundColor = '#388C46'
-                    } else if((x > 0 && x < xCellMax/2 && y <= -yCellMax/2 && y < -yCellMax/2)){ // bottom right bottom left
+                    if(x <= 0 && y <= 0){
                         div.style.backgroundColor = '#388C46'
                     }
-
-                    if((x >= -xCellMax/2 && x <= 0 && y < yCellMax/2 && y > 0)){ // top left bottom right
-                        div.style.backgroundColor = '#FA7E19'
-                    } else if((x >= xCellMax/2 && x <= xCellMax && y < yCellMax/2 && y > 0)){ // top right bottom right
-                        div.style.backgroundColor = '#FA7E19'
-                    } else if((x >= -xCellMax/2 && x <= 0 && y <= -yCellMax/2 && y < -yCellMax/2)){ // bottom left bottom right
-                        div.style.backgroundColor = '#FA7E19'
-                    } else if((x >= xCellMax/2 && x <= xCellMax && y <= -yCellMax/2 && y < -yCellMax/2)){ // bottom right bottom right
+                    if(x > 0 && y <= 0){
                         div.style.backgroundColor = '#FA7E19'
                     }
                 }
