@@ -45,6 +45,7 @@
 </style>
 <head>
     <script src="https://unpkg.com/mathjs@11.4.0/lib/browser/math.js"></script>
+    <script src='https://unpkg.com/paralleljs@1.0/lib/parallel.js'></script>
 </head>
 <body>
     <textarea id="input">x = y^2</textarea>
@@ -121,50 +122,93 @@
         setupComplete = true;
     }
 
-    function draw(input){
-        if(!setupComplete) return console.warn('setup not complete!')
-        let xIteration = 0;
-        let yIteration = 0;
+    const iterations = {
+        x: 0,
+        y: 0,
+        totalX: ((xCellMax * precision) * (yCellMax * precision)) + (yCellMax * precision * 2) + 1,
+        totalY: (yCellMax * precision)
+    }
 
-        let totalXIterations = ((xCellMax * precision) * (yCellMax * precision)) + (yCellMax * precision * 2) + 1
-        let totalYIterations = (yCellMax * precision)
-        let startTime = Date.now();
-        for(let y = yMax; y >= yMin; y -= iterator){
-            for(let x = xMin; x <= xMax; x += iterator){
-                let div = document.getElementById(`${x},${y}`);
+    function templateDraw(x, y, input){
+        let div = document.getElementById(`${x},${y}`);
+                        
+        let left = clean(input.split('=')[0]);
+        let right = math.evaluate(clean(input.split('=')[1]), {x: x, y: y});
 
+        if(left == 'x'){
+            if(x == right){
+                div.style.backgroundColor = colors[0];
+                div.setAttribute('plot', 'true');
+            }
+        } else if(left == 'y'){
+            if(y == right){
+                div.style.backgroundColor = colors[0];
+                div.setAttribute('plot', 'true');
+            }
+        }
+    }
 
-                
-                let left = clean(input.split('=')[0]);
-                let right = math.evaluate(clean(input.split('=')[1]), {x: x, y: y});
+    function drawTopLeft(input){
+        for(let y = yMax; y >= 0; y -= iterator){
+            for(let x = xMin; x <= 0; x += iterator){
+                templateDraw(x, y, input);
+                iterations.x++;
 
-                if(left == 'x'){
-                    if(x == right){
-                        div.style.backgroundColor = colors[0];
-                        div.setAttribute('plot', 'true');
-                    }
-                } else if(left == 'y'){
-                    if(y == right){
-                        div.style.backgroundColor = colors[0];
-                        div.setAttribute('plot', 'true');
-                    }
-                }
-
-
-
-                // get the total percentage of completion
-                xIteration++;
-                // get the percentage of completion for the whole graph
-                let percentage = math.round((xIteration * yIteration) / (totalXIterations * totalYIterations) * 100, 4);
-
-                console.log(`completion: ${percentage}%`);
                 
             }
-            yIteration++;
+            iterations.y++;
         }
+        console.log('top left done');
+    }
+    function drawTopRight(input){
+        for(let y = yMax; y >= 0; y -= iterator){
+            for(let x = 0; x <= xMax; x += iterator){
+                templateDraw(x, y, input);
+                iterations.x++;
+                
+            }
+            iterations.y++;
+        }
+        console.log('top right done');
+    }
+    function drawBottomLeft(input){
+        for(let y = 0; y >= yMin; y -= iterator){
+            for(let x = xMin; x <= 0; x += iterator){
+                templateDraw(x, y, input);
+                iterations.x++;
+                
+            }
+            iterations.y++;
+        }
+        console.log('bottom left done');
+    }
+    function drawBottomRight(input){
+        for(let y = 0; y >= yMin; y -= iterator){
+            for(let x = 0; x <= xMax; x += iterator){
+                templateDraw(x, y, input);
+                iterations.x++;
+                
+            }
+            iterations.y++;
+        }
+        console.log('bottom right done');
+    }
 
-        console.warn('done!')
-        console.log(`Elapsed time: ${parser.evaluate(`${Date.now() - startTime} ms to s`)}`);
+
+
+    async function draw(input){
+        if(!setupComplete) return console.warn('setup not complete!')
+        let startTime = Date.now();
+
+        const p = new Parallel([drawTopLeft(input), drawTopRight(input), drawBottomLeft(input), drawBottomRight(input)]);
+        try {
+            p.spawn()
+        } catch {
+            console.warn(`done in ${parser.evaluate(`${Date.now() - startTime} ms to s`)}`);
+            return
+        }
+        
+
     }
 
     window.onload = function(){
