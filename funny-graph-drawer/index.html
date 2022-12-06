@@ -56,7 +56,7 @@
     const graph = document.getElementById("graph");
     const input = document.getElementById("input");
 
-    const colors = ['#000000', '#0000FF', '#00FF00', '#FF0000', '#00FFFF', '#FF00FF', '#FFFF00', "#C74440", '#2D70B3', "#388C46", "#FA7E19", "#6042A6"];
+    const colors = ['#000000', '#0000FF', '#00FF00', '#FF0000', '#00FFFF', '#FF00FF', '#FFFF00', "#6042A6"];
 
 
     const xCellMax = 50;
@@ -80,14 +80,88 @@
         return Array(Array(string.trim()).reverse().join().trim()).reverse().join();
     }
 
-    function draw(input){
-        let xIteration = 0;
-        let yIteration = 0;
-        let startTime = Date.now();
+    // '#2D70B3'
+    // '#388C46'
+    // '#FA7E19'
+
+    let setupComplete = false;
+
+    const sectors = true;
+
+    function setup(){
         for(let y = yMax; y >= yMin; y -= iterator){
             for(let x = xMin; x <= xMax; x += iterator){
                 let div = document.createElement('div');
                 div.id = `${x},${y}`;
+                if(sectors){
+                    if((x >= -xCellMax && x <= -xCellMax/2 && y >= yCellMax/2)){ // top left top left
+                        div.style.backgroundColor = '#C74440'
+                    } else if((x >= 0 && x <= xCellMax/2 && y >= yCellMax/2)){ // top right top left
+                        div.style.backgroundColor = '#C74440'
+                    } else if((x >= -xCellMax && x <= -xCellMax/2 && y >= -yCellMax/2 && y <= 0)){ // bottom left top left
+                        div.style.backgroundColor = '#C74440'
+                    } else if((x >= 0 && x <= xCellMax/2 && y >= -yCellMax/2 && y <= 0)){ // bottom right top left
+                        div.style.backgroundColor = '#C74440'
+                    }
+
+
+                    if((x >= -xCellMax/2 && x <= 0 && y >= yCellMax/2)){ // top left top right
+                        div.style.backgroundColor = '#2D70B3'
+                    } else if((x >= xCellMax/2 && x <= xCellMax && y >= yCellMax/2)){ // top right top right
+                        div.style.backgroundColor = '#2D70B3'
+                    } else if((x >= -xCellMax/2 && x <= 0 && y >= -yCellMax/2 && y <= 0)){ // bottom left top right
+                        div.style.backgroundColor = '#2D70B3'
+                    } else if((x >= xCellMax/2 && x <= xCellMax && y >= -yCellMax/2 && y <= 0)){ // bottom right top right
+                        div.style.backgroundColor = '#2D70B3'
+                    }
+
+                    if((x >= -xCellMax && x < -xCellMax/2 && y < yCellMax/2 && y > 0)){ // top left bottom left
+                        div.style.backgroundColor = '#388C46'
+                    } else if((x > 0 && x < xCellMax/2 && y < yCellMax/2 && y > 0)){ // top right bottom left
+                        div.style.backgroundColor = '#388C46'
+                    } else if((x >= -xCellMax && x < -xCellMax/2 && y <= -yCellMax/2 && y < -yCellMax/2)){ // bottom left bottom left
+                        div.style.backgroundColor = '#388C46'
+                    } else if((x > 0 && x < xCellMax/2 && y <= -yCellMax/2 && y < -yCellMax/2)){ // bottom right bottom left
+                        div.style.backgroundColor = '#388C46'
+                    }
+
+                    if((x >= -xCellMax/2 && x <= 0 && y < yCellMax/2 && y > 0)){ // top left bottom right
+                        div.style.backgroundColor = '#FA7E19'
+                    } else if((x >= xCellMax/2 && x <= xCellMax && y < yCellMax/2 && y > 0)){ // top right bottom right
+                        div.style.backgroundColor = '#FA7E19'
+                    } else if((x >= -xCellMax/2 && x <= 0 && y <= -yCellMax/2 && y < -yCellMax/2)){ // bottom left bottom right
+                        div.style.backgroundColor = '#FA7E19'
+                    } else if((x >= xCellMax/2 && x <= xCellMax && y <= -yCellMax/2 && y < -yCellMax/2)){ // bottom right bottom right
+                        div.style.backgroundColor = '#FA7E19'
+                    }
+                }
+
+
+
+
+
+                if((y == 0 && x % 2 == 0) || (x == 0 && y % 2 == 0)){
+                    div.style.backgroundColor = 'black';
+                }
+                graph.appendChild(div);
+            }
+        }
+        setupComplete = true;
+    }
+
+    function draw(input){
+        if(!setupComplete) return console.warn('setup not complete!')
+        let xIteration = 0;
+        let yIteration = 0;
+
+        let totalXIterations = ((xCellMax * precision) * (yCellMax * precision)) + (yCellMax * precision * 2) + 1
+        let totalYIterations = (yCellMax * precision)
+        let startTime = Date.now();
+        for(let y = yMax; y >= yMin; y -= iterator){
+            for(let x = xMin; x <= xMax; x += iterator){
+                let div = document.getElementById(`${x},${y}`);
+
+
                 
                 let left = clean(input.split('=')[0]);
                 let right = math.evaluate(clean(input.split('=')[1]), {x: x, y: y});
@@ -104,29 +178,29 @@
                     }
                 }
 
-                if((y == 0 && x % 2 == 0) || (x == 0 && y % 2 == 0)){
-                    div.style.backgroundColor = 'black';
-                }
+
 
                 // get the total percentage of completion
                 xIteration++;
                 // get the percentage of completion for the whole graph
-                let percentage = math.round((xIteration + (yIteration * (xCellMax * precision + 1))) / ((xCellMax * precision + 1) * (yCellMax * precision + 1)) * 100, 1) / 2;
+                let percentage = math.round((xIteration * yIteration) / (totalXIterations * totalYIterations) * 100, 4);
 
-                console.log(`completion: ${percentage}%, x iteration: ${xIteration}, y iteration: ${yIteration}`);
-                graph.appendChild(div);
+                console.log(`completion: ${percentage}%`);
+                
             }
             yIteration++;
         }
 
         console.warn('done!')
-        console.log(`Total X iterations: ${xIteration}`);
-        console.log(`Total Y iterations: ${yIteration - 1}`);
         console.log(`Elapsed time: ${parser.evaluate(`${Date.now() - startTime} ms to s`)}`);
+    }
+
+    window.onload = function(){
+        setup()
     }
 
 
     // https://www.youtube.com/watch?v=JnCkF62gkOY
-    // total iterations for 4 precision: 8080200
+    // total iterations for 4 precision:  
 
 </script>
