@@ -95,44 +95,44 @@
                 let div = document.createElement('div');
                 div.id = `${x},${y}`;
                 if(sectors){
-                    if((x >= -xCellMax && x <= -xCellMax/2 && y >= yCellMax/2)){ // top left top left
+                    if(x >= -xCellMax && x <= -xCellMax/2 && y >= yCellMax/2){ // top left top left
                         div.style.backgroundColor = '#C74440'
-                    } else if((x >= 0 && x <= xCellMax/2 && y >= yCellMax/2)){ // top right top left
+                    } else if(x >= 0 && x <= xCellMax/2 && y >= yCellMax/2){ // top right top left
                         div.style.backgroundColor = '#C74440'
-                    } else if((x >= -xCellMax && x <= -xCellMax/2 && y >= -yCellMax/2 && y <= 0)){ // bottom left top left
+                    } else if(x >= -xCellMax && x <= -xCellMax/2 && y >= -yCellMax/2 && y <= 0){ // bottom left top left
                         div.style.backgroundColor = '#C74440'
-                    } else if((x >= 0 && x <= xCellMax/2 && y >= -yCellMax/2 && y <= 0)){ // bottom right top left
+                    } else if(x >= 0 && x <= xCellMax/2 && y >= -yCellMax/2 && y <= 0){ // bottom right top left
                         div.style.backgroundColor = '#C74440'
                     }
 
 
-                    if((x >= -xCellMax/2 && x <= 0 && y >= yCellMax/2)){ // top left top right
+                    if(x >= -xCellMax/2 && x <= 0 && y >= yCellMax/2){ // top left top right
                         div.style.backgroundColor = '#2D70B3'
-                    } else if((x >= xCellMax/2 && x <= xCellMax && y >= yCellMax/2)){ // top right top right
+                    } else if(x >= xCellMax/2 && x <= xCellMax && y >= yCellMax/2){ // top right top right
                         div.style.backgroundColor = '#2D70B3'
-                    } else if((x >= -xCellMax/2 && x <= 0 && y >= -yCellMax/2 && y <= 0)){ // bottom left top right
+                    } else if(x >= -xCellMax/2 && x <= 0 && y >= -yCellMax/2 && y <= 0){ // bottom left top right
                         div.style.backgroundColor = '#2D70B3'
-                    } else if((x >= xCellMax/2 && x <= xCellMax && y >= -yCellMax/2 && y <= 0)){ // bottom right top right
+                    } else if(x >= xCellMax/2 && x <= xCellMax && y >= -yCellMax/2 && y <= 0){ // bottom right top right
                         div.style.backgroundColor = '#2D70B3'
                     }
 
-                    if((x >= -xCellMax && x < -xCellMax/2 && y < yCellMax/2 && y > 0)){ // top left bottom left
+                    if(x >= -xCellMax && x < -xCellMax/2 && y < yCellMax/2 && y > 0){ // top left bottom left
                         div.style.backgroundColor = '#388C46'
-                    } else if((x > 0 && x < xCellMax/2 && y < yCellMax/2 && y > 0)){ // top right bottom left
+                    } else if(x > 0 && x < xCellMax/2 && y < yCellMax/2 && y > 0){ // top right bottom left
                         div.style.backgroundColor = '#388C46'
-                    } else if((x >= -xCellMax && x < -xCellMax/2 && y <= -yCellMax/2 && y < -yCellMax/2)){ // bottom left bottom left
+                    } else if(x >= -xCellMax && x < -xCellMax/2 && y <= -yCellMax/2 && y < -yCellMax/2){ // bottom left bottom left
                         div.style.backgroundColor = '#388C46'
-                    } else if((x > 0 && x < xCellMax/2 && y <= -yCellMax/2 && y < -yCellMax/2)){ // bottom right bottom left
+                    } else if(x > 0 && x < xCellMax/2 && y <= -yCellMax/2 && y < -yCellMax/2){ // bottom right bottom left
                         div.style.backgroundColor = '#388C46'
                     }
 
-                    if((x >= -xCellMax/2 && x <= 0 && y < yCellMax/2 && y > 0)){ // top left bottom right
+                    if(x >= -xCellMax/2 && x <= 0 && y < yCellMax/2 && y > 0){ // top left bottom right
                         div.style.backgroundColor = '#FA7E19'
-                    } else if((x >= xCellMax/2 && x <= xCellMax && y < yCellMax/2 && y > 0)){ // top right bottom right
+                    } else if(x >= xCellMax/2 && x <= xCellMax && y < yCellMax/2 && y > 0){ // top right bottom right
                         div.style.backgroundColor = '#FA7E19'
-                    } else if((x >= -xCellMax/2 && x <= 0 && y <= -yCellMax/2 && y < -yCellMax/2)){ // bottom left bottom right
+                    } else if(x >= -xCellMax/2 && x <= 0 && y <= -yCellMax/2 && y < -yCellMax/2){ // bottom left bottom right
                         div.style.backgroundColor = '#FA7E19'
-                    } else if((x >= xCellMax/2 && x <= xCellMax && y <= -yCellMax/2 && y < -yCellMax/2)){ // bottom right bottom right
+                    } else if(x >= xCellMax/2 && x <= xCellMax && y <= -yCellMax/2 && y < -yCellMax/2){ // bottom right bottom right
                         div.style.backgroundColor = '#FA7E19'
                     }
                 }
@@ -158,6 +158,8 @@
         totalY: (yCellMax * precision)
     }
 
+    let starttime = 0;
+
     function templateDraw(x, y, input){
         let div = document.getElementById(`${x},${y}`);
                         
@@ -167,73 +169,160 @@
         if(left == 'x'){
             if(x == right){
                 div.setAttribute('plot', 'true');
+                div.setAttribute('previousColor', div.style.backgroundColor);
                 div.style.backgroundColor = colors[0];
             }
         } else if(left == 'y'){
             if(y == right){
                 div.setAttribute('plot', 'true');
+                div.setAttribute('previousColor', div.style.backgroundColor);
                 div.style.backgroundColor = colors[0];
             }
         }
     }
 
-    function drawTopLeftTopLeft(input){
-        for(let y = yMax; y >= yMin; y -= iterator){
-            for(let x = xMin; x <= xMax; x += iterator){
-                if((x >= -xCellMax && x <= -xCellMax/2 && y >= yCellMax/2)){
-                    templateDraw(x, y, input);
+    const drawFunctions = {
+        top: {
+            left: {
+                top: {
+                    left: function(input){
+                        starttime = Date.now();
+                        for(let y = yMax; y >= yMin; y -= iterator){
+                            for(let x = xMin; x <= xMax; x += iterator){
+                                if(x >= -xCellMax && x <= -xCellMax/2 && y >= yCellMax/2){
+                                    templateDraw(x, y, input);
+                                }
+                            }
+                        }
+                        console.log(`top left top left done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 10})} ms to s`)})`);
+                    },
+                    right: function(input){
+                        for(let y = yMax; y >= yMin; y -= iterator){
+                            for(let x = xMin; x <= xMax; x += iterator){
+                                if(x >= -xCellMax/2 && x <= 0 && y >= yCellMax/2){
+                                    templateDraw(x, y, input);
+                                }
+                            }
+                        }
+                        console.log(`top left top right done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 10})} ms to s`)})`);
+                    },
+                },
+                bottom: {
+                    left: function(input){
+                        for(let y = yMax; y >= yMin; y -= iterator){
+                            for(let x = xMin; x <= xMax; x += iterator){
+                                if(x >= -xCellMax && x < -xCellMax/2 && y < yCellMax/2 && y > 0){
+                                    templateDraw(x, y, input);
+                                }
+                            }
+                        }
+                        console.log(`top left bottom left done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 10})} ms to s`)})`);
+                    },
+                    right: function(input){
+                        for(let y = yMax; y >= yMin; y -= iterator){
+                            for(let x = xMin; x <= xMax; x += iterator){
+                                if(x >= -xCellMax/2 && x <= 0 && y < yCellMax/2 && y > 0){
+                                    templateDraw(x, y, input);
+                                }
+                            }
+                        }
+                        console.log(`top left bottom right done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 10})} ms to s`)})`);
+                    }
+                }
+            },
+            right: {
+                top: {
+                    left: function(input){
+                        for(let y = yMax; y >= yMin; y -= iterator){
+                            for(let x = xMin; x <= xMax; x += iterator){
+                                if(x >= 0 && x <= xCellMax/2 && y >= yCellMax/2){
+                                    templateDraw(x, y, input);
+                                }
+                            }
+                        }
+                        console.log(`top right top left done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 10})} ms to s`)})`);
+                    },
+                    right: function(input){
+                        for(let y = yMax; y >= yMin; y -= iterator){
+                            for(let x = xMin; x <= xMax; x += iterator){
+                                if(x >= xCellMax/2 && x <= xCellMax && y >= yCellMax/2){
+                                    templateDraw(x, y, input);
+                                }
+                            }
+                        }
+                        console.log(`top right top right done (${parser.evaluate(`${math.format(Date.now() - startTime, {precision: 10})} ms to s`)})`);
+                    }
+                },
+                bottom: {
+                    left: function(input){
+
+                    },
+                    right: function(input){
+
+                    }
+                }
+            }
+        },
+        bottom: {
+            left: {
+                top: {
+                    left: function(input){
+
+                    },
+                    right: function(input){
+
+                    }
+                },
+                bottom: {
+                    left: function(input){
+
+                    },
+                    right: function(input){
+
+                    }
+                }
+            },
+            right: {
+                top: {
+                    left: function(input){
+
+                    },
+                    right: function(input){
+
+                    }
+                },
+                bottom: {
+                    left: function(input){
+
+                    },
+                    right: function(input){
+
+                    }
                 }
             }
         }
-        console.log('top left top left done');
     }
-
-    // function drawTopLeft(input){
-    //     for(let y = yMax; y >= 0; y -= iterator){
-    //         for(let x = xMin; x <= 0; x += iterator){
-    //             templateDraw(x, y, input);
-    //         }
-    //     }
-    //     console.log('top left done');
-    // }
-
-    // function drawTopRight(input){
-    //     for(let y = yMax; y >= 0; y -= iterator){
-    //         for(let x = 0; x <= xMax; x += iterator){
-    //             templateDraw(x, y, input);
-    //         }
-    //     }
-    //     console.log('top right done');
-    // }
-
-    // function drawBottomLeft(input){
-    //     for(let y = 0; y >= yMin; y -= iterator){
-    //         for(let x = xMin; x <= 0; x += iterator){
-    //             templateDraw(x, y, input);
-    //         }
-    //     }
-    //     console.log('bottom left done');
-    // }
-
-    // function drawBottomRight(input){
-    //     for(let y = 0; y >= yMin; y -= iterator){
-    //         for(let x = 0; x <= xMax; x += iterator){
-    //             templateDraw(x, y, input);
-    //         }
-    //     }
-    //     console.log('bottom right done');
-    // }
-
 
 
     async function draw(input){
         if(!setupComplete){
             return console.warn('setup not complete!')
         } else {
-            let startTime = Date.now();
+            let previouslyDrawn = document.querySelectorAll('[plot="true"]');
+            for(i = 0; i < previouslyDrawn.length; i++){
+                previouslyDrawn[i].style.backgroundColor = previouslyDrawn[i].getAttribute('previousColor');
+                previouslyDrawn[i].setAttribute('plot', 'false');
+            }
+            startTime = Date.now();
 
             const p = new Parallel([
-                drawTopLeftTopLeft(input),
+                drawFunctions.top.left.top.left(input),
+                drawFunctions.top.left.top.right(input),
+                drawFunctions.top.left.bottom.left(input),
+                drawFunctions.top.left.bottom.right(input),
+                
+                drawFunctions.top.right.top.left(input),
+                drawFunctions.top.right.top.right(input),
             ]);
             try {
                 p.spawn()
