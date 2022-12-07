@@ -61,7 +61,7 @@
     const graph = document.getElementById("graph");
     const input = document.getElementById("input");
 
-    const colors = ['#000000', '#0000FF', '#00FF00', '#FF0000', '#00FFFF', '#FF00FF', '#FFFF00', "#6042A6"];
+    const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', "#6042A6"];
 
     // x iterations per y iteration: xCellMax * 2 / iterator + 1
 
@@ -193,27 +193,50 @@
         let div = document.getElementById(`${x},${y}`);
         let left = clean(input.split('=')[0]);
         let right = math.evaluate(clean(input.split('=')[1]), {x: x, y: y});
+
+        let needsCurveId = false;
         if(left == 'r'){
             if(math.sqrt(math.pow(x, 2) + math.pow(y, 2)) == right){
+                if(div.getAttribute('curveID') == null){
+                    div.setAttribute('curveID', colors.indexOf(color));
+                } else {
+                    div.setAttribute('curveID', `${div.getAttribute('curveID')} ${colors.indexOf(color)}`);
+                }
 
-
-
-                div.setAttribute('curveID', colors.indexOf(color));
+                needsCurveId = true;
                 div.setAttribute('plot', 'true');
                 div.style.backgroundColor = color;
             }
         } else if(left == 'x'){
             if(x == right){
-                div.setAttribute('curveID', colors.indexOf(color));
+                if(div.getAttribute('curveID') == null){
+                    div.setAttribute('curveID', colors.indexOf(color));
+                } else {
+                    div.setAttribute('curveID', `${div.getAttribute('curveID')} ${colors.indexOf(color)}`);
+                }
+                
+                needsCurveId = true;
                 div.setAttribute('plot', 'true');
                 div.style.backgroundColor = color;
             }
         } else if(left == 'y'){
             if(y == right){
-                div.setAttribute('curveID', colors.indexOf(color));
+                if(div.getAttribute('curveID') == null){
+                    div.setAttribute('curveID', colors.indexOf(color));
+                } else {
+                    div.setAttribute('curveID', `${div.getAttribute('curveID')} ${colors.indexOf(color)}`);
+                }
+
+                needsCurveId = true;
                 div.setAttribute('plot', 'true');
                 div.style.backgroundColor = color;
             }
+        }
+
+        if(needsCurveId){
+            let curveIds = div.getAttribute('curveID').split(' ');
+            curveIds = curveIds.filter((item, index) => curveIds.indexOf(item) === index);
+            div.setAttribute('curveID', curveIds.join(' '));
         }
     }
 
@@ -499,7 +522,7 @@
             }
             console.warn(`total elapsed time: ${generateTimestamp(elapsedTime)}`)
         }
-        
+        console.log(document.getElementById('0,0'))
 
     }
 
