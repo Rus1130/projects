@@ -515,7 +515,12 @@
                 }
             }
 
-            let drawCurves = document.querySelectorAll('[curveID]');
+            let elements = document.querySelectorAll('[curveID]');
+            let drawCurves = {};
+            for(i = 0; i < elements.length; i++){
+                drawCurves[elements[i].attributes.id.nodeValue] = elements[i].attributes.curveID.nodeValue.split(' ');
+            }
+            console.log(drawCurves)
 
             
             console.warn('Done! completion summary:')
@@ -523,6 +528,8 @@
                 console.log(`elapsed time of curve ${i+1}: ${times[i]}`);
             }
             console.warn(`total elapsed time: ${generateTimestamp(elapsedTime)}`)
+
+
         }
     }
 

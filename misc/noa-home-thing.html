@@ -1,41 +1,48 @@
 <style>
+    body {
+    font-family: "Arial", sans-serif;
+    }
+
     .sidenav {
-        height: 100%;
-        width: 160px;
-        z-index: 1;
-        position: fixed;
-        top: 0;
-        left: 0;
-        background-color: #999;
-        overflow-x: hidden;
-        padding-top: 20px;
+    height: 100%;
+    width: 160px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #900;
+    overflow-x: hidden;
+    padding-top: 20px;
     }
 
     .sidenav a {
-        padding: 6px 8px 6px 26.5px;
-        text-decoration: none;
-        font-size: 20px;
+    padding: 6px 8px 6px 20px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #ffffff;
+    display: block;
+    }
+
+    .sidenav a:hover {
+    color: #f1f1f1;
     }
 
     .main {
-        margin-left: 160px;
-        font-size: 28px;
+    margin-left: 160px; /* Same as the width of the sidenav */
+    font-size: 28px; /* Increased text to enable scrolling */
+    padding: 0px 10px;
     }
 
     @media screen and (max-height: 450px) {
-        .sidenav {
-            padding-top: 15px;
-        }
-        .sidenav a {
-            font-size: 18px;
-        }
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
     }
 
-    #grid {
+    .grid {
         display: grid;
-        height: 100%;
-        width: 100%;
-        grid-template-columns: 160px calc(100% - 160px);
+        grid-template-columns: 400px 400px;
+        grid-template-rows: 50px;
+        width: 800px;
     }
 
     #wrapper {
@@ -45,32 +52,50 @@
         align-items: center;
     }
 </style>
+<!-- CSS end -->
 
+<!-- HTML begin -->
 <head>
-    <title>Home / Bit</title>
+    <title>Home / mealscrap</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body>
-    <div>
-        <div class="sidenav" id="sidenav">
-            <a href="home.html">Home</a>
-            <a href="posts.html">Browse posts</a>
-            <a href="login.html">Login</a>
-        </div>
+    <div class="sidenav">
+        <a href="login.html"><b>Login</b></a>
+        <a href="index.html"><b>Home</b></a>
+        <a href="browse.html"><b>Browse</b></a>
+        <a href="about.html"><b>About us</b></a>
+    </div>
     
+    <div>
         <div id="wrapper">
-            <h1 style="font-family:Arial">Bit</h1>
-            <table id="table" width="550" border="2" noshade cellpadding="4" cellspacing="0" color="CCEFFO">
+            <img src="mscrap.jpg" alt="mealscrap" >
+            <a target="_blank" href="post.html"><img src="post.jpg" alt="Post"></a></img>
+            <table class='grid' id="table" width="400" border="2" noshade cellpadding="4" cellspacing="0" color="CCEFFO">
                 <tbody>
                     <tr>
-                        <td valign="TOP" align="LEFT">
-                            <p style="font-family:Arial"><a href="test23.html">@test23</a>&nbsp time to go home... anything fun going on? ping me.</p>
+                        <td valign="top" align="left">
+                            <p style="font-family:Arial"><a href="eg.html">@eg</a>&nbsp time to go home... anything fun going on? ping me.</p>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <p>Bit © 2022</p>
         </div>
+    
+
+        <center>
+            <table class="grid" id="table" width="400" border="2" noshade cellpadding="4" cellspacing="0" color="CCEFFO">
+                <tbody>
+                    <tr>
+                        <td valign="left" align="left">
+                            <p style="font-family:Arial"><a href="destroyman.html">@destroyman</a>&nbsp I think mealscrap.com is a very good website.</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>mealscrap.com Â© 2022</p>
+        </center>
     </div>
 </body>
