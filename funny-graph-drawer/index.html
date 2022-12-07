@@ -67,7 +67,7 @@
 
     const xCellMax = 10;
     const yCellMax = 10;
-    const precision = 16;
+    const precision = 32;
     const iterator = 1 / (precision / 2);
 
     const parser = math.parser()
@@ -522,8 +522,6 @@
             }
             console.warn(`total elapsed time: ${generateTimestamp(elapsedTime)}`)
         }
-        console.log(document.getElementById('0,0'))
-
     }
 
     window.onload = function(){
