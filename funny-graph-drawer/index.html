@@ -53,7 +53,7 @@
     <script src='https://unpkg.com/paralleljs@1.0/lib/parallel.js'></script>
 </head>
 <body>
-    <textarea id="input">x = y^2</textarea>
+<textarea id="input"></textarea>
     <div id="graph"></div>
     <div id="draw-button" onclick="draw(input.value)"></div>
 </body>
@@ -65,9 +65,9 @@
 
     // x iterations per y iteration: xCellMax * 2 / iterator + 1
 
-    const xCellMax = 50;
-    const yCellMax = 50;
-    const precision = 8;
+    const xCellMax = 5;
+    const yCellMax = 5;
+    const precision = 32;
     const iterator = 1 / (precision / 2);
 
     const parser = math.parser()
@@ -100,6 +100,8 @@
         totalX: ((xCellMax * precision) * (yCellMax * precision)) + (yCellMax * precision * 2) + 1,
         totalY: (yCellMax * precision) + 1
     }
+
+    input.value = 'x = y^2\ny = x^2'
 
     function setup(){
         let startTime = Date.now();
@@ -177,7 +179,7 @@
                 if((y == 0 && x % 1 == 0) || (x == 0 && y % 1 == 0)){
                     div.style.backgroundColor = 'black';
                 }
-                graph.appendChild(div);
+                graph.appendChild(div)
                 iterations.x++;
             }
             
@@ -186,10 +188,6 @@
         console.warn(`setup complete in ${(Date.now() - startTime) / 1000}s.`)
         setupComplete = true;
     }
-
-
-
-    let startTime = 0;
 
     function templateDraw(x, y, input){
         let div = document.getElementById(`${x},${y}`);
@@ -434,11 +432,19 @@
             return console.warn('setup not complete!')
         } else {
             // estimate the amount of time the function will take to run
-
-
-            console.warn('starting...')
-            startTime = Date.now();
             
+
+            
+
+            let splitInput = input.split('\n');
+            splitInput = splitInput.filter(function (el) {
+                return el != null && el != '';
+            });
+
+            console.log(splitInput)
+            console.warn('starting...')
+            let elapsedTime = Date.now();
+            let times = []
             for(i = 0; i < graph.children.length; i++){
                 let child = graph.children[i];
                 if(child.getAttribute('plot') == 'true'){
@@ -448,34 +454,48 @@
             }
 
 
-            const p = new Parallel([
-                drawFunctions.top.left.top.left(input),
-                drawFunctions.top.left.top.right(input),
-                drawFunctions.top.left.bottom.left(input),
-                drawFunctions.top.left.bottom.right(input),
+            for(i = 0; i < splitInput.length; i++){
+                let startTime = Date.now();
+
+                const p = new Parallel([
+                drawFunctions.top.left.top.left(splitInput[i]),
+                drawFunctions.top.left.top.right(splitInput[i]),
+                drawFunctions.top.left.bottom.left(splitInput[i]),
+                drawFunctions.top.left.bottom.right(splitInput[i]),
                 
-                drawFunctions.top.right.top.left(input),
-                drawFunctions.top.right.top.right(input),
-                drawFunctions.top.right.bottom.left(input),
-                drawFunctions.top.right.bottom.right(input),
+                drawFunctions.top.right.top.left(splitInput[i]),
+                drawFunctions.top.right.top.right(splitInput[i]),
+                drawFunctions.top.right.bottom.left(splitInput[i]),
+                drawFunctions.top.right.bottom.right(splitInput[i]),
 
-                drawFunctions.bottom.left.top.left(input), // check
-                drawFunctions.bottom.left.top.right(input), // check
-                drawFunctions.bottom.left.bottom.left(input),
-                drawFunctions.bottom.left.bottom.right(input),
+                drawFunctions.bottom.left.top.left(splitInput[i]), // check
+                drawFunctions.bottom.left.top.right(splitInput[i]), // check
+                drawFunctions.bottom.left.bottom.left(splitInput[i]),
+                drawFunctions.bottom.left.bottom.right(splitInput[i]),
 
-                drawFunctions.bottom.right.top.left(input), // check
-                drawFunctions.bottom.right.top.right(input), // check
-                drawFunctions.bottom.right.bottom.left(input),
-                drawFunctions.bottom.right.bottom.right(input)
-            ]);
-            try {
-                p.spawn()
-            } catch {
-                console.warn(`done!`)
-                console.log(`total elapsed time: ${generateTimestamp(startTime)}`);
-                return
+                drawFunctions.bottom.right.top.left(splitInput[i]), // check
+                drawFunctions.bottom.right.top.right(splitInput[i]), // check
+                drawFunctions.bottom.right.bottom.left(splitInput[i]),
+                drawFunctions.bottom.right.bottom.right(splitInput[i])
+                ]);
+
+                try {
+                    p.spawn()
+                } catch {
+                    times.push(generateTimestamp(startTime))
+                    console.log(`done ${i+1} of ${splitInput.length}, elapsed time: ${generateTimestamp(startTime)}`);
+                }
             }
+
+            console.warn(`done in ${generateTimestamp(elapsedTime)}`)
+            console.log('summary:')
+            for(i = 0; i < times.length; i++){
+                console.log(`elapsed time of equation ${i+1}: ${times[i]}`);
+            }
+
+
+
+
         }
         
 
