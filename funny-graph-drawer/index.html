@@ -1,16 +1,20 @@
 <style>
     #graph {
         border: 1px solid black;
-        /*
-        make the width and height always the same
-        */
         width: 500px;
         height: 500px;
         position: absolute;
         left: 5px;
         top: 25%;
-
         display: grid;
+    }
+    #curve-drawer {
+        border: 1px solid black;
+        width: 500px;
+        height: 500px;
+        position: absolute;
+        left: 5px;
+        top: 25%;
     }
     #input {
         resize: none;
@@ -53,11 +57,14 @@
     <script src='https://unpkg.com/paralleljs@1.0/lib/parallel.js'></script>
 </head>
 <body>
-<textarea id="input"></textarea>
+    <textarea id="input"></textarea>
     <div id="graph"></div>
+    <svg id='curve-drawer' xmlns="http://www.w3.org/2000/svg"></svg>
     <div id="draw-button" onclick="draw(input.value)"></div>
 </body>
 <script>
+
+    const svg = document.getElementById("curve-drawer");
     const graph = document.getElementById("graph");
     const input = document.getElementById("input");
 
