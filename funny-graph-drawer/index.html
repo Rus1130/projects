@@ -68,13 +68,13 @@
     const graph = document.getElementById("graph");
     const input = document.getElementById("input");
 
-    const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', "#6042A6"];
+    const colors = ['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', "#6042A6"];
 
     // x iterations per y iteration: xCellMax * 2 / iterator + 1
 
-    const xCellMax = 10;
-    const yCellMax = 10;
-    const precision = 32;
+    const xCellMax = 15;
+    const yCellMax = 15;
+    const precision = 16;
     const iterator = 1 / (precision / 2);
 
     const parser = math.parser()
@@ -108,7 +108,7 @@
         totalY: (yCellMax * precision) + 1
     }
 
-    input.value = 'x = y^2\ny = x^2'
+    input.value = 'y = cos(x + pi)\ny = cos(x)\nx = cos(y + pi)\nx = cos(y)';
 
     function setQuadrantBorders(time){
         let leftRightDivide = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -224,6 +224,8 @@
         let div = document.getElementById(`${x},${y}`);
         let left = clean(input.split('=')[0]);
         let right = math.evaluate(clean(input.split('=')[1]), {x: x, y: y});
+
+        right = math.round(right / iterator) * iterator;
 
         let needsCurveId = false;
         if(left == 'r'){
@@ -517,25 +519,25 @@
                 let startTime = Date.now();
 
                 const p = new Parallel([
-                drawFunctions.top.left.top.left(splitInput[i],  color),
-                drawFunctions.top.left.top.right(splitInput[i], color),
-                drawFunctions.top.left.bottom.left(splitInput[i], color),
-                drawFunctions.top.left.bottom.right(splitInput[i], color),
-                
-                drawFunctions.top.right.top.left(splitInput[i], color),
-                drawFunctions.top.right.top.right(splitInput[i], color),
-                drawFunctions.top.right.bottom.left(splitInput[i], color),
-                drawFunctions.top.right.bottom.right(splitInput[i], color),
+                    drawFunctions.top.left.top.left(splitInput[i],  color),
+                    drawFunctions.top.left.top.right(splitInput[i], color),
+                    drawFunctions.top.left.bottom.left(splitInput[i], color),
+                    drawFunctions.top.left.bottom.right(splitInput[i], color),
+                    
+                    drawFunctions.top.right.top.left(splitInput[i], color),
+                    drawFunctions.top.right.top.right(splitInput[i], color),
+                    drawFunctions.top.right.bottom.left(splitInput[i], color),
+                    drawFunctions.top.right.bottom.right(splitInput[i], color),
 
-                drawFunctions.bottom.left.top.left(splitInput[i], color),
-                drawFunctions.bottom.left.top.right(splitInput[i], color),
-                drawFunctions.bottom.left.bottom.left(splitInput[i], color),
-                drawFunctions.bottom.left.bottom.right(splitInput[i], color),
+                    drawFunctions.bottom.left.top.left(splitInput[i], color),
+                    drawFunctions.bottom.left.top.right(splitInput[i], color),
+                    drawFunctions.bottom.left.bottom.left(splitInput[i], color),
+                    drawFunctions.bottom.left.bottom.right(splitInput[i], color),
 
-                drawFunctions.bottom.right.top.left(splitInput[i], color),
-                drawFunctions.bottom.right.top.right(splitInput[i], color),
-                drawFunctions.bottom.right.bottom.left(splitInput[i], color),
-                drawFunctions.bottom.right.bottom.right(splitInput[i], color)
+                    drawFunctions.bottom.right.top.left(splitInput[i], color),
+                    drawFunctions.bottom.right.top.right(splitInput[i], color),
+                    drawFunctions.bottom.right.bottom.left(splitInput[i], color),
+                    drawFunctions.bottom.right.bottom.right(splitInput[i], color)
                 ]);
 
                 try {
@@ -571,4 +573,22 @@
 
     // https://www.youtube.com/watch?v=JnCkF62gkOY
     // total iterations for 4 precision:  
+
+    /*
+    pillars: 'y = cos(x)\ny = sin(x)\ny = sin(x + pi)\ny = cos(x + pi)\nx = cos(y)\nx = sin(y)\nx = sin(y + pi)\nx = cos(y + pi)'
+    y = cos(x)
+    y = sin(x)
+    y = sin(x + pi)
+    y = cos(x + pi)
+    x = cos(y)
+    x = sin(y)
+    x = sin(y + pi)
+    x = cos(y + pi)
+
+    cos circle: 'y = cos(x + pi)\ny = cos(x)\nx = cos(y + pi)\nx = cos(y)'
+    y = cos(x + pi)
+    y = cos(x)
+    x = cos(y + pi)
+    x = cos(y)
+    */
 </script>
