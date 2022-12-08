@@ -1,8 +1,8 @@
 <style>
     #graph {
         border: 1px solid black;
-        width: 500px;
-        height: 500px;
+        width: 600px;
+        height: 600px;
         position: absolute;
         left: 5px;
         top: 25%;
@@ -10,8 +10,8 @@
     }
     #curve-drawer {
         border: 1px solid black;
-        width: 500px;
-        height: 500px;
+        width: 600px;
+        height: 600px;
         position: absolute;
         left: 5px;
         top: 25%;
@@ -74,7 +74,7 @@
 
     const xCellMax = 10;
     const yCellMax = 10;
-    const precision = 32;
+    const precision = 64;
     const iterator = 1 / (precision / 2);
 
     const parser = math.parser()
@@ -182,16 +182,35 @@
 
 
 
-
-                if((y == 0 && x % 1 == 0) || (x == 0 && y % 1 == 0)){
-                    div.style.backgroundColor = 'black';
-                }
                 graph.appendChild(div)
                 iterations.x++;
             }
             
             iterations.y++;
         }
+        
+
+        let leftRightDivide = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        leftRightDivide.setAttribute('x1', '50%');
+        leftRightDivide.setAttribute('y1', '0%');
+        leftRightDivide.setAttribute('x2', '50%');
+        leftRightDivide.setAttribute('y2', '100%');
+        leftRightDivide.setAttribute('stroke', 'black');
+        leftRightDivide.setAttribute('stroke-width', '1');
+        leftRightDivide.setAttribute('stroke-dasharray', '5,5');
+
+        let topBottomDivide = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        topBottomDivide.setAttribute('x1', '0%');
+        topBottomDivide.setAttribute('y1', '50%');
+        topBottomDivide.setAttribute('x2', '100%');
+        topBottomDivide.setAttribute('y2', '50%');
+        topBottomDivide.setAttribute('stroke', 'black');
+        topBottomDivide.setAttribute('stroke-width', '1');
+        topBottomDivide.setAttribute('stroke-dasharray', '5,5');
+
+        svg.appendChild(topBottomDivide);
+        svg.appendChild(leftRightDivide);
+
         console.warn(`setup complete in ${(Date.now() - startTime) / 1000}s.`)
         setupComplete = true;
     }
