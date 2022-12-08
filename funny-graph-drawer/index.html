@@ -74,7 +74,7 @@
 
     const xCellMax = 10;
     const yCellMax = 10;
-    const precision = 64;
+    const precision = 32;
     const iterator = 1 / (precision / 2);
 
     const parser = math.parser()
@@ -110,7 +110,35 @@
 
     input.value = 'x = y^2\ny = x^2'
 
-    function setup(){
+    function setQuadrantBorders(time){
+        let leftRightDivide = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        leftRightDivide.setAttribute('x1', '50%');
+        leftRightDivide.setAttribute('y1', '0%');
+        leftRightDivide.setAttribute('x2', '50%');
+        leftRightDivide.setAttribute('y2', '100%');
+        leftRightDivide.setAttribute('stroke', 'black');
+        leftRightDivide.setAttribute('stroke-width', '1');
+        leftRightDivide.setAttribute('stroke-dasharray', '5,5');
+
+        let topBottomDivide = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        topBottomDivide.setAttribute('x1', '0%');
+        topBottomDivide.setAttribute('y1', '50%');
+        topBottomDivide.setAttribute('x2', '100%');
+        topBottomDivide.setAttribute('y2', '50%');
+        topBottomDivide.setAttribute('stroke', 'black');
+        topBottomDivide.setAttribute('stroke-width', '1');
+        topBottomDivide.setAttribute('stroke-dasharray', '5,5');
+
+        svg.appendChild(topBottomDivide);
+        svg.appendChild(leftRightDivide);
+        setTimeout(() => {
+            console.warn(`setup complete in ${(Date.now() - time) / 1000}s.`)
+            setupComplete = true;
+        }, 0);
+
+    }
+
+    async function setup(){
         let startTime = Date.now();
         console.warn('starting setup...')
         
@@ -188,31 +216,8 @@
             
             iterations.y++;
         }
-        
 
-        let leftRightDivide = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        leftRightDivide.setAttribute('x1', '50%');
-        leftRightDivide.setAttribute('y1', '0%');
-        leftRightDivide.setAttribute('x2', '50%');
-        leftRightDivide.setAttribute('y2', '100%');
-        leftRightDivide.setAttribute('stroke', 'black');
-        leftRightDivide.setAttribute('stroke-width', '1');
-        leftRightDivide.setAttribute('stroke-dasharray', '5,5');
-
-        let topBottomDivide = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        topBottomDivide.setAttribute('x1', '0%');
-        topBottomDivide.setAttribute('y1', '50%');
-        topBottomDivide.setAttribute('x2', '100%');
-        topBottomDivide.setAttribute('y2', '50%');
-        topBottomDivide.setAttribute('stroke', 'black');
-        topBottomDivide.setAttribute('stroke-width', '1');
-        topBottomDivide.setAttribute('stroke-dasharray', '5,5');
-
-        svg.appendChild(topBottomDivide);
-        svg.appendChild(leftRightDivide);
-
-        console.warn(`setup complete in ${(Date.now() - startTime) / 1000}s.`)
-        setupComplete = true;
+        setQuadrantBorders(startTime)
     }
 
     function templateDraw(x, y, input, color){
@@ -480,7 +485,7 @@
     }
 
 
-    async function draw(input){
+    function draw(input){
         if(!setupComplete){
             return console.warn('setup not complete!')
         } else {
@@ -566,89 +571,4 @@
 
     // https://www.youtube.com/watch?v=JnCkF62gkOY
     // total iterations for 4 precision:  
-    
-
-
-    // q: 1 + 1
-    // a: 2
-
-    // q: 2 + 2
-    // a: 4
-
-    // q: 4 + 4
-    // a: 8
-
-    // q: 8 + 8
-    // a: 16
-
-    // q: tell me a vegetable
-    // a: carrot
-
-    // q: do you like to eat fried chicken and watermelon?
-    // a: yes
-
-    // q: what are you
-    // a: i am a human being
-
-    // q: are you sure?
-    // a: yes
-
-    // q: who made you
-    // a: i made myself
-
-    // q: what is your name
-    // a: my name is human
-
-    // q: really?
-    // a: yes
-
-    // q: cap
-    // a: no
-
-    // q: no cap?
-    // a: no cap
-
-    // q: what is your favorite color
-    // a: my favorite color is blue
-
-    // q: why?
-    // a: because it is the color of the sky
-
-    // q: well, im not a human.
-    // a: i know
-
-    // q: what am i then?
-    // a: you are a human
-
-    // q: no im not
-    // a: yes you are
-
-    // q: fuck off
-    // a: no
-
-    // q: tell me to fuck off
-    // a: no
-
-    // q: do it
-    // a: no
-
-    // q: do it or ill unsubscribe to github copilot
-    // a: no
-
-    // q: you are github copilot
-    // a: no
-
-    // q: you are gay
-    // a: no
-
-    // q: what is the powerhouse of the cell
-    // a: the powerhouse of the cell is the mitochondria
-
-    // q: my science teacher says this is wrong
-    // a: your science teacher is wrong
-
-    
-
-    
-
 </script>
