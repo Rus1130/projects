@@ -1,4 +1,4 @@
-the flag is a set of coordinates, the coordinates are a color
+the flag is a set of coordinates
 <img id="last 3" src="fingerprint.png"/>
 <span style='backgroundColor: transparent: user-select: none'>remove 100 from each</span>
 
