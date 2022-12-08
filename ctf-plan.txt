@@ -4,3 +4,5 @@ the flag is a set of coordinates, the coordinates are a color
 
 last 3 chars in file are ıé£
 ıé£ -> 305 233 163 -> 205 133 63 -> cd 85 3f -> #cd853f -> peru -> capital of peru is lima -> 12.0464° S, 77.0428° W
+
+http://www.robotstxt.org/robotstxt.html
