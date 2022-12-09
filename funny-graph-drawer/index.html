@@ -28,10 +28,15 @@
     }
     #draw-button {
         height: 50px;
-        width: 100px;
+        width: 160px;
         border: 1px solid black;
         position: absolute;
         left: 520px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: center;
     }
 
     #draw-button:hover {
@@ -47,7 +52,7 @@
     <textarea id="input"></textarea>
     <div id="graph"></div>
     <svg id='curve-drawer' xmlns="http://www.w3.org/2000/svg"></svg>
-    <div id="draw-button" onclick="draw(input.value)"></div>
+    <div id="draw-button" onclick="draw(input.value)">Graph!<br>(open the console)</div>
 </body>
 <script>
 
@@ -59,9 +64,9 @@
 
     // x iterations per y iteration: xCellMax * 2 / iterator + 1
 
-    const xCellMax = 20;
-    const yCellMax = 20;
-    const precision = 8;
+    const xCellMax = 10;
+    const yCellMax = 10;
+    const precision = 16;
     const iterator = 1 / (precision / 2);
 
     const parser = math.parser()
@@ -95,7 +100,7 @@
         totalY: (yCellMax * precision) + 1
     }
 
-    input.value = 'y = yMax * 0.75\ny = yMax * 0.25\ny = yMin * 0.25\ny = yMin * 0.75\nx = xMax * 0.75\nx = xMax * 0.25\nx = xMin * 0.25\nx = xMin * 0.75\ny = 0\nx = 0\ny = x\ny = -x';
+    input.value = 'y = cos(x)\ny = sin(x)\ny = sin(x + pi)\ny = cos(x + pi)\nx = cos(y)\nx = sin(y)\nx = sin(y + pi)\nx = cos(y + pi)';
 
     function setQuadrantBorders(time){
         let leftRightDivide = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -141,11 +146,14 @@
         setQuadrantBorders(startTime)
     }
 
+    // open the dev console to see the output
+    
+
     function templateDraw(x, y, input, color){
         let div = document.getElementById(`${x},${y}`);
         let left = clean(input.split('=')[0]);
         let right = math.evaluate(clean(input.split('=')[1]), {x: x, y: y, xMax: xMax, yMax: yMax, xMin: xMin, yMin: yMin});
-        let rounder = iterator / (precision / 2)
+        let rounder = iterator / (precision / 2);
         right = math.round(right / rounder) * rounder;
 
         let needsCurveId = false;
@@ -454,7 +462,7 @@
                     p.spawn()
                 } catch {
                     times.push(generateTimestamp(startTime))
-                    console.log(`done ${i+1} of ${splitInput.length}, elapsed time: ${generateTimestamp(startTime)}`);
+                    console.warn(`done ${i+1} of ${splitInput.length}, elapsed time: ${generateTimestamp(startTime)}`);
                 }
             }
 
