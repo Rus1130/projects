@@ -1,0 +1,69 @@
+<style>
+
+    body {
+        background-color: slategray;
+    }
+
+    h1 {
+
+        font-size: 2cm;
+        font-style: italic;
+        color: whitesmoke;
+    }
+
+    #button {
+        background-color: rgb(78, 75, 83);
+        color: whitesmoke;
+        width: 2in;
+        height: 0.5in;
+        font-family: Arial, Helvetica, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        user-select: none;
+        
+
+    }
+
+    #button:hover {
+        background-color: whitesmoke;
+        color: rgb(78, 75, 83);
+        border-color: rgb(78, 75, 83);
+        cursor: pointer;
+    }
+
+    #grid {
+        display: grid;
+        width: 2in;
+        grid-template-columns: 2in;
+        grid-template-rows:  0.5in;
+        row-gap: 10px;
+    }
+
+    .wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matt Koco</title>
+</head>
+
+<body>
+    <h1 align="center" style="font-family:'Courier New', Courier, monospace">MattKoco</h1>
+    <div class="wrapper">
+        <div id="grid">
+            <div id="button" onclick="window.open('http://github.com','_blank')">GitHub</div>
+            <div id="button" onclick="window.open('http://youtube.com','_blank')">YouTube</div>
+            <!--
+                if you want to add more divs, add them here.
+                but make sure to give them the id of 'button'
+            -->
+        </div>
+    </div>
+</body>
