@@ -1,3 +1,0 @@
-after you do that, you get a bunch of numbers. 0123456789ABCDEF
-
-if you still can't figure it out, go to hints/hint4.txt
