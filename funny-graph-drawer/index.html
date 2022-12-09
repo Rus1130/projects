@@ -55,7 +55,7 @@
     const graph = document.getElementById("graph");
     const input = document.getElementById("input");
 
-    const colors = ['#FF0000', '#0000FF', '#00FF00', '#FFFF00', '#FF00FF', '#00FFFF', "#6042A6", "#FF4500"];
+    const colors = ['#FF0000', '#0000FF', '#00FF00', '#FFFF00', '#FF00FF', '#00FFFF', "#6042A6", "#FF4500", "#DC143C", "#6495ED", "#8B0000", "#FF8C00"];
 
     // x iterations per y iteration: xCellMax * 2 / iterator + 1
 
@@ -95,7 +95,7 @@
         totalY: (yCellMax * precision) + 1
     }
 
-    input.value = 'y = cos(x + pi)\ny = cos(x)\nx = cos(y + pi)\nx = cos(y)';
+    input.value = 'y = yMax * 0.75\ny = yMax * 0.25\ny = yMin * 0.25\ny = yMin * 0.75\nx = xMax * 0.75\nx = xMax * 0.25\nx = xMin * 0.25\nx = xMin * 0.75\ny = 0\nx = 0\ny = x\ny = -x';
 
     function setQuadrantBorders(time){
         let leftRightDivide = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -144,7 +144,7 @@
     function templateDraw(x, y, input, color){
         let div = document.getElementById(`${x},${y}`);
         let left = clean(input.split('=')[0]);
-        let right = math.evaluate(clean(input.split('=')[1]), {x: x, y: y});
+        let right = math.evaluate(clean(input.split('=')[1]), {x: x, y: y, xMax: xMax, yMax: yMax, xMin: xMin, yMin: yMin});
         let rounder = iterator / (precision / 2)
         right = math.round(right / rounder) * rounder;
 
@@ -500,5 +500,19 @@
     y = cos(x)
     x = cos(y + pi)
     x = cos(y)
+
+    graph test: 'y = yMax * 0.75\ny = yMax * 0.25\ny = yMin * 0.25\ny = yMin * 0.75\nx = xMax * 0.75\nx = xMax * 0.25\nx = xMin * 0.25\nx = xMin * 0.75\ny = 0\nx = 0\ny = x\ny = -x'
+    y = yMax * 0.75
+    y = yMax * 0.25
+    y = yMin * 0.25
+    y = yMin * 0.75
+    x = xMax * 0.75
+    x = xMax * 0.25
+    x = xMin * 0.25
+    x = xMin * 0.75
+    y = 0
+    x = 0
+    y = x
+    y = -x
     */
 </script>
