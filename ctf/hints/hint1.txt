@@ -1,6 +1,4 @@
 theres a lot of stuff in the d attribute, I wonder if the first 7 letters mean anything...
 once you find the meaning, find the file!
-subtract 100 from each letter. Don't forget about unicode. 0123456789
-after you do that, you get a bunch of numbers. 0123456789ABCDEF
-then make it a color.
-w3schools can help you with that.
+
+if you still can't figure it out, go to hints/hint2.txt
