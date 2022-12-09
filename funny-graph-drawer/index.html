@@ -66,7 +66,7 @@
 
     const xCellMax = 10;
     const yCellMax = 10;
-    const precision = 16;
+    const precision = 8;
     const iterator = 1 / (precision / 2);
 
     const parser = math.parser()
@@ -137,16 +137,70 @@
         for(let y = yMax; y >= yMin; y -= iterator){
             for(let x = xMin; x <= xMax; x += iterator){
                 let div = document.createElement('div');
+                if(x >= -xCellMax && x <= -xCellMax/2 && y >= yCellMax/2){
+                    div.setAttribute('sector', 'tltl')
+                } else if(x >= -xCellMax/2 && x <= 0 && y >= yCellMax/2){
+                    div.setAttribute('sector', 'tltr')
+                } else if(x >= -xCellMax && x <= -xCellMax/2 && y >= 0 && y <= yCellMax/2){
+                    div.setAttribute('sector', 'tlbl')
+                } else if(x >= -xCellMax/2 && x <= 0 && y >= 0 && y <= yCellMax/2){
+                    div.setAttribute('sector', 'tlbr')
+                } else if(x >= 0 && x <= xCellMax/2 && y >= yCellMax/2){
+                    div.setAttribute('sector', 'trtl')
+                } else if(x >= xCellMax/2 && x <= xCellMax && y >= yCellMax/2){
+                    div.setAttribute('sector', 'trtr')
+                } else if(x >= 0 && x <= xCellMax/2 && y >= 0 && y <= yCellMax/2){
+                    div.setAttribute('sector', 'trbl')
+                } else if(x >= xCellMax/2 && x <= xCellMax && y >= 0 && y <= yCellMax/2){
+                    div.setAttribute('sector', 'trbr')
+                } else if(x >= -xCellMax && x <= -xCellMax/2 && y >= -yCellMax/2 && y <= 0){
+                    div.setAttribute('sector', 'bltl')
+                } else if(x >= -xCellMax/2 && x <= 0 && y >= -yCellMax/2 && y <= 0){
+                    div.setAttribute('sector', 'bltr')
+                } else if(x >= -xCellMax && x <= -xCellMax/2 && y >= -yCellMax && y <= -yCellMax/2){
+                    div.setAttribute('sector', 'blbl')
+                } else if(x >= -xCellMax/2 && x <= 0 && y >= -yCellMax && y <= -yCellMax/2){
+                    div.setAttribute('sector', 'blbr')
+                } else if(x >= 0 && x <= xCellMax/2 && y >= -yCellMax/2 && y <= 0){
+                    div.setAttribute('sector', 'brtl')
+                } else if(x >= xCellMax/2 && x <= xCellMax && y >= -yCellMax/2 && y <= 0){
+                    div.setAttribute('sector', 'brtr')
+                } else if(x >= 0 && x <= xCellMax/2 && y >= -yCellMax && y <= -yCellMax/2){
+                    div.setAttribute('sector', 'brbl')
+                } else if(x >= xCellMax/2 && x <= xCellMax && y >= -yCellMax && y <= -yCellMax/2){
+                    div.setAttribute('sector', 'brbr')
+                }
+
+
                 div.id = `${x},${y}`;
 
                 graph.appendChild(div)
             }
         }
-
         setQuadrantBorders(startTime)
     }
 
     // open the dev console to see the output
+
+    const sectors = {
+        tltl: false,
+        tltr: false,
+        tlbl: false,
+        tlbr: false,
+        trtl: false,
+        trtr: false,
+        trbl: false,
+        trbr: false,
+        bltl: false,
+        bltr: false,
+        blbl: false,
+        blbr: false,
+        brtl: false,
+        brtr: false,
+        brbl: false,
+        brbr: false
+
+    }
     
 
     function templateDraw(x, y, input, color){
@@ -158,11 +212,17 @@
 
         let needsCurveId = false;
         function setCurveId(){
+            
             if(div.getAttribute('curveID') == null){
                 div.setAttribute('curveID', colors.indexOf(color));
             } else {
                 div.setAttribute('curveID', `${div.getAttribute('curveID')} ${colors.indexOf(color)}`);
             }
+            let elements = document.querySelectorAll('[curveID]');
+            for(i = 0; i < elements.length; i++){
+                sectors[elements[i].getAttribute('sector')] = true;
+            }
+            console.log(elements)
 
             needsCurveId = true;
             div.setAttribute('plot', 'true');
