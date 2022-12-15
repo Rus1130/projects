@@ -73,8 +73,8 @@
         gradientRed: 0,
         gradientGreen: 255,
         gradientBlue: 0,
-        bulletSpeed: 10,
-        regenAmnt: 0.125,
+        bulletSpeed: 11,
+        regenAmnt: 0.15,
     }
     
     const playerData = {
@@ -244,10 +244,8 @@
             mouseDebug.innerHTML = `<pre>${debugCannonWear}${debugPlayerX}${debugPlayerY}${debugPlayerVX}${debugPlayerVY}${debugMouseX}${debugMouseY}${debugBorderCollision}${debugKeys}</pre>`;
 
             if(playerData.cannonWear < 400){
-                let randomArray = [];
                 if(playerData.cannonWear > 350){
                     playerData.cannonWearOffset = 0.37
-                    //gameData.keys[gameData.shootKey1] = false;
                 } else if(playerData.cannonWear > 300){
                     playerData.cannonWearOffset = 0.25
                 } else if(playerData.cannonWear > 250){
@@ -434,7 +432,12 @@
             let random = Math.floor(Math.random() * 200);
             if(random <= 60){
                 if(playerData.cannonWear < 400){
-                    Math.round(playerData.cannonWear = playerData.cannonWear + 2);
+                    if(gameData.keys[gameData.shootKey2]){
+                        Math.round(playerData.cannonWear = playerData.cannonWear + 2);
+                    } else {
+                        Math.round(playerData.cannonWear = playerData.cannonWear + 20);
+                    }
+                    
 
                 }
             }
@@ -447,7 +450,9 @@
             let key = e.key.toLowerCase();
             gameData.keys[key] = true;
             if(gameData.keys[gameData.shootKey1]){
-                shoot();
+                if(playerData.cannonWear < 400){
+                    shoot();
+                }
             }
             if(gameData.keys[gameData.toggleDebugKey]){
                 debug = !debug;
