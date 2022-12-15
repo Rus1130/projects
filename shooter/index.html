@@ -1,1089 +1,556 @@
 <style>
-    body {
+    :root{
         cursor: crosshair;
     }
-    #area {
-        width: 100%;
-        height: 100%;
+    .debug {
+        z-index: 100;
         position: absolute;
-        top: 0;
-        left: 0;
-        z-index: -1;
+        user-select: none;
+    }
+    #wearDisplay {
+        z-index: 100;
+        position: absolute;
+        user-select: none;
+        width: 400px;
+        height: 50px;
+        border: 1px solid black;
+        display: grid;
+        grid-template-columns: repeat(400, 1fr);
     }
     svg {
-        overflow: visible;
+        z-index: 0;
     }
-    #player {
-        position: absolute;
-        top: calc(50% - 33px);
-        left: calc(50% - 26px);
-        z-index: 1;
-    }
-    #healthbar {
-        position: absolute;
-        top: 2px;
-        left: 26px;
-        width: 300px;
-        height: 50px;
-        outline: 1px solid black;
-        display: grid;
-        grid-template-columns: repeat(20, 15px);
-        grid-template-rows: 50px;
-        z-index: -1;
-    }
-    #xpbar {
-        position: absolute;
-        top: 70px;
-        left: 26px;
-        width: 300px;
-        height: 5px;
-        outline: 1px solid black;
-        z-index: -1;
-    }
-    #wave-counter {
-        position: absolute;
-        top: 22px;
-        left: 330px;
-        z-index: -1;
-        font-size: 30px;
-    }
-    #level-counter {
-        position: absolute;
-        top: 63px;
-        left: 330px;
-        z-index: -1;
-        font-size: 15px;
-    }
-    .health-pip {
-        outline: 1px solid black;
-        width: 15px;
-        height: 50px;
-        background-color: red;
-    }
+
 </style>
 <head>
-
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';">
+    <script src="two.js"></script>
+    <script src="math.js"></script>
 </head>
-<body>
-    <div id='healthbar'></div>
-    <div id='xpbar'></div>
-    <div id="wave-counter">Wave: 1</div>
-    <div id='level-counter'>Level: 1</div>
-    <div id="area">
-        <svg width="50" id='player' height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect  width="50" height="50" fill="#FF0000"/>
-            <rect x="24" y="24" id="cannonCenterer" width="2" height="2" fill="yellow"/>
-            <g id="cannon">
-                <rect x="16" y="18" width="50" height="15" fill="black"/>
-            </g>
-            <!--'<path d="M15 15H34.6078V35H15V15Z" fill="black"/>'-->
-        </svg>
-    </div>
+<body>  
+    <div class="debug" id="mouse"></div>
+    <div id="wearDisplay"></div>
 </body>
 <script>
-    const area = document.getElementById('area');
-    const player = document.getElementById('player');
-    const heathbar = document.getElementById('healthbar');
-    const xpBar = document.getElementById('xpbar');
-    const levelDisplay = document.getElementById('level-counter');
-    const waveDisplay = document.getElementById('wave-counter');
+    const mouseDebug = document.getElementById('mouse');
+    const cannonWearDisplay = document.getElementById('wearDisplay');
 
-    const enemies = {
-        0: {
-            wave: 1,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Spiraler');
-                gameData.currentWave++
-            },
-        },
-        /*
-        0: {
-            wave: 1,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Grunt');
-                gameData.currentWave++
-            },
-        },
-        1: {
-            wave: 2,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Grunt')
-                spawnEnemy('Grunt')
-                gameData.currentWave++
-            },
-        },
-        2: {
-            wave: 3,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Grunt')
-                spawnEnemy('Grunt')
-                spawnEnemy('Grunt')
-                gameData.currentWave++
-            },
-        },
-        3: {
-            wave: 4,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Grunt')
-                spawnEnemy('Grunt')
-                spawnEnemy('Grunt')
-                spawnEnemy('Grunt')
-                gameData.currentWave++
-            },
-        },
-        4: {
-            wave: 5,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Grunt')
-                spawnEnemy('Grunt')
-                spawnEnemy('Grunt')
-                spawnEnemy('Grunt')
-                spawnEnemy('Grunt')
-                gameData.currentWave++
-            },
-        },
-        5: {
-            wave: 6,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Footman')
-                gameData.currentWave++
-            },
-        },
-        6: {
-            wave: 7,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Footman')
-                spawnEnemy('Footman')
-                gameData.currentWave++
-            },
-        },
-        7: {
-            wave: 8,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Footman')
-                spawnEnemy('Footman')
-                spawnEnemy('Footman')
-                gameData.currentWave++
-            },
-        },
-        8: {
-            wave: 9,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Footman')
-                spawnEnemy('Footman')
-                spawnEnemy('Footman')
-                spawnEnemy('Footman')
-                gameData.currentWave++
-            },
-        },
-        9: {
-            wave: 10,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Footman')
-                spawnEnemy('Footman')
-                spawnEnemy('Footman')
-                spawnEnemy('Footman')
-                spawnEnemy('Footman')
-                gameData.currentWave++
-            },
-        },
-        10: {
-            wave: 11,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Soldier')
-                gameData.currentWave++
-            },
-        },
-        11: {
-            wave: 12,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Soldier')
-                spawnEnemy('Soldier')
-                gameData.currentWave++
-            },
-        },
-        12: {
-            wave: 13,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Soldier')
-                spawnEnemy('Soldier')
-                spawnEnemy('Soldier')
-                gameData.currentWave++
-            },
-        },
-        13: {
-            wave: 14,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Soldier')
-                spawnEnemy('Soldier')
-                spawnEnemy('Soldier')
-                spawnEnemy('Soldier')
-                gameData.currentWave++
-            },
-        },
-        14: {
-            wave: 15,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Soldier')
-                spawnEnemy('Soldier')
-                spawnEnemy('Soldier')
-                spawnEnemy('Soldier')
-                spawnEnemy('Soldier')
-                gameData.currentWave++
-            },
-        },
-        15: {
-            wave: 16,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Grunt')
-                spawnEnemy('Footman')
-                spawnEnemy('Soldier')
-                gameData.currentWave++
-            },
-        },
-        16: {
-            wave: 17,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Grunt')
-                spawnEnemy('Grunt')
-                spawnEnemy('Footman')
-                spawnEnemy('Footman')
-                spawnEnemy('Soldier')
-                gameData.currentWave++
-            },
-        },
-        17: {
-            wave: 18,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Grunt')
-                spawnEnemy('Grunt')
-                spawnEnemy('Footman')
-                spawnEnemy('Soldier')
-                spawnEnemy('Soldier')
-                gameData.currentWave++
-            },
-        },
-        18: {
-            wave: 19,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Grunt')
-                spawnEnemy('Grunt')
-                spawnEnemy('Footman')
-                spawnEnemy('Footman')
-                spawnEnemy('Soldier')
-                spawnEnemy('Soldier')
-                gameData.currentWave++
-            },
-        },
-        19: {
-            wave: 20,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Grunt')
-                spawnEnemy('Grunt')
-                spawnEnemy('Swarmer')
-                gameData.currentWave++
-            },
-        },
-        20: {
-            wave: 21,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Grunt')
-                spawnEnemy('Grunt')
-                spawnEnemy('Swarmer')
-                spawnEnemy('Swarmer')
-                gameData.currentWave++
-            },
-        },
-        21: {
-            wave: 22,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Grunt')
-                spawnEnemy('Footman')
-                spawnEnemy('Swarmer')
-                spawnEnemy('Swarmer')
-                spawnEnemy('Swarmer')
-                gameData.currentWave++
-            },
-        },
-        22: {
-            wave: 23,
-            lock: false,
-            lockFunction: function() {
-                spawnEnemy('Grunt')
-                spawnEnemy('Grunt')
-                spawnEnemy('Footman')
-                spawnEnemy('Soldier')
-                spawnEnemy('Swarmer')
-                spawnEnemy('Swarmer')
-                spawnEnemy('Swarmer')
-                gameData.currentWave++
-            },
-        },
-        */
+    for(i = 1; i <= 400; i++){
+        let cell = document.createElement('div');
+        cell.id = 'cell' + i;
+        cell.style.backgroundColor = 'white';
+        cell.style.height = '50px';
+        cell.style.zIndex = '100';
+        cannonWearDisplay.appendChild(cell);
     }
 
+    let two = new Two({
+        fullscreen: true,
+        autostart: true
+    }).appendTo(document.body);
 
-    
+    let debug = false;
+
     const gameData = {
-        currentWave: 1,
+        upKey: 'w',
+        downKey: 's',
+        leftKey: 'a',
+        rightKey: 'd',
+        shootKey1: ' ',
+        shootKey2: 'mouse0',
+        toggleDebugKey: 'p',
+        intervalLength: 20, // 20
+        borderOffset: debug ? 20 : 125, // 125
+        borderWidth: 100, // 150
+        frictionCoefficient: 0.9,
+        keys: {
+            " ": false,
+            mouse0: false,
+        },
+        offsetDirectionDecider: Math.random() > 0.5 ? true : false,
+        offsetDirection: 0.01,
+        gradientRed: 0,
+        gradientGreen: 255,
+        gradientBlue: 0,
+        bulletSpeed: 10,
+    }
+    
+    const playerData = {
+        vx: 0,
+        vy: 0,
+        x: Math.round(two.width / 2),
+        y: Math.round(two.height / 2),
+        width: 50,
+        height: 50,
+        speed: 1,
+        borderCollision: false,
+        mouseX: 0,
+        mouseY: 0,
+        cannonWear: 0,
+        angle: null,
+        cannonWearOffset: 0,
+        maxWear: 400,
+        bulletCount: 0,
+        bulletData: {},
+        shootAngle: null,
+        regen: false,
+        regenTimer: Date.now(),
+    }
+
+    const debugData = {
+        vx: 0,
+        vy: 0,
         x: 0,
         y: 0,
-        xVelocity: 0,
-        yVelocity: 0,
-        interval: null,
-        up: 'w',
-        down: 's',
-        left: 'a',
-        right: 'd',
-        cannonAngle: 0,
-        speed: 1,
-        bulletSpeed: 0.9,
-        friction: 0.95,
-        xp: 0,
-        xpToNextLevel: 10,
-        level: 1,
+        borderCollision: false,
         mouseX: 0,
-        mouseX: 0,
-        intervalLength: 20,
-        currentHealth: 20,
-        maxHealth: 20,
-        playing: true,
-        waveStart: Date.now(),
-        enemyCount: 0,
-        gameOver: false,
-        enemyData: {
-            'Grunt': {
-                color: 'black',
-                damage: 1,
-                xp: 1,
-            },
-            'Footman': {
-                color: 'blue',
-                damage: 1,
-                xp: 2,
-            },
-            "Soldier": {
-                color: 'green',
-                damage: 1,
-                xp: 3,
-            },
-            "Swarmer": {
-                color: 'orange',
-                damage: 0,
-                xp: 1,
-            },
-            "Spiraler": {
-                color: 'gold',
-                damage: 2,
-                xp: 4,
+        mouseY: 0,
+        cannonWear: 0, // ===========================================================================
+        keys: {}
+    }
+
+    // create a gradient that starts at 
+
+    
+    let player = two.makeRectangle(two.width / 2, two.height / 2, 50 ,50);
+    let playerCannonBase = two.makeRectangle(playerData.x, playerData.y, 30, 30);
+    let playerCannon = two.makeRectangle(playerData.x + 25, playerData.y, 50, 20);
+
+
+    function buildPlayer(){
+        player.fill = 'red';
+        player.stroke = 'red';
+        player.id = 'player';
+
+        playerCannon.fill = 'gradient';
+        playerCannon.stroke = 'black';
+        playerCannon.id = 'playerCannon';
+
+        playerCannonBase.fill = 'black';
+        playerCannonBase.stroke = 'black';
+        playerCannonBase.id = 'player';
+
+        playerData.angle = Math.atan2(playerData.mouseY - playerData.y, playerData.mouseX - playerData.x);
+    }
+
+
+    let borderLeft = two.makeRectangle(-gameData.borderOffset, 0, gameData.borderWidth, two.height * 2);
+    let borderRight = two.makeRectangle(two.width + gameData.borderOffset, 0, gameData.borderWidth, two.height * 2);
+    let borderTop = two.makeRectangle(0, -gameData.borderOffset, two.width * 2, gameData.borderWidth);
+    let borderBottom = two.makeRectangle(0, two.height + gameData.borderOffset, two.width * 2, gameData.borderWidth);
+
+    // make a border for the screen
+    let screenLeft = two.makeRectangle(-gameData.borderOffset + 123, 0, 2, two.height * 2);
+    let screenRight = two.makeRectangle(two.width + gameData.borderOffset - 123, 0, 2, two.height * 2);
+    let screenTop = two.makeRectangle(0, -gameData.borderOffset + 123, two.width * 2, 2);
+    let screenBottom = two.makeRectangle(0, two.height + gameData.borderOffset - 123, two.width * 2, 2);
+
+    borderLeft.id = 'borderLeft'
+    borderRight.id = 'borderRight'
+    borderTop.id = 'borderTop'
+    borderBottom.id = 'borderBottom'
+
+    screenLeft.id = 'screenLeft'
+    screenRight.id = 'screenRight'
+    screenTop.id = 'screenTop'
+    screenBottom.id = 'screenBottom'
+
+    borderLeft.fill = 'blue'
+    borderRight.fill = 'blue'
+    borderTop.fill = 'blue'
+    borderBottom.fill = 'blue'
+
+    screenLeft.fill = 'black'
+    screenRight.fill = 'black'
+    screenTop.fill = 'black'
+    screenBottom.fill = 'black'
+
+
+    function constantUpdate(){
+        // check if shootKey1 or shootKey2 havent been pressed for 5 seconds
+
+
+        setInterval(function(){
+            // if 1 second has passed, console.log('1 second has passed')
+            if(Date.now() - playerData.regenTimer >= 5000){
+                playerData.regen = true;
             }
-        },
-        oscillator: 0,
-        oscillatorDirection: false,
-    }
+            if(gameData.keys[gameData.shootKey1] == true || gameData.keys[gameData.shootKey2] == true){
+                playerData.regen = false;
+                playerData.regenTimer = Date.now();
+            }
 
-    function move(x, y){
-        if(!gameData.playing) return;
-        const player = document.getElementById('player');
-        const playerRect = player.getBoundingClientRect();
-        const areaRect = area.getBoundingClientRect();
-        const newX = playerRect.left + x;
-        const newY = playerRect.top + y;
-        if(newX >= areaRect.left && newX <= areaRect.right - playerRect.width){
-            player.style.left = newX + 'px';
-        }
-        if(newY >= areaRect.top && newY <= areaRect.bottom - playerRect.height){
-            player.style.top = newY + 'px';
-        }
-    }
+            if(playerData.regen){
+                if(playerData.cannonWear > 0){
+                    playerData.cannonWear = playerData.cannonWear - 0.25;
+                }
+            }
 
+            for(i = 1; i <= 400; i++){
+                let cell = document.getElementById('cell' + i);
+                if(i <= playerData.cannonWear){
+                    cell.style.backgroundColor = 'rgb(' + gameData.gradientRed + ',' + gameData.gradientGreen + ',' + gameData.gradientBlue + ')';
+                } else {
+                    cell.style.backgroundColor = 'white';
+                }
+            }
 
-    function moveBullet(x, y, bullet){
-        if(!gameData.playing) return;
-        const bulletRect = bullet.getBoundingClientRect();
-        const areaRect = area.getBoundingClientRect();
-        const newX = bulletRect.left + x;
-        const newY = bulletRect.top + y;
-        if(newX >= areaRect.left && newX <= areaRect.right - bulletRect.width){
-            bullet.style.left = newX + 'px';
-        }
-        if(newY >= areaRect.top && newY <= areaRect.bottom - bulletRect.height){
-            bullet.style.top = newY + 'px';
-        }
-    }
+            if(playerData.cannonWear <= 400){
+                let percentage = playerData.cannonWear / 400;
+                if(playerData.cannonWear > 200){
+                    gameData.gradientGreen = Math.round(510 - (510 * percentage));
+                } else {
+                    gameData.gradientRed = Math.round(510 * percentage);
+                }
+            }
 
-    function screenSetup(){
-        const svgOutlines = {
-            top: document.createElementNS('http://www.w3.org/2000/svg', 'rect'),
-            bottom: document.createElementNS('http://www.w3.org/2000/svg', 'rect'),
-            left: document.createElementNS('http://www.w3.org/2000/svg', 'rect'),
-            right: document.createElementNS('http://www.w3.org/2000/svg', 'rect'),
-        }
-        const outlineSize = 25;
-        const outlineColor = 'white';
+            updateCannon();
+            debugData.x = playerData.x;
+            debugData.y = playerData.y;
+            debugData.vx = playerData.vx;
+            debugData.vy = playerData.vy;
+            debugData.borderCollision = playerData.borderCollision;
+            debugData.mouseX = playerData.mouseX;
+            debugData.mouseY = playerData.mouseY;
+            debugData.cannonWear = playerData.cannonWear;
+            debugData.keys = gameData.keys;
 
-        svgOutlines.top.setAttribute('width', '100%');
-        svgOutlines.top.setAttribute('height', `${outlineSize}px`);
-        svgOutlines.top.setAttribute('fill', outlineColor);
-        svgOutlines.top.setAttribute('x', '0');
-        svgOutlines.top.setAttribute('y', '0');
+            if(debug){
+                mouseDebug.style.display = 'initial';
+                gameData.borderOffset = 20;
 
-        svgOutlines.bottom.setAttribute('width', '100%');
-        svgOutlines.bottom.setAttribute('height', `${outlineSize}px`);
-        svgOutlines.bottom.setAttribute('fill', outlineColor);
-        svgOutlines.bottom.setAttribute('x', '0');
-        svgOutlines.bottom.setAttribute('y', `calc(100% - ${outlineSize}px)`);
+            } else {
+                mouseDebug.style.display = 'none';
+                gameData.borderOffset = 125;
+            }
 
-        svgOutlines.left.setAttribute('width', `${outlineSize}px`);
-        svgOutlines.left.setAttribute('height', '100%');
-        svgOutlines.left.setAttribute('fill', outlineColor);
-        svgOutlines.left.setAttribute('x', '0');
-        svgOutlines.left.setAttribute('y', '0');
+            cannonWearDisplay.style.left = screenLeft.translation._x + screenLeft.width + 10 + 'px';
+            cannonWearDisplay.style.top = screenTop.translation._y + screenTop.height + 10 + 'px';
 
-        svgOutlines.right.setAttribute('width', `${outlineSize}px`);
-        svgOutlines.right.setAttribute('height', '100%')
-        svgOutlines.right.setAttribute('fill', outlineColor);
-        svgOutlines.right.setAttribute('x', `calc(100% - ${outlineSize}px)`);
+            calculateBorders()
 
-        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            let debugCannonWear = `Cannon Wear: ${debugData.cannonWear}\n`
+            let debugPlayerX = `Player X: ${debugData.x}\n`
+            let debugPlayerY = `Player Y: ${debugData.y}\n`
+            let debugPlayerVX = `Player VX: ${debugData.vx}\n`
+            let debugPlayerVY = `Player VY: ${debugData.vy}\n`
+            let debugMouseX = `Mouse X: ${debugData.mouseX}\n`
+            let debugMouseY = `Mouse Y: ${debugData.mouseY}\n`
+            let debugBorderCollision = `Border Collision: ${debugData.borderCollision}\n`
+            let debugKeys = `Keys: ${JSON.stringify(debugData.keys)}\n`
 
-        svg.style.zIndex = '-1';
+            mouseDebug.innerHTML = `<pre>${debugCannonWear}${debugPlayerX}${debugPlayerY}${debugPlayerVX}${debugPlayerVY}${debugMouseX}${debugMouseY}${debugBorderCollision}${debugKeys}</pre>`;
 
-        svg.appendChild(svgOutlines.top);
-        svg.appendChild(svgOutlines.bottom);
-        svg.appendChild(svgOutlines.left);
-        svg.appendChild(svgOutlines.right);
+            if(playerData.cannonWear < 400){
+                if(playerData.cannonWear > 350){
+                    playerData.cannonWearOffset = 0.15
+                    //gameData.keys[gameData.shootKey1] = false;
+                } else if(playerData.cannonWear > 300){
+                    playerData.cannonWearOffset = 0.11
+                } else if(playerData.cannonWear > 250){
+                    playerData.cannonWearOffset = 0.09
+                } else if(playerData.cannonWear > 200){
+                    playerData.cannonWearOffset = 0.07
+                } else if(playerData.cannonWear > 150){
+                    playerData.cannonWearOffset = 0.05
+                } else if(playerData.cannonWear > 100){
+                    playerData.cannonWearOffset = 0.03
+                } else if(playerData.cannonWear > 50){
+                    playerData.cannonWearOffset = 0.01
+                } else {
+                    playerData.cannonWearOffset = 0
+                }
+            }
 
-        
-        svgOutlines.top.setAttribute('collider', 'false');
-        svgOutlines.bottom.setAttribute('collider', 'false');
-        svgOutlines.left.setAttribute('collider', 'false');
-        svgOutlines.right.setAttribute('collider', 'false');
+            if(playerData.vx <= 0.001 && playerData.vx >= -0.001){
+                playerData.vx = 0;
+            }
 
-        svg.style.position = 'absolute';
-        svg.style.width = '100%';
-        svg.style.height = '100%';
+            if(playerData.vy <= 0.001 && playerData.vy >= -0.001){
+                playerData.vy = 0;
+            }
 
-        area.appendChild(svg);
-    }
-
-    function healthbarSetup(){
-        for(i = 0; i < gameData.maxHealth; i++){
-            const heart = document.createElement('div');
-            heart.id = `health-pip${i}`;
-            heart.classList.add('health-pip');
-            heathbar.appendChild(heart);
-        }
-    }
-
-
-    window.addEventListener('resize', () => {
-        const player = document.getElementById('player');
-        const playerRect = player.getBoundingClientRect();
-        const areaRect = area.getBoundingClientRect();
-        player.style.left = (areaRect.width / 2) - (playerRect.width / 2) + 'px';
-        player.style.top = (areaRect.height / 2) - (playerRect.height / 2) + 'px';
-        screenSetup()
-    });
-
-    function mouseController(e){
-        if(!gameData.playing) return;
-        document.addEventListener('mousemove', onMouseUpdate, false);
-        document.addEventListener('mouseenter', onMouseUpdate, false);
-
-        
-        function onMouseUpdate(e) {
-            gameData.mouseX = e.pageX;
-            gameData.mouseY = e.pageY;
-        }
+            playerData.x = math.round(playerData.x)
+            playerData.y = math.round(playerData.y)
+        }, gameData.intervalLength)
 
     }
 
-    // get all elements that have the property 'collideable'
-    function getColliders(){
-        const collideables = [];
-        const allElements = document.getElementsByTagName('*');
-        for(let i = 0; i < allElements.length; i++){
-            if(allElements[i].hasAttribute('collider')){
-                collideables.push(allElements[i]);
+    function updateCannon(){
+
+        playerCannon.rotation = playerData.angle;
+        playerCannonBase.rotation = playerData.angle;
+
+        playerCannon.translation.x = playerData.x + 25 * Math.cos(playerData.angle);
+        playerCannon.translation.y = playerData.y + 25 * Math.sin(playerData.angle);
+
+        playerCannonBase.translation.x = playerData.x;
+        playerCannonBase.translation.y = playerData.y;
+
+        setTimeout(() => {
+            if(playerData.cannonWear < 400){
+                playerData.angle = Math.atan2(playerData.mouseY - playerData.y, playerData.mouseX - playerData.x) + playerData.cannonWearOffset;
+            }
+        }, playerData.cannonWear)
+    }
+
+    function calculateBorders(){
+        // replace all of the borders and screens
+        borderRight.translation.x = two.width + gameData.borderOffset;
+        borderRight.height = two.height * 2;
+
+        borderBottom.translation.y = two.height + gameData.borderOffset;
+        borderBottom.width = two.width * 2;
+
+        borderTop.translation.y = -gameData.borderOffset;
+        borderTop.width = two.width * 2;
+
+        borderLeft.translation.x = -gameData.borderOffset;
+        borderLeft.height = two.height * 2;
+
+        screenRight.translation.x = two.width + gameData.borderOffset - 123;
+        screenRight.height = two.height * 2;
+
+        screenBottom.translation.y = two.height + gameData.borderOffset - 123;
+        screenBottom.width = two.width * 2;
+
+        screenTop.translation.y = -gameData.borderOffset + 123;
+        screenTop.width = two.width * 2;
+
+        screenLeft.translation.x = -gameData.borderOffset + 123;
+        screenLeft.height = two.height * 2;
+    }
+
+    window.onresize = () => {
+        calculateBorders()
+
+        playerData.x = Math.round(two.width / 2);
+        playerData.y = Math.round(two.height / 2);
+    }
+
+    function checkCollision(rects, colliders){
+        let collision = false;
+        let collider = undefined;
+        for(i = 0; i < rects.length; i++){
+            if(collision) break;
+            for(j = 0; j < colliders.length; j++){
+                let rectMinX = rects[i].translation._x - rects[i].width / 2;
+                let rectMaxX = rects[i].translation._x + rects[i].width / 2;
+                let rectMinY = rects[i].translation._y - rects[i].height / 2;
+                let rectMaxY = rects[i].translation._y + rects[i].height / 2;
+
+                let colliderMinX = colliders[j].translation._x - colliders[j].width / 2;
+                let colliderMaxX = colliders[j].translation._x + colliders[j].width / 2;
+                let colliderMinY = colliders[j].translation._y - colliders[j].height / 2;
+                let colliderMaxY = colliders[j].translation._y + colliders[j].height / 2;
+
+                if(rectMinX < colliderMaxX && rectMaxX > colliderMinX && rectMinY < colliderMaxY && rectMaxY > colliderMinY){
+                    collider = colliders[j].id;
+                    collision = true;
+                    break;
+                }
+            }
+            if(collision) break;
+        }
+        return [collision, collider];
+    }
+
+    function spawnPlayerBullet(){
+        let bullet = two.makeRectangle(playerCannon.translation.x, playerCannon.translation.y, 10, 10);
+        bullet.rotation = playerData.angle;
+
+
+        bullet.translation.x += 15 * Math.cos(playerData.angle);
+        bullet.translation.y += 15 * Math.sin(playerData.angle);
+        bullet.fill = 'red';
+        bullet.stroke = 'black';
+        bullet.linewidth = 1;
+        bullet.id = 'playerBullet' + playerData.bulletCount;
+
+        two.scene.remove(playerCannon);
+        two.scene.remove(playerCannonBase);
+        two.scene.add(bullet);
+        two.scene.add(playerCannon);
+        two.scene.add(playerCannonBase);
+
+        playerData.bulletData[bullet.id] = {
+            x: playerCannon.translation.x,
+            y: playerCannon.translation.y,
+            id: bullet.id,
+            vx: 0,
+            vy: 0,
+            width: 10,
+            height: 10,
+            element: bullet,
+            angle: playerData.angle,
+            type: 'player',
+            speed: gameData.bulletSpeed,
+            borderCollision: false
+        }
+    }
+
+    function borderWrapController(elements, elementData){
+        let isColliding = checkCollision(elements, [borderLeft, borderRight, borderTop, borderBottom])[0];
+        let collider = checkCollision(elements, [borderLeft, borderRight, borderTop, borderBottom])[1];
+
+
+        if(isColliding && !elementData.borderCollision){
+            if(collider == 'borderLeft'){
+                elementData.x = (two.width - borderLeft.translation._x) - (elementData.width / 2) - (gameData.borderWidth / 2);
+                elementData.borderCollision = true;
+            }
+            if(collider == 'borderRight'){
+                elementData.x = (elementData.width / 2) + (gameData.borderWidth / 2) + borderLeft.translation._x;
+                elementData.borderCollision = true;
+            }
+            if(collider == 'borderTop'){
+                elementData.y = (two.height - borderTop.translation._y) - (elementData.height / 2)  - (gameData.borderWidth / 2);
+                elementData.borderCollision = true;
+            }
+            if(collider == 'borderBottom'){
+                elementData.y = (elementData.height / 2) + (gameData.borderWidth / 2) + borderTop.translation._y;
+                elementData.borderCollision = true;
             }
         }
-        return collideables;
     }
+
+    function movePlayer(x, y){
+        playerData.x += x;
+        playerData.y += y;
+
+        player.translation._x += playerData.x;
+        player.translation._y += playerData.y;
+
+        player.translation.set(playerData.x, playerData.y);
+    }
+
+    playerData.angle = Math.atan2(playerData.mouseY - playerData.y, playerData.mouseX - playerData.x);
 
     function playerController(){
-        if(!gameData.playing) return;
-        const player = document.getElementById('player');
-        const playerRect = player.getBoundingClientRect();
-        const areaRect = area.getBoundingClientRect();
-        const keys = {};
-        const friction = 0.9;
-        window.addEventListener('keydown', function(e){
-            keys[e.key] = true;
-        });
-        window.addEventListener('keyup', function(e){
-            keys[e.key] = false;
-        });
-        function movePlayer(){
-            if(!gameData.playing) return;
-            if(keys[gameData.up]){
-                gameData.y -= gameData.speed;
+        function shoot(){
+            let random = Math.floor(Math.random() * 200);
+            if(random <= 60){
+                if(playerData.cannonWear < 400) Math.round(playerData.cannonWear = playerData.cannonWear + 2);
+                if(gameData.offsetDirectionDecider){
+                    playerData.cannonWearOffset = math.round(playerData.cannonWearOffset + (Math.random() > 0.5 ? gameData.offsetDirection : -gameData.offsetDirection), 3);
+                } else {
+                    playerData.cannonWearOffset = math.round(playerData.cannonWearOffset + (Math.random() > 0.5 ? -gameData.offsetDirection : gameData.offsetDirection), 3);
+                }
             }
-            if(keys[gameData.down]){
-                gameData.y += gameData.speed;
-            }
-            if(keys[gameData.left]){
-                gameData.x -= gameData.speed;
-            }
-            if(keys[gameData.right]){
-                gameData.x += gameData.speed;
-            }
-            
-            gameData.x *= friction;
-            gameData.y *= friction;
-            
-            move(gameData.x, gameData.y);
+            playerData.bulletCount++;
+            spawnPlayerBullet()
         }
+        
 
-        function updateCannonAngle(){
-            if(!gameData.playing) return;
-            const cannon = document.getElementById('cannon');
-            const cannonCenterer = document.getElementById('cannonCenterer');
-            const cannonCentererRect = cannonCenterer.getBoundingClientRect();
-            const playerRect = player.getBoundingClientRect();
-            const areaRect = area.getBoundingClientRect();
-            const mouseX = gameData.mouseX;
-            const mouseY = gameData.mouseY;
-            const cannonCentererX = cannonCentererRect.left + (cannonCentererRect.width / 2);
-            const cannonCentererY = cannonCentererRect.top + (cannonCentererRect.height / 2);
-            const playerX = playerRect.left + (playerRect.width / 2);
-            const playerY = playerRect.top + (playerRect.height / 2);
-            const angle = Math.atan2(mouseY - cannonCentererY, mouseX - cannonCentererX) * 180 / Math.PI;
-            gameData.cannonAngle = angle;
-        }
-
-        setInterval(updateCannonAngle, gameData.intervalLength);
-        setInterval(mouseController, gameData.intervalLength);
-        setInterval(movePlayer, gameData.intervalLength);
-    }
-
-    function rotate_point(pointX,pointY,originX,originY,angle) {
-        angle = angle * Math.PI / 180.0;
-        return {
-            x: Math.cos(angle) * (pointX-originX) - Math.sin(angle) * (pointY-originY) + originX,
-            y: Math.sin(angle) * (pointX-originX) + Math.cos(angle) * (pointY-originY) + originY
+        document.onkeydown = e => {
+            let key = e.key.toLowerCase();
+            gameData.keys[key] = true;
+            if(gameData.keys[gameData.shootKey1]){
+                shoot();
+            }
+            if(gameData.keys[gameData.toggleDebugKey]){
+                debug = !debug;
+            }
         };
-    }
-    function cannonController(){
-        function rotateCannon(){
-            if(!gameData.playing) return;
-            const player = document.getElementById('player');
-            const playerRect = player.getBoundingClientRect();
-            const cannon = document.getElementById('cannon');
-            const cannonCenterer = document.getElementById('cannonCenterer');
-            const cannonCentererRect = cannonCenterer.getBoundingClientRect();
-            const cannonRect = cannon.getBoundingClientRect();
-            const cannonCentererX = cannonCentererRect.left + cannonCentererRect.width/2;
-            const cannonCentererY = cannonCentererRect.top + cannonCentererRect.height/2;
-            const mouseX = gameData.mouseX
-            const mouseY = gameData.mouseY
-            const angle = (Math.atan2(mouseY - cannonCentererY, mouseX - cannonCentererX)) * 180 / Math.PI;
-            const newPoint = rotate_point(cannonRect.left, cannonRect.top, cannonCentererX, cannonCentererY, angle);
 
-            cannon.style.transformOrigin = `${cannonCentererX - playerRect.left}px ${cannonCentererY - playerRect.top}px`;
-            cannon.style.transform = `rotate(${gameData.cannonAngle}deg)`;
+        document.onkeyup = e => {
+            let key = e.key.toLowerCase();
+            gameData.keys[key.toLowerCase()] = false;
+        };
+
+        document.onmousemove = e => {
+            if(debug){
+                mouseDebug.style.left = e.clientX + 10 + 'px';
+                mouseDebug.style.top = e.clientY + 'px';
+            }
+            setTimeout(() => {
+                playerData.mouseX = e.clientX
+                playerData.mouseY = e.clientY
+            }, playerData.cannonWear)
         }
-       
-        
-        setInterval(rotateCannon, gameData.intervalLength);
+
+        document.onmousedown = e => { 
+            
+            gameData.keys["mouse" + e.button] = true;
+            if(gameData.keys[gameData.shootKey2]){
+                shoot();
+            }
+        }
+
+        document.onmouseup = e => {
+            gameData.keys["mouse" + e.button] = false;
+        }
+
+        function move(){
+            borderWrapController([player], playerData)
+            if(gameData.keys[gameData.upKey]){
+                playerData.vy -= playerData.speed;
+                playerData.borderCollision = false;
+            }
+            if(gameData.keys[gameData.downKey]){
+                playerData.vy += playerData.speed;
+                playerData.borderCollision = false;
+            }
+            if(gameData.keys[gameData.leftKey]){
+                playerData.vx -= playerData.speed;
+                playerData.borderCollision = false;
+            }
+            if(gameData.keys[gameData.rightKey]){
+                playerData.vx += playerData.speed;   
+                playerData.borderCollision = false;  
+            }
+
+            playerData.vx = math.round(playerData.vx * gameData.frictionCoefficient, 4);
+            playerData.vy = math.round(playerData.vy * gameData.frictionCoefficient, 4);
+
+            movePlayer(playerData.vx, playerData.vy);
+        }
+
+        setInterval(move, gameData.intervalLength);
     }
 
-    // on click, create a bullet that is placed at the end of the barrel and moves in the direction of the cannon, and when it hits anything that is an svg, console log the id of the svg
     function bulletController(){
-        document.addEventListener('keyup', function(e){
-            if(e.key == ' '){
-                // get the x and y coordinates of the end of the barrel
-                if(!gameData.playing) return;
-                const player = document.getElementById('player');
-                const playerRect = player.getBoundingClientRect();
-                const cannon = document.getElementById('cannon');
-                const cannonRect = cannon.getBoundingClientRect();
-                const cannonCenterer = document.getElementById('cannonCenterer');
-                const cannonCentererRect = cannonCenterer.getBoundingClientRect();
-                // place the bullet in the center of the player
-                const bullet = document.createElement('div');
-                bullet.style.position = 'absolute';
-                bullet.style.left = playerRect.left + playerRect.width/2 + 'px';
-                bullet.style.top = playerRect.top + playerRect.height/2 + 'px';
-                bullet.style.width = '10px';
-                bullet.style.height = '10px';
-                bullet.style.backgroundColor = 'black';
-                bullet.style.borderRadius = '50%';
-                area.appendChild(bullet);
-                const angle = gameData.cannonAngle;
-                const bulletData = {
-                    x: 0,
-                    y: 0,
-                    speed: 0.5,
-                    angle: angle,
-                    interval: null
+        function move(){
+            let bulletIDs = Object.keys(playerData.bulletData)
+            bulletIDs.forEach(id => {
+                let element = playerData.bulletData[id].element;
+
+                // move the bullet at the angle it was shot at
+                playerData.bulletData[id].vx = playerData.bulletData[id].speed * Math.cos(playerData.bulletData[id].angle);
+                playerData.bulletData[id].vy = playerData.bulletData[id].speed * Math.sin(playerData.bulletData[id].angle);
+
+                playerData.bulletData[id].x += playerData.bulletData[id].vx;
+                playerData.bulletData[id].y += playerData.bulletData[id].vy;
+
+                element.translation.x += playerData.bulletData[id].vx;
+                element.translation.y += playerData.bulletData[id].vy;
+
+
+                // if the element collides with the border, remove it
+                element.translation.set(playerData.bulletData[id].x, playerData.bulletData[id].y);
+                let isColliding = checkCollision([element], [borderLeft, borderRight, borderTop, borderBottom])[0];
+
+                if(isColliding){
+                    playerData.bulletData[id].element.remove();
+                    delete playerData.bulletData[id];
                 }
-                function updateBulletPos(){
-                    if(!gameData.playing) return;
-                    bulletData.x += bulletData.speed * Math.cos(bulletData.angle * Math.PI / 180);
-                    bulletData.y += bulletData.speed * Math.sin(bulletData.angle * Math.PI / 180);
-                    moveBullet(bulletData.x, bulletData.y, bullet);
-                    // if the bullet hits an svg, console log the id of the svg
-                    const bulletRect = bullet.getBoundingClientRect();
-                    const areaRect = area.getBoundingClientRect();
-                    const svgElements = document.getElementsByTagName('svg');
-                    let colliders = getColliders();
-                    // if the bullet hits a collideables, remove the bullet
-                    for(let i = 0; i < colliders.length; i++){
-                        const collideable = colliders[i];
-                        const colliderRect = collideable.getBoundingClientRect();
-                        if(bulletRect.left + bulletRect.width > colliderRect.left && bulletRect.left < colliderRect.left + colliderRect.width && bulletRect.top + bulletRect.height > colliderRect.top && bulletRect.top < colliderRect.top + colliderRect.height){
-                            bullet.remove();
-                            clearInterval(bulletData.interval);
-                            // get attribute value
-                            let attribute = collideable.getAttribute('collider');
-                            if(attribute == 'true'){
-                                let id = collideable.getAttribute('id').split('-')[0];
-                                addXp(gameData.enemyData[id].xp);
-                                collideable.remove();
-                                gameData.enemyCount--;
-                            }
-                        }
-                    }
-                }
-                bulletData.interval = setInterval(updateBulletPos, 10);
-            }
-        });
-    }
-
-    function removeHeart(amnt){
-        for(i = 0; i < amnt; i++){
-            // remove the child
-            const heart = document.getElementById(`health-pip${(gameData.currentHealth - 1) - i}`)
-            heart.remove();
-           
-        }
-        gameData.currentHealth -= amnt;
-    }
-
-    function gameoverController(){
-        setInterval(function(){
-            if(gameData.currentHealth <= 0){
-                gameData.playing = false;
-                if(!gameData.gameOver) gameoverAlert = alert('game over');
-                gameData.gameOver = true;
-                if(gameoverAlert == undefined){
-                    window.location.reload();
-                }
-                
-            }
-        }, gameData.intervalLength);
-    }
-
-    function updateXPBar(){
-        setInterval(function(){
-            if(!gameData.playing) return;
-            gameData.xpToNextLevel = Math.round(gameData.xpToNextLevel);
-            xpBar.style.display = 'grid';
-            xpBar.style.gridTemplateColumns = `repeat(${gameData.xpToNextLevel}, 1fr)`;
-            for(let i = 0; i < gameData.xpToNextLevel; i++){
-                if(!xpBar.children[i]){
-                    const xpBarChild = document.createElement('div');
-                    xpBarChild.id = `xpBarChild${i}`;
-                    xpBarChild.style.backgroundColor = 'white';
-                    xpBar.appendChild(xpBarChild);
-                }
-                if(gameData.xp > i){
-                    xpBar.children[i].style.backgroundColor = 'black';
-                }
-            }
-            if(gameData.xp >= gameData.xpToNextLevel){
-                gameData.xp -= gameData.xpToNextLevel;
-                gameData.xpToNextLevel *= 1.5;
-                gameData.level++;
-                for(let i = 0; i < xpBar.children.length; i++){
-                    xpBar.children[i].style.backgroundColor = 'white';
-                }
-            }
-        }, gameData.intervalLength);
-    }
-
-    function addXp(amnt){
-        gameData.xp += amnt;
-    }
-
-    function spawnEnemy(enemyName){
-        const enemy = document.createElement('div');
-        enemy.style.position = 'absolute';
-        // inclusive random number
-        enemy.style.left = Math.random() * (area.getBoundingClientRect().width - 200) + 'px';
-        enemy.style.top = Math.random() * (area.getBoundingClientRect().height - 200) + 'px';
-        enemy.style.width = '20px';
-        enemy.style.height = '20px';
-        enemy.style.backgroundColor = gameData.enemyData[enemyName].color;
-        enemy.style.zIndex = '1';
-        enemy.id = `${enemyName}-${gameData.enemyCount}`;
-        gameData.enemyCount++;
-        enemy.setAttribute('collider', 'true');
-        enemy.setAttribute('enemyName', enemyName);
-
-        if(enemyName == 'Spiraler'){
-            enemy.setAttribute('radius', '350');
-        }
-        
-        area.appendChild(enemy);
-    }
-
-    function enemyController(){
-        setInterval(function(){
-            if(!gameData.playing) return;
-            // excecute the lock functin in the enemy object when the current wave is equal to the wave the enemy is in
-            for(let i = 0; i < Object.keys(enemies).length; i++){
-                if(gameData.enemyCount == 0 && enemies[i].wave == gameData.currentWave){
-                    // if it is the last index in the enemies object, add a new wave that is the same as the last wave and its lock function is the same as the last wave
-                    if(i == Object.keys(enemies).length - 1){
-                        enemies[i + 1] = {
-                            wave: enemies[i].wave + 1,
-                            lock: false,
-                            lockFunction: enemies[i].lockFunction
-                        }
-                    }
-                    if(!enemies[i].lock){
-                        enemies[i].lock = true;
-                        enemies[i].lockFunction(i);
-                    }
-                }
-            }
-            gruntController();
-            footmanController();
-            soldierController();
-            swarmerController();
-            spiralerController();
-        }, gameData.intervalLength);
-    }
-    // make the grunt enemies follow the player
-    
-    function gruntController(){
-
-        let playerX = player.getBoundingClientRect().left;
-        let playerY = player.getBoundingClientRect().top;
-        let enemyList = document.querySelectorAll(`[enemyName="Grunt"]`);
-        for(let i = 0; enemyList.length; i++){
-
-            let enemyX;
-            let enemyY;
-
-            try{
-                enemyX = enemyList[i].getBoundingClientRect().left;
-                enemyY = enemyList[i].getBoundingClientRect().top;
-            } catch {
-                return;
-            };
-    
-            if(Math.abs(enemyX - playerX) > 350 || Math.abs(enemyY - playerY) > 350){
-                if(!enemyList[i].cooldown){
-                    enemyList[i].cooldown = true;
-                    enemyList[i].direction = Math.floor(Math.random() * 4);
-                    setTimeout(function(){
-                        enemyList[i].cooldown = false;
-                    }, 1000);
-                }
-                if(enemyList[i].direction == 0){
-                    enemyList[i].style.left = enemyX + 1 + 'px';
-                }
-                if(enemyList[i].direction == 1){
-                    enemyList[i].style.left = enemyX - 1 + 'px';
-                }
-                if(enemyList[i].direction == 2){
-                    enemyList[i].style.top = enemyY + 1 + 'px';
-                }
-                if(enemyList[i].direction == 3){
-                    enemyList[i].style.top = enemyY - 1 + 'px';
-                }
-            } else {
-                // make it move towards the player
-                if(enemyX < playerX){
-                    enemyList[i].style.left = enemyX + 1 + 'px';
-                }
-                if(enemyX > playerX){
-                    enemyList[i].style.left = enemyX - 1 + 'px';
-                }
-                if(enemyY < playerY){
-                    enemyList[i].style.top = enemyY + 1 + 'px';
-                }
-                if(enemyY > playerY){
-                    enemyList[i].style.top = enemyY - 1 + 'px';
-                }
-            } 
-        }
-    }
-
-    function footmanController(){
-        let playerX = player.getBoundingClientRect().left;
-        let playerY = player.getBoundingClientRect().top;
-        let enemyList = document.querySelectorAll(`[enemyName="Footman"]`);
-        for(let i = 0; enemyList.length; i++){
-
-            let enemyX;
-            let enemyY;
-
-            try{
-                enemyX = enemyList[i].getBoundingClientRect().left;
-                enemyY = enemyList[i].getBoundingClientRect().top;
-            } catch {
-                return;
-            };
-
-            if(enemyX < playerX){
-                enemyList[i].style.left = enemyX + 1 + 'px';
-            }
-            if(enemyX > playerX){
-                enemyList[i].style.left = enemyX - 1 + 'px';
-            }
-            if(enemyY < playerY){
-                enemyList[i].style.top = enemyY + 1 + 'px';
-            }
-            if(enemyY > playerY){
-                enemyList[i].style.top = enemyY - 1 + 'px';
-            }
-        }
-    }
-
-    function soldierController(){
-        let playerX = player.getBoundingClientRect().left;
-        let playerY = player.getBoundingClientRect().top;
-        let enemyList = document.querySelectorAll(`[enemyName="Soldier"]`);
-        for(let i = 0; enemyList.length; i++){
-
-            let enemyX;
-            let enemyY;
-
-            try{
-                enemyX = enemyList[i].getBoundingClientRect().left;
-                enemyY = enemyList[i].getBoundingClientRect().top;
-            } catch {
-                return;
-            };
-
-            if(enemyX < playerX && enemyX > playerX - 200){
-                enemyList[i].style.left = enemyX + 2 + 'px';
-            }
-            if(enemyX > playerX && enemyX < playerX + 200){
-                enemyList[i].style.left = enemyX - 2 + 'px';
-            }
-            if(enemyY < playerY && enemyY > playerY - 200){
-                enemyList[i].style.top = enemyY + 2 + 'px';
-            }
-            if(enemyY > playerY && enemyY < playerY + 200){
-                enemyList[i].style.top = enemyY - 2 + 'px';
-            }
-
-
-            
-            if(enemyX < playerX && enemyX < playerX - 200){
-                enemyList[i].style.top = enemyY + gameData.oscillator + 'px';
-                enemyList[i].style.left = enemyX + 1 + 'px';
-            }
-            if(enemyX > playerX && enemyX > playerX + 200){
-                enemyList[i].style.top = enemyY - gameData.oscillator + 'px';
-                enemyList[i].style.left = enemyX - 1 + 'px';
-            }
-            if(enemyY < playerY && enemyY < playerY - 200){
-                enemyList[i].style.left = enemyX + gameData.oscillator + 'px';
-                enemyList[i].style.top = enemyY + 1 + 'px';
-            }
-            if(enemyY > playerY && enemyY > playerY + 200){
-                enemyList[i].style.left = enemyX - gameData.oscillator + 'px';
-                enemyList[i].style.top = enemyY - 1 + 'px';
-            }
-        }
-    }
-
-    function swarmerController(){
-        let mouseX = gameData.mouseX;
-        let mouseY = gameData.mouseY;
-
-        let playerX = player.getBoundingClientRect().left;
-        let playerY = player.getBoundingClientRect().top;
-        let enemyList = document.querySelectorAll(`[enemyName="Swarmer"]`);
-
-        let colliders = getAllEnemies();
-        for(let i = 0; enemyList.length; i++){
-
-            let enemyX;
-            let enemyY;
-
-            try{
-                enemyX = enemyList[i].getBoundingClientRect().left;
-                enemyY = enemyList[i].getBoundingClientRect().top;
-            } catch {
-                return;
-            };
-
-            if(enemyX < mouseX){
-                enemyList[i].style.left = enemyX + 3 + 'px';
-            }
-            if(enemyX > mouseX){
-                enemyList[i].style.left = enemyX - 3 + 'px';
-            }
-            if(enemyY < mouseY){
-                enemyList[i].style.top = enemyY + 3 + 'px';
-            }
-            if(enemyY > mouseY){
-                enemyList[i].style.top = enemyY - 3 + 'px';
-            }
-        }
-    }
-
-    function spiralerController(){
-        let mouseX = gameData.mouseX;
-        let mouseY = gameData.mouseY;
-
-        let playerX = player.getBoundingClientRect().left;
-        let playerY = player.getBoundingClientRect().top;
-        let enemyList = document.querySelectorAll(`[enemyName="Spiraler"]`);
-
-        for(let i = 0; enemyList.length; i++){
-            let enemyX;
-            let enemyY;
-
-            try{
-                enemyX = enemyList[i].getBoundingClientRect().left;
-                enemyY = enemyList[i].getBoundingClientRect().top;
-            } catch {
-                return;
-            };
-
-
-            // rotate around the player
-            let angle = Math.atan2(enemyY - playerY, enemyX - playerX);
-            angle += 0.01;
-
-            let x = playerX + Math.cos(angle) * +enemyList[i].getAttribute('radius');
-            let y = playerY + Math.sin(angle) * +enemyList[i].getAttribute('radius');
-
-            enemyList[i].style.left = x + 'px';
-            enemyList[i].style.top = y + 'px';
-
-            enemyList[i].setAttribute('radius', +enemyList[i].getAttribute('radius') - 0.25);
-
-
-
-            
-
-
-            
-            
-
-        }
-    }
-
-    // if an enemy collides with the player, console log the enemy id
-    function enemyCollisionController(){
-        setInterval(function(){
-            if(!gameData.playing) return;
-            let enemies = document.querySelectorAll('[collider="true"]');
-            for(let i = 0; i < enemies.length; i++){
-                let enemyX = enemies[i].getBoundingClientRect().left;
-                let enemyY = enemies[i].getBoundingClientRect().top;
-                let enemyWidth = enemies[i].getBoundingClientRect().width;
-                let enemyHeight = enemies[i].getBoundingClientRect().height;
-                let playerX = player.getBoundingClientRect().left;
-                let playerY = player.getBoundingClientRect().top;
-                let playerWidth = player.getBoundingClientRect().width;
-                let playerHeight = player.getBoundingClientRect().height;
-                if(enemyX < playerX + playerWidth && enemyX + enemyWidth > playerX && enemyY < playerY + playerHeight && enemyY + enemyHeight > playerY){
-                    // get the enemy name
-                    let enemyName = enemies[i].id.split('-')[0];
-
-                    removeHeart(gameData.enemyData[enemyName].damage);
-                    enemies[i].remove();
-                    gameData.enemyCount--;
-                }
-                // if the enemy collides with the outer walls, stop it from moving
-                if(enemyX < 0){
-                    enemies[i].style.left = 0 + 'px';
-                }
-                if(enemyX + enemyWidth > area.offsetWidth){
-                    enemies[i].style.left = area.offsetWidth - enemyWidth + 'px';
-                }
-                if(enemyY < 0){
-                    enemies[i].style.top = 0 + 'px';
-                }
-                if(enemyY + enemyHeight > area.offsetHeight){
-                    enemies[i].style.top = area.offsetHeight - enemyHeight + 'px';
-                }
-            }
-        }, gameData.intervalLength);
-    }
-
-    // space key listener
-    document.addEventListener('keydown', function(e){
-        if(e.key == 'p'){
-            if(!gameData.gameOver){
-                gameData.playing = !gameData.playing;
-            }
-        }
-    });
-
-    setInterval(function(){
-        if(gameData.oscillator == 8){
-            gameData.oscillatorDirection = true;
-        } else if(gameData.oscillator == -8){
-            gameData.oscillatorDirection = false;
+            })
         }
 
-        if(!gameData.oscillatorDirection){
-            gameData.oscillator++;
-        } else {
-            gameData.oscillator--;
-        }
-        
-        
-        waveDisplay.innerHTML = `Wave: ${gameData.currentWave - 1}`;
-        levelDisplay.innerHTML = `Level: ${gameData.level}`;
-    }, gameData.intervalLength);
-
-    function getAllEnemies(){
-        let enemies = document.querySelectorAll('[enemyName]');
-        return enemies;
+        setInterval(move, gameData.intervalLength);
     }
 
-    screenSetup();
-    gameoverController();
-    updateXPBar();
-    healthbarSetup();
-    bulletController();
+    document.oncontextmenu = e => {
+        e.preventDefault();
+    }
+
+    buildPlayer();
     playerController();
-    enemyController();
-    cannonController();
-    enemyCollisionController();
+    constantUpdate();
+    bulletController();
+
+
+    // npm start
+    // electron-packager ./ JS-Game --platform=win32 --arch=ia32 ./JS-Game
 </script>
