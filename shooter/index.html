@@ -74,7 +74,7 @@
         gradientGreen: 255,
         gradientBlue: 0,
         bulletSpeed: 11,
-        regenAmnt: 0.15,
+        regenAmnt: 0.125,
     }
     
     const playerData = {
@@ -433,9 +433,9 @@
             if(random <= 60){
                 if(playerData.cannonWear < 400){
                     if(gameData.keys[gameData.shootKey2]){
-                        Math.round(playerData.cannonWear = playerData.cannonWear + 2);
+                        math.round(playerData.cannonWear = playerData.cannonWear + 2);
                     } else {
-                        Math.round(playerData.cannonWear = playerData.cannonWear + 20);
+                        math.round(playerData.cannonWear = playerData.cannonWear + 20);
                     }
                     
 
