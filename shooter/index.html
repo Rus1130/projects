@@ -183,7 +183,7 @@
             }
 
             if(playerData.regen){
-                if(playerData.cannonWear > 0){
+                if(playerData.cannonWear > 0 && playerData.cannonWear < 400){
                     playerData.cannonWear = playerData.cannonWear - gameData.regenAmnt;
                 }
             }
@@ -244,15 +244,16 @@
             mouseDebug.innerHTML = `<pre>${debugCannonWear}${debugPlayerX}${debugPlayerY}${debugPlayerVX}${debugPlayerVY}${debugMouseX}${debugMouseY}${debugBorderCollision}${debugKeys}</pre>`;
 
             if(playerData.cannonWear < 400){
+                let randomArray = [];
                 if(playerData.cannonWear > 350){
-                    playerData.cannonWearOffset = 0.15
+                    playerData.cannonWearOffset = 0.37
                     //gameData.keys[gameData.shootKey1] = false;
                 } else if(playerData.cannonWear > 300){
-                    playerData.cannonWearOffset = 0.11
+                    playerData.cannonWearOffset = 0.25
                 } else if(playerData.cannonWear > 250){
-                    playerData.cannonWearOffset = 0.09
+                    playerData.cannonWearOffset = 0.15
                 } else if(playerData.cannonWear > 200){
-                    playerData.cannonWearOffset = 0.07
+                    playerData.cannonWearOffset = 0.11
                 } else if(playerData.cannonWear > 150){
                     playerData.cannonWearOffset = 0.05
                 } else if(playerData.cannonWear > 100){
@@ -432,11 +433,9 @@
         function shoot(){
             let random = Math.floor(Math.random() * 200);
             if(random <= 60){
-                if(playerData.cannonWear < 400) Math.round(playerData.cannonWear = playerData.cannonWear + 2);
-                if(gameData.offsetDirectionDecider){
-                    playerData.cannonWearOffset = math.round(playerData.cannonWearOffset + (Math.random() > 0.5 ? gameData.offsetDirection : -gameData.offsetDirection), 3);
-                } else {
-                    playerData.cannonWearOffset = math.round(playerData.cannonWearOffset + (Math.random() > 0.5 ? -gameData.offsetDirection : gameData.offsetDirection), 3);
+                if(playerData.cannonWear < 400){
+                    Math.round(playerData.cannonWear = playerData.cannonWear + 2);
+
                 }
             }
             playerData.bulletCount++;
