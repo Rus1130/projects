@@ -74,6 +74,7 @@
         gradientGreen: 255,
         gradientBlue: 0,
         bulletSpeed: 10,
+        regenAmnt: 0.125,
     }
     
     const playerData = {
@@ -183,7 +184,7 @@
 
             if(playerData.regen){
                 if(playerData.cannonWear > 0){
-                    playerData.cannonWear = playerData.cannonWear - 0.25;
+                    playerData.cannonWear = playerData.cannonWear - gameData.regenAmnt;
                 }
             }
 
