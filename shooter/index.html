@@ -63,7 +63,7 @@
         intervalLength: 20, // 20
         borderOffset: debug ? 20 : 125, // 125
         borderWidth: 100, // 150
-        frictionCoefficient: 0.9,
+        frictionCoefficient: 0.92,
         keys: {
             " ": false,
             mouse0: false,
@@ -74,7 +74,7 @@
         gradientGreen: 255,
         gradientBlue: 0,
         bulletSpeed: 11,
-        regenAmnt: 0.125,
+        regenAmnt: 0.4,
     }
     
     const playerData = {
@@ -186,6 +186,9 @@
                 if(playerData.cannonWear > 0 && playerData.cannonWear < 400){
                     playerData.cannonWear = playerData.cannonWear - gameData.regenAmnt;
                 }
+            }
+            if(playerData.cannonWear < 0){
+                playerData.cannonWear = 0;
             }
 
             for(i = 1; i <= 400; i++){
@@ -435,12 +438,14 @@
                     if(gameData.keys[gameData.shootKey2]){
                         math.round(playerData.cannonWear = playerData.cannonWear + 2);
                     } else {
-                        math.round(playerData.cannonWear = playerData.cannonWear + 20);
+                        math.round(playerData.cannonWear = playerData.cannonWear + 8); // ===========================================
                     }
                     
 
                 }
             }
+
+            playerData.cannonWear = Math.round(playerData.cannonWear)
             playerData.bulletCount++;
             spawnPlayerBullet()
         }
