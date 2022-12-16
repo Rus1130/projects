@@ -547,7 +547,6 @@
             }
 
             playerData.cannonWear = Math.round(playerData.cannonWear)
-            playerData.bulletCount++;
             spawnPlayerBullet()
         }
         
@@ -664,7 +663,7 @@
     }
 
     function waveController(){
-        if(enemyData + [] == []){
+        if(gameData.currentEnemies == 0){
             gameData.wave++;
             waveData['wave' + gameData.wave]();
         }
