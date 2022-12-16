@@ -84,6 +84,7 @@
         bulletSpeed: 11,
         regenAmnt: 0.4,
         currentEnemies: 0,
+        wave: 0,
     }
     
     const playerData = {
@@ -125,31 +126,10 @@
 
     const enemyDatabase = {
         "Grunt": {
-            speed: 3,
+            speed: 2,
             damage: 1,
             health: 1,
             color: 'green',
-        }
-    }
-
-    const enemyData = []
-
-    function spawnEnemy(enemyName){
-        let enemy = two.makeRectangle(Math.random() * two.width, Math.random() * two.height, 50, 50);
-        enemy.fill = enemyDatabase[enemyName].color;
-        enemy.stroke = enemyDatabase[enemyName].color;
-        enemy.id = enemyName;
-        enemyData.push({
-            vx: 0,
-            vy: 0,
-            x: enemy.translation.x,
-            y: enemy.translation.y,
-            element: enemy,
-            width: 50,
-            height: 50,
-            speed: enemyDatabase[enemyName].speed,
-            damage: enemyDatabase[enemyName].damage,
-            health: enemyDatabase[enemyName].health,
             aiFunction: function(){
 
                 // make the enemy slowly go towards the player
@@ -171,10 +151,45 @@
                     gameData.currentEnemies--;
                 }
 
-
-
-
+                // if the enemy has a health of 0, destroy the enemy
+                if(this.health <= 0){
+                    this.element.remove();
+                    enemyData.splice(enemyData.indexOf(this), 1);
+                    gameData.currentEnemies--;
+                }
             }
+        }
+    }
+
+    const enemyData = []
+
+    const waveData = {
+        'wave1': function(){
+            spawnEnemy('Grunt');
+        },
+        'wave2': function(){
+            spawnEnemy('Grunt');
+            spawnEnemy('Grunt');
+        },
+    }
+
+    function spawnEnemy(enemyName){
+        let enemy = two.makeRectangle(Math.random() * two.width, Math.random() * two.height, 25, 25);
+        enemy.fill = enemyDatabase[enemyName].color;
+        enemy.stroke = enemyDatabase[enemyName].color;
+        enemy.id = enemyName;
+        enemyData.push({
+            vx: 0,
+            vy: 0,
+            x: enemy.translation.x,
+            y: enemy.translation.y,
+            element: enemy,
+            width: 25,
+            height: 25,
+            speed: enemyDatabase[enemyName].speed,
+            damage: enemyDatabase[enemyName].damage,
+            health: enemyDatabase[enemyName].health,
+            aiFunction: enemyDatabase[enemyName].aiFunction,
         })
         gameData.currentEnemies++;
     }
@@ -237,11 +252,8 @@
     function constantUpdate(){
         // check if shootKey1 or shootKey2 havent been pressed for 5 seconds
 
-
+        waveController()
         setInterval(function(){
-            // if 1 second has passed, console.log('1 second has passed')
-
-            // for each enemy, run the aiFunction
             for(i = 0; i < enemyData.length; i++){
                 enemyData[i].aiFunction();
             }
@@ -465,6 +477,8 @@
             speed: gameData.bulletSpeed,
             borderCollision: false
         }
+
+        playerData.bulletCount++;
     }
 
     function borderWrapController(elements, elementData){
@@ -632,10 +646,28 @@
                     playerData.bulletData[id].element.remove();
                     delete playerData.bulletData[id];
                 }
+
+                // check if the bullet is colliding with an enemy, it if is, remove 1 health from the enemy and remove the bullet
+                for(i = 0; i < enemyData.length; i++){
+                    let isColliding = checkCollision([element], [enemyData[i].element])[0];
+                    if(isColliding){
+                        enemyData[i].health -= 1;
+                        playerData.bulletData[id].element.remove();
+                        delete playerData.bulletData[id];
+                    }
+                }
+
             })
         }
 
         setInterval(move, gameData.intervalLength);
+    }
+
+    function waveController(){
+        if(enemyData + [] == []){
+            gameData.wave++;
+            waveData['wave' + gameData.wave]();
+        }
     }
 
     document.oncontextmenu = e => {
