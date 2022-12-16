@@ -36,7 +36,7 @@
 </head>
 <body>  
     <div class="debug" id="mouse"></div>
-    <div id="healthDisplay">Health: 25</div>
+    <div id="healthDisplay">Health: 40</div>
     <div id="wearDisplay"></div>
 </body>
 <script>
@@ -83,6 +83,7 @@
         gradientBlue: 0,
         bulletSpeed: 11,
         regenAmnt: 0.4,
+        currentEnemies: 0,
     }
     
     const playerData = {
@@ -106,7 +107,8 @@
         regen: false,
         regenTimer: Date.now(),
         currentHealth: 40,
-        maxHealth: 40
+        maxHealth: 40,
+        damage: 1,
     }
 
     const debugData = {
@@ -121,13 +123,67 @@
         keys: {}
     }
 
-    // create a gradient that starts at 
+    const enemyDatabase = {
+        "Grunt": {
+            speed: 3,
+            damage: 1,
+            health: 1,
+            color: 'green',
+        }
+    }
+
+    const enemyData = []
+
+    function spawnEnemy(enemyName){
+        let enemy = two.makeRectangle(Math.random() * two.width, Math.random() * two.height, 50, 50);
+        enemy.fill = enemyDatabase[enemyName].color;
+        enemy.stroke = enemyDatabase[enemyName].color;
+        enemy.id = enemyName;
+        enemyData.push({
+            vx: 0,
+            vy: 0,
+            x: enemy.translation.x,
+            y: enemy.translation.y,
+            element: enemy,
+            width: 50,
+            height: 50,
+            speed: enemyDatabase[enemyName].speed,
+            damage: enemyDatabase[enemyName].damage,
+            health: enemyDatabase[enemyName].health,
+            aiFunction: function(){
+
+                // make the enemy slowly go towards the player
+                let angle = Math.atan2(playerData.y - this.y, playerData.x - this.x);
+                this.x += Math.cos(angle) * this.speed;
+                this.y += Math.sin(angle) * this.speed;
+
+                // make the enemy go towards the player
+
+                this.element.translation.x = this.x;
+                this.element.translation.y = this.y;
+
+                // if the enemy is touching the player, damage the player and destroy the enemy
+                if(this.x + this.width / 2 > playerData.x - playerData.width / 2 && this.x - this.width / 2 < playerData.x + playerData.width / 2 && this.y + this.height / 2 > playerData.y - playerData.height / 2 && this.y - this.height / 2 < playerData.y + playerData.height / 2){
+                    playerData.currentHealth -= this.damage;
+                    playerHealthDisplay.innerHTML = 'Health: ' + playerData.currentHealth;
+                    this.element.remove();
+                    enemyData.splice(enemyData.indexOf(this), 1);
+                    gameData.currentEnemies--;
+                }
+
+
+
+
+            }
+        })
+        gameData.currentEnemies++;
+    }
+
 
     
     let player = two.makeRectangle(two.width / 2, two.height / 2, 50 ,50);
     let playerCannonBase = two.makeRectangle(playerData.x, playerData.y, 30, 30);
     let playerCannon = two.makeRectangle(playerData.x + 25, playerData.y, 50, 20);
-
 
     function buildPlayer(){
         player.fill = 'red';
@@ -184,6 +240,11 @@
 
         setInterval(function(){
             // if 1 second has passed, console.log('1 second has passed')
+
+            // for each enemy, run the aiFunction
+            for(i = 0; i < enemyData.length; i++){
+                enemyData[i].aiFunction();
+            }
             if(Date.now() - playerData.regenTimer >= 5000){
                 playerData.regen = true;
             }
