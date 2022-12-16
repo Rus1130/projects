@@ -17,6 +17,12 @@
         display: grid;
         grid-template-columns: repeat(400, 1fr);
     }
+    #healthDisplay {
+        z-index: 100;
+        position: absolute;
+        user-select: none;
+        height: 20px;
+    }
     svg {
         z-index: 0;
     }
@@ -30,15 +36,17 @@
 </head>
 <body>  
     <div class="debug" id="mouse"></div>
+    <div id="healthDisplay">Health: 40  </div>
     <div id="wearDisplay"></div>
 </body>
 <script>
     const mouseDebug = document.getElementById('mouse');
     const cannonWearDisplay = document.getElementById('wearDisplay');
+    const playerHealthDisplay = document.getElementById('healthDisplay');
 
     for(i = 1; i <= 400; i++){
         let cell = document.createElement('div');
-        cell.id = 'cell' + i;
+        cell.id = 'wearCell' + i;
         cell.style.backgroundColor = 'white';
         cell.style.height = '50px';
         cell.style.zIndex = '100';
@@ -75,6 +83,8 @@
         gradientBlue: 0,
         bulletSpeed: 11,
         regenAmnt: 0.4,
+        currentEnemies: 0,
+        wave: 0,
     }
     
     const playerData = {
@@ -97,6 +107,9 @@
         shootAngle: null,
         regen: false,
         regenTimer: Date.now(),
+        currentHealth: 40,
+        maxHealth: 40,
+        damage: 1,
     }
 
     const debugData = {
@@ -111,13 +124,81 @@
         keys: {}
     }
 
-    // create a gradient that starts at 
+    const enemyDatabase = {
+        "Grunt": {
+            speed: 2,
+            damage: 1,
+            health: 1,
+            color: 'green',
+            aiFunction: function(){
+
+                // make the enemy slowly go towards the player
+                let angle = Math.atan2(playerData.y - this.y, playerData.x - this.x);
+                this.x += Math.cos(angle) * this.speed;
+                this.y += Math.sin(angle) * this.speed;
+
+                // make the enemy go towards the player
+
+                this.element.translation.x = this.x;
+                this.element.translation.y = this.y;
+
+                // if the enemy is touching the player, damage the player and destroy the enemy
+                if(this.x + this.width / 2 > playerData.x - playerData.width / 2 && this.x - this.width / 2 < playerData.x + playerData.width / 2 && this.y + this.height / 2 > playerData.y - playerData.height / 2 && this.y - this.height / 2 < playerData.y + playerData.height / 2){
+                    playerData.currentHealth -= this.damage;
+                    playerHealthDisplay.innerHTML = 'Health: ' + playerData.currentHealth;
+                    this.element.remove();
+                    enemyData.splice(enemyData.indexOf(this), 1);
+                    gameData.currentEnemies--;
+                }
+
+                // if the enemy has a health of 0, destroy the enemy
+                if(this.health <= 0){
+                    this.element.remove();
+                    enemyData.splice(enemyData.indexOf(this), 1);
+                    gameData.currentEnemies--;
+                }
+            }
+        }
+    }
+
+    const enemyData = []
+
+    const waveData = {
+        'wave1': function(){
+            spawnEnemy('Grunt');
+        },
+        'wave2': function(){
+            spawnEnemy('Grunt');
+            spawnEnemy('Grunt');
+        },
+    }
+
+    function spawnEnemy(enemyName){
+        let enemy = two.makeRectangle(Math.random() * two.width, Math.random() * two.height, 25, 25);
+        enemy.fill = enemyDatabase[enemyName].color;
+        enemy.stroke = enemyDatabase[enemyName].color;
+        enemy.id = enemyName;
+        enemyData.push({
+            vx: 0,
+            vy: 0,
+            x: enemy.translation.x,
+            y: enemy.translation.y,
+            element: enemy,
+            width: 25,
+            height: 25,
+            speed: enemyDatabase[enemyName].speed,
+            damage: enemyDatabase[enemyName].damage,
+            health: enemyDatabase[enemyName].health,
+            aiFunction: enemyDatabase[enemyName].aiFunction,
+        })
+        gameData.currentEnemies++;
+    }
+
 
     
     let player = two.makeRectangle(two.width / 2, two.height / 2, 50 ,50);
     let playerCannonBase = two.makeRectangle(playerData.x, playerData.y, 30, 30);
     let playerCannon = two.makeRectangle(playerData.x + 25, playerData.y, 50, 20);
-
 
     function buildPlayer(){
         player.fill = 'red';
@@ -171,9 +252,11 @@
     function constantUpdate(){
         // check if shootKey1 or shootKey2 havent been pressed for 5 seconds
 
-
+        waveController()
         setInterval(function(){
-            // if 1 second has passed, console.log('1 second has passed')
+            for(i = 0; i < enemyData.length; i++){
+                enemyData[i].aiFunction();
+            }
             if(Date.now() - playerData.regenTimer >= 5000){
                 playerData.regen = true;
             }
@@ -192,7 +275,7 @@
             }
 
             for(i = 1; i <= 400; i++){
-                let cell = document.getElementById('cell' + i);
+                let cell = document.getElementById('wearCell' + i);
                 if(i <= playerData.cannonWear){
                     cell.style.backgroundColor = 'rgb(' + gameData.gradientRed + ',' + gameData.gradientGreen + ',' + gameData.gradientBlue + ')';
                 } else {
@@ -228,6 +311,9 @@
                 mouseDebug.style.display = 'none';
                 gameData.borderOffset = 125;
             }
+
+            playerHealthDisplay.style.left = screenLeft.translation._x + screenLeft.width + 10 + 'px';
+            playerHealthDisplay.style.top = screenTop.translation._y + screenTop.height + 70 + 'px';
 
             cannonWearDisplay.style.left = screenLeft.translation._x + screenLeft.width + 10 + 'px';
             cannonWearDisplay.style.top = screenTop.translation._y + screenTop.height + 10 + 'px';
@@ -399,6 +485,8 @@
             speed: gameData.bulletSpeed,
             borderCollision: false
         }
+
+        playerData.bulletCount++;
     }
 
     function borderWrapController(elements, elementData){
@@ -424,6 +512,19 @@
                 elementData.borderCollision = true;
             }
         }
+    }
+
+    function removePlayerHealth(amnt){
+        // remove amnt from player health and update the health bar
+        playerData.currentHealth -= amnt;
+        playerHealthDisplay.innerHTML = "Health: " + playerData.currentHealth;
+
+        if(playerData.currentHealth <= 0){
+            // reload window
+            alert('you died lol')
+            window.location.reload();
+        }
+        
     }
 
     function movePlayer(x, y){
@@ -454,7 +555,6 @@
             }
 
             playerData.cannonWear = Math.round(playerData.cannonWear)
-            playerData.bulletCount++;
             spawnPlayerBullet()
         }
         
@@ -552,10 +652,28 @@
                     playerData.bulletData[id].element.remove();
                     delete playerData.bulletData[id];
                 }
+
+                // check if the bullet is colliding with an enemy, it if is, remove 1 health from the enemy and remove the bullet
+                for(i = 0; i < enemyData.length; i++){
+                    let isColliding = checkCollision([element], [enemyData[i].element])[0];
+                    if(isColliding){
+                        enemyData[i].health -= 1;
+                        playerData.bulletData[id].element.remove();
+                        delete playerData.bulletData[id];
+                    }
+                }
+
             })
         }
 
         setInterval(move, gameData.intervalLength);
+    }
+
+    function waveController(){
+        if(gameData.currentEnemies == 0){
+            gameData.wave++;
+            waveData['wave' + gameData.wave]();
+        }
     }
 
     document.oncontextmenu = e => {
