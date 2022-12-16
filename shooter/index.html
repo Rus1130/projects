@@ -17,6 +17,12 @@
         display: grid;
         grid-template-columns: repeat(400, 1fr);
     }
+    #healthDisplay {
+        z-index: 100;
+        position: absolute;
+        user-select: none;
+        height: 20px;
+    }
     svg {
         z-index: 0;
     }
@@ -30,15 +36,17 @@
 </head>
 <body>  
     <div class="debug" id="mouse"></div>
+    <div id="healthDisplay">Health: 25</div>
     <div id="wearDisplay"></div>
 </body>
 <script>
     const mouseDebug = document.getElementById('mouse');
     const cannonWearDisplay = document.getElementById('wearDisplay');
+    const playerHealthDisplay = document.getElementById('healthDisplay');
 
     for(i = 1; i <= 400; i++){
         let cell = document.createElement('div');
-        cell.id = 'cell' + i;
+        cell.id = 'wearCell' + i;
         cell.style.backgroundColor = 'white';
         cell.style.height = '50px';
         cell.style.zIndex = '100';
@@ -97,6 +105,8 @@
         shootAngle: null,
         regen: false,
         regenTimer: Date.now(),
+        currentHealth: 40,
+        maxHealth: 40
     }
 
     const debugData = {
@@ -192,7 +202,7 @@
             }
 
             for(i = 1; i <= 400; i++){
-                let cell = document.getElementById('cell' + i);
+                let cell = document.getElementById('wearCell' + i);
                 if(i <= playerData.cannonWear){
                     cell.style.backgroundColor = 'rgb(' + gameData.gradientRed + ',' + gameData.gradientGreen + ',' + gameData.gradientBlue + ')';
                 } else {
@@ -228,6 +238,9 @@
                 mouseDebug.style.display = 'none';
                 gameData.borderOffset = 125;
             }
+
+            playerHealthDisplay.style.left = screenLeft.translation._x + screenLeft.width + 10 + 'px';
+            playerHealthDisplay.style.top = screenTop.translation._y + screenTop.height + 70 + 'px';
 
             cannonWearDisplay.style.left = screenLeft.translation._x + screenLeft.width + 10 + 'px';
             cannonWearDisplay.style.top = screenTop.translation._y + screenTop.height + 10 + 'px';
@@ -416,6 +429,19 @@
                 elementData.borderCollision = true;
             }
         }
+    }
+
+    function removePlayerHealth(amnt){
+        // remove amnt from player health and update the health bar
+        playerData.currentHealth -= amnt;
+        playerHealthDisplay.innerHTML = "Health: " + playerData.currentHealth;
+
+        if(playerData.currentHealth <= 0){
+            // reload window
+            alert('you died lol')
+            window.location.reload();
+        }
+        
     }
 
     function movePlayer(x, y){
