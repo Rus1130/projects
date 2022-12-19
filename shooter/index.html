@@ -71,7 +71,7 @@
         intervalLength: 20, // 20
         borderOffset: debug ? 20 : 125, // 125
         borderWidth: 100, // 150
-        frictionCoefficient: 0.4,
+        frictionCoefficient: 0.9,
         keys: {
             " ": false,
             mouse0: false,
@@ -85,6 +85,7 @@
         regenAmnt: 0.4,
         currentEnemies: 0,
         currentWave: 0,
+        regenAmnt: 0.125,
     }
     
     const playerData = {
@@ -94,7 +95,7 @@
         y: Math.round(two.height / 2),
         width: 50,
         height: 50,
-        speed: 2,
+        speed: 1,
         borderCollision: false,
         mouseX: 0,
         mouseY: 0,
@@ -213,9 +214,6 @@
                     playerData.cannonWear = math.round(playerData.cannonWear - gameData.regenAmnt, 5);
                 }
             }
-            if(playerData.cannonWear < 0){
-                playerData.cannonWear = 0;
-            }
 
             for(i = 1; i <= 400; i++){
                 let cell = document.getElementById('wearCell' + i);
@@ -311,7 +309,6 @@
 
             playerData.x = math.round(playerData.x)
             playerData.y = math.round(playerData.y)
-
         }, gameData.intervalLength)
     }
 
@@ -525,7 +522,7 @@
                     if(gameData.keys[gameData.shootKey2]){
                         math.round(playerData.cannonWear = playerData.cannonWear + 2);
                     } else {
-                        math.round(playerData.cannonWear = playerData.cannonWear + 8); // ===========================================
+                        math.round(playerData.cannonWear = playerData.cannonWear + 20);
                     }
                     
 
@@ -533,6 +530,7 @@
             }
 
             playerData.cannonWear = Math.round(playerData.cannonWear)
+            playerData.bulletCount++;
             spawnPlayerBullet()
         }
         
