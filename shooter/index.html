@@ -83,7 +83,7 @@
         gradientBlue: 0,
         regenAmnt: 0.4,
         currentEnemies: 0,
-        currentWave: 0,
+        currentWave: 1,
         regenAmnt: 0.125,
     }
     
@@ -125,9 +125,6 @@
         cannonWear: 0, // ===========================================================================
         keys: {}
     }
-
-    const enemies = {}
-
     const enemyTypes = {
         'Grunt': {
             health: 1,
@@ -142,6 +139,16 @@
             damage: 1,
             color: 'green',
             name: 'Enemy2',
+        }
+    }
+
+    const waveData = {
+        1: function(){
+            spawnEnemy('Grunt')
+        },
+        2: function(){
+            spawnEnemy('Grunt')
+            spawnEnemy('Grunt')
         }
     }
 
@@ -203,6 +210,7 @@
         // check if shootKey1 or shootKey2 havent been pressed for 5 second;
         setInterval(function(){
             enemyController()
+            waveController()
             if(Date.now() - playerData.regenTimer >= 5000){
                 playerData.regen = true;
             }
@@ -329,6 +337,16 @@
 
     }
 
+    function waveController(){
+        let enemies = two.scene.children.filter(child => child.type === 'enemy');
+        if(enemies[0] == 0){
+            waveData[gameData.currentWave]();
+            gameData.currentWave++;
+            
+
+        }
+    }
+
     function spawnEnemy(enemyName){
         // spawn an enemy with random x and y
         let enemy = two.makeRectangle(Math.random() * two.width, Math.random() * two.height, 25, 25);
@@ -362,8 +380,21 @@
                     enemy.remove();
                 }
 
-                let bullets = Object.keys(playerData.bulletData);
-                // get the elements of the bullets
+                let bullets = two.scene.children.filter(child => child.type === 'playerBullet');
+                // if a bullet hits an enemy, subtract the health
+                if(bullets[0] != 0){
+                    bullets.forEach(bullet => {
+                        if(bullet.translation._x < enemy.translation._x + 25 && bullet.translation._x > enemy.translation._x - 25 && bullet.translation._y < enemy.translation._y + 25 && bullet.translation._y > enemy.translation._y - 25){
+                            enemy.health -= playerData.damage;
+                            bullet.remove();
+                        }
+                    })
+                }
+
+                if(enemy.health <= 0){
+                    enemy.remove();
+                    gameData.currentEnemies--;
+                }
             })
         }
     }
@@ -606,7 +637,6 @@
                     let angle = bullet.angle;
                     let speed = playerData.bulletSpeed;
 
-                    console.log(speed)
                     // move the bullet in the direction the cannon is facing
                     let x = bullet.translation._x + (speed * Math.cos(angle));
                     let y = bullet.translation._y + (speed * Math.sin(angle));
@@ -632,8 +662,6 @@
     playerController();
     constantUpdate();
     bulletController();
-
-    spawnEnemy('Grunt')
 
 
     // npm start
