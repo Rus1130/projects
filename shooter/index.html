@@ -71,7 +71,7 @@
         intervalLength: 20, // 20
         borderOffset: debug ? 20 : 125, // 125
         borderWidth: 100, // 150
-        frictionCoefficient: 0.92,
+        frictionCoefficient: 0.4,
         keys: {
             " ": false,
             mouse0: false,
@@ -94,7 +94,7 @@
         y: Math.round(two.height / 2),
         width: 50,
         height: 50,
-        speed: 1,
+        speed: 2,
         borderCollision: false,
         mouseX: 0,
         mouseY: 0,
@@ -129,16 +129,17 @@
     const enemyTypes = {
         'Grunt': {
             health: 1,
+            speed: 2,
+            damage: 1,
+            name: 'Grunt',
+            color: 'blue',
+        },
+        'Enemy2': {
+            health: 1,
             speed: 1,
             damage: 1,
-            x: 0,
-            y: 0,
-            ai: function(){
-                // follow player
-                let angle = Math.atan2(playerData.y - this.y, playerData.x - this.x);
-                this.vx = Math.cos(angle) * this.speed;
-                this.vy = Math.sin(angle) * this.speed;
-            }
+            color: 'green',
+            name: 'Enemy2',
         }
     }
 
@@ -197,8 +198,7 @@
 
 
     function constantUpdate(){
-        // check if shootKey1 or shootKey2 havent been pressed for 5 seconds
-        
+        // check if shootKey1 or shootKey2 havent been pressed for 5 second;
         setInterval(function(){
             if(Date.now() - playerData.regenTimer >= 5000){
                 playerData.regen = true;
@@ -312,8 +312,9 @@
             playerData.x = math.round(playerData.x)
             playerData.y = math.round(playerData.y)
 
-        }, gameData.intervalLength)
+            enemyController();
 
+        }, gameData.intervalLength)
     }
 
     function updateCannon(){
@@ -337,7 +338,39 @@
     }
 
     function spawnEnemy(enemyName){
+        // spawn an enemy with random x and y
+        let enemy = two.makeRectangle(Math.random() * two.width, Math.random() * two.height, 25, 25);
+        enemy.fill = enemyTypes[enemyName].color;
+        enemy.type = 'enemy'
+        enemy.name = enemyName;
+        enemy.damage = enemyTypes[enemyName].damage;
+        enemy.health = enemyTypes[enemyName].health;
+        enemy.speed = enemyTypes[enemyName].speed;
 
+        gameData.currentEnemies++;
+    }
+
+    function enemyController(){
+        let enemies = two.scene.children.filter(child => child.type === 'enemy');
+        enemies.forEach(enemy => {
+            let health = enemy.health;
+            let damage = enemy.damage;
+            let speed = enemy.speed;
+
+            if(enemy.name == 'Grunt'){
+                // move it towards the player
+                let angle = Math.atan2(playerData.y - enemy.translation._y, playerData.x - enemy.translation._x);
+                enemy.translation.x += speed * Math.cos(angle);
+                enemy.translation.y += speed * Math.sin(angle);
+            }
+
+            // if the enemy collides with the player, damage the player and remove the enemy
+            if(enemy.translation._x < playerData.x + 25 && enemy.translation._x > playerData.x - 25 && enemy.translation._y < playerData.y + 25 && enemy.translation._y > playerData.y - 25){
+                removePlayerHealth(damage);
+                enemy.remove();
+                gameData.currentEnemies--;
+            }
+        })
     }
 
     function calculateBorders(){
