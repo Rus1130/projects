@@ -210,7 +210,7 @@
 
             if(playerData.regen){
                 if(playerData.cannonWear > 0 && playerData.cannonWear < 400){
-                    playerData.cannonWear = playerData.cannonWear - gameData.regenAmnt;
+                    playerData.cannonWear = math.round(playerData.cannonWear - gameData.regenAmnt, 5);
                 }
             }
             if(playerData.cannonWear < 0){
@@ -276,14 +276,20 @@
             mouseDebug.innerHTML = `<pre>${debugCannonWear}${debugPlayerX}${debugPlayerY}${debugPlayerVX}${debugPlayerVY}${debugMouseX}${debugMouseY}${debugBorderCollision}${debugKeys}</pre>`;
 
             if(playerData.cannonWear < 400){
+                playerData.cannonWearOffset = 0.32
+                playerData.speed = 0.5
                 if(playerData.cannonWear > 350){
-                    playerData.cannonWearOffset = 0.37
+                    playerData.cannonWearOffset = 0.29
+                    playerData.speed = 0.6
                 } else if(playerData.cannonWear > 300){
-                    playerData.cannonWearOffset = 0.25
+                    playerData.cannonWearOffset = 0.21
+                    playerData.speed = 0.7
                 } else if(playerData.cannonWear > 250){
                     playerData.cannonWearOffset = 0.15
+                    playerData.speed = 0.8
                 } else if(playerData.cannonWear > 200){
                     playerData.cannonWearOffset = 0.11
+                    playerData.speed = 0.9
                 } else if(playerData.cannonWear > 150){
                     playerData.cannonWearOffset = 0.05
                 } else if(playerData.cannonWear > 100){
@@ -312,6 +318,12 @@
 
     function updateCannon(){
 
+        setTimeout(() => {
+            if(playerData.cannonWear < 400){
+                playerData.angle = Math.atan2(playerData.mouseY - playerData.y, playerData.mouseX - playerData.x) + playerData.cannonWearOffset;
+            }
+        }, playerData.cannonWear)
+
         playerCannon.rotation = playerData.angle;
         playerCannonBase.rotation = playerData.angle;
 
@@ -321,11 +333,7 @@
         playerCannonBase.translation.x = playerData.x;
         playerCannonBase.translation.y = playerData.y;
 
-        setTimeout(() => {
-            if(playerData.cannonWear < 400){
-                playerData.angle = Math.atan2(playerData.mouseY - playerData.y, playerData.mouseX - playerData.x) + playerData.cannonWearOffset;
-            }
-        }, playerData.cannonWear)
+
     }
 
     function spawnEnemy(enemyName){
@@ -517,10 +525,9 @@
         };
 
         document.onmousemove = e => {
-            if(debug){
-                mouseDebug.style.left = e.clientX + 10 + 'px';
-                mouseDebug.style.top = e.clientY + 'px';
-            }
+            mouseDebug.style.left = e.clientX + 10 + 'px';
+            mouseDebug.style.top = e.clientY + 'px';
+
             setTimeout(() => {
                 playerData.mouseX = e.clientX
                 playerData.mouseY = e.clientY
