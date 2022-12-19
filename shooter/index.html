@@ -111,11 +111,11 @@
         regenTimer: Date.now(),
         currentHealth: 40,
         maxHealth: 40,
-        damage: 1,
-        bulletSpeed: 11,
-        bulletDamage: 1,
+        damage: 1, // =========
+        bulletSpeed: 11, // ===============
+        bulletDamage: 1, // ============
+        bulletPierce: 2, // ==========
     }
-
     const debugData = {
         vx: 0,
         vy: 0,
@@ -130,17 +130,17 @@
     const enemyTypes = {
         'Grunt': {
             health: 1,
-            speed: 2,
+            speed: 1.5,
             damage: 1,
             name: 'Grunt',
             color: 'blue',
         },
-        'Enemy2': {
+        'Footsoldier': {
             health: 1,
-            speed: 1,
+            speed: 2,
             damage: 1,
+            name: 'Footsoldier',
             color: 'green',
-            name: 'Enemy2',
         }
     }
 
@@ -164,7 +164,7 @@
             spawnEnemy('Grunt');
         },
         5: function(){
-            spawnEnemy('Grunt')
+            spawnEnemy('Footsoldier')
             spawnEnemy('Grunt')
             spawnEnemy('Grunt')
             spawnEnemy('Grunt')
@@ -375,7 +375,6 @@
         // get a random x any y coordinate between the two borders
         let x = Math.random() * (borderRight.translation._x - borderLeft.translation._x) + borderLeft.translation._x;
         let y = Math.random() * (borderBottom.translation._y - borderTop.translation._y) + borderTop.translation._y;
-        console.log(x, y)
 
         let enemy = two.makeRectangle(x, y, 25, 25);
         enemy.fill = enemyTypes[enemyName].color;
@@ -398,6 +397,19 @@
                 let speed = enemy.speed;
 
                 if(enemy.name == 'Grunt'){
+                    if(enemy.translation.x > playerData.x){
+                        enemy.translation.x -= speed;
+                    } else if(enemy.translation.x < playerData.x){
+                        enemy.translation.x += speed;
+                    }
+                    
+                    if(enemy.translation.y > playerData.y){
+                        enemy.translation.y -= speed;
+                    } else if(enemy.translation.y < playerData.y){
+                        enemy.translation.y += speed;
+                    }
+                }
+                if(enemy.name == 'Footsoldier'){
                     // move it towards the player
                     let angle = Math.atan2(playerData.y - enemy.translation._y, playerData.x - enemy.translation._x);
                     enemy.translation.x += speed * Math.cos(angle);
@@ -509,9 +521,10 @@
 
         bullet.type = 'playerBullet';
         bullet.angle = playerData.angle;
-        bullet.speed = gameData.bulletSpeed;
-        bullet.health = gameData.bulletHealth;
-        bullet.damage = gameData.bulletDamage
+        bullet.speed = playerData.bulletSpeed;
+        bullet.health = playerData.bulletHealth;
+        bullet.damage = playerData.bulletDamage;
+        bullet.peirce = playerData.bulletPeirce;
         bullet.borderCollision = false;
 
 
@@ -680,7 +693,7 @@
 
                     let bullet = bullets[i];
                     let angle = bullet.angle;
-                    let speed = playerData.bulletSpeed;
+                    let speed = bullet.speed;
 
                     // move the bullet in the direction the cannon is facing
                     let x = bullet.translation._x + (speed * Math.cos(angle));
