@@ -604,8 +604,9 @@
 
                     let bullet = bullets[i];
                     let angle = bullet.angle;
-                    let speed = bullet.speed;
+                    let speed = playerData.bulletSpeed;
 
+                    console.log(speed)
                     // move the bullet in the direction the cannon is facing
                     let x = bullet.translation._x + (speed * Math.cos(angle));
                     let y = bullet.translation._y + (speed * Math.sin(angle));
