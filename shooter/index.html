@@ -68,6 +68,7 @@
         shootKey1: ' ',
         shootKey2: 'mouse0',
         toggleDebugKey: 'p',
+        togglePauseKey: '=',
         intervalLength: 20, // 20
         borderOffset: debug ? 20 : 125, // 125
         borderWidth: 100, // 150
@@ -85,6 +86,7 @@
         currentEnemies: 0,
         currentWave: 1,
         regenAmnt: 0.125,
+        playing: true,
     }
     
     const playerData = {
@@ -205,10 +207,10 @@
     screenTop.fill = 'black'
     screenBottom.fill = 'black'
 
-
     function constantUpdate(){
         // check if shootKey1 or shootKey2 havent been pressed for 5 second;
         setInterval(function(){
+            if(!gameData.playing) return;
             enemyController()
             waveController()
             if(Date.now() - playerData.regenTimer >= 5000){
@@ -318,7 +320,7 @@
     }
 
     function updateCannon(){
-
+        if(!gameData.playing) return;
         setTimeout(() => {
             if(playerData.cannonWear < 400){
                 playerData.angle = Math.atan2(playerData.mouseY - playerData.y, playerData.mouseX - playerData.x) + playerData.cannonWearOffset;
@@ -338,18 +340,26 @@
     }
 
     function waveController(){
+        if(!gameData.playing) return;
         let enemies = two.scene.children.filter(child => child.type === 'enemy');
         if(enemies[0] == 0){
-            waveData[gameData.currentWave]();
-            gameData.currentWave++;
-            
-
+            if(waveData[gameData.currentWave + 1] == undefined){
+                waveData[gameData.currentWave]();
+            } else {
+                waveData[gameData.currentWave]();
+                gameData.currentWave++;
+            }
         }
     }
 
     function spawnEnemy(enemyName){
-        // spawn an enemy with random x and y
-        let enemy = two.makeRectangle(Math.random() * two.width, Math.random() * two.height, 25, 25);
+        if(!gameData.playing) return;   
+        // get a random x any y coordinate between the two borders
+        let x = Math.random() * (borderRight.translation._x - borderLeft.translation._x) + borderLeft.translation._x;
+        let y = Math.random() * (borderBottom.translation._y - borderTop.translation._y) + borderTop.translation._y;
+        console.log(x, y)
+
+        let enemy = two.makeRectangle(x, y, 25, 25);
         enemy.fill = enemyTypes[enemyName].color;
         enemy.type = 'enemy'
         enemy.name = enemyName;
@@ -361,6 +371,7 @@
     }
 
     function enemyController(){
+        if(!gameData.playing) return;
         let enemies = two.scene.children.filter(child => child.type === 'enemy');
         if(enemies[0] != 0){
             enemies.forEach(enemy => {
@@ -400,6 +411,7 @@
     }
 
     function calculateBorders(){
+        if(!gameData.playing) return;
         // replace all of the borders and screens
         borderRight.translation.x = two.width + gameData.borderOffset;
         borderRight.height = two.height * 2;
@@ -424,9 +436,12 @@
 
         screenLeft.translation.x = -gameData.borderOffset + 123;
         screenLeft.height = two.height * 2;
+
+        // get the width between the border and the screen
     }
 
     window.onresize = () => {
+        if(!gameData.playing) return;
         calculateBorders()
 
         playerData.x = Math.round(two.width / 2);
@@ -434,6 +449,7 @@
     }
 
     function checkCollision(rects, colliders){
+        if(!gameData.playing) return;
         let collision = false;
         let collider = undefined;
         for(i = 0; i < rects.length; i++){
@@ -461,6 +477,7 @@
     }
 
     function spawnPlayerBullet(){
+        if(!gameData.playing) return;
         let bullet = two.makeRectangle(playerCannon.translation.x, playerCannon.translation.y, 10, 10);
         bullet.rotation = playerData.angle;
 
@@ -490,6 +507,7 @@
     }
 
     function borderWrapController(elements, elementData){
+        if(!gameData.playing) return;
         let isColliding = checkCollision(elements, [borderLeft, borderRight, borderTop, borderBottom])[0];
         let collider = checkCollision(elements, [borderLeft, borderRight, borderTop, borderBottom])[1];
 
@@ -515,6 +533,7 @@
     }
 
     function removePlayerHealth(amnt){
+        if(!gameData.playing) return;
         // remove amnt from player health and update the health bar
         playerData.currentHealth -= amnt;
         playerHealthDisplay.innerHTML = "Health: " + playerData.currentHealth;
@@ -527,6 +546,7 @@
     }
 
     function movePlayer(x, y){
+        if(!gameData.playing) return;
         playerData.x += x;
         playerData.y += y;
 
@@ -539,6 +559,7 @@
     playerData.angle = Math.atan2(playerData.mouseY - playerData.y, playerData.mouseX - playerData.x);
 
     function playerController(){
+        if(!gameData.playing) return;
         function shoot(){
             let random = Math.floor(Math.random() * 200);
             if(random <= 60){
@@ -570,6 +591,9 @@
             if(gameData.keys[gameData.toggleDebugKey]){
                 debug = !debug;
             }
+            if(gameData.keys[gameData.togglePauseKey]){
+                gameData.playing = !gameData.playing;
+            }
         };
 
         document.onkeyup = e => {
@@ -600,6 +624,7 @@
         }
 
         function move(){
+            if(!gameData.playing) return;
             borderWrapController([player], playerData)
             if(gameData.keys[gameData.upKey]){
                 playerData.vy -= playerData.speed;
@@ -628,7 +653,9 @@
     }
 
     function bulletController(){
+        if(!gameData.playing) return;
         function move(){
+            if(!gameData.playing) return;
             let bullets = two.scene.children.filter(child => child.type == 'playerBullet');
             if(bullets[0] != 0){
                 for(let i = 0; i < bullets.length; i++){
