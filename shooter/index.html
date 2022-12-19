@@ -81,7 +81,6 @@
         gradientRed: 0,
         gradientGreen: 255,
         gradientBlue: 0,
-        bulletSpeed: 11,
         regenAmnt: 0.4,
         currentEnemies: 0,
         currentWave: 0,
@@ -111,6 +110,8 @@
         currentHealth: 40,
         maxHealth: 40,
         damage: 1,
+        bulletSpeed: 11,
+        bulletDamage: 1,
     }
 
     const debugData = {
@@ -201,6 +202,7 @@
     function constantUpdate(){
         // check if shootKey1 or shootKey2 havent been pressed for 5 second;
         setInterval(function(){
+            enemyController()
             if(Date.now() - playerData.regenTimer >= 5000){
                 playerData.regen = true;
             }
@@ -275,19 +277,14 @@
 
             if(playerData.cannonWear < 400){
                 playerData.cannonWearOffset = 0.32
-                playerData.speed = 0.5
                 if(playerData.cannonWear > 350){
                     playerData.cannonWearOffset = 0.29
-                    playerData.speed = 0.6
                 } else if(playerData.cannonWear > 300){
                     playerData.cannonWearOffset = 0.21
-                    playerData.speed = 0.7
                 } else if(playerData.cannonWear > 250){
                     playerData.cannonWearOffset = 0.15
-                    playerData.speed = 0.8
                 } else if(playerData.cannonWear > 200){
                     playerData.cannonWearOffset = 0.11
-                    playerData.speed = 0.9
                 } else if(playerData.cannonWear > 150){
                     playerData.cannonWearOffset = 0.05
                 } else if(playerData.cannonWear > 100){
@@ -347,25 +344,28 @@
 
     function enemyController(){
         let enemies = two.scene.children.filter(child => child.type === 'enemy');
-        enemies.forEach(enemy => {
-            let health = enemy.health;
-            let damage = enemy.damage;
-            let speed = enemy.speed;
+        if(enemies[0] != 0){
+            enemies.forEach(enemy => {
+                let health = enemy.health;
+                let damage = enemy.damage;
+                let speed = enemy.speed;
 
-            if(enemy.name == 'Grunt'){
-                // move it towards the player
-                let angle = Math.atan2(playerData.y - enemy.translation._y, playerData.x - enemy.translation._x);
-                enemy.translation.x += speed * Math.cos(angle);
-                enemy.translation.y += speed * Math.sin(angle);
-            }
+                if(enemy.name == 'Grunt'){
+                    // move it towards the player
+                    let angle = Math.atan2(playerData.y - enemy.translation._y, playerData.x - enemy.translation._x);
+                    enemy.translation.x += speed * Math.cos(angle);
+                    enemy.translation.y += speed * Math.sin(angle);
+                }
 
-            // if the enemy collides with the player, damage the player and remove the enemy
-            if(enemy.translation._x < playerData.x + 25 && enemy.translation._x > playerData.x - 25 && enemy.translation._y < playerData.y + 25 && enemy.translation._y > playerData.y - 25){
-                removePlayerHealth(damage);
-                enemy.remove();
-                gameData.currentEnemies--;
-            }
-        })
+                if(enemy.translation._x < playerData.x + 25 && enemy.translation._x > playerData.x - 25 && enemy.translation._y < playerData.y + 25 && enemy.translation._y > playerData.y - 25){
+                    removePlayerHealth(damage);
+                    enemy.remove();
+                }
+
+                let bullets = Object.keys(playerData.bulletData);
+                // get the elements of the bullets
+            })
+        }
     }
 
     function calculateBorders(){
@@ -441,26 +441,19 @@
         bullet.linewidth = 1;
         bullet.id = 'playerBullet' + playerData.bulletCount;
 
+        bullet.type = 'playerBullet';
+        bullet.angle = playerData.angle;
+        bullet.speed = gameData.bulletSpeed;
+        bullet.health = gameData.bulletHealth;
+        bullet.damage = gameData.bulletDamage
+        bullet.borderCollision = false;
+
+
         two.scene.remove(playerCannon);
         two.scene.remove(playerCannonBase);
         two.scene.add(bullet);
         two.scene.add(playerCannon);
         two.scene.add(playerCannonBase);
-
-        playerData.bulletData[bullet.id] = {
-            x: playerCannon.translation.x,
-            y: playerCannon.translation.y,
-            id: bullet.id,
-            vx: 0,
-            vy: 0,
-            width: 10,
-            height: 10,
-            element: bullet,
-            angle: playerData.angle,
-            type: 'player',
-            speed: gameData.bulletSpeed,
-            borderCollision: false
-        }
 
         playerData.bulletCount++;
     }
@@ -605,32 +598,21 @@
 
     function bulletController(){
         function move(){
-            let bulletIDs = Object.keys(playerData.bulletData)
-            bulletIDs.forEach(id => {
-                let element = playerData.bulletData[id].element;
+            let bullets = two.scene.children.filter(child => child.type == 'playerBullet');
+            if(bullets[0] != 0){
+                for(let i = 0; i < bullets.length; i++){
 
-                // move the bullet at the angle it was shot at
-                playerData.bulletData[id].vx = playerData.bulletData[id].speed * Math.cos(playerData.bulletData[id].angle);
-                playerData.bulletData[id].vy = playerData.bulletData[id].speed * Math.sin(playerData.bulletData[id].angle);
+                    let bullet = bullets[i];
+                    let angle = bullet.angle;
+                    let speed = bullet.speed;
 
-                playerData.bulletData[id].x += playerData.bulletData[id].vx;
-                playerData.bulletData[id].y += playerData.bulletData[id].vy;
+                    // move the bullet in the direction the cannon is facing
+                    let x = bullet.translation._x + (speed * Math.cos(angle));
+                    let y = bullet.translation._y + (speed * Math.sin(angle));
 
-                element.translation.x += playerData.bulletData[id].vx;
-                element.translation.y += playerData.bulletData[id].vy;
-
-
-                // if the element collides with the border, remove it
-                element.translation.set(playerData.bulletData[id].x, playerData.bulletData[id].y);
-                let isColliding = checkCollision([element], [borderLeft, borderRight, borderTop, borderBottom])[0];
-
-                if(isColliding){
-                    playerData.bulletData[id].element.remove();
-                    delete playerData.bulletData[id];
-                    playerData.bulletCount--;
                 }
+            }
 
-            })
         }
 
         setInterval(move, gameData.intervalLength);
@@ -644,6 +626,8 @@
     playerController();
     constantUpdate();
     bulletController();
+
+    spawnEnemy('Grunt')
 
 
     // npm start
