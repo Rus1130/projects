@@ -23,6 +23,12 @@
         user-select: none;
         height: 20px;
     }
+    #waveDisplay {
+        z-index: 100;
+        position: absolute;
+        user-select: none;
+        height: 20px;
+    }
     svg {
         z-index: 0;
     }
@@ -36,13 +42,15 @@
 </head>
 <body>  
     <div class="debug" id="mouse"></div>
-    <div id="healthDisplay">Health: 40  </div>
+    <div id="healthDisplay">Health: 40</div>
+    <div id="waveDisplay">Wave: 1</div>
     <div id="wearDisplay"></div>
 </body>
 <script>
     const mouseDebug = document.getElementById('mouse');
     const cannonWearDisplay = document.getElementById('wearDisplay');
     const playerHealthDisplay = document.getElementById('healthDisplay');
+    const waveDisplay = document.getElementById('waveDisplay');
 
     for(i = 1; i <= 400; i++){
         let cell = document.createElement('div');
@@ -84,9 +92,10 @@
         gradientBlue: 0,
         regenAmnt: 0.4,
         currentEnemies: 0,
-        currentWave: 1,
+        currentWave: 0,
         regenAmnt: 0.125,
         playing: true,
+        displayWave: 0,
     }
     
     const playerData = {
@@ -143,10 +152,27 @@
             name: 'Footsoldier',
             color: 'green',
             size: 25,
-        }
+        },
+        'Soldier': {
+            health: 1,
+            speed: 1.5,
+            damage: 2,
+            name: 'Soldier',
+            color: 'gold',
+            size: 30,
+        },
+        'Swarmer': {
+            health: 1,
+            speed: 2.25,
+            damage: 0,
+            name: 'Swarmer',
+            color: 'darkorange',
+            size: 15,
+        },
     }
 
     const waveData = {
+        
         1: function(){
             spawnEnemy('Grunt')
         },
@@ -166,7 +192,7 @@
             spawnEnemy('Grunt');
         },
         5: function(){
-            spawnEnemy('Footsoldier')
+            spawnEnemy('Grunt')
             spawnEnemy('Grunt')
             spawnEnemy('Grunt')
             spawnEnemy('Grunt')
@@ -174,7 +200,7 @@
         },
         6: function(){
             spawnEnemy('Footsoldier')
-            spawnEnemy('Footsoldier')
+            spawnEnemy('Grunt')
             spawnEnemy('Grunt')
             spawnEnemy('Grunt')
             spawnEnemy('Grunt')
@@ -182,7 +208,7 @@
         7: function(){
             spawnEnemy('Footsoldier')
             spawnEnemy('Footsoldier')
-            spawnEnemy('Footsoldier')
+            spawnEnemy('Grunt')
             spawnEnemy('Grunt')
             spawnEnemy('Grunt')
         },
@@ -190,7 +216,7 @@
             spawnEnemy('Footsoldier')
             spawnEnemy('Footsoldier')
             spawnEnemy('Footsoldier')
-            spawnEnemy('Footsoldier')
+            spawnEnemy('Grunt')
             spawnEnemy('Grunt')
         },
         9: function(){
@@ -198,7 +224,51 @@
             spawnEnemy('Footsoldier')
             spawnEnemy('Footsoldier')
             spawnEnemy('Footsoldier')
+            spawnEnemy('Grunt')
+        },
+        10: function(){
             spawnEnemy('Footsoldier')
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Footsoldier')
+        },
+        11: function(){
+            spawnEnemy('Soldier')
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Grunt')
+        },
+        12: function(){
+            spawnEnemy('Soldier')
+            spawnEnemy('Soldier')
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Grunt')
+        },
+        13: function(){
+            spawnEnemy('Soldier')
+            spawnEnemy('Soldier')
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Grunt')
+        },
+        14: function(){
+            spawnEnemy('Soldier')
+            spawnEnemy('Soldier')
+            spawnEnemy('Soldier')
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Footsoldier')
+        },
+        15: function(){
+            spawnEnemy('Soldier')
+            spawnEnemy('Soldier')
+            spawnEnemy('Soldier')
+            spawnEnemy('Soldier')
+            spawnEnemy('Footsoldier')
+        },
+        16: function(){
+            spawnEnemy('Grunt')
+            spawnEnemy('Swarmer')
+            spawnEnemy('Swarmer')
         }
     }
 
@@ -316,6 +386,9 @@
             playerHealthDisplay.style.left = screenLeft.translation._x + screenLeft.width + 10 + 'px';
             playerHealthDisplay.style.top = screenTop.translation._y + screenTop.height + 70 + 'px';
 
+            waveDisplay.style.left = screenLeft.translation._x + screenLeft.width + 10 + 'px';
+            waveDisplay.style.top = screenTop.translation._y + screenTop.height + 90 + 'px';
+
             cannonWearDisplay.style.left = screenLeft.translation._x + screenLeft.width + 10 + 'px';
             cannonWearDisplay.style.top = screenTop.translation._y + screenTop.height + 10 + 'px';
 
@@ -392,11 +465,15 @@
         let enemies = two.scene.children.filter(child => child.type === 'enemy');
         if(enemies[0] == 0){
             if(waveData[gameData.currentWave + 1] == undefined){
+                gameData.displayWave++;
                 waveData[gameData.currentWave]();
             } else {
-                waveData[gameData.currentWave]();
+                gameData.displayWave++;
                 gameData.currentWave++;
+                waveData[gameData.currentWave]();
+                
             }
+            waveDisplay.innerHTML = `Wave: ${gameData.displayWave}`;
         }
     }
 
@@ -408,6 +485,7 @@
 
         let enemy = two.makeRectangle(x, y, enemyTypes[enemyName].size, enemyTypes[enemyName].size);
         enemy.fill = enemyTypes[enemyName].color;
+        enemy.stroke = enemyTypes[enemyName].color;
         enemy.type = 'enemy'
         enemy.name = enemyName;
         enemy.damage = enemyTypes[enemyName].damage;
@@ -447,6 +525,26 @@
                     enemy.rotation = angle
                     enemy.translation.x += speed * Math.cos(angle);
                     enemy.translation.y += speed * Math.sin(angle);
+                }
+                if(enemy.name == 'Soldier'){
+                    enemy.rotation = angle
+                    // get distance between enemy and player
+                    let distance = Math.sqrt(Math.pow(playerData.x - enemy.translation._x, 2) + Math.pow(playerData.y - enemy.translation._y, 2));
+                    if(distance < 200){
+                        speed = 2.5;
+                    }
+                    enemy.translation.x += speed * Math.cos(angle);
+                    enemy.translation.y += speed * Math.sin(angle);
+                }
+                if(enemy.name == 'Swarmer'){
+                    // get angle between enemy and mouse
+                    let randomY = Math.random() * (50 - -50) + -50
+                    let randomX = Math.random() * (50 - -50) + -50
+                    let mouseAngle = Math.atan2((playerData.mouseY - enemy.translation._y) + randomY, (playerData.mouseX - enemy.translation._x) + randomX)
+
+                    enemy.rotation = mouseAngle
+                    enemy.translation.x += speed * Math.cos(mouseAngle);
+                    enemy.translation.y += speed * Math.sin(mouseAngle);
                 }
 
                 if(enemy.translation._x < playerData.x + enemyTypes[enemy.name].size &&
@@ -606,7 +704,7 @@
         if(!gameData.playing) return;
         // remove amnt from player health and update the health bar
         playerData.currentHealth -= amnt;
-        playerHealthDisplay.innerHTML = "Health: " + playerData.currentHealth;
+        playerHealthDisplay.innerHTML = "Health: " + playerData.currentHealth
 
         if(playerData.currentHealth <= 0){
             // reload window
