@@ -114,7 +114,7 @@
         damage: 1, // =========
         bulletSpeed: 11, // ===============
         bulletDamage: 1, // ============
-        bulletPierce: 2, // ==========
+        bulletPiercing: 2, // ==========
     }
     const debugData = {
         vx: 0,
@@ -134,6 +134,7 @@
             damage: 1,
             name: 'Grunt',
             color: 'blue',
+            size: 25    ,
         },
         'Footsoldier': {
             health: 1,
@@ -141,12 +142,13 @@
             damage: 1,
             name: 'Footsoldier',
             color: 'green',
+            size: 25,
         }
     }
 
     const waveData = {
         1: function(){
-            spawnEnemy('Grunt')
+            spawnEnemy('Footsoldier')
         },
         2: function(){
             spawnEnemy('Grunt')
@@ -376,7 +378,7 @@
         let x = Math.random() * (borderRight.translation._x - borderLeft.translation._x) + borderLeft.translation._x;
         let y = Math.random() * (borderBottom.translation._y - borderTop.translation._y) + borderTop.translation._y;
 
-        let enemy = two.makeRectangle(x, y, 25, 25);
+        let enemy = two.makeRectangle(x, y, enemyTypes[enemyName].size, enemyTypes[enemyName].size);
         enemy.fill = enemyTypes[enemyName].color;
         enemy.type = 'enemy'
         enemy.name = enemyName;
@@ -396,6 +398,9 @@
                 let damage = enemy.damage;
                 let speed = enemy.speed;
 
+                let angle = Math.atan2(playerData.y - enemy.translation._y, playerData.x - enemy.translation._x)
+                enemy.rotation = angle                
+
                 if(enemy.name == 'Grunt'){
                     if(enemy.translation.x > playerData.x){
                         enemy.translation.x -= speed;
@@ -411,12 +416,14 @@
                 }
                 if(enemy.name == 'Footsoldier'){
                     // move it towards the player
-                    let angle = Math.atan2(playerData.y - enemy.translation._y, playerData.x - enemy.translation._x);
                     enemy.translation.x += speed * Math.cos(angle);
                     enemy.translation.y += speed * Math.sin(angle);
                 }
 
-                if(enemy.translation._x < playerData.x + 25 && enemy.translation._x > playerData.x - 25 && enemy.translation._y < playerData.y + 25 && enemy.translation._y > playerData.y - 25){
+                if(enemy.translation._x < playerData.x + enemyTypes[enemy.name].size &&
+                enemy.translation._x > playerData.x - enemyTypes[enemy.name].size &&
+                enemy.translation._y < playerData.y + enemyTypes[enemy.name].size &&
+                enemy.translation._y > playerData.y - enemyTypes[enemy.name].size){
                     removePlayerHealth(damage);
                     enemy.remove();
                 }
@@ -425,7 +432,10 @@
                 // if a bullet hits an enemy, subtract the health
                 if(bullets[0] != 0){
                     bullets.forEach(bullet => {
-                        if(bullet.translation._x < enemy.translation._x + 25 && bullet.translation._x > enemy.translation._x - 25 && bullet.translation._y < enemy.translation._y + 25 && bullet.translation._y > enemy.translation._y - 25){
+                        if(bullet.translation._x < enemy.translation._x + enemyTypes[enemy.name].size &&
+                        bullet.translation._x > enemy.translation._x - enemyTypes[enemy.name].size &&
+                        bullet.translation._y < enemy.translation._y + enemyTypes[enemy.name].size &&
+                        bullet.translation._y > enemy.translation._y - enemyTypes[enemy.name].size){
                             enemy.health -= playerData.damage;
                             bullet.remove();
                         }
@@ -524,7 +534,7 @@
         bullet.speed = playerData.bulletSpeed;
         bullet.health = playerData.bulletHealth;
         bullet.damage = playerData.bulletDamage;
-        bullet.peirce = playerData.bulletPeirce;
+        bullet.piercing = playerData.bulletPiercing;
         bullet.borderCollision = false;
 
 
@@ -571,6 +581,7 @@
 
         if(playerData.currentHealth <= 0){
             // reload window
+            gameData.playing = false;
             alert('you died lol')
             window.location.reload();
         }
