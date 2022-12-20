@@ -148,7 +148,7 @@
 
     const waveData = {
         1: function(){
-            spawnEnemy('Footsoldier')
+            spawnEnemy('Grunt')
         },
         2: function(){
             spawnEnemy('Grunt')
@@ -172,6 +172,34 @@
             spawnEnemy('Grunt')
             spawnEnemy('Grunt')
         },
+        6: function(){
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Grunt')
+            spawnEnemy('Grunt')
+            spawnEnemy('Grunt')
+        },
+        7: function(){
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Grunt')
+            spawnEnemy('Grunt')
+        },
+        8: function(){
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Grunt')
+        },
+        9: function(){
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Footsoldier')
+        }
     }
 
     
@@ -399,7 +427,7 @@
                 let speed = enemy.speed;
 
                 let angle = Math.atan2(playerData.y - enemy.translation._y, playerData.x - enemy.translation._x)
-                enemy.rotation = angle                
+                             
 
                 if(enemy.name == 'Grunt'){
                     if(enemy.translation.x > playerData.x){
@@ -416,6 +444,7 @@
                 }
                 if(enemy.name == 'Footsoldier'){
                     // move it towards the player
+                    enemy.rotation = angle
                     enemy.translation.x += speed * Math.cos(angle);
                     enemy.translation.y += speed * Math.sin(angle);
                 }
