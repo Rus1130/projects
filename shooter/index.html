@@ -176,14 +176,23 @@
             name: 'Jumper',
             color: 'turquoise',
             size: 30,
+        },
+        'Supersoldier': {
+            health: 20,
+            speed: 1,
+            damage: 40,
+            name: 'Supersoldier',
+            color: 'firebrick',
+            size: 80
         }
     }
 
     const waveData = {
         
         1: function(){
-            spawnEnemy('Grunt')
+            spawnEnemy('Supersoldier')
         },
+        /*
         2: function(){
             spawnEnemy('Grunt')
             spawnEnemy('Grunt')
@@ -308,6 +317,33 @@
             spawnEnemy('Swarmer')
             spawnEnemy('Swarmer')
         },
+        21: function(){
+            spawnEnemy('Soldier')
+            spawnEnemy('Soldier')
+            spawnEnemy('Jumper')
+        },
+        22: function(){
+            spawnEnemy('Soldier')
+            spawnEnemy('Jumper')
+            spawnEnemy('Jumper')
+        },
+        23: function(){
+            spawnEnemy('Soldier')
+            spawnEnemy('Soldier')
+            spawnEnemy('Jumper')
+            spawnEnemy('Jumper')
+        },
+        24: function(){
+            spawnEnemy('Soldier')
+            spawnEnemy('Jumper')
+            spawnEnemy('Jumper')
+            spawnEnemy('Jumper')
+            spawnEnemy('Jumper')
+        },
+        25: function(){
+
+        }
+        */
     }
 
     
@@ -526,6 +562,7 @@
         enemy.stroke = enemyTypes[enemyName].color;
         enemy.type = 'enemy'
         enemy.name = enemyName;
+        enemy.invincible = false,
         enemy.damage = enemyTypes[enemyName].damage;
         enemy.health = enemyTypes[enemyName].health;
         enemy.speed = enemyTypes[enemyName].speed;
@@ -602,6 +639,59 @@
                     enemy.translation.y += speed * Math.sin(angle);
                 }
 
+                if(enemy.name == 'Supersoldier'){
+                    let timer = Date.now()
+                    if(enemy.spawnLine == undefined){
+                        enemy.spawnLine = false
+                    }
+
+                    if(timer % 5000 >= 4700){
+                        enemy.spawnLine = true
+                    } else {
+                        enemy.spawnLine = false
+                        enemy.invincible = false
+                    }
+
+                    if(timer % 5000 >= 4300){
+                        enemy.invincible = true
+                        speed = 0
+                    } else {
+                        speed = 1;
+                    }
+
+
+
+                    if(enemy.spawnLine){
+
+                        let line = two.makeRectangle(enemy.translation._x, enemy.translation._y, 20000, 1);
+
+                        line.rotation = angle
+                        line.fill = 'black';
+
+                        line.type = 'supersoldierLine';
+                        line.spawnTime = Date.now();
+                        enemy.spawnLine = false
+                    }
+
+                    // for each supersoldier line, if it's been alive for more than 3 seconds, remove it
+                    let lines = two.scene.children.filter(child => child.type === 'supersoldierLine');
+                    if(lines[0] != 0){
+                        lines.forEach(line => {
+                            if(Date.now() - line.spawnTime >= 3000){
+                                // if the player collides with the line, remove health
+                                line.remove()
+                            }
+
+                        })
+                    }
+
+
+
+                    enemy.rotation = angle
+                    enemy.translation.x += speed * Math.cos(angle);
+                    enemy.translation.y += speed * Math.sin(angle);
+                }
+
                 if(enemy.translation._x < playerData.x + enemyTypes[enemy.name].size &&
                 enemy.translation._x > playerData.x - enemyTypes[enemy.name].size &&
                 enemy.translation._y < playerData.y + enemyTypes[enemy.name].size &&
@@ -618,7 +708,9 @@
                         bullet.translation._x > enemy.translation._x - enemyTypes[enemy.name].size &&
                         bullet.translation._y < enemy.translation._y + enemyTypes[enemy.name].size &&
                         bullet.translation._y > enemy.translation._y - enemyTypes[enemy.name].size){
-                            enemy.health -= playerData.damage;
+                            if(!enemy.invincible){
+                                enemy.health -= playerData.damage;
+                            }
                             bullet.remove();
                         }
                     })
