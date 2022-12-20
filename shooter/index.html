@@ -92,10 +92,10 @@
         gradientBlue: 0,
         regenAmnt: 0.4,
         currentEnemies: 0,
-        currentWave: 0,
+        currentWave: 0, // ===============
         regenAmnt: 0.125,
         playing: true,
-        displayWave: 0,
+        displayWave: 0, // ===============
     }
     
     const playerData = {
@@ -169,6 +169,14 @@
             color: 'darkorange',
             size: 15,
         },
+        'Jumper': {
+            health: 1,
+            speed: 0,
+            damage: 2,
+            name: 'Jumper',
+            color: 'turquoise',
+            size: 30,
+        }
     }
 
     const waveData = {
@@ -269,7 +277,37 @@
             spawnEnemy('Grunt')
             spawnEnemy('Swarmer')
             spawnEnemy('Swarmer')
-        }
+        },
+        17: function(){
+            spawnEnemy('Grunt')
+            spawnEnemy('Swarmer')
+            spawnEnemy('Swarmer')
+            spawnEnemy('Swarmer')
+        },
+        18: function(){
+            spawnEnemy('Grunt')
+            spawnEnemy('Swarmer')
+            spawnEnemy('Swarmer')
+            spawnEnemy('Swarmer')
+            spawnEnemy('Swarmer')
+        },
+        19: function(){
+            spawnEnemy('Grunt')
+            spawnEnemy('Grunt')
+            spawnEnemy('Swarmer')
+            spawnEnemy('Swarmer')
+            spawnEnemy('Swarmer')
+            spawnEnemy('Swarmer')
+        },
+        20: function(){
+            spawnEnemy('Soldier')
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Footsoldier')
+            spawnEnemy('Swarmer')
+            spawnEnemy('Swarmer')
+            spawnEnemy('Swarmer')
+            spawnEnemy('Swarmer')
+        },
     }
 
     
@@ -545,6 +583,23 @@
                     enemy.rotation = mouseAngle
                     enemy.translation.x += speed * Math.cos(mouseAngle);
                     enemy.translation.y += speed * Math.sin(mouseAngle);
+                }
+                if(enemy.name == 'Jumper'){
+                    enemy.rotation = angle
+
+                    // every second, change speed from 1 to 3, or 3 to 1
+                    if(Date.now() % 3000 >= 2800){
+                        
+                        if(speed == 0){
+                            speed = 20;
+                        } else {
+                            speed = 0;
+                
+                        }
+                    }
+
+                    enemy.translation.x += speed * Math.cos(angle);
+                    enemy.translation.y += speed * Math.sin(angle);
                 }
 
                 if(enemy.translation._x < playerData.x + enemyTypes[enemy.name].size &&
