@@ -641,14 +641,12 @@
 
                 if(enemy.name == 'Supersoldier'){
                     let timer = Date.now()
-                    if(enemy.spawnLine == undefined){
-                        enemy.spawnLine = false
+
+                    if(enemy.attack == undefined){
+                        enemy.attack = false;
                     }
 
-                    if(timer % 5000 >= 4700){
-                        enemy.spawnLine = true
-                    } else {
-                        enemy.spawnLine = false
+                    if(timer % 5000 < 4700){
                         enemy.invincible = false
                     }
 
@@ -659,30 +657,10 @@
                         speed = 1;
                     }
 
-
-
-                    if(enemy.spawnLine){
-
-                        let line = two.makeRectangle(enemy.translation._x, enemy.translation._y, 20000, 1);
-
-                        line.rotation = angle
-                        line.fill = 'black';
-
-                        line.type = 'supersoldierLine';
-                        line.spawnTime = Date.now();
-                        enemy.spawnLine = false
-                    }
-
-                    // for each supersoldier line, if it's been alive for more than 3 seconds, remove it
-                    let lines = two.scene.children.filter(child => child.type === 'supersoldierLine');
-                    if(lines[0] != 0){
-                        lines.forEach(line => {
-                            if(Date.now() - line.spawnTime >= 3000){
-                                // if the player collides with the line, remove health
-                                line.remove()
-                            }
-
-                        })
+                    if(timer % 5000 >= 4900){
+                        enemy.attack = true;
+                    } else {
+                        enemy.attack = false;
                     }
 
 
