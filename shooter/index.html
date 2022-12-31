@@ -178,7 +178,7 @@
             size: 30,
         },
         'Supersoldier': {
-            health: 20,
+            health: 30,
             speed: 1,
             damage: 40,
             name: 'Supersoldier',
@@ -188,11 +188,6 @@
     }
 
     const waveData = {
-        
-        1: function(){
-            spawnEnemy('Supersoldier')
-        },
-        /*
         2: function(){
             spawnEnemy('Grunt')
             spawnEnemy('Grunt')
@@ -340,10 +335,6 @@
             spawnEnemy('Jumper')
             spawnEnemy('Jumper')
         },
-        25: function(){
-
-        }
-        */
     }
 
     
@@ -574,13 +565,21 @@
         if(!gameData.playing) return;
         let enemies = two.scene.children.filter(child => child.type === 'enemy');
         if(enemies[0] != 0){
+            
+            
+
+
             enemies.forEach(enemy => {
                 let health = enemy.health;
                 let damage = enemy.damage;
                 let speed = enemy.speed;
 
+                let enemyColliding = checkCollision([player], [enemy])[0]
+                if(enemyColliding){
+                    removePlayerHealth(damage)
+                }
+
                 let angle = Math.atan2(playerData.y - enemy.translation._y, playerData.x - enemy.translation._x)
-                             
 
                 if(enemy.name == 'Grunt'){
                     if(enemy.translation.x > playerData.x){
@@ -670,27 +669,60 @@
                     enemy.translation.y += speed * Math.sin(angle);
                 }
 
-                if(enemy.translation._x < playerData.x + enemyTypes[enemy.name].size &&
-                enemy.translation._x > playerData.x - enemyTypes[enemy.name].size &&
-                enemy.translation._y < playerData.y + enemyTypes[enemy.name].size &&
-                enemy.translation._y > playerData.y - enemyTypes[enemy.name].size){
-                    removePlayerHealth(damage);
-                    enemy.remove();
-                }
+
 
                 let bullets = two.scene.children.filter(child => child.type === 'playerBullet');
                 // if a bullet hits an enemy, subtract the health
                 if(bullets[0] != 0){
                     bullets.forEach(bullet => {
-                        if(bullet.translation._x < enemy.translation._x + enemyTypes[enemy.name].size &&
-                        bullet.translation._x > enemy.translation._x - enemyTypes[enemy.name].size &&
-                        bullet.translation._y < enemy.translation._y + enemyTypes[enemy.name].size &&
-                        bullet.translation._y > enemy.translation._y - enemyTypes[enemy.name].size){
-                            if(!enemy.invincible){
-                                enemy.health -= playerData.damage;
-                            }
+                        // get the bullets 4 corners
+                        let bulletTL = {x: bullet.translation._x - bullet.width / 2, y: bullet.translation._y - bullet.height / 2};
+                        let bulletTR = {x: bullet.translation._x + bullet.width / 2, y: bullet.translation._y - bullet.height / 2};
+                        let bulletBL = {x: bullet.translation._x - bullet.width / 2, y: bullet.translation._y + bullet.height / 2};
+                        let bulletBR = {x: bullet.translation._x + bullet.width / 2, y: bullet.translation._y + bullet.height / 2};
+
+                        // get the enemies 4 corners (account for rotation)
+                        let enemyTL = {x: enemy.translation._x - enemy.width / 2, y: enemy.translation._y - enemy.height / 2};
+                        let enemyTR = {x: enemy.translation._x + enemy.width / 2, y: enemy.translation._y - enemy.height / 2};
+                        let enemyBL = {x: enemy.translation._x - enemy.width / 2, y: enemy.translation._y + enemy.height / 2};
+                        let enemyBR = {x: enemy.translation._x + enemy.width / 2, y: enemy.translation._y + enemy.height / 2};
+
+                        // expand the enemies corners to account for rotation
+
+                        let expandAmnt = 6;
+                        enemyTL.x -= expandAmnt
+                        enemyTL.y -= expandAmnt
+
+                        enemyTR.x += expandAmnt
+                        enemyTR.y -= expandAmnt
+
+                        enemyBL.x -= expandAmnt
+                        enemyBL.y += expandAmnt
+
+                        enemyBR.x += expandAmnt
+                        enemyBR.y += expandAmnt
+
+                        
+
+                        // check if the bullets corners are inside the enemies corners
+                        if(bulletTL.x > enemyTL.x && bulletTL.x < enemyTR.x && bulletTL.y > enemyTL.y && bulletTL.y < enemyBL.y){
+                            enemy.health -= bullet.damage;
                             bullet.remove();
                         }
+                        if(bulletTR.x > enemyTL.x && bulletTR.x < enemyTR.x && bulletTR.y > enemyTL.y && bulletTR.y < enemyBL.y){
+                            enemy.health -= bullet.damage;
+                            bullet.remove();
+                        }
+                        if(bulletBL.x > enemyTL.x && bulletBL.x < enemyTR.x && bulletBL.y > enemyTL.y && bulletBL.y < enemyBL.y){
+                            enemy.health -= bullet.damage;
+                            bullet.remove();
+                        }
+                        if(bulletBR.x > enemyTL.x && bulletBR.x < enemyTR.x && bulletBR.y > enemyTL.y && bulletBR.y < enemyBL.y){
+                            enemy.health -= bullet.damage;
+                            bullet.remove();
+                        }
+
+
                     })
                 }
 
@@ -744,6 +776,8 @@
         if(!gameData.playing) return;
         let collision = false;
         let collider = undefined;
+        let colliderElement = undefined;
+        let rect = undefined;
         for(i = 0; i < rects.length; i++){
             if(collision) break;
             for(j = 0; j < colliders.length; j++){
@@ -760,12 +794,17 @@
                 if(rectMinX < colliderMaxX && rectMaxX > colliderMinX && rectMinY < colliderMaxY && rectMaxY > colliderMinY){
                     collider = colliders[j].id;
                     collision = true;
+                    colliderElement = document.getElementById(colliders[j].id)
+                    rect = rects[i];
                     break;
                 }
+                // get the collider element
+
+
             }
             if(collision) break;
         }
-        return [collision, collider];
+        return [collision, collider, colliderElement, rect];
     }
 
     function spawnPlayerBullet(){
