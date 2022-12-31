@@ -188,6 +188,9 @@
     }
 
     const waveData = {
+        1: function(){
+            spawnEnemy('Grunt')
+        },
         2: function(){
             spawnEnemy('Grunt')
             spawnEnemy('Grunt')
@@ -577,6 +580,9 @@
                 let enemyColliding = checkCollision([player], [enemy])[0]
                 if(enemyColliding){
                     removePlayerHealth(damage)
+                    // remove the enemy
+                    enemy.remove();
+                    gameData.currentEnemies--;
                 }
 
                 let angle = Math.atan2(playerData.y - enemy.translation._y, playerData.x - enemy.translation._x)
