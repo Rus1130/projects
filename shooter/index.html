@@ -180,7 +180,7 @@
         },
         'Supersoldier': {
             health: 30,
-            speed: 1,
+            speed: 0.5,
             damage: 40,
             name: 'Supersoldier',
             color: 'firebrick',
@@ -654,6 +654,7 @@
                 }
                 if(enemy.name == 'Supersoldier'){
                     enemy.rotation = angle
+                    
 
                     if(enemy.attack == undefined){
                         enemy.attack = false;
@@ -667,7 +668,7 @@
                         enemy.invincible = true
                         speed = 0
                     } else {
-                        speed = 1;
+                        speed = 0.5;
                     }
 
                     if(gameData.tick % 500 >= 490 && gameData.tick % 500 < 493){
@@ -690,6 +691,7 @@
                         damagingRect.fill = 'black';
                         damagingRect.type = 'supersoldierDamagingRect'
                         damagingRect.rotation = angle;
+                        damagingRect.damageLock = false;
                         damagingRect.spawnTick = gameData.tick;
                     }
                     enemy.translation.x += speed * Math.cos(angle);
@@ -702,8 +704,25 @@
                 if(supersoldierDamagingRects[0] != 0){
                     supersoldierDamagingRects.forEach(supersoldierDamagingRect => {
                         // every tick, move it forward
+                        let collisionRecord = [];
                         supersoldierDamagingRect.translation.x += 20 * Math.cos(supersoldierDamagingRect.rotation);
                         supersoldierDamagingRect.translation.y += 20 * Math.sin(supersoldierDamagingRect.rotation);
+
+
+                        // if the supersoldierDamagingRect is fully outside of the screen, remove it
+                        if(supersoldierDamagingRect.translation._x > two.width + 100 || supersoldierDamagingRect.translation._x < -100 || supersoldierDamagingRect.translation._y > two.height + 100 || supersoldierDamagingRect.translation._y < -100){
+                            supersoldierDamagingRect.remove();
+                        }
+
+                        // if the supersoldierDamagingRect collides with the player, remove 3 from the player's health
+                        let isColliding = checkCollision([player], [supersoldierDamagingRect])[0]
+                        if(isColliding && supersoldierDamagingRect.damageLock == false){
+                            supersoldierDamagingRect.damageLock = true;
+                            removePlayerHealth(3)
+                        }
+
+
+
                     })
                 }
 
