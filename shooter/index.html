@@ -35,6 +35,26 @@
         user-select: none;
         height: 20px;
     }
+    #nextWaveBtn {
+        position: absolute;
+        z-index: 100;
+        user-select: none;
+        width: 100px;
+        height: 50px;
+        border: 1px solid black;
+        /*center*/
+        left: 50%;
+        top: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transform: translate(-50%, -50%);
+    }
+    #keybindHelp {
+        position: absolute;
+        z-index: 100;
+        user-select: none;   
+    }
     svg {
         z-index: 0;
     }
@@ -52,6 +72,8 @@
     <div id="waveDisplay">Wave: 1</div>
     <div id="wearDisplay"></div>
     <div id="coinDisplay">Coins: 0</div>
+    <div id="nextWaveBtn" onclick="clearShopGUI()">Next Wave</div>
+    <div id="keybindHelp">h for keybind help</div>
 </body>
 <script>
     const mouseDebug = document.getElementById('mouse');
@@ -59,6 +81,19 @@
     const playerHealthDisplay = document.getElementById('healthDisplay');
     const waveDisplay = document.getElementById('waveDisplay');
     const coinDisplay = document.getElementById('coinDisplay');
+    const nextWaveBtn = document.getElementById('nextWaveBtn');
+    const keybindHelp = document.getElementById('keybindHelp');
+
+    function clearShopGUI(){
+        nextWaveBtn.style.display = 'none';
+        gameData.pauseWave = false;
+    }
+
+    function setShopGUI(){
+        gameData.pauseWave = true;
+        nextWaveBtn.style.display = 'flex';
+        
+    }
 
     for(i = 1; i <= 400; i++){
         let cell = document.createElement('div');
@@ -81,17 +116,18 @@
         downKey: 's',
         leftKey: 'a',
         rightKey: 'd',
-        shootKey1: ' ',
-        shootKey2: 'mouse0',
+        shootKey1: 'e',
+        shootKey2: 'q',
         toggleDebugKey: 'p',
-        togglePauseKey: '=',
+        togglePauseKey: ' ',
+        helpKey: 'h',
         intervalLength: 20, // 20
         borderOffset: debug ? 20 : 125, // 125
         borderWidth: 100, // 150
         frictionCoefficient: 0.9,
         keys: {
-            " ": false,
-            mouse0: false,
+            q: false,
+            e: false,
         },
         offsetDirectionDecider: Math.random() > 0.5 ? true : false,
         offsetDirection: 0.01,
@@ -100,11 +136,12 @@
         gradientBlue: 0,
         regenAmnt: 0.4,
         currentEnemies: 0,
-        currentWave: 0, // ===============
+        currentWave: 24, // ===============
         regenAmnt: 0.125,
         playing: true,
         displayWave: 0, // ===============
         tick: 0,
+        pauseWave: false,
     }
     
     const playerData = {
@@ -202,6 +239,8 @@
             coins: 10,
         }
     }
+
+    clearShopGUI()
 
     const waveData = {
         /*
@@ -359,7 +398,31 @@
             spawnEnemy('Jumper')
             spawnEnemy('Jumper')
             spawnEnemy('Jumper')
-        }
+        },
+        25: function(){
+            spawnEnemy('Supersoldier')
+        },
+        26: function(){
+            setShopGUI();
+        },
+        27: function(){
+            spawnEnemy('Soldier')
+            spawnEnemy('Soldier')
+            spawnEnemy('Soldier')
+            spawnEnemy('Soldier')
+            spawnEnemy('Soldier')
+            spawnEnemy('Jumper')
+            spawnEnemy('Jumper')
+            spawnEnemy('Jumper')
+            spawnEnemy('Jumper')
+            spawnEnemy('Swarmer')
+            spawnEnemy('Swarmer')
+            spawnEnemy('Swarmer')
+            spawnEnemy('Swarmer')
+            spawnEnemy('Swarmer')
+            spawnEnemy('Swarmer')
+        },
+        
     }
 
     
@@ -416,7 +479,6 @@
     screenBottom.fill = 'black'
 
     function constantUpdate(){
-        // check if shootKey1 or shootKey2 havent been pressed for 5 second;
         setInterval(function(){
             if(!gameData.playing) return;
             gameData.tick++;
@@ -491,6 +553,9 @@
             coinDisplay.style.left = screenLeft.translation._x + screenLeft.width + 10 + 'px';
             coinDisplay.style.top = screenTop.translation._y + screenTop.height + 110 + 'px';
 
+            keybindHelp.style.left = screenLeft.translation._x + screenLeft.width + 10 + 'px';
+            keybindHelp.style.top = screenTop.translation._y + screenTop.height + 130 + 'px';
+
             calculateBorders()
 
             let debugCannonWear = `Cannon Wear: ${debugData.cannonWear}\n`
@@ -562,7 +627,7 @@
     function waveController(){
         if(!gameData.playing) return;
         let enemies = two.scene.children.filter(child => child.type === 'enemy');
-        if(enemies[0] == 0){
+        if(enemies[0] == 0 && gameData.pauseWave == false){
             if(waveData[gameData.currentWave + 1] == undefined){
                 gameData.displayWave++;
                 waveData[gameData.currentWave]();
@@ -1059,18 +1124,25 @@
                     shoot();
                 }
             }
+            if(gameData.keys[gameData.shootKey2] && e.repeat == false){
+                shoot();
+            }
             if(gameData.keys[gameData.toggleDebugKey]){
                 debug = !debug;
             }
             if(gameData.keys[gameData.togglePauseKey]){
                 gameData.playing = !gameData.playing;
             }
+            if(gameData.keys[gameData.helpKey]){
+                confirm('wasd to move\nq to shoot\ne to rapid fire\nspace to pause')
+                gameData.keys[gameData.helpKey] = false;
+            }
         };
 
         document.onkeyup = e => {
             let key = e.key.toLowerCase();
             gameData.keys[key.toLowerCase()] = false;
-        };
+        }
 
         document.onmousemove = e => {
             mouseDebug.style.left = e.clientX + 10 + 'px';
@@ -1080,18 +1152,6 @@
                 playerData.mouseX = e.clientX
                 playerData.mouseY = e.clientY
             }, playerData.cannonWear)
-        }
-
-        document.onmousedown = e => { 
-            
-            gameData.keys["mouse" + e.button] = true;
-            if(gameData.keys[gameData.shootKey2]){
-                shoot();
-            }
-        }
-
-        document.onmouseup = e => {
-            gameData.keys["mouse" + e.button] = false;
         }
 
         function move(){
