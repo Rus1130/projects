@@ -613,7 +613,7 @@
                     removePlayerHealth(damage)
                     // remove the enemy
                     playerData.coins += enemyTypes[enemy.name].coins;
-                    if(enemy.cannonElement != 0){
+                    if(enemy.cannonElement != undefined){
                         enemy.cannonElement.remove();
                     }
                     enemy.remove();
@@ -860,7 +860,7 @@
                 if(enemy.health <= 0){
                     
                     // if the enemy was the supersoldier, remove the supersoldierCannon
-                    if(enemy.cannonElement != 0){
+                    if(enemy.cannonElement != undefined){
                         enemy.cannonElement.remove();
                     }
 
