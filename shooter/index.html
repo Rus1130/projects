@@ -670,17 +670,41 @@
                         speed = 1;
                     }
 
-                    if(gameData.tick % 500 >= 490){
+                    if(gameData.tick % 500 >= 490 && gameData.tick % 500 < 493){
                         enemy.attack = true;
                     } else {
                         enemy.attack = false;
                     }
 
                     if(enemy.attack){
-                        console.log('attack')
+                        // make the damagingRect originate from the enemy
+                        
+                        let damagingRect = two.makeRectangle(enemy.translation._x + 50 * Math.cos(angle), enemy.translation._y + 50 * Math.sin(angle), 100, 25);
+
+                        two.scene.remove(enemy)
+                        two.scene.remove(damagingRect)
+
+                        two.scene.add(damagingRect)
+                        two.scene.add(enemy)
+
+                        damagingRect.fill = 'black';
+                        damagingRect.type = 'supersoldierDamagingRect'
+                        damagingRect.rotation = angle;
+                        damagingRect.spawnTick = gameData.tick;
                     }
                     enemy.translation.x += speed * Math.cos(angle);
                     enemy.translation.y += speed * Math.sin(angle);
+                }
+
+
+                // see if there is a supersoldierDamagingRect
+                let supersoldierDamagingRects = two.scene.children.filter(child => child.type === 'supersoldierDamagingRect');
+                if(supersoldierDamagingRects[0] != 0){
+                    supersoldierDamagingRects.forEach(supersoldierDamagingRect => {
+                        // every tick, move it forward
+                        supersoldierDamagingRect.translation.x += 20 * Math.cos(supersoldierDamagingRect.rotation);
+                        supersoldierDamagingRect.translation.y += 20 * Math.sin(supersoldierDamagingRect.rotation);
+                    })
                 }
 
 
