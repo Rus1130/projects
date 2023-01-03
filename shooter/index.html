@@ -92,7 +92,7 @@
     function setShopGUI(){
         gameData.pauseWave = true;
         nextWaveBtn.style.display = 'flex';
-        
+        clearBossParts()   
     }
 
     for(i = 1; i <= 400; i++){
@@ -250,7 +250,7 @@
         }
         */
         1: function(){
-            spawnEnemy('Grunt')
+            spawnEnemy('Supersoldier')
         },
         2: function(){
             spawnEnemy('Grunt')
@@ -405,24 +405,24 @@
         26: function(){
             setShopGUI();
         },
-        27: function(){
-            spawnEnemy('Soldier')
-            spawnEnemy('Soldier')
-            spawnEnemy('Soldier')
-            spawnEnemy('Soldier')
-            spawnEnemy('Soldier')
-            spawnEnemy('Jumper')
-            spawnEnemy('Jumper')
-            spawnEnemy('Jumper')
-            spawnEnemy('Jumper')
-            spawnEnemy('Swarmer')
-            spawnEnemy('Swarmer')
-            spawnEnemy('Swarmer')
-            spawnEnemy('Swarmer')
-            spawnEnemy('Swarmer')
-            spawnEnemy('Swarmer')
-        },
-        
+    }
+
+    waveData[Object.keys(waveData).length + 1] = function(){
+        spawnEnemy('Soldier')
+        spawnEnemy('Soldier')
+        spawnEnemy('Soldier')
+        spawnEnemy('Soldier')
+        spawnEnemy('Soldier')
+        spawnEnemy('Jumper')
+        spawnEnemy('Jumper')
+        spawnEnemy('Jumper')
+        spawnEnemy('Jumper')
+        spawnEnemy('Swarmer')
+        spawnEnemy('Swarmer')
+        spawnEnemy('Swarmer')
+        spawnEnemy('Swarmer')
+        spawnEnemy('Swarmer')
+        spawnEnemy('Swarmer')
     }
 
     
@@ -681,6 +681,9 @@
                     if(enemy.cannonElement != undefined){
                         enemy.cannonElement.remove();
                     }
+                    if(enemy.name == 'supersoldier'){
+                        clearBossParts()
+                    }
                     enemy.remove();
                     gameData.currentEnemies--;
                 }
@@ -753,6 +756,7 @@
 
 
                         enemyCannon.name = 'Supersoldier';
+                        enemyCannon.parentElement = 'Supersoldier'
                         enemyCannon.name2 = 'supersoldierCannon'
                         enemyCannon.rotation = angle
                         enemy.spawnCannon = false;
@@ -767,7 +771,6 @@
                     two.scene.add(enemy)
                     two.scene.add(enemyCannon)
 
-                    enemy.cannonElement = enemyCannon
                     enemyCannon.rotation = angle
                     enemyCannon.translation._x = enemy.translation._x + 50 * Math.cos(angle);
                     enemyCannon.translation._y = enemy.translation._y + 50 * Math.sin(angle);
@@ -803,6 +806,7 @@
                         two.scene.add(damagingRect)
                         two.scene.add(enemy)
 
+                        damagingRect.parentElement = 'Supersoldier'
                         damagingRect.fill = 'black';
                         damagingRect.type = 'supersoldierDamagingRect'
                         damagingRect.rotation = angle;
@@ -924,11 +928,14 @@
 
                 if(enemy.health <= 0){
                     
-                    // if the enemy was the supersoldier, remove the supersoldierCannon
-                    if(enemy.cannonElement != undefined){
-                        enemy.cannonElement.remove();
-                    }
+                    // if the enemy was a supersoldier, remove everything with a parentElement of 'Supersoldier'
 
+                    let superSoldierElements = two.scene.children.filter(child => child.parentElement === 'Supersoldier');
+                    if(superSoldierElements[0] != 0){
+                        superSoldierElements.forEach(element => {
+                            element.remove();
+                        })
+                    }
                     playerData.coins += enemyTypes[enemy.name].coins;
                     enemy.remove();
                     gameData.currentEnemies--;
