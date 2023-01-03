@@ -96,6 +96,7 @@
         regenAmnt: 0.125,
         playing: true,
         displayWave: 0, // ===============
+        tick: 0,
     }
     
     const playerData = {
@@ -188,6 +189,10 @@
     }
 
     const waveData = {
+        1: function(){
+            spawnEnemy('Supersoldier')
+        }
+        /*
         1: function(){
             spawnEnemy('Grunt')
         },
@@ -337,7 +342,7 @@
             spawnEnemy('Jumper')
             spawnEnemy('Jumper')
             spawnEnemy('Jumper')
-        },
+        },*/
     }
 
     
@@ -395,6 +400,10 @@
 
     function constantUpdate(){
         // check if shootKey1 or shootKey2 havent been pressed for 5 second;
+        setInterval(function(){
+            if(!gameData.playing) return;
+            gameData.tick++;
+        }, 1)
         setInterval(function(){
             if(!gameData.playing) return;
             enemyController()
@@ -630,7 +639,7 @@
                     enemy.rotation = angle
 
                     // every second, change speed from 1 to 3, or 3 to 1
-                    if(Date.now() % 3000 >= 2800){
+                    if(gameData.tick % 300 >= 280){
                         
                         if(speed == 0){
                             speed = 20;
@@ -643,34 +652,33 @@
                     enemy.translation.x += speed * Math.cos(angle);
                     enemy.translation.y += speed * Math.sin(angle);
                 }
-
                 if(enemy.name == 'Supersoldier'){
-                    let timer = Date.now()
+                    enemy.rotation = angle
 
                     if(enemy.attack == undefined){
                         enemy.attack = false;
                     }
 
-                    if(timer % 5000 < 4700){
+                    if(gameData.tick % 500 < 470){
                         enemy.invincible = false
                     }
 
-                    if(timer % 5000 >= 4300){
+                    if(gameData.tick % 500 >= 430){
                         enemy.invincible = true
                         speed = 0
                     } else {
                         speed = 1;
                     }
 
-                    if(timer % 5000 >= 4900){
+                    if(gameData.tick % 500 >= 490){
                         enemy.attack = true;
                     } else {
                         enemy.attack = false;
                     }
 
-
-
-                    enemy.rotation = angle
+                    if(enemy.attack){
+                        console.log('attack')
+                    }
                     enemy.translation.x += speed * Math.cos(angle);
                     enemy.translation.y += speed * Math.sin(angle);
                 }
