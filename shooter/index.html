@@ -419,7 +419,6 @@
     function spawnRandomWave(){
         let enemies = ['Grunt', 'Footsoldier', 'Soldier', 'Swarmer', 'Jumper']
         let bosses = ['Supersoldier']
-        let difficulties = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
         let chosenEnemies = []
 
@@ -428,30 +427,41 @@
         let currentWave = gameData.currentWave
 
         
-        // get a random index of difficulties
-        let chosenDifficulty = Math.floor(Math.random() * Math.floor(difficulties.length))
-        let enemyAmnt = Math.ceil((currentWave + chosenDifficulty) / 5)
+        let randomEnemyIndex = Math.floor(Math.random() * Math.floor(enemies.length))
+        let enemyAmnt = Math.ceil((currentWave + (randomEnemyIndex * 2)) / 5)
 
-        // get the percent of each enemies chance to spawn
+        let randomEnemy = enemies[randomEnemyIndex]
 
-        let enemiesAndChances = {}
+        let probs = {}
         for(i = 0; i < enemies.length; i++){
-            enemiesAndChances[enemies[i]] = Math.floor(100 / enemies.length)
+            probs[enemies[i]] = Math.abs(i - randomEnemyIndex)
         }
 
-        // weight the percent of each enemies chance to spawn based on the difficulty
-        for(j = 0; j < 20; j++){
-            for(i = 0; i < chosenDifficulty; i++){
-                let randomEnemy = Math.floor(Math.random() * Math.floor(enemies.length))
-                enemiesAndChances[enemies[randomEnemy]] += 1
+        // get the highest value in probs
+        let highestValue = 0
+        let totalValue = 0
+        for(i = 0; i < Object.keys(probs).length; i++){
+            if(probs[Object.keys(probs)[i]] > highestValue){
+                highestValue = probs[Object.keys(probs)[i]]
             }
+            totalValue += probs[Object.keys(probs)[i]]
         }
+
+        for(i = 0; i < Object.keys(probs).length; i++){
+            probs[Object.keys(probs)[i]] = (highestValue - probs[Object.keys(probs)[i]]) / totalValue
+        }
+
+
+
         
+
+
 
         let result = {
             enemyAmnt: enemyAmnt,
-            enemiesAndChances: enemiesAndChances,
-            chosenDifficulty: chosenDifficulty
+            randomEnemy: randomEnemy,
+            probs: probs,
+            chosenEnemies: chosenEnemies
         }
         return result
 
