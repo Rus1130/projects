@@ -136,7 +136,7 @@
         gradientBlue: 0,
         regenAmnt: 0.4,
         currentEnemies: 0,
-        currentWave: 1, // ===============
+        currentWave: 0, // ===============
         regenAmnt: 0.125,
         playing: true,
         displayWave: 0, // ===============
@@ -245,9 +245,8 @@
 
     const waveData = {
         1: function(){
-            spawnEnemy('Supersoldier')
+            spawnEnemy('Grunt')
         },
-        /*
         2: function(){
             spawnEnemy('Grunt')
             spawnEnemy('Grunt')
@@ -400,9 +399,7 @@
         },
         26: function(){
             setShopGUI();
-        },
-        */
-        
+        }
     }
 
     function randomizer(values){
@@ -431,7 +428,8 @@
     // create random waves
     function randomWave(){
         let wave = [];
-        let waveLength = Math.floor(Math.random() * Math.ceil((gameData.currentWave / 3))) + 1;
+        
+        let waveLength = Math.floor(Math.random() * Math.floor(Math.random() * Math.ceil(gameData.currentWave  / 4)) + 1) + 1;
         for (let i = 0; i < waveLength; i++) {
             let enemy = randomizer([
                 {value: 'Grunt', probability: 0.5},
@@ -442,9 +440,12 @@
                 {value: 'Supersoldier', probability: 0.05},
                 {value: 'Boss', probability: '*'}
             ]);
-            wave.push(enemy);
+            wave.push(`spawnEnemy("${enemy}");`);
         }
-        return wave;
+        wave = wave.join("\n")
+        const waveFunction = new Function(wave);
+        waveData[Object.keys(waveData).length + 1] = waveFunction;
+        return waveFunction;
     }
     
 
@@ -652,7 +653,8 @@
         let enemies = two.scene.children.filter(child => child.type === 'enemy');
         if(enemies[0] == 0 && gameData.pauseWave == false){
             if(waveData[gameData.currentWave + 1] == undefined){
-                // gameData.displayWave++; =======================
+                randomWave();
+                gameData.displayWave++; 
                 gameData.currentWave++;
                 waveData[gameData.currentWave]();
             } else {
