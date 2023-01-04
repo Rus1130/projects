@@ -429,19 +429,39 @@
     function randomWave(){
         let wave = [];
         
-        let waveLength = Math.floor(Math.random() * Math.floor(Math.random() * Math.ceil(gameData.currentWave  / 4)) + 1) + 1;
-        for (let i = 0; i < waveLength; i++) {
-            let enemy = randomizer([
-                {value: 'Grunt', probability: 0.5},
-                {value: 'Footsoldier', probability: 0.5},
-                {value: 'Soldier', probability: 0.3},
-                {value: 'Swarmer', probability: 0.2},
-                {value: 'Jumper', probability: 0.1},
-                {value: 'Supersoldier', probability: 0.05},
-                {value: 'Boss', probability: '*'}
-            ]);
-            wave.push(`spawnEnemy("${enemy}");`);
+        let spawnBoss = randomizer([
+            {value: true, probability: 0.05},
+            {value: false, probability: 0.95}
+        ]);
+        if(!spawnBoss){
+            let waveLength = Math.floor(Math.random() * Math.floor(Math.random() * Math.ceil(gameData.currentWave  / 4)) + 1) + 1;
+            let spawnProbabilities = []
+            // create spawn probabilities
+            for(let i = 0; i < enemyArray.length; i++){
+                let probability = 0.5 / (i + 1)
+                spawnProbabilities.push({value: enemyArray[i], probability: probability})
+            }
+
+            for (let i = 0; i < waveLength; i++) {
+                let enemy = randomizer(spawnProbabilities);
+                wave.push(`spawnEnemy("${enemy}");`);
+            }
+
+        } else {
+            let waveLength = Math.floor(Math.random() * 3) + 1;
+            let spawnProbabilities = []
+            // create spawn probabilities
+            for(let i = 0; i < bossArray.length; i++){
+                let probability = 0.5 / (i + 1)
+                spawnProbabilities.push({value: bossArray[i], probability: probability})
+            }
+
+            for (let i = 0; i < waveLength; i++) {
+                let enemy = randomizer(spawnProbabilities);
+                wave.push(`spawnEnemy("${enemy}");`);
+            }
         }
+
         wave = wave.join("\n")
         const waveFunction = new Function(wave);
         waveData[Object.keys(waveData).length + 1] = waveFunction;
