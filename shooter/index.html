@@ -92,7 +92,7 @@
     function setShopGUI(){
         gameData.pauseWave = true;
         nextWaveBtn.style.display = 'flex';
-        clearBossParts()   
+           
     }
 
     for(i = 1; i <= 400; i++){
@@ -136,7 +136,7 @@
         gradientBlue: 0,
         regenAmnt: 0.4,
         currentEnemies: 0,
-        currentWave: 0, // ===============
+        currentWave: 1, // ===============
         regenAmnt: 0.125,
         playing: true,
         displayWave: 0, // ===============
@@ -245,7 +245,7 @@
 
     const waveData = {
         1: function(){
-            spawnEnemy('Grunt')
+            spawnEnemy('Supersoldier')
         },
         /*
         2: function(){
@@ -402,86 +402,50 @@
             setShopGUI();
         },
         */
+        
+    }
+
+    function randomizer(values){
+        let i, pickedValue, 
+        randomNr = Math.random(),
+        threshold = 0;
+        for (i = 0; i < values.length; i++) {
+            if (values[i].probability === '*'){ 
+                continue;
+            }
+            threshold += values[i].probability; 
+            if(threshold > randomNr) {
+                pickedValue = values[i].value;
+                break;
+            }
+            if (!pickedValue) {
+                pickedValue = values.filter((value) => value.probability === '*');
+            }
+        }
+        return pickedValue;
     }
 
     const enemyArray = ['Grunt', 'Footsoldier', 'Soldier', 'Swarmer', 'Jumper']
     const bossArray = ['Supersoldier']
 
-
-    const randomWaveEnemyAmnt = {
-        1: 5,
-        2: 6,
-        3: 7,
-        4: 8,
-        5: 9,
+    // create random waves
+    function randomWave(){
+        let wave = [];
+        let waveLength = Math.floor(Math.random() * Math.ceil((gameData.currentWave / 3))) + 1;
+        for (let i = 0; i < waveLength; i++) {
+            let enemy = randomizer([
+                {value: 'Grunt', probability: 0.5},
+                {value: 'Footsoldier', probability: 0.5},
+                {value: 'Soldier', probability: 0.3},
+                {value: 'Swarmer', probability: 0.2},
+                {value: 'Jumper', probability: 0.1},
+                {value: 'Supersoldier', probability: 0.05},
+                {value: 'Boss', probability: '*'}
+            ]);
+            wave.push(enemy);
+        }
+        return wave;
     }
-
-    function spawnRandomWave(){
-        let enemies = ['Grunt', 'Footsoldier', 'Soldier', 'Swarmer', 'Jumper']
-        let bosses = ['Supersoldier']
-
-        let chosenEnemies = []
-
-        let playerDurability = gameData.playerDurability
-        let playerHealth = gameData.playerHealth
-        let currentWave = gameData.currentWave
-
-        
-        let randomEnemyIndex = Math.floor(Math.random() * Math.floor(enemies.length))
-        let enemyAmnt = Math.ceil((currentWave + (randomEnemyIndex * 2)) / 5)
-
-        let randomEnemy = enemies[randomEnemyIndex]
-
-        let probs = {}
-        for(i = 0; i < enemies.length; i++){
-            probs[enemies[i]] = Math.abs(i - randomEnemyIndex)
-        }
-
-        // get the highest value in probs
-        let highestValue = 0
-        let totalValue = 0
-        for(i = 0; i < Object.keys(probs).length; i++){
-            if(probs[Object.keys(probs)[i]] > highestValue){
-                highestValue = probs[Object.keys(probs)[i]]
-            }
-            totalValue += probs[Object.keys(probs)[i]]
-        }
-
-        for(i = 0; i < Object.keys(probs).length; i++){
-            probs[Object.keys(probs)[i]] = (highestValue - probs[Object.keys(probs)[i]]) / totalValue
-        }
-
-
-
-        
-        
-
-
-        let result = {
-            enemyAmnt: enemyAmnt,
-            randomEnemy: randomEnemy,
-            probs: probs,
-            chosenEnemies: chosenEnemies
-        }
-        return result
-
-
-        // let difficulty = Math.floor(Math.random() * Math.floor(Object.keys(randomWaveEnemyAmnt).length)) + 1;
-        // let enemyAmnt = randomWaveEnemyAmnt[difficulty];
-
-        // let buffer = [];
-        // for(i = 0; i < enemyAmnt; i++){
-        //     let randomEnemy = Math.floor(Math.random() * Math.floor(enemyArray.length));
-        //     buffer.push(`spawnEnemy("${enemyArray[randomEnemy]}")`)
-        // }
-
-        // waveData[Object.keys(waveData).length + 1] = new Function(buffer.join('\n'));
-
-    }
-
-    gameData.playing = false;
-    gameData.currentWave = 27;
-
     
 
     
@@ -688,9 +652,8 @@
         let enemies = two.scene.children.filter(child => child.type === 'enemy');
         if(enemies[0] == 0 && gameData.pauseWave == false){
             if(waveData[gameData.currentWave + 1] == undefined){
-                spawnRandomWave()
+                // gameData.displayWave++; =======================
                 gameData.currentWave++;
-                gameData.displayWave++;
                 waveData[gameData.currentWave]();
             } else {
                 gameData.displayWave++;
@@ -743,7 +706,6 @@
                         enemy.cannonElement.remove();
                     }
                     if(enemy.name == 'supersoldier'){
-                        clearBossParts()
                     }
                     enemy.remove();
                     gameData.currentEnemies--;
