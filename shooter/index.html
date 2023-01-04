@@ -62,7 +62,7 @@
 </style>
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval';">
     <script src="two.js"></script>
     <script src="math.js"></script>
 </head>
@@ -242,6 +242,7 @@
 
     clearShopGUI()
 
+
     const waveData = {
         /*
         1: function(){
@@ -252,6 +253,7 @@
         1: function(){
             spawnEnemy('Grunt')
         },
+        /*
         2: function(){
             spawnEnemy('Grunt')
             spawnEnemy('Grunt')
@@ -405,8 +407,10 @@
         26: function(){
             setShopGUI();
         },
+        */
     }
 
+    /*
     waveData[Object.keys(waveData).length + 1] = function(){
         spawnEnemy('Soldier')
         spawnEnemy('Soldier')
@@ -424,6 +428,47 @@
         spawnEnemy('Swarmer')
         spawnEnemy('Swarmer')
     }
+    */
+
+    const enemyArray = ['Grunt', 'Footsoldier', 'Soldier', 'Swarmer', 'Jumper']
+    const bossArray = ['Supersoldier']
+
+
+    const randomWaveEnemyAmnt = {
+        1: 5,
+        2: 7,
+        3: 9,
+        4: 10,
+        5: 12,
+        6: 14,
+        7: 1,
+        8: 2,
+    }
+
+    function spawnRandomWave(){
+        let difficulty = Math.floor(Math.random() * Math.floor(8)) + 1;
+        let enemyAmnt = randomWaveEnemyAmnt[difficulty];
+
+        let buffer = [];
+
+        if(difficulty <= 6){
+            for(i = 0; i < enemyAmnt; i++){
+                let randomEnemy = Math.floor(Math.random() * Math.floor(enemyArray.length));
+                buffer.push(`spawnEnemy("${enemyArray[randomEnemy]}")`)
+            }
+
+        } else {
+            for(i = 0; i < enemyAmnt; i++){
+                let randomBoss = Math.floor(Math.random() * Math.floor(bossArray.length));
+                buffer.push(`spawnEnemy("${enemyArray[randomBoss]}")`)
+            }
+        }
+
+        waveData[Object.keys(waveData).length + 1] = new Function(buffer.join('\n'));
+
+    }
+
+    
 
     
     let player = two.makeRectangle(two.width / 2, two.height / 2, 50 ,50);
@@ -629,8 +674,11 @@
         let enemies = two.scene.children.filter(child => child.type === 'enemy');
         if(enemies[0] == 0 && gameData.pauseWave == false){
             if(waveData[gameData.currentWave + 1] == undefined){
+                
+                
+                gameData.currentWave++;
                 gameData.displayWave++;
-                waveData[gameData.currentWave]();
+                spawnRandomWave()
             } else {
                 gameData.displayWave++;
                 gameData.currentWave++;
