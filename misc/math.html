@@ -4,6 +4,11 @@
 <script>
     function simplifyRadical(outer, inner){
         // outer√inner
+
+        if(inner == undefined){
+            inner = outer;
+            outer = 1;
+        }
         let factors = [];
         let divisor = 2;
 
@@ -40,4 +45,5 @@
         return outerProduct * outer + "√" + innerProduct;
     }
 
+    document.write(simplifyRadical(294));
 </script>
