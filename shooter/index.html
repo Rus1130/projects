@@ -244,12 +244,6 @@
 
 
     const waveData = {
-        /*
-        1: function(){
-            spawnEnemy('Supersoldier');
-            spawnEnemy('Supersoldier');
-        }
-        */
         1: function(){
             spawnEnemy('Grunt')
         },
@@ -410,63 +404,73 @@
         */
     }
 
-    /*
-    waveData[Object.keys(waveData).length + 1] = function(){
-        spawnEnemy('Soldier')
-        spawnEnemy('Soldier')
-        spawnEnemy('Soldier')
-        spawnEnemy('Soldier')
-        spawnEnemy('Soldier')
-        spawnEnemy('Jumper')
-        spawnEnemy('Jumper')
-        spawnEnemy('Jumper')
-        spawnEnemy('Jumper')
-        spawnEnemy('Swarmer')
-        spawnEnemy('Swarmer')
-        spawnEnemy('Swarmer')
-        spawnEnemy('Swarmer')
-        spawnEnemy('Swarmer')
-        spawnEnemy('Swarmer')
-    }
-    */
-
     const enemyArray = ['Grunt', 'Footsoldier', 'Soldier', 'Swarmer', 'Jumper']
     const bossArray = ['Supersoldier']
 
 
     const randomWaveEnemyAmnt = {
         1: 5,
-        2: 7,
-        3: 9,
-        4: 10,
-        5: 12,
-        6: 14,
-        7: 1,
-        8: 2,
+        2: 6,
+        3: 7,
+        4: 8,
+        5: 9,
     }
 
     function spawnRandomWave(){
-        let difficulty = Math.floor(Math.random() * Math.floor(8)) + 1;
-        let enemyAmnt = randomWaveEnemyAmnt[difficulty];
+        let enemies = ['Grunt', 'Footsoldier', 'Soldier', 'Swarmer', 'Jumper']
+        let bosses = ['Supersoldier']
+        let difficulties = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
-        let buffer = [];
+        let chosenEnemies = []
 
-        if(difficulty <= 6){
-            for(i = 0; i < enemyAmnt; i++){
-                let randomEnemy = Math.floor(Math.random() * Math.floor(enemyArray.length));
-                buffer.push(`spawnEnemy("${enemyArray[randomEnemy]}")`)
-            }
+        let playerDurability = gameData.playerDurability
+        let playerHealth = gameData.playerHealth
+        let currentWave = gameData.currentWave
 
-        } else {
-            for(i = 0; i < enemyAmnt; i++){
-                let randomBoss = Math.floor(Math.random() * Math.floor(bossArray.length));
-                buffer.push(`spawnEnemy("${enemyArray[randomBoss]}")`)
-            }
+        
+        // get a random index of difficulties
+        let chosenDifficulty = Math.floor(Math.random() * Math.floor(difficulties.length))
+        let enemyAmnt = Math.ceil((currentWave + chosenDifficulty) / 5)
+
+        // get the percent of each enemies chance to spawn
+
+        let enemiesAndChances = {}
+        for(i = 0; i < enemies.length; i++){
+            enemiesAndChances[enemies[i]] = Math.floor(100 / enemies.length)
         }
 
-        waveData[Object.keys(waveData).length + 1] = new Function(buffer.join('\n'));
+        // weight the percent of each enemies chance to spawn based on the difficulty
+        for(j = 0; j < 20; j++){
+            for(i = 0; i < chosenDifficulty; i++){
+                let randomEnemy = Math.floor(Math.random() * Math.floor(enemies.length))
+                enemiesAndChances[enemies[randomEnemy]] += 1
+            }
+        }
+        
+
+        let result = {
+            enemyAmnt: enemyAmnt,
+            enemiesAndChances: enemiesAndChances,
+            chosenDifficulty: chosenDifficulty
+        }
+        return result
+
+
+        // let difficulty = Math.floor(Math.random() * Math.floor(Object.keys(randomWaveEnemyAmnt).length)) + 1;
+        // let enemyAmnt = randomWaveEnemyAmnt[difficulty];
+
+        // let buffer = [];
+        // for(i = 0; i < enemyAmnt; i++){
+        //     let randomEnemy = Math.floor(Math.random() * Math.floor(enemyArray.length));
+        //     buffer.push(`spawnEnemy("${enemyArray[randomEnemy]}")`)
+        // }
+
+        // waveData[Object.keys(waveData).length + 1] = new Function(buffer.join('\n'));
 
     }
+
+    gameData.playing = false;
+    gameData.currentWave = 27;
 
     
 
@@ -674,11 +678,10 @@
         let enemies = two.scene.children.filter(child => child.type === 'enemy');
         if(enemies[0] == 0 && gameData.pauseWave == false){
             if(waveData[gameData.currentWave + 1] == undefined){
-                
-                
+                spawnRandomWave()
                 gameData.currentWave++;
                 gameData.displayWave++;
-                spawnRandomWave()
+                waveData[gameData.currentWave]();
             } else {
                 gameData.displayWave++;
                 gameData.currentWave++;
