@@ -183,6 +183,10 @@
         Colors_landed: 0
     }
 
+    const gameData = {
+        bank: 0,
+    }
+
     const numbers = {
         0: 'green',
         32: 'red',
@@ -283,13 +287,6 @@
             weights[i] = math.round(1/36, 6)
         }
 
-
-        // add each key of the weights object togehter
-        let totalWeight = 0
-        for(let key in weights){
-            totalWeight += weights[key]
-        }
-
         for(let key in weights){
             if(key == unweightedSpunNumber){
                 weights[key] -= 0.017778
@@ -303,20 +300,28 @@
         let spinNumber = weightedRand(weights)
         let spunNumber = spinNumber()
 
-        console.log(weights)
-        console.log(unweightedSpunNumber)
-        console.log(spunNumber)
-
-
         
 
-        
-
-        let spunColor = numbers[spunNumber]
+        let unweightedSpunColor = numbers[spunNumber]
         let colorWeights = {
             red: 0.4999,
             black: 0.4999,
             green: 0.0004
+        }
+
+        for(let key in colorWeights){
+            if(key == unweightedSpunColor){
+                colorWeights[key] -= 0.1999
+            } else {
+                colorWeights[key] += 0.1999
+            }
+        }
+
+        let spinColor = weightedRand(colorWeights)
+        let spunColor = spinColor()
+
+        if(unweightedSpunColor == 'green'){
+            spunColor = 'green'
         }
 
         alertBox.classList.remove('hidden')
@@ -347,6 +352,7 @@
             alertText.innerHTML = `You landed on a ${spunNumber}}! You got $${betAmount * 35}!`
         } else {
             stats.Money_lost += betAmount
+            gameData.back += betAmount
             stats.Losses += 1
 
             money -= betAmount
