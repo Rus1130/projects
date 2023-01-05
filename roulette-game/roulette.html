@@ -185,6 +185,15 @@
 
     const gameData = {
         bank: 0,
+        playerMoney: 100,
+    }
+
+    if (localStorage.getItem('stats') != null) {
+        stats = JSON.parse(localStorage.getItem('stats'))
+    }
+
+    if (localStorage.getItem('gameData') != null) {
+        gameData = JSON.parse(localStorage.getItem('gameData'))
     }
 
     const numbers = {
@@ -227,8 +236,6 @@
         26: 'black'
     }
 
-    let money = 100;
-
     function submitBet(){
         betOnElem.value = betOnElem.value.trim()
         betAmountElem.value = betAmountElem.value.trim()
@@ -249,7 +256,7 @@
 
         betAmount = parseInt(betAmount)
 
-        if(betAmount > money){
+        if(betAmount > gameData.playerMoney){
             alertText.innerHTML = "You can't bet what you don't have."
             betAmountElem.value = ''
             alertBox.classList.remove('hidden')
@@ -333,14 +340,14 @@
                 stats.Wins += 1
                 stats.Colors_landed += 1
 
-                money += betAmount * 35
+                gameData.playerMoney += betAmount * 35
                 alertText.innerHTML = `You landed on ${spunColor}}! You got $${betAmount * 35}!` 
             } else {
                 stats.Money_won += betAmount
                 stats.Wins += 1
                 stats.Colors_landed += 1
 
-                money += betAmount
+                gameData.playerMoney += betAmount
                 alertText.innerHTML = `You landed on ${spunColor}. You got $${betAmount}.`
             }
         } else if(betOn == spunNumber){
@@ -348,19 +355,19 @@
             stats.Wins += 1
             stats.Numbers_landed += 1
 
-            money += betAmount * 35
+            gameData.playerMoney += betAmount * 35
             alertText.innerHTML = `You landed on a ${spunNumber}}! You got $${betAmount * 35}!`
         } else {
             stats.Money_lost += betAmount
-            gameData.back += betAmount
+            gameData.bank += betAmount
             stats.Losses += 1
 
-            money -= betAmount
+            gameData.playerMoney -= betAmount
 
-            if(money < 0){
+            if(gameData.playerMoney < 0){
                 stats.Times_you_went_into_debt += 1
             }
-            alertText.innerHTML = `You didn't spin a ${spunColor}. You lost $${betAmount}.`
+            alertText.innerHTML = `You didn't spin a ${betOn}. You lost $${betAmount}.`
         }
 
 
@@ -374,8 +381,10 @@
         statBuffer += `<br><br>e to open banking menu`
 
         statsElem.innerHTML = statBuffer.replaceAll("_", " ")
-        moneyCounter.innerHTML = `$${money}`
+        moneyCounter.innerHTML = `Bet Money: $${gameData.playerMoney}`
     }
+
+    let deleteCounter = 0;
 
 
     document.addEventListener('keydown', function(event){
@@ -386,7 +395,38 @@
                 bankingMenu.classList.add('hidden')
             }
         }
+        // check if Delete was pressed 3 times within 500ms
+        
+        if(event.key == 'Delete'){
+            if(deleteCounter == 0){
+                deleteCounter = 1
+                setTimeout(function(){
+                    deleteCounter = 0
+                }, 800)
+            } else if(deleteCounter == 1){
+                deleteCounter = 2
+                setTimeout(function(){
+                    deleteCounter = 0
+                }, 800)
+            } else if(deleteCounter == 2){
+                deleteCounter = 0
+                let resetDataConfirmation = confirm('Are you sure you want to reset your data?')
+                if(resetDataConfirmation){
+                    localStorage.removeItem('roulette_gameData')
+                    localStorage.removeItem('roulette_stats')
+                    location.reload()
+                }
+            }
+        }
     })
+
+
+    setInterval(function(){
+        localStorage.setItem('roulette_gameData', JSON.stringify(gameData))
+        localStorage.setItem('roulette_stats', JSON.stringify(stats))
+    }, 10)
+
+
 
 
 </script>
