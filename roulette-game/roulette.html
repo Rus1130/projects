@@ -109,7 +109,7 @@
         font-size: 20px;
     }
 
-    #bankingMenu, #statsMenu {
+    #bankingMenu, #statsMenu, #loansMenu {
         width: 500px;
         height: 500px;
         position: absolute;
@@ -192,13 +192,13 @@
                 Losses: 0<br>
                 Money won: $0<br>
                 Money lost: $0<br>
-                Times you went into debt: 0<br>
                 Numbers landed: 0<br>
                 Numbers Missed: 0<br>
                 Colors landed: 0<br>
                 Colors missed: 0
             </div>
         </div>
+        <div id="loansMenu" gameMenu class="hidden">nothing yet</div>
     </div>
 
 </body>
@@ -275,7 +275,6 @@
         Losses: 0,
         Money_won: 0,
         Money_lost: 0,
-        Times_you_went_into_debt: 0,
         Numbers_landed: 0,
         Numbers_missed: 0,
         Colors_landed: 0,
@@ -524,6 +523,9 @@
         }
         if(event.key == 'o'){
             menuController("statsMenu")
+        }
+        if(event.key == 'l'){
+            menuController("loansMenu")
         }
         // check if Delete was pressed 3 times within 500ms
         
