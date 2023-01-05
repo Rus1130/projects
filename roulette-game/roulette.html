@@ -155,12 +155,15 @@
 
 </style>
 <head>
+    <!--add interest-cohort -->
+    <meta http-equiv="interest-cohort" content="default=()"/>
     <script src="math.js"></script>
 </head>
 <body>
     <div id="helper">
         e to open banking menu<br>
-        o to open stats menu
+        o to open stats menu<br>
+        l to open loans menu<br>
     </div>
     <div id="wrapper">
         <div id="alert" class="hidden">
@@ -255,6 +258,8 @@
                 bankedMoneyDisplay.innerHTML = `Account Balance: $${gameData.bankedMoney}`
             }
         }
+
+        setAllDisplays()
     }
 
     function menuController(menu){
@@ -286,13 +291,35 @@
         loanTimer: 0,
     }
 
-    if (localStorage.getItem('stats') != null) {
-        stats = JSON.parse(localStorage.getItem('stats'))
+    if (localStorage.getItem('roulette_stats') != null) {
+        let keys = Object.keys(JSON.parse(localStorage.getItem('roulette_stats')));
+        keys.forEach(key => {
+            stats[key] = JSON.parse(localStorage.getItem('roulette_stats'))[key]
+        })
     }
 
-    if (localStorage.getItem('gameData') != null) {
-        gameData = JSON.parse(localStorage.getItem('gameData'))
+    if (localStorage.getItem('roulette_gameData') != null) {
+        let keys = Object.keys(JSON.parse(localStorage.getItem('roulette_gameData')));
+        keys.forEach(key => {
+            gameData[key] = JSON.parse(localStorage.getItem('roulette_gameData'))[key]
+        })
     }
+
+    function setAllDisplays(){
+        let statBuffer = ''
+
+        for(let stat in stats){
+            statBuffer += `${stat}: ${stat == "Money_won" || stat == "Money_lost" ? "$" : ""}${stats[stat]}<br>`
+        }
+
+        statBuffer = `<div id='wrapper' style="font-size: 20px; text-align: center;">${statBuffer}</div>`
+        statsElem.innerHTML = statBuffer.replaceAll("_", " ")
+
+        moneyCounter.innerHTML = `Bet Money: $${gameData.playerMoney}`
+        bankedMoneyDisplay.innerHTML = `Account Balance: $${gameData.bankedMoney}`
+    }
+
+    setAllDisplays()
 
     const numbers = {
         0: 'green',
@@ -480,19 +507,11 @@
 
 
 
-        let statBuffer = ''
-
-        for(let stat in stats){
-            statBuffer += `${stat}: ${stat == "Money_won" || stat == "Money_lost" ? "$" : ""}${stats[stat]}<br>`
-        }
-
-        statBuffer = `<div id='wrapper' style="font-size: 20px; text-align: center;">${statBuffer}</div>`
-        statsElem.innerHTML = statBuffer.replaceAll("_", " ")
-    
-        moneyCounter.innerHTML = `Bet Money: $${gameData.playerMoney}`
+        setAllDisplays()
     }
 
     let deleteCounter = 0;
+    let savelock = false;
 
 
     document.addEventListener('keydown', function(event){
@@ -509,15 +528,18 @@
         // check if Delete was pressed 3 times within 500ms
         
         if(event.key == 'Delete'){
+            savelock = true;
             if(deleteCounter == 0){
                 deleteCounter = 1
                 setTimeout(function(){
                     deleteCounter = 0
+                    savelock = false;
                 }, 800)
             } else if(deleteCounter == 1){
                 deleteCounter = 2
                 setTimeout(function(){
                     deleteCounter = 0
+                    savelock = false;
                 }, 800)
             } else if(deleteCounter == 2){
                 deleteCounter = 0
@@ -531,11 +553,13 @@
         }
     })
 
-
-    setInterval(function(){
-        localStorage.setItem('roulette_gameData', JSON.stringify(gameData))
-        localStorage.setItem('roulette_stats', JSON.stringify(stats))
-    }, 10)
+    // on unload, save the game data
+    window.onbeforeunload = function(){
+        if(!savelock){
+            localStorage.setItem('roulette_gameData', JSON.stringify(gameData))
+            localStorage.setItem('roulette_stats', JSON.stringify(stats))
+        }
+    }
 
 
 
