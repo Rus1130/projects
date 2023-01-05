@@ -125,9 +125,32 @@
         display: grid;
         grid-template-columns: 100%;
         grid-template-rows: 1fr 1fr 1fr 1fr;
-
-        transform: translate(0, 50px);
         text-align: center;
+    }
+
+    #centerer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+
+    #depositButton, #withdrawButton {
+        width: calc(100% - 2px);
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 20px;
+        user-select: none;
+        background-color: rgb(159, 187, 247);
+        transition: background-color 0.5s;
+        border: 1px solid black;
+    }
+
+    #depositButton:hover, #withdrawButton:hover {
+        cursor: pointer;
+        background-color: rgb(101, 150, 255);
     }
 
 </style>
@@ -151,11 +174,13 @@
             <div id="submitBetButton" onclick="submitBet()">Bet!</div>
         </div>
         <div id="bankingMenu" gameMenu class="hidden">
-            <div id="bankingMenuInner">
-                <div>Banked Money: $0</div>
-                <div>aa</div>
-                <div>bb</div>
-                <div>cc</div>
+            <div id='centerer'>
+                <div style="display: grid; row-gap: 4px; text-align: center;">
+                    <div id="bankedMoneyDisplay">Account Balance: $0</div>
+                    <textarea placeholder="Enter the amount" id="bankAmountInput" style="font-size: 20px; height: 1.5em;"></textarea>
+                    <div id="depositButton" onclick="bankMoneyController('add', bankAmountInput.value)">Deposit</div>
+                    <div id="withdrawButton" onclick="bankMoneyController('sub', bankAmountInput.value)">Withdraw</div>
+                </div>
             </div>
         </div>
         <div id="statsMenu" gameMenu class="hidden">
@@ -190,8 +215,46 @@
 
     const statsElem = document.getElementById('statsMenu')
 
+    const bankedMoneyDisplay = document.getElementById('bankedMoneyDisplay')
+
+    const bankAmountInput = document.getElementById('bankAmountInput')
+
     function closeAlertBox(){
         alertBox.classList.add('hidden')
+    }
+
+    function bankMoneyController(type, amount){
+        // check if amount is a number
+        if (amount == '' || isNaN(amount)){
+            alertText.innerHTML = 'You must bet a number.'
+            betAmountElem.value = ''
+            alertBox.classList.remove('hidden')
+            return
+        }
+
+        amount = parseInt(amount)
+
+        if(type == 'add'){
+            if(gameData.playerMoney < amount){
+                alertText.innerHTML = "You can't bank what you don't have."
+                alertBox.classList.remove('hidden')
+            } else {
+                gameData.playerMoney -= amount
+                gameData.bankedMoney += amount
+                moneyCounter.innerHTML = `Bet Money: $${gameData.playerMoney}`
+                bankedMoneyDisplay.innerHTML = `Account Balance: $${gameData.bankedMoney}`
+            }
+        } else if(type == "sub"){
+            if(gameData.bankedMoney < amount){
+                alertText.innerHTML = "You can't withdraw what you don't have."
+                alertBox.classList.remove('hidden')
+            } else {
+                gameData.playerMoney += amount
+                gameData.bankedMoney -= amount
+                moneyCounter.innerHTML = `Bet Money: $${gameData.playerMoney}`
+                bankedMoneyDisplay.innerHTML = `Account Balance: $${gameData.bankedMoney}`
+            }
+        }
     }
 
     function menuController(menu){
@@ -217,6 +280,10 @@
     const gameData = {
         bank: 0,
         playerMoney: 100,
+        bankedMoney: 0,
+        maxLoan: 1000,
+        hasLoan: false,
+        loanTimer: 0,
     }
 
     if (localStorage.getItem('stats') != null) {
@@ -390,6 +457,8 @@
                 stats.Colors_missed += 1
                 stats.Money_lost += betAmount
                 stats.Losses += 1
+
+                gameData.bank += Math.round(betAmount * 3.5)
             }
         } else {
             if(betOn == spunNumber){
@@ -404,6 +473,8 @@
                 stats.Numbers_missed += 1
                 stats.Money_lost += betAmount
                 stats.Losses += 1
+
+                gameData.bank += Math.round(betAmount * 3.5)
             }
         }
 
@@ -425,10 +496,10 @@
 
 
     document.addEventListener('keydown', function(event){
-        // do nothing if the user is typing in the bet amount or bet on input
-        if(document.activeElement == betAmountElem || document.activeElement == betOnElem){
-            return
-        }
+        // do nothing if the user is typing in an input
+        if(document.activeElement.tagName == 'TEXTAREA') return;
+
+
         if(event.key == 'e'){
             menuController("bankingMenu")
         }
