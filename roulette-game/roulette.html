@@ -44,8 +44,6 @@
         font-size: calc(100% + 0.3vw);
     }
 
-
-
     #submitBetButton {
         width: calc(100% - 1);
         height: 50px;
@@ -109,7 +107,7 @@
         font-size: 20px;
     }
 
-    #bankingMenu, #statsMenu, #loansMenu {
+    #bankingMenu, #statsMenu, #loansMenu, #visual {
         width: 500px;
         height: 500px;
         position: absolute;
@@ -117,6 +115,17 @@
         background-color: white;
         border: 1px black solid;
         font-size: 20px;
+    }
+
+    #rouletteVisualizer {
+        width: 250px;
+        height: 250px;
+        border: 1px solid black;
+        position: absolute;
+        z-index: 1;
+        background-color: white;
+        border: 1px solid black;
+
     }
 
     #bankingMenuInner {
@@ -199,6 +208,11 @@
             </div>
         </div>
         <div id="loansMenu" gameMenu class="hidden">nothing yet</div>
+        <div id="visual" gameMenu class="hidden">
+            <div id="centerer">
+                <div id="rouletteVisualizer"></div>
+            </div>
+        </div>
     </div>
 
 </body>
@@ -221,6 +235,8 @@
     const bankedMoneyDisplay = document.getElementById('bankedMoneyDisplay')
 
     const bankAmountInput = document.getElementById('bankAmountInput')
+
+    const rouletteVisualizer = document.getElementById('rouletteVisualizer')
 
     function closeAlertBox(){
         alertBox.classList.add('hidden')
@@ -319,7 +335,7 @@
     }
 
     setAllDisplays()
-
+    const numberOrder = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26]
     const numbers = {
         0: 'green',
         32: 'red',
@@ -457,8 +473,6 @@
             spunColor = 'green'
         }
 
-        alertBox.classList.remove('hidden')
-
 
         // check if betOn was a number or the colors
         if(betOn == "red" || betOn == 'black' || betOn == 'green'){
@@ -505,6 +519,10 @@
         }
 
 
+        
+        menuController('visual')
+        // fix =====================================
+        // alertBox.classList.remove('hidden')
 
         setAllDisplays()
     }
@@ -536,13 +554,13 @@
                 setTimeout(function(){
                     deleteCounter = 0
                     savelock = false;
-                }, 800)
+                }, 600)
             } else if(deleteCounter == 1){
                 deleteCounter = 2
                 setTimeout(function(){
                     deleteCounter = 0
                     savelock = false;
-                }, 800)
+                }, 600)
             } else if(deleteCounter == 2){
                 deleteCounter = 0
                 let resetDataConfirmation = confirm('Are you sure you want to reset your data?')
