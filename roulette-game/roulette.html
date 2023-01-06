@@ -293,18 +293,23 @@
 
         menus.forEach(element => {
             if(element.id != menu && !element.classList.contains('hidden')) element.classList.add('hidden')
-            if(menu == element.id){
+            if(menu == element.id) element.classList.toggle('hidden')
 
-                element.classList.toggle('hidden')
-                if(element.id == 'bankingMenu'){
-                    if(moneyCounter.style.transform == 'translateY(60px)'){
-                        moneyCounter.style.transform = 'translateY(-60px)'
-                    } else {
-                        moneyCounter.style.transform = 'translateY(60px)'
-                    }
-                }
+            let allHidden = true
+            menus.forEach(element => {
+                if(!element.classList.contains('hidden')) allHidden = false
+            })
+
+            // if the menu is the banking menu, move the bet money counter down a bit, otherwise have the bet money counter be in the center
+            if(menu == 'bankingMenu'){
+                moneyCounter.style.transform = 'translateY(60px)'
+            } else {
+                moneyCounter.style.transform = 'translateY(-25px)'
             }
 
+            if(allHidden){
+                moneyCounter.style.transform = 'translateY(-25px)'
+            }
         });
     }
 
