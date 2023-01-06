@@ -14,11 +14,40 @@
         autostart: true
     }).appendTo(document.body);
 
+    let center = two.makeCircle(two.width / 2, (two.height / 2) + 600, 10);
+
+    let squares = []
+    let squareText = []
+
+    const numberOrder = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26]
+
+    for(i = 0; i < 37; i++){
+        let number = numberOrder[i];
+
+        let square = two.makeRectangle(center.translation.x, center.translation.y - 600, 100, 100);
+        let text = two.makeText(number, center.translation.x, center.translation.y - 600)
+        square.id = number;
+
+        squares.push(square)
+        squareText.push(text)
+    }
+
+    // put all the squares next to eachother
+
+    for (i = 0; i < 37; i++) {
+        squares[i].translation.x = center.translation.x + 600 * Math.cos(i * Math.PI / 18);
+        squares[i].translation.y = center.translation.y + 600 * Math.sin(i * Math.PI / 18);
+        squares[i].rotation = i * Math.PI / 18;
 
 
-    // let ticker = two.makeRectangle(two.width / 2, (two.height / 2) - 50, 20, 50);
+        squareText[i].translation.x = center.translation.x + 600 * Math.cos(i * Math.PI / 18);
+        squareText[i].translation.y = center.translation.y + 600 * Math.sin(i * Math.PI / 18);
+        squareText[i].rotation = i * Math.PI / 18 + Math.PI / 2;
+    }
 
-    // get the id of the square that is colliding with the ticker
+
+
+    let ticker = two.makeRectangle(two.width / 2, (two.height / 2) - 50, 20, 50);
 
     function checkCollision(rects, colliders){
         let collision = false;
@@ -54,40 +83,62 @@
         return [collision, collider, colliderElement, rect];
     }
 
-    // function getSquareCollidingWithTicker(){
-    //     let colliding = false;
-    //     // check if the ticker is colliding with any of the squares
-    //     for (let i = 0; i < squares.length; i++) {
-    //         let collision = checkCollision([ticker], [squares[i]]);
-    //         if(collision[0]){
-    //             colliding = squares[i].id;
-    //             break;
-    //         }
-    //     }
+    function getSquareCollidingWithTicker(){
+        let colliding = false;
+        // check if the ticker is colliding with any of the squares
+        for (let i = 0; i < squares.length; i++) {
+            let collision = checkCollision([ticker], [squares[i]]);
+            if(collision[0]){
+                colliding = squares[i].id;
+                break;
+            }
+        }
 
-    //     return colliding
-    // }
+        return colliding
+    }
 
-    // // rotate the squares
+    // rotate the squares
 
-    // // for each square, set the new rotation
-    // function rotateSquares(rotation){
-    //     rotation = -(rotation * Math.PI / 18);
-    //     for (let i = 0; i < squares.length; i++) {
-    //         squares[i].rotation = rotation + (i * Math.PI / 18);
-    //         squares[i].translation.x = center.translation.x + 600 * Math.cos(rotation + (i * Math.PI / 18));
-    //         squares[i].translation.y = center.translation.y + 600 * Math.sin(rotation + (i * Math.PI / 18));
-
-    //         // rotate the text with the square
-
-    //         squares[i].text.translation.x = center.translation.x + 600 * Math.cos(rotation + (i * Math.PI / 18));
-    //         squares[i].text.translation.y = center.translation.y + 600 * Math.sin(rotation + (i * Math.PI / 18));
+    // for each square, set the new rotation
+    function rotateSquares(rotation){
+        rotation = -(rotation * Math.PI / 18);
+        let revolutions = 0;
 
 
-    //     }
-    // }
+        // animate the rotation using two.js
+        two.bind('update', function(frameCount) {
+            // increase the rotation until it reaches the max rotation, then slow down
+            rotation += 0.001
+            for (let i = 0; i < squares.length; i++) {
+                squares[numberOrder[i]].rotation = rotation + (i * Math.PI / 18);
+                squares[numberOrder[i]].translation.x = center.translation.x + 600 * Math.cos(rotation + (i * Math.PI / 18));
+                squares[numberOrder[i]].translation.y = center.translation.y + 600 * Math.sin(rotation + (i * Math.PI / 18));
 
-    //rotateSquares(0)
+                squareText[numberOrder[i]].rotation = rotation + (i * Math.PI / 18 + Math.PI / 2);
+                squareText[numberOrder[i]].translation.x = center.translation.x + 600 * Math.cos(rotation + (i * Math.PI / 18));
+                squareText[numberOrder[i]].translation.y = center.translation.y + 600 * Math.sin(rotation + (i * Math.PI / 18));
+            }
+
+            if(getSquareCollidingWithTicker() == 0){
+                revolutions++;
+            }
+
+            console.log(revolutions)
+        }).play();
+
+
+        // for (let i = 0; i < squares.length; i++) {
+        //     squares[i].rotation = rotation + (i * Math.PI / 18);
+        //     squares[i].translation.x = center.translation.x + 600 * Math.cos(rotation + (i * Math.PI / 18));
+        //     squares[i].translation.y = center.translation.y + 600 * Math.sin(rotation + (i * Math.PI / 18));
+
+        //     squareText[i].rotation = rotation + (i * Math.PI / 18 + Math.PI / 2);
+        //     squareText[i].translation.x = center.translation.x + 600 * Math.cos(rotation + (i * Math.PI / 18));
+        //     squareText[i].translation.y = center.translation.y + 600 * Math.sin(rotation + (i * Math.PI / 18));
+        // }
+    }
+
+    // rotateSquares(0)
 
 
 
