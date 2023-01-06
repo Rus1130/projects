@@ -117,9 +117,17 @@
         font-size: 20px;
     }
 
+    #statsMenu, #loansMenu, #visual {
+        z-index: 6;
+    }
+
+    #visual {
+        width: 700px;
+    }
+
     #rouletteVisualizer {
-        width: 250px;
-        height: 250px;
+        width: 200px;
+        height: 200px;
         border: 1px solid black;
         position: absolute;
         z-index: 1;
@@ -180,7 +188,7 @@
             <div id="close" onclick="closeAlertBox()">X</div>
         </div>
         <div id="container">
-            <div id="moneyCounter">Bet Money: $100</div>
+            <div id="moneyCounter" style="z-index: 5">Bet Money: $100</div>
             <textarea placeholder="what you bet on (red, black, or a number)" id="bet-on"></textarea>
             <textarea placeholder="your bet" id="bet-amount"></textarea>
             <div id="submitBetButton" onclick="submitBet()">Bet!</div>
@@ -280,9 +288,22 @@
 
     function menuController(menu){
         let menus = document.querySelectorAll('[gameMenu]')
+
+
         menus.forEach(element => {
             if(element.id != menu && !element.classList.contains('hidden')) element.classList.add('hidden')
-            if(menu == element.id) element.classList.toggle('hidden')
+            if(menu == element.id){
+
+                element.classList.toggle('hidden')
+                if(element.id == 'bankingMenu'){
+                    if(moneyCounter.style.transform == 'translateY(60px)'){
+                        moneyCounter.style.transform = 'translateY(-60px)'
+                    } else {
+                        moneyCounter.style.transform = 'translateY(60px)'
+                    }
+                }
+            }
+
         });
     }
 
@@ -519,16 +540,48 @@
         }
 
 
-        
-        menuController('visual')
         // fix =====================================
-        // alertBox.classList.remove('hidden')
+        // menuController('visual')
+        menuController('visual')
+        //alertBox.classList.remove('hidden')
 
         setAllDisplays()
     }
 
     let deleteCounter = 0;
     let savelock = false;
+
+    document.addEventListener('keyup', function(event){
+        if(document.activeElement.tagName == 'TEXTAREA') return;
+        if(event.key == ' '){
+            submitBet()
+        }
+
+        if(event.key == 'Delete'){
+            savelock = true;
+            if(deleteCounter == 0){
+                deleteCounter = 1
+                setTimeout(function(){
+                    deleteCounter = 0
+                    savelock = false;
+                }, 700)
+            } else if(deleteCounter == 1){
+                deleteCounter = 2
+                setTimeout(function(){
+                    deleteCounter = 0
+                    savelock = false;
+                }, 700)
+            } else if(deleteCounter == 2){
+                deleteCounter = 0
+                let resetDataConfirmation = confirm('Are you sure you want to reset your data?')
+                if(resetDataConfirmation){
+                    localStorage.removeItem('roulette_gameData')
+                    localStorage.removeItem('roulette_stats')
+                    location.reload()
+                }
+            }
+        }
+    })
 
 
     document.addEventListener('keydown', function(event){
@@ -544,32 +597,6 @@
         }
         if(event.key == 'l'){
             menuController("loansMenu")
-        }
-        // check if Delete was pressed 3 times within 500ms
-        
-        if(event.key == 'Delete'){
-            savelock = true;
-            if(deleteCounter == 0){
-                deleteCounter = 1
-                setTimeout(function(){
-                    deleteCounter = 0
-                    savelock = false;
-                }, 600)
-            } else if(deleteCounter == 1){
-                deleteCounter = 2
-                setTimeout(function(){
-                    deleteCounter = 0
-                    savelock = false;
-                }, 600)
-            } else if(deleteCounter == 2){
-                deleteCounter = 0
-                let resetDataConfirmation = confirm('Are you sure you want to reset your data?')
-                if(resetDataConfirmation){
-                    localStorage.removeItem('roulette_gameData')
-                    localStorage.removeItem('roulette_stats')
-                    location.reload()
-                }
-            }
         }
     })
 

@@ -1,0 +1,94 @@
+<style>
+
+</style>
+<header>
+    <script src="two.js"></script>
+</header>
+<body>
+
+</body>
+<script>
+
+    let two = new Two({
+        fullscreen: true,
+        autostart: true
+    }).appendTo(document.body);
+
+
+
+    // let ticker = two.makeRectangle(two.width / 2, (two.height / 2) - 50, 20, 50);
+
+    // get the id of the square that is colliding with the ticker
+
+    function checkCollision(rects, colliders){
+        let collision = false;
+        let collider = undefined;
+        let colliderElement = undefined;
+        let rect = undefined;
+        for(i = 0; i < rects.length; i++){
+            if(collision) break;
+            for(j = 0; j < colliders.length; j++){
+                let rectMinX = rects[i].translation._x - rects[i].width / 2;
+                let rectMaxX = rects[i].translation._x + rects[i].width / 2;
+                let rectMinY = rects[i].translation._y - rects[i].height / 2;
+                let rectMaxY = rects[i].translation._y + rects[i].height / 2;
+
+                let colliderMinX = colliders[j].translation._x - colliders[j].width / 2;
+                let colliderMaxX = colliders[j].translation._x + colliders[j].width / 2;
+                let colliderMinY = colliders[j].translation._y - colliders[j].height / 2;
+                let colliderMaxY = colliders[j].translation._y + colliders[j].height / 2;
+
+                if(rectMinX < colliderMaxX && rectMaxX > colliderMinX && rectMinY < colliderMaxY && rectMaxY > colliderMinY){
+                    collider = colliders[j].id;
+                    collision = true;
+                    colliderElement = document.getElementById(colliders[j].id)
+                    rect = rects[i];
+                    break;
+                }
+                // get the collider element
+
+
+            }
+            if(collision) break;
+        }
+        return [collision, collider, colliderElement, rect];
+    }
+
+    // function getSquareCollidingWithTicker(){
+    //     let colliding = false;
+    //     // check if the ticker is colliding with any of the squares
+    //     for (let i = 0; i < squares.length; i++) {
+    //         let collision = checkCollision([ticker], [squares[i]]);
+    //         if(collision[0]){
+    //             colliding = squares[i].id;
+    //             break;
+    //         }
+    //     }
+
+    //     return colliding
+    // }
+
+    // // rotate the squares
+
+    // // for each square, set the new rotation
+    // function rotateSquares(rotation){
+    //     rotation = -(rotation * Math.PI / 18);
+    //     for (let i = 0; i < squares.length; i++) {
+    //         squares[i].rotation = rotation + (i * Math.PI / 18);
+    //         squares[i].translation.x = center.translation.x + 600 * Math.cos(rotation + (i * Math.PI / 18));
+    //         squares[i].translation.y = center.translation.y + 600 * Math.sin(rotation + (i * Math.PI / 18));
+
+    //         // rotate the text with the square
+
+    //         squares[i].text.translation.x = center.translation.x + 600 * Math.cos(rotation + (i * Math.PI / 18));
+    //         squares[i].text.translation.y = center.translation.y + 600 * Math.sin(rotation + (i * Math.PI / 18));
+
+
+    //     }
+    // }
+
+    //rotateSquares(0)
+
+
+
+</script>
