@@ -99,16 +99,30 @@
 
     // rotate the squares
 
-    // for each square, set the new rotation
-    function rotateSquares(rotation){
-        rotation = -(rotation * Math.PI / 18);
+    function rotateSquares(rotationSpeed, maxRevolutions, stopAt){
+        
         let revolutions = 0;
+        let rotation = -(Math.PI / 18);
 
+        let newRevolutionAt = getSquareCollidingWithTicker();
+        let rotationLocked = false;
 
-        // animate the rotation using two.js
         two.bind('update', function(frameCount) {
-            // increase the rotation until it reaches the max rotation, then slow down
-            rotation += 0.001
+            rotation += rotationSpeed;
+
+            if(revolutions > maxRevolutions){
+                // make the rotation speed slow down until it stops
+                rotationSpeed -= 0.05;
+
+                if(getSquareCollidingWithTicker() == stopAt){
+                    setTimeout(function(){
+                        rotationSpeed = 0;
+                        two.unbind('update');
+                    }, Math.random() * 100)
+                }
+            }
+        
+
             for (let i = 0; i < squares.length; i++) {
                 squares[numberOrder[i]].rotation = rotation + (i * Math.PI / 18);
                 squares[numberOrder[i]].translation.x = center.translation.x + 600 * Math.cos(rotation + (i * Math.PI / 18));
@@ -119,12 +133,17 @@
                 squareText[numberOrder[i]].translation.y = center.translation.y + 600 * Math.sin(rotation + (i * Math.PI / 18));
             }
 
-            if(getSquareCollidingWithTicker() == 0){
+            if(getSquareCollidingWithTicker() == newRevolutionAt && !rotationLocked){
                 revolutions++;
+                rotationLocked = true;
+            }
+            if(getSquareCollidingWithTicker() != newRevolutionAt){
+                rotationLocked = false;
             }
 
             console.log(revolutions)
         }).play();
+       
 
 
         // for (let i = 0; i < squares.length; i++) {
@@ -138,7 +157,7 @@
         // }
     }
 
-    // rotateSquares(0)
+    rotateSquares(0.05, 1, 9)
 
 
 
