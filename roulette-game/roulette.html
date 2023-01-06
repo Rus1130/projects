@@ -418,6 +418,13 @@
 
         betAmount = parseInt(betAmount)
 
+        if(betAmount <= 0){
+            alertText.innerHTML = "You can't bet that, broke ass."
+            betAmountElem.value = ''
+            alertBox.classList.remove('hidden')
+            return
+        }
+
         if(betAmount > gameData.playerMoney || gameData.playerMoney == 0){
             alertText.innerHTML = "You can't bet what you don't have."
             betAmountElem.value = ''
