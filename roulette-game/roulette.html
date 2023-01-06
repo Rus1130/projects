@@ -254,7 +254,7 @@
     function bankMoneyController(type, amount){
         // check if amount is a number
         if (amount == '' || isNaN(amount)){
-            alertText.innerHTML = 'You must bet a number.'
+            alertText.innerHTML = "You can't bet nothing. Or something that isn't a number.	"
             betAmountElem.value = ''
             alertBox.classList.remove('hidden')
             return
