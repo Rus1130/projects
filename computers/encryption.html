@@ -19,11 +19,154 @@
 
 </body>
 <script>
-    function encrypt(string){
+    const base60 = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y']
+
+    function convertCustomBase(num, toBase){
+        let result = ''
+        let remainder = 0
+        let quotient = 0
+        let i = 0
+        if(toBase == 60){
+            while(num > 0){
+                remainder = num % 60
+                quotient = Math.floor(num / 60)
+                result = base60[remainder] + result
+                num = quotient
+            }
+        } else if(toBase == 10){
+            let numArray = num.split("").map(x => base60.indexOf(x)).reverse()
+            for(i = 0; i < numArray.length; i++){
+                result += numArray[i] * Math.pow(60, i)
+            }
+
+            
+            result = parseInt(result)
+        }
+
+        return result
+    }
+
+    function encrypt(string, displayType){
+        let modifier;
+        let redo = false;
+        if(displayType == undefined) displayType = 'simple'
+        
+        if(displayType == 'simple'){
+            modifier = 40;
+        } else if(displayType == 'complex'){
+            modifier = 50;
+        } else if(displayType == 'compact'){
+            modifier = 60;
+        } else {
+            console.warn("Invalid display type. Defaulting to 'simple'.")
+            modifier = 40;
+        }
+
+
         let array = string.split("").map(char => char.charCodeAt(0));
         let key = []
+        let modifierRemainders = []
+
         for(i = 0; i < array.length; i++){
-            key.push(Math.floor(Math.random() * 100));
+            key.push(array[i] - ((array[i] >> 3) << 3))
         }
+
+        
+        array = array.map(x => (x >> 3) * modifier)
+        modifierRemainders = array.map(x => x - ((x >> 3) << 3))
+
+        key = key.map(x => x + '-').join("")
+        key = (key.substring(0, key.length - 1) + ":").match(/.{1,2}/g)
+
+        for(i = 0; i < array.length; i++){
+
+            let rand = Math.floor(Math.random() * modifier) + 1
+
+            if(rand < modifier / 2 + 1) array[i] -= rand
+            else array[i] += rand
+
+            rand = convertCustomBase(rand, 60)
+            key.push(`${rand}-`)
+        }
+
+
+        modifierRemainders = modifierRemainders.map(x => convertCustomBase(x, 60)).join("")
+
+        array = array.map(x => String.fromCharCode(x)).join("")
+        key = key.join("").replaceAll("-", "") + ":" + modifierRemainders + ":" + modifier;
+
+        let result = {
+            string: array,
+            key: key
+        }
+
+        // if there is any char code below 32 and between 127 and 159, return false
+        for(i = 0; i < array.length; i++){
+            if(array.charCodeAt(i) < 32 || (array.charCodeAt(i) > 126 && array.charCodeAt(i) < 160)){
+                redo = true;
+            }
+        }  
+        
+        if(redo) {
+            try { 
+                encrypt(string, displayType)
+            } catch(e) {
+                return console.warn("Some really bad shit happened. Try again.")
+            }
+        } if(/ !/g.test(result)) return console.warn("For some FUCKING reason you can't do that.") 
+        else return result
+    }
+
+    function decrypt(string, key){
+        // reverse the process of encrypting
+        let modifier = parseInt(key.split(":")[3])
+        let array = string.split("").map(char => char.charCodeAt(0));
+        let shiftKeys = key.split(":")[0].split("")
+        let randKeys = key.split(":")[1].split("")
+        let modifierRemainders = key.split(":")[2].split("")
+
+        randKeys = randKeys.map(x => convertCustomBase(x, 10))
+
+
+        for(i = 0; i < array.length; i++){
+            let rand = randKeys[i]
+            if(rand < modifier / 2 + 1) array[i] += rand
+            else array[i] -= rand
+        }
+
+        for(i = 0; i < array.length; i++){
+            array[i] = (((array[i] + parseInt(shiftKeys[i])) / modifier) << 3) + parseInt(shiftKeys[i])
+        }
+
+        let redo = false;
+
+        let result = array.map(x => String.fromCharCode(x)).join("")
+
+        for(i = 0; i < result.length; i++){
+            if(result.charCodeAt(i) < 32 || (result.charCodeAt(i) > 126 && result.charCodeAt(i) < 160)){
+                redo = true;
+            }
+        }  
+
+        if(result == undefined) redo = true;
+        
+        if(redo) {
+            try { 
+                return decrypt(string, key)
+            } catch(e) {
+                return e //console.warn("Some really bad shit happened. Try again.")
+            }
+        } else return result;
+
+        // check if result has the char string " !" in it
+        
+    }
+    
+    function encryptDecrypt(string, displayType){
+        let encrypted = encrypt(string, displayType)
+        let decrypted = decrypt(encrypted.string, encrypted.key)
+
+        console.log("Encryption:", encrypted)
+        return "Decryption: " + decrypted
     }
 </script>
