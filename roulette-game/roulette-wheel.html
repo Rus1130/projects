@@ -10,8 +10,7 @@
     }
     #visualizer1, #visualizer2, #visualizer3, #visualizer4 {
         transform: translate(100px, 0);
-        border: 1px solid black;
-        z-index: 1;
+        z-index: 2;
         background-color: white;
     }
 
@@ -21,7 +20,6 @@
         position: absolute;
         z-index: 1;
         background-color: white;
-        border: 1px black solid;
         font-size: 20px;
     }
 
@@ -126,7 +124,7 @@
     }
 
     function spinOnce(){
-        // animate the visualizers moving to the left
+        // get visualizer4 x position
         let visualizer1 = document.getElementById('visualizer1');
         let visualizer2 = document.getElementById('visualizer2');
         let visualizer3 = document.getElementById('visualizer3');
@@ -142,11 +140,12 @@
             let animLength = 200;
             let animEquation = -timePassed + 100; 
 
-            let fullStatement = animEquation <= -90 ? -99 : animEquation
+            let fullStatement = animEquation <= -90 ? -100 : animEquation
 
             if (timePassed >= animLength) {
                 clearInterval(timer);
-                visualizer1.style.transform = `translate(${500}px, 0)`;
+                visualizer1.style.transform = `translate(${-fullStatement * 7}px, 0)`;
+                visualizer1.style.backgroundColor = numbers[parseInt(visualizer3.innerHTML) + 1]
                 return;
             }
 
