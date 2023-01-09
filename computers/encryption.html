@@ -113,7 +113,7 @@
             } catch(e) {
                 return console.warn("Some really bad shit happened. Try again.")
             }
-        } if(/ !/g.test(result)) return console.warn("For some FUCKING reason you can't do that.") 
+        }
         else return result
     }
 
@@ -165,6 +165,8 @@
     function encryptDecrypt(string, displayType){
         let encrypted = encrypt(string, displayType)
         let decrypted = decrypt(encrypted.string, encrypted.key)
+
+
 
         console.log("Encryption:", encrypted)
         return "Decryption: " + decrypted
