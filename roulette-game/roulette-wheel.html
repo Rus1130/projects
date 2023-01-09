@@ -107,8 +107,8 @@
         26: 'black'
     }
 
-    function setupRouletteWheel(startAt){
-        for(i = 0; i < 3; i++){
+    function setNumbers(startAt){
+        for(i = 0; i < 4; i++){
             let index = ((startAt - 1) + i) % 37;
             // wrap around to 36 if we go negative
             if(index <= -1){
@@ -125,18 +125,41 @@
         }
     }
 
-    function spin(){
+    function spinOnce(){
         // animate the visualizers moving to the left
         let visualizer1 = document.getElementById('visualizer1');
         let visualizer2 = document.getElementById('visualizer2');
         let visualizer3 = document.getElementById('visualizer3');
         let visualizer4 = document.getElementById('visualizer4');
+
+        let start = Date.now(); // remember start time
+
+        
+        
+        let timer = setInterval(function() {
+            console.log()
+            let timePassed = Date.now() - start;
+            let animLength = 200;
+            let animEquation = -timePassed + 100; 
+
+            let fullStatement = animEquation <= -90 ? -99 : animEquation
+
+            if (timePassed >= animLength) {
+                clearInterval(timer);
+                visualizer1.style.transform = `translate(${500}px, 0)`;
+                return;
+            }
+
+            visualizer1.style.transform = `translate(${fullStatement}px, 0)`;
+            visualizer2.style.transform = `translate(${fullStatement}px, 0)`;
+            visualizer3.style.transform = `translate(${fullStatement}px, 0)`;
+            visualizer4.style.transform = `translate(${fullStatement}px, 0)`;
+
+        }, 1);
     }
 
 
-    setupRouletteWheel(0);
-    
-
-    spin()
+    setNumbers(0);
+    spinOnce()
 
 </script>
