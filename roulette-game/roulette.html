@@ -107,7 +107,7 @@
         font-size: 20px;
     }
 
-    #bankingMenu, #statsMenu, #loansMenu, #visual {
+    #bankingMenu, #statsMenu, #loansMenu {
         width: 500px;
         height: 500px;
         position: absolute;
@@ -123,16 +123,30 @@
 
     #visual {
         width: 600px;
-    }
-
-    #rouletteVisualizer {
-        width: 300px;
         height: 300px;
-        border: 1px solid black;
+        overflow: hidden;
         position: absolute;
         z-index: 1;
         background-color: white;
+        border: 1px black solid;
+        font-size: 20px;
+    }
+
+    #rouletteVisualizer {
+        width: 800px;
+        height: 300px;
+        position: absolute;
+        display: grid;
+        grid-template-columns: repeat(4, 200px);
+        z-index: 1;
+        background-color: white;
+    }
+    
+    #visualizer1, #visualizer2, #visualizer3, #visualizer4 {
+        transform: translate(100px, 0);
         border: 1px solid black;
+        z-index: 1;
+        background-color: white;
     }
 
     #bankingMenuInner {
@@ -218,7 +232,12 @@
         <div id="loansMenu" gameMenu class="hidden">nothing yet</div>
         <div id="visual" gameMenu class="hidden">
             <div id="centerer">
-                <div id="rouletteVisualizer"></div>
+                <div id="rouletteVisualizer">
+                    <div id="visualizer1">AA</div>
+                    <div id="visualizer2">BB</div>
+                    <div id="visualizer3">CC</div>
+                    <div id="visualizer4">DD</div>
+                </div>
             </div>
         </div>
     </div>
@@ -331,6 +350,8 @@
         hasLoan: false,
         loanTimer: 0,
     }
+
+    menuController('visual')
 
     if (localStorage.getItem('roulette_stats') != null) {
         let keys = Object.keys(JSON.parse(localStorage.getItem('roulette_stats')));
@@ -553,8 +574,7 @@
 
 
         // fix =====================================
-        menuController('visual')
-        //alertBox.classList.remove('hidden')
+        alertBox.classList.remove('hidden')
 
         setAllDisplays()
     }
