@@ -123,18 +123,17 @@
 
     #visual {
         width: 600px;
-        height: 300px;
-        overflow: hidden;
+        height: 400px;
         position: absolute;
         z-index: 1;
         background-color: white;
-        border: 1px black solid;
         font-size: 20px;
+        overflow: hidden;
     }
 
     #rouletteVisualizer {
         width: 800px;
-        height: 300px;
+        height: 400px;
         position: absolute;
         display: grid;
         grid-template-columns: repeat(4, 200px);
@@ -144,9 +143,13 @@
     
     #visualizer1, #visualizer2, #visualizer3, #visualizer4 {
         transform: translate(100px, 0);
-        border: 1px solid black;
-        z-index: 1;
+        z-index: 200;
         background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 20px;
+        font-family: Arial, Helvetica, sans-serif;
     }
 
     #bankingMenuInner {
@@ -163,6 +166,7 @@
         justify-content: center;
         align-items: center;
         height: 100%;
+        width: 100%;
     }
 
     #depositButton, #withdrawButton {
@@ -310,6 +314,7 @@
 
 
         menus.forEach(element => {
+            if(gameData.spinning && menu != 'visual') return
             if(element.id != menu && !element.classList.contains('hidden')) element.classList.add('hidden')
             if(menu == element.id) element.classList.toggle('hidden')
 
@@ -323,6 +328,12 @@
                 moneyCounter.style.transform = 'translateY(60px)'
             } else {
                 moneyCounter.style.transform = 'translateY(-25px)'
+            }
+
+            if(menu == 'visual'){
+                moneyCounter.style.zIndex = '0'
+            } else {
+                moneyCounter.style.zIndex = '2'
             }
 
             if(allHidden){
@@ -349,9 +360,8 @@
         maxLoan: 1000,
         hasLoan: false,
         loanTimer: 0,
+        spinning: false,
     }
-
-    menuController('visual')
 
     if (localStorage.getItem('roulette_stats') != null) {
         let keys = Object.keys(JSON.parse(localStorage.getItem('roulette_stats')));
@@ -423,6 +433,97 @@
         26: 'black'
     }
 
+    function setNumbers(){
+        // get the last index of the array
+        let numberToPush = spinnerView[spinnerView.length - 1] + 1;
+        if(numberToPush > 36){
+            numberToPush = 0
+        }
+        spinnerView.shift()
+        spinnerView.push(numberToPush)
+    }
+
+    let visualizer1 = document.getElementById('visualizer1');
+    let visualizer2 = document.getElementById('visualizer2');
+    let visualizer3 = document.getElementById('visualizer3');
+    let visualizer4 = document.getElementById('visualizer4');
+
+    let spinnerView = [36, 0, 1, 2]
+
+    const visualizers = [visualizer1, visualizer2, visualizer3, visualizer4]
+
+
+    function setVisualizers(){
+        for(i = 0; i < visualizers.length; i++){
+            visualizers[i].innerHTML = numberOrder[spinnerView[i]]
+            visualizers[i].style.backgroundColor = numbers[numberOrder[spinnerView[i]]]
+            if( numbers[numberOrder[spinnerView[i]]] == 'black'){
+                visualizers[i].style.color = 'white'
+            } else {
+                visualizers[i].style.color = 'black'
+            }
+        }
+    }
+
+    setVisualizers()
+
+    let keyframes = [
+        {transform: 'translate(100px, 0)'},
+        {transform: 'translate(-100px, 0)'}
+    ]
+
+    let keyframeOptions = {
+        duration: 25,
+        iterations: 1,
+        fill: 'forwards'
+    }
+
+    let spinnerStartedAt = spinnerView[2]
+
+    function animateWheel(times, decel, decelAmnt){
+
+        visualizer1.animate(keyframes, keyframeOptions)
+        visualizer2.animate(keyframes, keyframeOptions);
+        visualizer3.animate(keyframes, keyframeOptions);
+        visualizer4.animate(keyframes, keyframeOptions).addEventListener('finish', () => {
+
+            let newSpin = times - 1
+
+            if(newSpin < decel){
+                keyframeOptions.duration *= decelAmnt
+            }
+
+            if(newSpin > 0){
+                setNumbers()
+                setVisualizers()
+                animateWheel(newSpin, decel, decelAmnt)
+            }
+
+            if(newSpin == 0){
+                keyframeOptions.duration = 25
+                spinnerStartedAt = spinnerView[2]
+                console.log(spinnerStartedAt)
+                gameData.spinning = false
+                setTimeout(function(){
+                    menuController('visual')
+                    alertBox.classList.remove('hidden')
+                }, 2000)
+                
+                
+                return;
+            }
+        });
+    }
+
+    function spin(target){
+        // do a full rotation 3 times, then land on the target
+        gameData.spinning = true
+        menuController('visual')
+        let decel = (111 - numberOrder.indexOf(target)) / 2
+        let decelAmnt = 1.03
+        animateWheel(111 + numberOrder.indexOf(target) - spinnerStartedAt + 1, decel, decelAmnt)
+    }
+
     function submitBet(){
         betOnElem.value = betOnElem.value.trim()
         betAmountElem.value = betAmountElem.value.trim()
@@ -443,14 +544,14 @@
 
         betAmount = parseInt(betAmount)
 
-        if(betAmount <= 0){
+        if(betAmount < 0){
             alertText.innerHTML = "You can't bet that, broke ass."
             betAmountElem.value = ''
             alertBox.classList.remove('hidden')
             return
         }
 
-        if(betAmount > gameData.playerMoney || gameData.playerMoney == 0){
+        if(betAmount > gameData.playerMoney || gameData.playerMoney <= 0){
             alertText.innerHTML = "You can't bet what you don't have."
             betAmountElem.value = ''
             alertBox.classList.remove('hidden')
@@ -458,7 +559,7 @@
         }
 
         if (betOn != 'red' && betOn != 'black' && betOn != 'green'){
-            if(!redNumbers.includes(betOn) && !blackNumbers.includes(betOn)){
+            if(!redNumbers.includes(betOn) && !blackNumbers.includes(betOn) && betOn != 0){
                 alertText.innerHTML = 'You must bet on red, black, or a number.'
                 betOnElem.value = ''
                 alertBox.classList.remove('hidden')
@@ -484,15 +585,15 @@
         }
 
         let weights = {}
-        for(i = 1; i <= 36; i++){
-            weights[i] = math.round(1/36, 6)
+        for(i = 0; i < 37; i++){
+            weights[i] = math.round(1/37, 6)
         }
 
         for(let key in weights){
             if(key == unweightedSpunNumber){
-                weights[key] -= 0.017778
+                weights[key] -= 0.017027
             } else {
-                weights[key] += 0.017778
+                weights[key] += 0.017027
             }
         }
 
@@ -500,32 +601,7 @@
 
         let spinNumber = weightedRand(weights)
         let spunNumber = spinNumber()
-
-        
-
-        let unweightedSpunColor = numbers[spunNumber]
-        let colorWeights = {
-            red: 0.499995,
-            black: 0.499995,
-            green: 0.00001
-        }
-
-        // chance the probability of landing on the color the user bet on
-        for(let key in colorWeights){
-            if(key == 'green') continue;
-            if(key == unweightedSpunColor){
-                colorWeights[key] -= 0.099995
-            } else {
-                colorWeights[key] += 0.099995
-            }
-        }
-
-        let spinColor = weightedRand(colorWeights)
-        let spunColor = spinColor()
-
-        if(unweightedSpunColor == 'green'){
-            spunColor = 'green'
-        }
+        let spunColor = numbers[spunNumber]
 
 
         // check if betOn was a number or the colors
@@ -572,9 +648,8 @@
             }
         }
 
-
-        // fix =====================================
-        alertBox.classList.remove('hidden')
+        spin(parseInt(spunNumber))
+        
 
         setAllDisplays()
     }
@@ -613,6 +688,8 @@
             }
         }
     })
+
+    
 
 
     document.addEventListener('keydown', function(event){
