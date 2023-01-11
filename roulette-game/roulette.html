@@ -519,8 +519,8 @@
         // do a full rotation 3 times, then land on the target
         gameData.spinning = true
         menuController('visual')
-        let decel = (111 - numberOrder.indexOf(target)) / 2
-        let decelAmnt = 1.03
+        let decel = (111 - numberOrder.indexOf(target))
+        let decelAmnt = 1.01
         animateWheel(111 + numberOrder.indexOf(target) - spinnerStartedAt + 1, decel, decelAmnt)
     }
 
