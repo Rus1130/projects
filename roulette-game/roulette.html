@@ -544,7 +544,7 @@
 
         betAmount = parseInt(betAmount)
 
-        if(betAmount < 0){
+        if(betAmount <= 0){
             alertText.innerHTML = "You can't bet that, broke ass."
             betAmountElem.value = ''
             alertBox.classList.remove('hidden')
