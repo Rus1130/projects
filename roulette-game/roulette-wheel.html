@@ -21,7 +21,7 @@
         z-index: 1;
         background-color: white;
         font-size: 20px;
-        overflow: hidden;
+        /*overflow: hidden;*/
     }
 
     #centerer {
@@ -123,84 +123,50 @@
             }
         }
     }
+    
+    let singleSpinDuration = 20;
 
-    function spin(times){
+    function spin(){
         let visualizer1 = document.getElementById('visualizer1');
         let visualizer2 = document.getElementById('visualizer2');
         let visualizer3 = document.getElementById('visualizer3');
         let visualizer4 = document.getElementById('visualizer4');
-
-        let start = Date.now();
         
-        let timer = setInterval(function() {
+        // https://developer.mozilla.org/en-US/docs/Web/API/Element/animate
 
-            let timePassed = Date.now() - start;
-            let animLength = 200;
-            let animEquation = -timePassed + 100; 
+        let visualizer3Index = numberOrder.indexOf(parseInt(visualizer3.innerHTML));
+        let nextIndex = (visualizer3Index + 2) % 37;
+        console.log(nextIndex)
 
-            let fullStatement = animEquation <= -90 ? -100 : animEquation
+        visualizer4.style.transform = 'translateX(-100px)';
+        visualizer3.style.transform = 'translateX(-100px)';
+        visualizer2.style.transform = 'translateX(-100px)';
+        visualizer1.style.transform = 'translateX(700px)';
 
-            if (timePassed >= animLength) {
-                clearInterval(timer);
+        visualizer1.innerHTML = numberOrder[nextIndex];
+        visualizer1.style.backgroundColor = numbers[numberOrder[nextIndex]];
+        if(numbers[numberOrder[nextIndex]] === 'black'){
+            visualizer1.style.color = 'white';
+        } else {
+            visualizer1.style.color = 'black';
+        }
 
 
-                let index = numberOrder.indexOf(parseInt(visualizer4.innerHTML));
+        
 
-                let number = numberOrder[index + 1];
+        
 
 
-                let color = numbers[number];
 
-                visualizer1.style.transform = `translate(${-fullStatement}px, 0)`;
-                visualizer2.style.transform = `translate(${-fullStatement}px, 0)`;
-                visualizer3.style.transform = `translate(${-fullStatement}px, 0)`;
-                visualizer4.style.transform = `translate(${-fullStatement}px, 0)`;
-                
-                visualizer1.innerHTML = visualizer2.innerHTML;
-                visualizer1.style.backgroundColor = visualizer2.style.backgroundColor;
-                if(visualizer1.style.backgroundColor == 'black'){
-                    visualizer1.style.color = 'white';
-                } else {
-                    visualizer1.style.color = 'black';
-                }
-            
-                visualizer2.innerHTML = visualizer3.innerHTML;
-                visualizer2.style.backgroundColor = visualizer3.style.backgroundColor;
-                if(visualizer2.style.backgroundColor == 'black'){
-                    visualizer2.style.color = 'white';
-                } else {
-                    visualizer2.style.color = 'black';
-                }
 
-                visualizer3.innerHTML = visualizer4.innerHTML;
-                visualizer3.style.backgroundColor = visualizer4.style.backgroundColor;
-                if(visualizer3.style.backgroundColor == 'black'){
-                    visualizer3.style.color = 'white';
-                } else {
-                    visualizer3.style.color = 'black';
-                }
+        
 
-                visualizer4.innerHTML = number;
-                visualizer4.style.backgroundColor = color;
-                if(visualizer4.style.backgroundColor == 'black'){
-                    visualizer4.style.color = 'white';
-                } else {
-                    visualizer4.style.color = 'black';
-                }
 
-                return;
-            }
 
-            visualizer1.style.transform = `translate(${fullStatement}px, 0)`;
-            visualizer2.style.transform = `translate(${fullStatement}px, 0)`;
-            visualizer3.style.transform = `translate(${fullStatement}px, 0)`;
-            visualizer4.style.transform = `translate(${fullStatement}px, 0)`;
-
-        }, 1);
     }
 
 
-    function spinTimesMax36(times){
+    function spinTimes(times){
         let i = 0;
         let interval = setInterval(function(){
             spin();
@@ -208,12 +174,12 @@
             if(i >= times){
                 clearInterval(interval);
             }
-        }, 200);
+        }, singleSpinDuration * times);
     }
 
 
 
 
-    setNumbers(0);
-    spinNtimes(36);
+    setNumbers(35);
+    spin()
 </script>
