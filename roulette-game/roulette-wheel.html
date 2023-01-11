@@ -21,7 +21,7 @@
         z-index: 1;
         background-color: white;
         font-size: 20px;
-        /*overflow: hidden;*/
+        overflow: hidden;
     }
 
     #centerer {
@@ -124,32 +124,62 @@
         }
     }
     
-    let singleSpinDuration = 20;
+    let singleSpinDuration = 1000;
 
-    function spin(){
+    visualizer1.addEventListener("animationiteration", function(){
+        console.log(1)
+    }, false);
+
+    function spin(times){
         let visualizer1 = document.getElementById('visualizer1');
         let visualizer2 = document.getElementById('visualizer2');
         let visualizer3 = document.getElementById('visualizer3');
         let visualizer4 = document.getElementById('visualizer4');
+
+
         
         // https://developer.mozilla.org/en-US/docs/Web/API/Element/animate
 
-        let visualizer3Index = numberOrder.indexOf(parseInt(visualizer3.innerHTML));
-        let nextIndex = (visualizer3Index + 2) % 37;
-        console.log(nextIndex)
 
-        visualizer4.style.transform = 'translateX(-100px)';
-        visualizer3.style.transform = 'translateX(-100px)';
-        visualizer2.style.transform = 'translateX(-100px)';
-        visualizer1.style.transform = 'translateX(700px)';
+        let children = rouletteVisualizer.children;
 
-        visualizer1.innerHTML = numberOrder[nextIndex];
-        visualizer1.style.backgroundColor = numbers[numberOrder[nextIndex]];
-        if(numbers[numberOrder[nextIndex]] === 'black'){
-            visualizer1.style.color = 'white';
-        } else {
-            visualizer1.style.color = 'black';
-        }
+        visualizer1.animate([
+            {transform: 'translate(100px, 0)'},
+            {transform: 'translate(-100px, 0)'}
+        ], {
+            duration: singleSpinDuration,
+            iterations: times,
+            fill: 'forwards'
+        });
+
+        visualizer2.animate([
+            {transform: 'translate(100px, 0)'},
+            {transform: 'translate(-100px, 0)'}
+        ], {
+            duration: singleSpinDuration,
+            iterations: times,
+            fill: 'forwards'
+        });
+
+        visualizer3.animate([
+            {transform: 'translate(100px, 0)'},
+            {transform: 'translate(-100px, 0)'}
+        ], {
+            duration: singleSpinDuration,
+            iterations: times,
+            fill: 'forwards'
+        });
+
+        visualizer4.animate([
+            {transform: 'translate(100px, 0)'},
+            {transform: 'translate(-100px, 0)'}
+        ], {
+            duration: singleSpinDuration,
+            iterations: times,
+            fill: 'forwards'
+        });
+
+        // console.log('anim update') everyime the animation updates
 
 
         
@@ -166,20 +196,8 @@
     }
 
 
-    function spinTimes(times){
-        let i = 0;
-        let interval = setInterval(function(){
-            spin();
-            i++;
-            if(i >= times){
-                clearInterval(interval);
-            }
-        }, singleSpinDuration * times);
-    }
 
 
-
-
-    setNumbers(35);
-    spin()
+    setNumbers(0);
+    spin(2)
 </script>
