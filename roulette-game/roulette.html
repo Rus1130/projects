@@ -361,6 +361,18 @@
         hasLoan: false,
         loanTimer: 0,
         spinning: false,
+        spinnerView: [36, 0, 1, 2],
+        spinnerKeyframes: [
+            {transform: 'translate(100px, 0)'},
+            {transform: 'translate(-100px, 0)'}
+        ],
+        spinnerKeyframeOptions: {
+            duration: 30,
+            iterations: 1,
+            fill: 'forwards'
+        },
+        spinnerStartedAt: 1,
+
     }
 
     if (localStorage.getItem('roulette_stats') != null) {
@@ -435,12 +447,12 @@
 
     function setNumbers(){
         // get the last index of the array
-        let numberToPush = spinnerView[spinnerView.length - 1] + 1;
+        let numberToPush = gameData.spinnerView[gameData.spinnerView.length - 1] + 1;
         if(numberToPush > 36){
             numberToPush = 0
         }
-        spinnerView.shift()
-        spinnerView.push(numberToPush)
+        gameData.spinnerView.shift()
+        gameData.spinnerView.push(numberToPush)
     }
 
     let visualizer1 = document.getElementById('visualizer1');
@@ -448,16 +460,14 @@
     let visualizer3 = document.getElementById('visualizer3');
     let visualizer4 = document.getElementById('visualizer4');
 
-    let spinnerView = [36, 0, 1, 2]
-
     const visualizers = [visualizer1, visualizer2, visualizer3, visualizer4]
 
 
     function setVisualizers(){
         for(i = 0; i < visualizers.length; i++){
-            visualizers[i].innerHTML = numberOrder[spinnerView[i]]
-            visualizers[i].style.backgroundColor = numbers[numberOrder[spinnerView[i]]]
-            if( numbers[numberOrder[spinnerView[i]]] == 'black'){
+            visualizers[i].innerHTML = numberOrder[gameData.spinnerView[i]]
+            visualizers[i].style.backgroundColor = numbers[numberOrder[gameData.spinnerView[i]]]
+            if( numbers[numberOrder[gameData.spinnerView[i]]] == 'black'){
                 visualizers[i].style.color = 'white'
             } else {
                 visualizers[i].style.color = 'black'
@@ -467,30 +477,18 @@
 
     setVisualizers()
 
-    let keyframes = [
-        {transform: 'translate(100px, 0)'},
-        {transform: 'translate(-100px, 0)'}
-    ]
-
-    let keyframeOptions = {
-        duration: 25,
-        iterations: 1,
-        fill: 'forwards'
-    }
-
-    let spinnerStartedAt = spinnerView[2]
 
     function animateWheel(times, decel, decelAmnt){
 
-        visualizer1.animate(keyframes, keyframeOptions)
-        visualizer2.animate(keyframes, keyframeOptions);
-        visualizer3.animate(keyframes, keyframeOptions);
-        visualizer4.animate(keyframes, keyframeOptions).addEventListener('finish', () => {
+        visualizer1.animate(gameData.spinnerKeyframes, gameData.spinnerKeyframeOptions)
+        visualizer2.animate(gameData.spinnerKeyframes, gameData.spinnerKeyframeOptions);
+        visualizer3.animate(gameData.spinnerKeyframes, gameData.spinnerKeyframeOptions);
+        visualizer4.animate(gameData.spinnerKeyframes, gameData.spinnerKeyframeOptions).addEventListener('finish', () => {
 
             let newSpin = times - 1
 
             if(newSpin < decel){
-                keyframeOptions.duration *= decelAmnt
+                gameData.spinnerKeyframeOptions.duration *= decelAmnt
             }
 
             if(newSpin > 0){
@@ -500,28 +498,18 @@
             }
 
             if(newSpin == 0){
-                keyframeOptions.duration = 25
-                spinnerStartedAt = spinnerView[2]
-                console.log(spinnerStartedAt)
+                gameData.spinnerKeyframeOptions.duration = 30
+                gameData.spinnerStartedAt = gameData.spinnerView[2]
                 gameData.spinning = false
                 setTimeout(function(){
                     menuController('visual')
                     alertBox.classList.remove('hidden')
-                }, 2000)
+                }, 3000)
                 
                 
                 return;
             }
         });
-    }
-
-    function spin(target){
-        // do a full rotation 3 times, then land on the target
-        gameData.spinning = true
-        menuController('visual')
-        let decel = (111 - numberOrder.indexOf(target))
-        let decelAmnt = 1.01
-        animateWheel(111 + numberOrder.indexOf(target) - spinnerStartedAt + 1, decel, decelAmnt)
     }
 
     function submitBet(){
@@ -648,6 +636,15 @@
             }
         }
 
+        function spin(target){
+            // do a full rotation 3 times, then land on the target
+            gameData.spinning = true
+            menuController('visual')
+            let decel = (111 - numberOrder.indexOf(target))
+            let decelAmnt = 1.01
+            animateWheel(111 + numberOrder.indexOf(target) - gameData.spinnerStartedAt + 1, decel, decelAmnt)
+        }
+
         spin(parseInt(spunNumber))
         
 
@@ -660,6 +657,7 @@
     document.addEventListener('keyup', function(event){
         if(document.activeElement.tagName == 'TEXTAREA') return;
         if(event.key == ' '){
+            if(gameData.spinning) return;
             submitBet()
         }
 
