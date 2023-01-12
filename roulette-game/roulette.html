@@ -372,6 +372,7 @@
             fill: 'forwards'
         },
         spinnerStartedAt: 1,
+        defaultSpinnerSpeed: 30,
 
     }
 
@@ -498,7 +499,7 @@
             }
 
             if(newSpin == 0){
-                gameData.spinnerKeyframeOptions.duration = 30
+                gameData.spinnerKeyframeOptions.duration = gameData.defaultSpinnerSpeed
                 gameData.spinnerStartedAt = gameData.spinnerView[2]
                 gameData.spinning = false
                 setTimeout(function(){
