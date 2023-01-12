@@ -640,9 +640,9 @@
             // do a full rotation 3 times, then land on the target
             gameData.spinning = true
             menuController('visual')
-            let decel = (111 - numberOrder.indexOf(target))
-            let decelAmnt = 1.01
-            animateWheel(111 + numberOrder.indexOf(target) - gameData.spinnerStartedAt + 1, decel, decelAmnt)
+            let decel = (74 - numberOrder.indexOf(target))
+            let decelAmnt = 1.017
+            animateWheel(74 + numberOrder.indexOf(target) - gameData.spinnerStartedAt + 1, decel, decelAmnt)
         }
 
         spin(parseInt(spunNumber))
@@ -658,6 +658,8 @@
         if(document.activeElement.tagName == 'TEXTAREA') return;
         if(event.key == ' '){
             if(gameData.spinning) return;
+            // check if the alert box is open
+            if(!alertBox.classList.contains('hidden')) return closeAlertBox();
             submitBet()
         }
 

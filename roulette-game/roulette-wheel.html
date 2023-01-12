@@ -200,10 +200,9 @@
     }
 
     function spin(target){
-        // do a full rotation 3 times, then land on the target
-        let decel = (111 - numberOrder.indexOf(target))
-        let decelAmnt = 1.02
-        animateWheel(111 + numberOrder.indexOf(target) - spinnerStartedAt + 1, decel, decelAmnt)
+        let decel = (74 - numberOrder.indexOf(target))
+        let decelAmnt = 1.017
+        animateWheel(74 + numberOrder.indexOf(target) - spinnerStartedAt + 1, decel, decelAmnt)
     }
 
     spin(15)
