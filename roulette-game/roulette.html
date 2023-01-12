@@ -117,11 +117,11 @@
         font-size: 20px;
     }
 
-    #statsMenu, #loansMenu, #visual {
+    #statsMenu, #loansMenu, #rouletteVisualizerMenu {
         z-index: 6;
     }
 
-    #visual {
+    #rouletteVisualizerMenu {
         width: 600px;
         height: 400px;
         position: absolute;
@@ -141,7 +141,7 @@
         background-color: white;
     }
     
-    #visualizer1, #visualizer2, #visualizer3, #visualizer4 {
+    #wheelCell1, #wheelCell2, #wheelCell3, #wheelCell4 {
         transform: translate(100px, 0);
         z-index: 200;
         background-color: white;
@@ -234,13 +234,13 @@
             </div>
         </div>
         <div id="loansMenu" gameMenu class="hidden">nothing yet</div>
-        <div id="visual" gameMenu class="hidden">
+        <div id="rouletteVisualizerMenu" gameMenu class="hidden">
             <div id="centerer">
                 <div id="rouletteVisualizer">
-                    <div id="visualizer1">AA</div>
-                    <div id="visualizer2">BB</div>
-                    <div id="visualizer3">CC</div>
-                    <div id="visualizer4">DD</div>
+                    <div id="wheelCell1"></div>
+                    <div id="wheelCell2"></div>
+                    <div id="wheelCell3"></div>
+                    <div id="wheelCell4"></div>
                 </div>
             </div>
         </div>
@@ -271,6 +271,8 @@
 
     function closeAlertBox(){
         alertBox.classList.add('hidden')
+        document.getElementById("rouletteVisualizerMenu").classList.add('hidden')
+        gameData.spinning = false
     }
 
     function bankMoneyController(type, amount){
@@ -314,7 +316,7 @@
 
 
         menus.forEach(element => {
-            if(gameData.spinning && menu != 'visual') return
+            if(gameData.spinning && menu != 'rouletteVisualizerMenu') return
             if(element.id != menu && !element.classList.contains('hidden')) element.classList.add('hidden')
             if(menu == element.id) element.classList.toggle('hidden')
 
@@ -330,7 +332,7 @@
                 moneyCounter.style.transform = 'translateY(-25px)'
             }
 
-            if(menu == 'visual'){
+            if(menu == 'rouletteVisualizerMenu'){
                 moneyCounter.style.zIndex = '0'
             } else {
                 moneyCounter.style.zIndex = '2'
@@ -456,58 +458,54 @@
         gameData.spinnerView.push(numberToPush)
     }
 
-    let visualizer1 = document.getElementById('visualizer1');
-    let visualizer2 = document.getElementById('visualizer2');
-    let visualizer3 = document.getElementById('visualizer3');
-    let visualizer4 = document.getElementById('visualizer4');
+    let wheelCell1 = document.getElementById('wheelCell1');
+    let wheelCell2 = document.getElementById('wheelCell2');
+    let wheelCell3 = document.getElementById('wheelCell3');
+    let wheelCell4 = document.getElementById('wheelCell4');
 
-    const visualizers = [visualizer1, visualizer2, visualizer3, visualizer4]
+    const wheelCells = [wheelCell1, wheelCell2, wheelCell3, wheelCell4]
 
 
-    function setVisualizers(){
-        for(i = 0; i < visualizers.length; i++){
-            visualizers[i].innerHTML = numberOrder[gameData.spinnerView[i]]
-            visualizers[i].style.backgroundColor = numbers[numberOrder[gameData.spinnerView[i]]]
-            if( numbers[numberOrder[gameData.spinnerView[i]]] == 'black'){
-                visualizers[i].style.color = 'white'
+    function setWheelCells(){
+        for(i = 0; i < wheelCells.length; i++){
+            wheelCells[i].innerHTML = numberOrder[gameData.spinnerView[i]]
+            wheelCells[i].style.backgroundColor = numbers[numberOrder[gameData.spinnerView[i]]]
+            if(numbers[numberOrder[gameData.spinnerView[i]]] == 'black'){
+                wheelCells[i].style.color = 'white'
             } else {
-                visualizers[i].style.color = 'black'
+                wheelCells[i].style.color = 'black'
             }
         }
     }
 
-    setVisualizers()
+    setWheelCells()
 
 
-    function animateWheel(times, decel, decelAmnt){
+    function animateWheel(times, decelAmount){
 
-        visualizer1.animate(gameData.spinnerKeyframes, gameData.spinnerKeyframeOptions)
-        visualizer2.animate(gameData.spinnerKeyframes, gameData.spinnerKeyframeOptions);
-        visualizer3.animate(gameData.spinnerKeyframes, gameData.spinnerKeyframeOptions);
-        visualizer4.animate(gameData.spinnerKeyframes, gameData.spinnerKeyframeOptions).addEventListener('finish', () => {
+        wheelCell1.animate(gameData.spinnerKeyframes, gameData.spinnerKeyframeOptions)
+        wheelCell2.animate(gameData.spinnerKeyframes, gameData.spinnerKeyframeOptions);
+        wheelCell3.animate(gameData.spinnerKeyframes, gameData.spinnerKeyframeOptions);
+        wheelCell4.animate(gameData.spinnerKeyframes, gameData.spinnerKeyframeOptions).addEventListener('finish', () => {
 
             let newSpin = times - 1
 
-            if(newSpin < decel){
-                gameData.spinnerKeyframeOptions.duration *= decelAmnt
+            if(newSpin > 0){
+                gameData.spinnerKeyframeOptions.duration *= decelAmount
             }
 
             if(newSpin > 0){
                 setNumbers()
-                setVisualizers()
-                animateWheel(newSpin, decel, decelAmnt)
+                setWheelCells()
+                animateWheel(newSpin, decelAmount)
             }
 
             if(newSpin == 0){
                 gameData.spinnerKeyframeOptions.duration = gameData.defaultSpinnerSpeed
                 gameData.spinnerStartedAt = gameData.spinnerView[2]
-                gameData.spinning = false
-                setTimeout(function(){
-                    menuController('visual')
+                setInterval(() => {
                     alertBox.classList.remove('hidden')
-                }, 3000)
-                
-                
+                }, 1500)
                 return;
             }
         });
@@ -638,17 +636,15 @@
         }
 
         function spin(target){
-            // do a full rotation 3 times, then land on the target
             gameData.spinning = true
-            menuController('visual')
-            let decel = (74 - numberOrder.indexOf(target))
+            menuController('rouletteVisualizerMenu')
+            let targetSpins = 74 + numberOrder.indexOf(target) - gameData.spinnerStartedAt + 1
             let decelAmnt = 1.017
-            animateWheel(74 + numberOrder.indexOf(target) - gameData.spinnerStartedAt + 1, decel, decelAmnt)
+            
+            animateWheel(targetSpins, decelAmnt)
         }
 
         spin(parseInt(spunNumber))
-        
-
         setAllDisplays()
     }
 
@@ -658,10 +654,10 @@
     document.addEventListener('keyup', function(event){
         if(document.activeElement.tagName == 'TEXTAREA') return;
         if(event.key == ' '){
-            if(gameData.spinning) return;
-            // check if the alert box is open
             if(!alertBox.classList.contains('hidden')) return closeAlertBox();
-            submitBet()
+            if(gameData.spinning == false){
+                submitBet()
+            }
         }
 
         if(event.key == 'Delete'){
@@ -712,6 +708,8 @@
     // on unload, save the game data
     window.onbeforeunload = function(){
         if(!savelock){
+            gameData.spinning = false;
+            gameData.spinnerKeyframeOptions.duration = 30;
             localStorage.setItem('roulette_gameData', JSON.stringify(gameData))
             localStorage.setItem('roulette_stats', JSON.stringify(stats))
         }
