@@ -42,8 +42,8 @@
 
 
     */ 
-    const messageModifierAmount = 300;
-    const keyModifierAmount = 600;
+    const messageModifierAmount = 600;
+    const keyModifierAmount = 950;
 
     function encrypt(string){
         let decimalValues = string.split('').map(char => char.charCodeAt(0))
@@ -148,26 +148,29 @@
             }
         }
 
-        for(i = 0; i < resizedReorderArray.length; i++){
-            for(j = 0; j < resizedReorderArray[i].length; j++){
-                if(i == 0 || i == 1){
-                    if(j >= resizedReorderArray[i].length / 2){
-                        resizedReorderArray[i][j] = resizedReorderArray[i][j].charCodeAt(0) - keyModifierAmount
-                    } else {
-                        resizedReorderArray[i][j] = resizedReorderArray[i][j].charCodeAt(0) - messageModifierAmount
+
+        try {
+            for(i = 0; i < resizedReorderArray.length; i++){
+                for(j = 0; j < resizedReorderArray[i].length; j++){
+                    if(i == 0 || i == 1){
+                        if(j >= resizedReorderArray[i].length / 2){
+                            resizedReorderArray[i][j] = resizedReorderArray[i][j].charCodeAt(0) - keyModifierAmount
+                        } else {
+                            resizedReorderArray[i][j] = resizedReorderArray[i][j].charCodeAt(0) - messageModifierAmount
+                        }
+                    } else if(i == 2 || i == 3){
+                        if(j >= resizedReorderArray[i].length / 2){
+                            resizedReorderArray[i][j] = resizedReorderArray[i][j].charCodeAt(0) - keyModifierAmount
+                        } else {
+                            resizedReorderArray[i][j] = resizedReorderArray[i][j].charCodeAt(0) - messageModifierAmount
+                        }
                     }
-                } else if(i == 2 || i == 3){
-                    if(j >= resizedReorderArray[i].length / 2){
-                        resizedReorderArray[i][j] = resizedReorderArray[i][j].charCodeAt(0) - keyModifierAmount
-                    } else {
-                        resizedReorderArray[i][j] = resizedReorderArray[i][j].charCodeAt(0) - messageModifierAmount
+                    if(resizedReorderArray[i][j] > 50){
+                        resizedReorderArray[i][j] = resizedReorderArray[i][j] - (keyModifierAmount - messageModifierAmount)
                     }
-                }
-                if(resizedReorderArray[i][j] > 50){
-                    resizedReorderArray[i][j] = resizedReorderArray[i][j] - (keyModifierAmount - messageModifierAmount)
                 }
             }
-        }
+        } catch(e){}
 
         let messages = resizedReorderArray[2]
         let keys = resizedReorderArray[0]
