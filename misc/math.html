@@ -4,46 +4,35 @@
 <script>
     function simplifyRadical(outer, inner){
         // outer√inner
-
         if(inner == undefined){
-            inner = outer;
-            outer = 1;
+            inner = outer
+            outer = 1
         }
-        let factors = [];
-        let divisor = 2;
-
-        let outerProduct = 1;
-        let innerProduct = 1;
-
-        while (inner >= 2) {
-            if (inner % divisor == 0) {
-                factors.push(divisor);
-                inner = inner / divisor;
-            } else {
-                divisor++;
+        let squares = []
+        for(i = 1; i <= 100; i++){
+            squares.push(i**2)
+        }
+        squares = squares.reverse()
+        let innerNum;
+        let outerNum;
+        for(i = 0; i < squares.length; i++){
+            let num = inner / squares[i]
+            let square = squares[i]
+            // check if num is a whole number
+            if(num % 1 == 0){
+                outerNum = Math.pow(square, 1/2)
+                innerNum = num
+                break;
             }
         }
-        
-        let current = '';
-        let last = '';
-        for(i = 0; i < factors.length; i++){
-            last = current;
-            current = factors[i];
-            if(current == last){
-                outerProduct *= current;
-                delete factors[i - 1]
-                i++
-                delete factors[i - 1]
-            }
-        }
-        factors = factors.filter(function (el) {
-            return el != null;
-        });
+        outerNum = outer * outerNum
+        radical = '√'
+        if(outerNum == 1) outerNum = '';
+        if(innerNum == 1) innerNum = '';
 
-        innerProduct = +factors.map(x => innerProduct * x).join("")
+        if(outerNum == '') radical = '';
+        if(innerNum == '') radical = '';
 
-        return outerProduct * outer + "√" + innerProduct;
+        return outerNum + radical + innerNum
     }
-
-    document.write(simplifyRadical(294));
 </script>
