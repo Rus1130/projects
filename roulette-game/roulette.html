@@ -273,6 +273,7 @@
         alertBox.classList.add('hidden')
         document.getElementById("rouletteVisualizerMenu").classList.add('hidden')
         gameData.spinning = false
+        console.log('aa')
     }
 
     function bankMoneyController(type, amount){
@@ -503,7 +504,8 @@
             if(newSpin == 0){
                 gameData.spinnerKeyframeOptions.duration = gameData.defaultSpinnerSpeed
                 gameData.spinnerStartedAt = gameData.spinnerView[2]
-                setInterval(() => {
+                console.log("bb")
+                setTimeout(() => {
                     alertBox.classList.remove('hidden')
                 }, 1500)
                 return;
