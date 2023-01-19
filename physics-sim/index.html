@@ -22,24 +22,26 @@
         size: 20,
         airDensity: 1.204,
         seconds: 0,
-        pixelsPerMeter: 5,
+        pixelsPerMeter: 50,
     }
 
-    // draw a grid of lines that are 100px apart
+    function metersToPixels(meters){
+        return meters * data.pixelsPerMeter;
+    }
 
-    // for(let i = 0; i < window.innerWidth; i += data.pixelsPerMeter){
-    //     let line = two.makeLine(i, 0, i, window.innerHeight);
-    //     line.stroke = 'black';
-    //     line.yGrid = true;
-    //     line.linewidth = 1;
-    // }
+    for(let i = 0; i < window.innerWidth; i += data.pixelsPerMeter){
+        let line = two.makeLine(i, 0, i, window.innerHeight);
+        line.stroke = 'black';
+        line.yGrid = true;
+        line.linewidth = 1;
+    }
 
-    // for(let i = 0; i < window.innerHeight; i += data.pixelsPerMeter){
-    //     let line = two.makeLine(0, i, window.innerWidth, i);
-    //     line.stroke = 'black';
-    //     line.xGrid = true;
-    //     line.linewidth = 1;
-    // }
+    for(let i = 0; i < window.innerHeight; i += data.pixelsPerMeter){
+        let line = two.makeLine(0, i, window.innerWidth, i);
+        line.stroke = 'black';
+        line.xGrid = true;
+        line.linewidth = 1;
+    }
 
     let previewCircle = two.makeCircle(0, 0, data.size);
     previewCircle.fill = 'red';
