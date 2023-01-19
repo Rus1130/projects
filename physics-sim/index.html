@@ -14,32 +14,41 @@
         autostart: true
     }).appendTo(document.body);
 
+    // main unit: pixels per tick
+
     const data = {
         mouseX: 0,
         mouseY: 0,
-        size: 25,
-        airDensity: 1.225,
+        size: 20,
+        airDensity: 1.204,
         seconds: 0,
+        pixelsPerMeter: 5,
+        gravity: (9.81 * 5) / 60,
     }
 
-    let previewCircle = two.makeCircle(0, 0, data.size);
-    previewCircle.fill = 'red';
-    previewCircle.opacity = 0.5;
+    function metersToPixels(meters){
+        return meters * data.pixelsPerMeter;
+    }
 
     // draw a grid of lines that are 100px apart
-    for(let i = 0; i < window.innerWidth; i += 50){
+
+    for(let i = 0; i < window.innerWidth; i += data.pixelsPerMeter){
         let line = two.makeLine(i, 0, i, window.innerHeight);
         line.stroke = 'black';
         line.yGrid = true;
         line.linewidth = 1;
     }
 
-    for(let i = 0; i < window.innerHeight; i += 50){
+    for(let i = 0; i < window.innerHeight; i += data.pixelsPerMeter){
         let line = two.makeLine(0, i, window.innerWidth, i);
         line.stroke = 'black';
         line.xGrid = true;
         line.linewidth = 1;
     }
+
+    let previewCircle = two.makeCircle(0, 0, data.size);
+    previewCircle.fill = 'red';
+    previewCircle.opacity = 0.5;
 
     document.onmousedown = () => {
         let circle = two.makeCircle(data.mouseX, data.mouseY, data.size);
@@ -47,7 +56,14 @@
         circle.fill = 'red';
         circle.vx = 0;
         circle.vy = 0;
-        circle.crossSection = 0.25 * Math.PI * (50 / data.size);
+        circle.crossSection = 0.25 * Math.PI * Math.pow((data.size * 2) / data.pixelsPerMeter, 2)
+        circle.mass = data.size / 2;
+
+
+        let _2mg = 2 * circle.mass * 9.81;
+        let pACd = 1.204 * circle.crossSection * 0.47;
+        circle.termVel = metersToPixels(Math.sqrt(_2mg / pACd));
+        
         
         // https://www.omnicalculator.com/physics/terminal-velocity#:~:text=How%20do%20I%20find%20terminal,drag%20coefficient%20and%20projected%20area.
         two.update();
@@ -62,20 +78,21 @@
     document.onkeydown = e => {
         if(e.key == 'ArrowUp') data.size++;
         if(e.key == 'ArrowDown') data.size--;
+        previewCircle.radius = data.size;
     }
 
 
     two.bind('update', function(frameCount){
         if(data.size < 1) data.size = 1;
-
-        if(data.selectedObject == 'circle'){
-            previewCircle.translation.set(data.mouseX, data.mouseY);
-        }
+        previewCircle.translation.set(data.mouseX, data.mouseY);
 
         for(let i = 0; i < two.scene.children.length; i++){
             let object = two.scene.children[i];
             if(object.physicsObject){
-                object.translation.y += 9.8;
+                object.vy += data.gravity;
+                if(object.vy >= object.termVel) object.vy = object.termVel;
+                object.translation.y += object.vy;
+
             }
         }
     })
