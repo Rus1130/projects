@@ -18,7 +18,6 @@
         mouseX: 0,
         mouseY: 0,
         size: 25,
-        selectedObject: 'circle',
         airDensity: 1.225,
         seconds: 0,
     }
@@ -48,7 +47,9 @@
         circle.fill = 'red';
         circle.vx = 0;
         circle.vy = 0;
-        circle.crossSection = Math.PI * Math.pow(data.size, 2);
+        circle.crossSection = 0.25 * Math.PI * (50 / data.size);
+        
+        // https://www.omnicalculator.com/physics/terminal-velocity#:~:text=How%20do%20I%20find%20terminal,drag%20coefficient%20and%20projected%20area.
         two.update();
     }
 
@@ -74,9 +75,8 @@
 
         for(let i = 0; i < two.scene.children.length; i++){
             let object = two.scene.children[i];
-            data.seconds = Math.round(frameCount / 60);
             if(object.physicsObject){
-                console.log(1)
+                object.translation.y += 9.8;
             }
         }
     })
