@@ -1,0 +1,83 @@
+<style>
+
+</style>
+<head>
+    <script src="two.js"></script>
+</head>
+<body>
+
+</body>
+<script>
+    // 50px² = 1m²
+    let two = new Two({
+        fullscreen: true,
+        autostart: true
+    }).appendTo(document.body);
+
+    const data = {
+        mouseX: 0,
+        mouseY: 0,
+        size: 25,
+        selectedObject: 'circle',
+        airDensity: 1.225,
+        seconds: 0,
+    }
+
+    let previewCircle = two.makeCircle(0, 0, data.size);
+    previewCircle.fill = 'red';
+    previewCircle.opacity = 0.5;
+
+    // draw a grid of lines that are 100px apart
+    for(let i = 0; i < window.innerWidth; i += 50){
+        let line = two.makeLine(i, 0, i, window.innerHeight);
+        line.stroke = 'black';
+        line.yGrid = true;
+        line.linewidth = 1;
+    }
+
+    for(let i = 0; i < window.innerHeight; i += 50){
+        let line = two.makeLine(0, i, window.innerWidth, i);
+        line.stroke = 'black';
+        line.xGrid = true;
+        line.linewidth = 1;
+    }
+
+    document.onmousedown = () => {
+        let circle = two.makeCircle(data.mouseX, data.mouseY, data.size);
+        circle.physicsObject = true;
+        circle.fill = 'red';
+        circle.vx = 0;
+        circle.vy = 0;
+        circle.crossSection = Math.PI * Math.pow(data.size, 2);
+        two.update();
+    }
+
+    document.onmousemove = e => {
+        data.mouseX = e.clientX
+        data.mouseY = e.clientY
+    }
+
+
+    document.onkeydown = e => {
+        if(e.key == 'ArrowUp') data.size++;
+        if(e.key == 'ArrowDown') data.size--;
+    }
+
+
+    two.bind('update', function(frameCount){
+        if(data.size < 1) data.size = 1;
+
+        if(data.selectedObject == 'circle'){
+            previewCircle.radius = data.size;
+            previewCircle.translation.set(data.mouseX, data.mouseY);
+        }
+
+        for(let i = 0; i < two.scene.children.length; i++){
+            let object = two.scene.children[i];
+            data.seconds = Math.round(frameCount / 60);
+            if(object.physicsObject){
+                console.log(1)
+            }
+        }
+    })
+</script>
