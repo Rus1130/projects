@@ -23,7 +23,9 @@
         airDensity: 1.204,
         seconds: 0,
         pixelsPerMeter: 50,
+        circles: []
     }
+    
 
     function metersToPixels(meters){
         return meters * data.pixelsPerMeter;
@@ -47,17 +49,38 @@
     previewCircle.fill = 'red';
     previewCircle.opacity = 0.5;
 
-    document.onmousedown = () => {
-        let circle = two.makeCircle(data.mouseX, data.mouseY, data.size);
-        circle.physicsObject = true;
-        circle.fill = 'red';
-        circle.vx = 0;
-        circle.vy = 0;
-        circle.mass = data.size
-        
+    document.onmousedown = e => {
+        if(e.button == 0){
+            let circle = two.makeCircle(data.mouseX, data.mouseY, data.size);
+            circle.physicsObject = true;
+            circle.fill = 'red';
+            circle.vx = 0;
+            circle.vy = 0;
+            circle.mass = data.size
+            circle.applyPhysics = false;
+            circle.newSpawn = true;
+
+            // terminal velocity: V_t = sqrt(2mg/C_d*A)
+            // drag force: F_d = (1/2) * C_d * A * rho * v^2
+
+
+            data.circles.push(circle);
+        }
         
         // https://www.omnicalculator.com/physics/terminal-velocity#:~:text=How%20do%20I%20find%20terminal,drag%20coefficient%20and%20projected%20area.
         two.update();
+    }
+
+    document.onmouseup = e => {
+        if(e.button == 0){
+            for(let i = 0; i < data.circles.length; i++){
+                let circle = data.circles[i];
+                if(circle.newSpawn){
+                    circle.applyPhysics = true;
+                    circle.newSpawn = false;
+                }
+            }
+        }
     }
 
     document.onmousemove = e => {
@@ -72,7 +95,6 @@
         previewCircle.radius = data.size;
     }
 
-
     two.bind('update', function(frameCount){
         if(data.size < 1) data.size = 1;
         previewCircle.translation.set(data.mouseX, data.mouseY);
@@ -80,7 +102,9 @@
         for(let i = 0; i < two.scene.children.length; i++){
             let object = two.scene.children[i];
             if(object.physicsObject){
-            
+                if(object.applyPhysics){
+                    object.translation.y += 10;
+                }
             }
         }
     })
