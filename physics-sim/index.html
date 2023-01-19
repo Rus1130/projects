@@ -23,28 +23,23 @@
         airDensity: 1.204,
         seconds: 0,
         pixelsPerMeter: 5,
-        gravity: (9.81 * 5) / 60,
-    }
-
-    function metersToPixels(meters){
-        return meters * data.pixelsPerMeter;
     }
 
     // draw a grid of lines that are 100px apart
 
-    for(let i = 0; i < window.innerWidth; i += data.pixelsPerMeter){
-        let line = two.makeLine(i, 0, i, window.innerHeight);
-        line.stroke = 'black';
-        line.yGrid = true;
-        line.linewidth = 1;
-    }
+    // for(let i = 0; i < window.innerWidth; i += data.pixelsPerMeter){
+    //     let line = two.makeLine(i, 0, i, window.innerHeight);
+    //     line.stroke = 'black';
+    //     line.yGrid = true;
+    //     line.linewidth = 1;
+    // }
 
-    for(let i = 0; i < window.innerHeight; i += data.pixelsPerMeter){
-        let line = two.makeLine(0, i, window.innerWidth, i);
-        line.stroke = 'black';
-        line.xGrid = true;
-        line.linewidth = 1;
-    }
+    // for(let i = 0; i < window.innerHeight; i += data.pixelsPerMeter){
+    //     let line = two.makeLine(0, i, window.innerWidth, i);
+    //     line.stroke = 'black';
+    //     line.xGrid = true;
+    //     line.linewidth = 1;
+    // }
 
     let previewCircle = two.makeCircle(0, 0, data.size);
     previewCircle.fill = 'red';
@@ -56,13 +51,7 @@
         circle.fill = 'red';
         circle.vx = 0;
         circle.vy = 0;
-        circle.crossSection = 0.25 * Math.PI * Math.pow((data.size * 2) / data.pixelsPerMeter, 2)
-        circle.mass = data.size / 2;
-
-
-        let _2mg = 2 * circle.mass * 9.81;
-        let pACd = 1.204 * circle.crossSection * 0.47;
-        circle.termVel = metersToPixels(Math.sqrt(_2mg / pACd));
+        circle.mass = data.size
         
         
         // https://www.omnicalculator.com/physics/terminal-velocity#:~:text=How%20do%20I%20find%20terminal,drag%20coefficient%20and%20projected%20area.
@@ -89,10 +78,7 @@
         for(let i = 0; i < two.scene.children.length; i++){
             let object = two.scene.children[i];
             if(object.physicsObject){
-                object.vy += data.gravity;
-                if(object.vy >= object.termVel) object.vy = object.termVel;
-                object.translation.y += object.vy;
-
+            
             }
         }
     })
