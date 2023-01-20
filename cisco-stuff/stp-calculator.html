@@ -88,6 +88,8 @@
     const labelSpace = 60;
     const portRadius = 6;
 
+    const commands = {};
+
 
 
     let colors = {
@@ -138,6 +140,8 @@ SW3 g0/1 SW4 g0/0`
                 return {...acc, ...port};
             }, {})
         }
+
+        commands[device] = [];
     }
 
 
@@ -379,29 +383,7 @@ SW3 g0/1 SW4 g0/0`
             }
         }
         
-
-
-
-
-
-        
-
-
-
-
-
-        
-
-
-
-
-        
-                    
-
-
-
-
-
+        console.log(commands)
 
 
 
