@@ -16,13 +16,23 @@
     const gameData = {
         gridLines: [],
         zoom: 1,
+        zoomMultiplier: 40,
         mouseX: 0,
         mouseY: 0,
         redrawGrid: false,
     }
 
+    let placementPreview = two.makeCircle(0, 0, gameData.zoom * (gameData.zoomMultiplier / 2));
 
-    let placementPreview = two.makeCircle(0, 0, gameData.zoom * 20);
+    
+    let zoomText = two.makeText("Zoom: " + gameData.zoom, 20, window.innerHeight - 20, {
+        size: 20,
+        family: 'Arial',
+        fill: 'black',
+        alignment: 'left',
+    });
+
+    console.log(zoomText)
 
     document.onmousemove = e => {
         gameData.mouseX = e.clientX;
@@ -33,7 +43,7 @@
         gameData.gridLines.forEach(line => {
             line.remove();
         });
-        for(let i = 0; i < window.innerWidth; i += (gameData.zoom * 40)){
+        for(let i = 0; i < window.innerWidth; i += (gameData.zoom * gameData.zoomMultiplier)){
             let line = two.makeLine(i, 0, i, window.innerHeight);
             line.stroke = 'black';
             line.linewidth = 1;
@@ -41,7 +51,7 @@
             gameData.gridLines.push(line);
         }
 
-        for(let i = 0; i < window.innerHeight; i += (gameData.zoom * 40)){
+        for(let i = 0; i < window.innerHeight; i += (gameData.zoom * gameData.zoomMultiplier)){
             let line = two.makeLine(0, i, window.innerWidth, i);
             line.stroke = 'black';
             line.linewidth = 1;
@@ -52,32 +62,43 @@
 
     document.onkeyup = e => {
         let key = e.key
-        if(key == 'i'){
-            gameData.zoom += 0.2;
+        if(key == 'ArrowUp'){
+            gameData.zoom += 0.1;
             gameData.redrawGrid = true;
-        } else if(key == 'o'){
-            gameData.zoom -= 0.2;
+        } else if(key == 'ArrowDown'){
+            gameData.zoom -= 0.1;
             gameData.redrawGrid = true;
         }
     }
 
-    two.bind('update', function(frameCount) {
+    function update(fc){
         let x = gameData.mouseX;
         let y = gameData.mouseY;
 
         // make it snap to grid squares
 
-        x = Math.round(x / (40 * gameData.zoom)) * (40 * gameData.zoom);
-        y = Math.round(y / (40 * gameData.zoom)) * (40 * gameData.zoom);
+        x = Math.round(x / (gameData.zoomMultiplier * gameData.zoom)) * (gameData.zoomMultiplier * gameData.zoom);
+        y = Math.round(y / (gameData.zoomMultiplier * gameData.zoom)) * (gameData.zoomMultiplier * gameData.zoom);
         
         placementPreview.translation.set(x, y);
 
         if(gameData.redrawGrid){
             setGridLines();
-            placementPreview.radius = gameData.zoom * 20;
+            placementPreview.radius = gameData.zoom * (gameData.zoomMultiplier / 2);
             gameData.redrawGrid = false;
-        }   
+        } 
+
+        zoomText.translation.set(20, window.innerHeight - 20);
+        zoomText.value = "Zoom: " + gameData.zoom.toFixed(1) + "x";
+    }
+
+    two.bind('update', function(frameCount) {
+        update(frameCount);
     })
+
+    window.onresize = e => {
+        update();
+    }
 
     setGridLines();
 </script>
