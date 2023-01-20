@@ -1,0 +1,88 @@
+<style>
+
+</style>
+<head>
+
+</head>
+<body>
+    <script src="two.js"></script>
+</body>
+<script>
+    var two = new Two({
+        fullscreen: true,
+        autostart: true
+    }).appendTo(document.body);
+
+    const gameData = {
+        gridLines: [],
+        zoom: 1,
+        mouseX: 0,
+        mouseY: 0,
+        redrawGrid: false,
+    }
+
+
+    let placementPreview = two.makeCircle(0, 0, gameData.zoom * 20);
+
+    document.onmousemove = e => {
+        gameData.mouseX = e.clientX;
+        gameData.mouseY = e.clientY;
+    }
+
+    function setGridLines(){
+        gameData.gridLines.forEach(line => {
+            line.remove();
+        });
+        for(let i = 0; i < window.innerWidth; i += (gameData.zoom * 40)){
+            let line = two.makeLine(i, 0, i, window.innerHeight);
+            line.stroke = 'black';
+            line.linewidth = 1;
+
+            gameData.gridLines.push(line);
+        }
+
+        for(let i = 0; i < window.innerHeight; i += (gameData.zoom * 40)){
+            let line = two.makeLine(0, i, window.innerWidth, i);
+            line.stroke = 'black';
+            line.linewidth = 1;
+
+            gameData.gridLines.push(line);
+        }
+    }
+
+    document.onkeyup = e => {
+        let key = e.key
+        if(key == 'i'){
+            gameData.zoom += 0.2;
+            gameData.redrawGrid = true;
+        } else if(key == 'o'){
+            gameData.zoom -= 0.2;
+            gameData.redrawGrid = true;
+        }
+    }
+
+    two.bind('update', function(frameCount) {
+        let x = gameData.mouseX;
+        let y = gameData.mouseY;
+
+        // make it snap to grid squares
+
+        x = Math.round(x / (40 * gameData.zoom)) * (40 * gameData.zoom);
+        y = Math.round(y / (40 * gameData.zoom)) * (40 * gameData.zoom);
+
+        
+        console.log(x);
+        console.log(y);
+
+        
+        placementPreview.translation.set(x, y);
+
+        if(gameData.redrawGrid){
+            setGridLines();
+            placementPreview.radius = gameData.zoom * 20;
+            gameData.redrawGrid = false;
+        }   
+    })
+
+    setGridLines();
+</script>
