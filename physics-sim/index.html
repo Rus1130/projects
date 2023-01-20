@@ -19,10 +19,10 @@
     const data = {
         mouseX: 0,
         mouseY: 0,
-        size: 20,
+        size: 25,
         airDensity: 1.204,
         seconds: 0,
-        pixelsPerMeter: 50,
+        pixelsPerMeter: 100,
         circles: []
     }
     
@@ -64,6 +64,20 @@
             // drag force: F_d = (1/2) * C_d * A * rho * v^2
 
 
+            let dragCoefficient = 0.47;
+            let projectedArea = Math.PI * ((data.size / 2) ** 2);
+            let fluidDensity = 1.204;
+
+            let dragForce = (1/2) * dragCoefficient * projectedArea * fluidDensity
+
+            let terminalVelocity = Math.sqrt((2 * circle.mass * 9.8 * 60)/(dragCoefficient * projectedArea * fluidDensity))
+
+            circle.dragForce = dragForce;
+            circle.dragCoefficient = dragCoefficient;
+            circle.projectedArea = projectedArea;
+            circle.fluidDensity = fluidDensity;
+            circle.terminalVelocity = terminalVelocity;
+
             data.circles.push(circle);
         }
         
@@ -103,7 +117,17 @@
             let object = two.scene.children[i];
             if(object.physicsObject){
                 if(object.applyPhysics){
-                    object.translation.y += 10;
+                    let dragForce = object.dragForce * object.vy
+                    let netForce = 9.8 - dragForce;
+                    let acceleration = netForce / object.mass;
+
+                    let velocity = object.vy + acceleration * 0.016;
+
+                    object.vy += velocity
+                    
+                    if(object.vy > object.terminalVelocity) object.vy = object.terminalVelocity;
+                    object.translation.y += object.vy;
+
                 }
             }
         }
