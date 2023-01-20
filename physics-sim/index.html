@@ -22,6 +22,7 @@
         seconds: 0,
         orbitals: [],
         coords: [],
+        gridSnap: true,
         orbitPoint: {
             x: 0,
             y: 0,
@@ -91,6 +92,8 @@
                         data.orbitPoint.x += data.coords[i][0];
                         data.orbitPoint.y += data.coords[i][1];
 
+                        // modif
+
                         data.orbitPoint.x /= 2;
                         data.orbitPoint.y /= 2;
                     }
@@ -115,6 +118,10 @@
 
     two.bind('update', function(frameCount){
         if(data.size < 1) data.size = 1;
+        if(data.gridSnap == true){
+            data.mouseX = Math.round(data.mouseX / 50) * 50;
+            data.mouseY = Math.round(data.mouseY / 50) * 50;
+        }
         placementPreview.translation.set(data.mouseX, data.mouseY);
 
         for(let i = 0; i < two.scene.children.length; i++){
