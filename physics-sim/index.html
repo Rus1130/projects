@@ -14,16 +14,18 @@
         autostart: true
     }).appendTo(document.body);
 
-    // main unit: pixels per tick
-
     const data = {
         mouseX: 0,
         mouseY: 0,
         size: 25,
         airDensity: 1.204,
         seconds: 0,
-        pixelsPerMeter: 100,
-        circles: []
+        orbitals: [],
+        coords: [],
+        orbitPoint: {
+            x: 0,
+            y: 0,
+        },
     }
     
 
@@ -31,54 +33,41 @@
         return meters * data.pixelsPerMeter;
     }
 
-    for(let i = 0; i < window.innerWidth; i += data.pixelsPerMeter){
+    for(let i = 0; i < window.innerWidth; i += 50){
         let line = two.makeLine(i, 0, i, window.innerHeight);
         line.stroke = 'black';
         line.yGrid = true;
         line.linewidth = 1;
     }
 
-    for(let i = 0; i < window.innerHeight; i += data.pixelsPerMeter){
+    for(let i = 0; i < window.innerHeight; i += 50){
         let line = two.makeLine(0, i, window.innerWidth, i);
         line.stroke = 'black';
         line.xGrid = true;
         line.linewidth = 1;
     }
 
-    let previewCircle = two.makeCircle(0, 0, data.size);
-    previewCircle.fill = 'red';
-    previewCircle.opacity = 0.5;
+    let placementPreview = two.makeCircle(0, 0, data.size);
+    placementPreview.fill = 'red';
+    placementPreview.opacity = 0.5;
+
+    let orbitPoint = two.makeCircle(0, 0, 10);
+    orbitPoint.fill = 'blue';
 
     document.onmousedown = e => {
         if(e.button == 0){
-            let circle = two.makeCircle(data.mouseX, data.mouseY, data.size);
-            circle.physicsObject = true;
-            circle.fill = 'red';
-            circle.vx = 0;
-            circle.vy = 0;
-            circle.mass = data.size
-            circle.applyPhysics = false;
-            circle.newSpawn = true;
+            let orbital = two.makeCircle(data.mouseX, data.mouseY, data.size);
+            orbital.physicsObject = true;
+            orbital.fill = 'red';
+            orbital.vx = 0;
+            orbital.vy = 0;
+            orbital.mass = data.size
+            orbital.applyPhysics = false;
+            orbital.newSpawn = true;
+            data.coords.push([data.mouseX, data.mouseY, orbital.mass])
+        
 
-            // terminal velocity: V_t = sqrt(2mg/C_d*A)
-            // drag force: F_d = (1/2) * C_d * A * rho * v^2
-
-
-            let dragCoefficient = 0.47;
-            let projectedArea = Math.PI * ((data.size / 2) ** 2);
-            let fluidDensity = 1.204;
-
-            let dragForce = (1/2) * dragCoefficient * projectedArea * fluidDensity
-
-            let terminalVelocity = Math.sqrt((2 * circle.mass * 9.8 * 60)/(dragCoefficient * projectedArea * fluidDensity))
-
-            circle.dragForce = dragForce;
-            circle.dragCoefficient = dragCoefficient;
-            circle.projectedArea = projectedArea;
-            circle.fluidDensity = fluidDensity;
-            circle.terminalVelocity = terminalVelocity;
-
-            data.circles.push(circle);
+            data.orbitals.push(orbital);
         }
         
         // https://www.omnicalculator.com/physics/terminal-velocity#:~:text=How%20do%20I%20find%20terminal,drag%20coefficient%20and%20projected%20area.
@@ -87,11 +76,26 @@
 
     document.onmouseup = e => {
         if(e.button == 0){
-            for(let i = 0; i < data.circles.length; i++){
-                let circle = data.circles[i];
-                if(circle.newSpawn){
-                    circle.applyPhysics = true;
-                    circle.newSpawn = false;
+            for(let i = 0; i < data.orbitals.length; i++){
+                let orbital = data.orbitals[i];
+                if(orbital.newSpawn){
+                    orbital.applyPhysics = true;
+                    orbital.newSpawn = false;
+
+                    for(i = 0; i < data.coords.length; i++){
+                        if(i == 0){
+                            data.orbitPoint.x = data.coords[i][0];
+                            data.orbitPoint.y = data.coords[i][1];
+                        }
+
+                        data.orbitPoint.x += data.coords[i][0];
+                        data.orbitPoint.y += data.coords[i][1];
+
+                        data.orbitPoint.x /= 2;
+                        data.orbitPoint.y /= 2;
+                    }
+
+                    console.log(data.orbitPoint.x, data.orbitPoint.y)
                 }
             }
         }
@@ -106,28 +110,18 @@
     document.onkeydown = e => {
         if(e.key == 'ArrowUp') data.size++;
         if(e.key == 'ArrowDown') data.size--;
-        previewCircle.radius = data.size;
+        placementPreview.radius = data.size;
     }
 
     two.bind('update', function(frameCount){
         if(data.size < 1) data.size = 1;
-        previewCircle.translation.set(data.mouseX, data.mouseY);
+        placementPreview.translation.set(data.mouseX, data.mouseY);
 
         for(let i = 0; i < two.scene.children.length; i++){
             let object = two.scene.children[i];
             if(object.physicsObject){
                 if(object.applyPhysics){
-                    let dragForce = object.dragForce * object.vy
-                    let netForce = 9.8 - dragForce;
-                    let acceleration = netForce / object.mass;
-
-                    let velocity = object.vy + acceleration * 0.016;
-
-                    object.vy += velocity
-                    
-                    if(object.vy > object.terminalVelocity) object.vy = object.terminalVelocity;
-                    object.translation.y += object.vy;
-
+                    orbitPoint.translation.set(data.orbitPoint.x, data.orbitPoint.y);
                 }
             }
         }
