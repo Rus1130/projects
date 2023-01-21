@@ -15,14 +15,34 @@
 
     const gameData = {
         gridLines: [],
-        zoom: 1,
+        zoom: 0.7,
         zoomMultiplier: 40,
         mouseX: 0,
         mouseY: 0,
         redrawGrid: false,
+        objects: [],
+        keys: {},
+        showGrid: false,
     }
 
-    let placementPreview = two.makeCircle(0, 0, gameData.zoom * (gameData.zoomMultiplier / 2));
+    let placementPreview = two.makeRoundedRectangle(0, 0, gameData.zoomMultiplier, gameData.zoomMultiplier, 4);
+    placementPreview.fill = 'black';
+    placementPreview.opacity = 0.5;
+
+
+    function getPreviewCoordinates(){
+        return {x: placementPreview.translation.x, y: placementPreview.translation.y};
+    }
+
+
+    const place = {
+        circle(x, y, radius){
+            let circle = two.makeCircle(x, y, radius);
+            circle.fill = 'red';
+            circle.objectType = 'circle';
+            gameData.objects.push(circle);
+        },
+    }
 
     
     let zoomText = two.makeText("Zoom: " + gameData.zoom, 20, window.innerHeight - 20, {
@@ -31,8 +51,6 @@
         fill: 'black',
         alignment: 'left',
     });
-
-    console.log(zoomText)
 
     document.onmousemove = e => {
         gameData.mouseX = e.clientX;
@@ -43,10 +61,13 @@
         gameData.gridLines.forEach(line => {
             line.remove();
         });
+
+
         for(let i = 0; i < window.innerWidth; i += (gameData.zoom * gameData.zoomMultiplier)){
             let line = two.makeLine(i, 0, i, window.innerHeight);
             line.stroke = 'black';
             line.linewidth = 1;
+            line.direction = 'horizontal';
 
             gameData.gridLines.push(line);
         }
@@ -55,19 +76,64 @@
             let line = two.makeLine(0, i, window.innerWidth, i);
             line.stroke = 'black';
             line.linewidth = 1;
+            line.direction = 'vertical';
 
             gameData.gridLines.push(line);
         }
     }
 
-    document.onkeyup = e => {
+    function redrawAllObjects(){
+        placementPreview.width = gameData.zoomMultiplier * gameData.zoom;
+        placementPreview.height = gameData.zoomMultiplier * gameData.zoom;
+
+        gameData.objects.forEach(object => {
+
+            let x = object.translation.x;
+            let y = object.translation.y;
+
+            x = Math.round(x / (gameData.zoomMultiplier * gameData.zoom)) * (gameData.zoomMultiplier * gameData.zoom);
+            y = Math.round(y / (gameData.zoomMultiplier * gameData.zoom)) * (gameData.zoomMultiplier * gameData.zoom);
+
+            object.translation.set(x, y);
+
+
+            if(object.objectType == 'circle'){
+                object.radius = gameData.zoomMultiplier * gameData.zoom / 2;
+            }
+        })
+
+
+        
+        gameData.redrawGrid = false;
+    }
+
+    document.onkeydown = e => {
         let key = e.key
-        if(key == 'ArrowUp'){
+        gameData.keys[key] = true;
+
+        if(gameData.keys['ArrowUp']){
             gameData.zoom += 0.1;
             gameData.redrawGrid = true;
-        } else if(key == 'ArrowDown'){
-            gameData.zoom -= 0.1;
-            gameData.redrawGrid = true;
+        }
+        if(gameData.keys['ArrowDown']){
+            // only zoom in more if the zoom is greater than 0.1
+            if(gameData.zoom > 0.1){
+                gameData.zoom -= 0.1;
+                gameData.redrawGrid = true;
+            }
+        }
+    }
+
+
+    document.onkeyup = e => {
+        let key = e.key
+        gameData.keys[key] = false;
+    }
+
+    document.onmouseup = e => {
+        let button = e.button;
+        if(button == 0){
+            place.circle(getPreviewCoordinates().x, getPreviewCoordinates().y, gameData.zoomMultiplier * gameData.zoom / 2);
         }
     }
 
@@ -83,13 +149,14 @@
         placementPreview.translation.set(x, y);
 
         if(gameData.redrawGrid){
-            setGridLines();
-            placementPreview.radius = gameData.zoom * (gameData.zoomMultiplier / 2);
-            gameData.redrawGrid = false;
+            if(gameData.showGrid) setGridLines();
+
+            redrawAllObjects()
+
         } 
 
         zoomText.translation.set(20, window.innerHeight - 20);
-        zoomText.value = "Zoom: " + gameData.zoom.toFixed(1) + "x";
+        zoomText.value = "Zoom: " + (gameData.zoom + 0.3).toFixed(1) + "x";
     }
 
     two.bind('update', function(frameCount) {
@@ -97,8 +164,9 @@
     })
 
     window.onresize = e => {
+        gameData.redrawGrid = true;
         update();
     }
 
-    setGridLines();
+    if(gameData.showGrid) setGridLines();
 </script>
