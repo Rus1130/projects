@@ -27,8 +27,6 @@
 
     const gameData = {
         gridLines: [],
-        zoom: 0.5,
-        zoomMultiplier: 40,
         mouseX: 0,
         mouseY: 0,
         buildMode: false,
@@ -36,42 +34,72 @@
         keys: {},
         selectedObject: null,
         mouselock: false,
+        rotation: 0,
+        placementSprite: [],
+        sizer: 20,
     }
 
-    placementPreview = two.makeRectangle(0, 0, gameData.zoomMultiplier * gameData.zoom, gameData.zoomMultiplier * gameData.zoom);
-    placementPreview.fill = 'black';
-    placementPreview.opacity = 0.3;
-    placementPreview.id = 'placementPreview';
+    function addObject(srcs){
+        gameData.objects.push()
+    }
 
-    gameData.objects.push(placementPreview);
+    gameData.placementSprite = two.makeRectangle(0, 0, gameData.sizer, gameData.sizer);
+    gameData.placementSprite.fill = 'black';
+    gameData.placementSprite.opacity = 0.3;
+    gameData.placementSprite.id = 'placementPreview';
 
 
     function getPreviewCoordinates(){
-        return {x: placementPreview.translation.x, y: placementPreview.translation.y};
+        return {x: gameData.placementSprite.translation.x, y: gameData.placementSprite.translation.y};
     }
+
+
 
 
 
     const place = {
         circle(x, y){
-            let circle = two.makeCircle(x, y, gameData.zoomMultiplier * gameData.zoom / 2);
+            let circle = two.makeCircle(x, y, gameData.sizer / 2);
             circle.fill = 'red';
             circle.objectType = 'circle';
             gameData.objects.push(circle);
         },
         square(x, y){
-            let square = two.makeRectangle(x, y, gameData.zoomMultiplier * gameData.zoom, gameData.zoomMultiplier * gameData.zoom);
+            let square = two.makeRectangle(x, y, gameData.sizer, gameData.sizer);
             square.fill = 'blue';
             square.objectType = 'square';
             gameData.objects.push(square);
         },
-        conveyer(x, y){
-            let conveyer1 = two.makeRectangle(x - (gameData.zoomMultiplier * gameData.zoom / 2), y, 1, gameData.zoomMultiplier * gameData.zoom);
-            let conveyer2 = two.makeRectangle(x + (gameData.zoomMultiplier * gameData.zoom / 2), y, 1, gameData.zoomMultiplier * gameData.zoom);
-            let conveyer = two.makeGroup(conveyer1, conveyer2);
-            conveyer.objectType = 'conveyer';
-            gameData.objects.push(conveyer);
-        }
+        straightConveyer(x, y){
+            let conveyer1 = two.makePolygon(x, y + (gameData.sizer / 3), (gameData.sizer) / 20, 3);
+            let conveyer2 = two.makePolygon(x, y, (gameData.sizer) / 20, 3);
+            let conveyer3 = two.makePolygon(x, y - (gameData.sizer / 3), (gameData.sizer) / 20, 3);
+            let conveyerHood = two.makeRectangle(x, y, gameData.sizer, gameData.sizer);
+
+            let edge1 = two.makeLine(x - 10, y - 10.5, x - 10, y + 10.5);
+            let edge2 = two.makeLine(x + 10, y + 10.5, x + 10, y - 10.5);
+
+            conveyer1.fill = 'red'
+            conveyer1.stroke = 'red';
+
+            conveyer2.fill = 'red'
+            conveyer2.stroke = 'red';
+
+            conveyer3.fill = 'red'
+            conveyer3.stroke = 'red';
+
+            conveyerHood.stroke = 'white'
+            conveyerHood.id = 'conveyerHood';
+
+            edge1.stroke = 'black'
+
+            let conveyer = two.makeGroup(conveyerHood, conveyer1, conveyer2, conveyer3, edge1, edge2);
+
+            
+            conveyerHood.objectType = 'conveyer';
+
+            gameData.objects.push(conveyerHood);
+        },
     }
 
     document.onmousemove = e => {
@@ -87,7 +115,7 @@
                 line.remove();
             });
         }
-        for(let i = -(gameData.zoom * gameData.zoomMultiplier) / 2; i < window.innerWidth; i += (gameData.zoom * gameData.zoomMultiplier)){
+        for(let i = -(gameData.sizer) / 2; i < window.innerWidth; i += (gameData.sizer)){
             let line = two.makeLine(i, 0, i, window.innerHeight);
             line.stroke = 'black';
             line.linewidth = 1;
@@ -96,7 +124,7 @@
             gameData.gridLines.push(line);
         }
 
-        for(let i = -(gameData.zoom * gameData.zoomMultiplier) / 2; i < window.innerHeight; i += (gameData.zoom * gameData.zoomMultiplier)){
+        for(let i = -(gameData.sizer) / 2; i < window.innerHeight; i += (gameData.sizer)){
             let line = two.makeLine(0, i, window.innerWidth, i);
             line.stroke = 'black';
             line.linewidth = 1;
@@ -114,16 +142,16 @@
 
     
     function redrawAllObjects(){
-        placementPreview.width = gameData.zoomMultiplier * gameData.zoom;
-        placementPreview.height = gameData.zoomMultiplier * gameData.zoom;
+        gameData.placementSprite.width = gameData.sizer;
+        gameData.placementSprite.height = gameData.sizer;
 
         gameData.objects.forEach(object => {
 
             let x = object.translation.x;
             let y = object.translation.y;
 
-            x = Math.round(x / (gameData.zoomMultiplier * gameData.zoom)) * (gameData.zoomMultiplier * gameData.zoom);
-            y = Math.round(y / (gameData.zoomMultiplier * gameData.zoom)) * (gameData.zoomMultiplier * gameData.zoom);
+            x = Math.round(x / (gameData.sizer)) * (gameData.sizer);
+            y = Math.round(y / (gameData.sizer)) * (gameData.sizer);
 
             object.translation.set(x, y);
         })
@@ -145,19 +173,19 @@
         let key = e.key
         gameData.keys[key] = true;
         if(gameData.keys['ArrowUp']){
-            gameData.mouseY -= gameData.zoomMultiplier * gameData.zoom;
+            gameData.mouseY -= gameData.sizer;
             document.body.style.cursor = 'none';
         }
         if(gameData.keys['ArrowDown']){
-            gameData.mouseY += gameData.zoomMultiplier * gameData.zoom;
+            gameData.mouseY += gameData.sizer;
             document.body.style.cursor = 'none';
         }
         if(gameData.keys['ArrowLeft']){
-            gameData.mouseX -= gameData.zoomMultiplier * gameData.zoom;
+            gameData.mouseX -= gameData.sizer;
             document.body.style.cursor = 'none';
         }
         if(gameData.keys['ArrowRight']){
-            gameData.mouseX += gameData.zoomMultiplier * gameData.zoom;
+            gameData.mouseX += gameData.sizer;
             document.body.style.cursor = 'none';
         }
 
@@ -176,6 +204,12 @@
                 // buildMenu.animate(buildMenuKeyframes, buildMenuKeyframeOptions);
             }
         }
+        if(gameData.keys['r']){
+            gameData.rotation += Math.PI / 4;
+            if(gameData.rotation >= Math.PI){
+                gameData.rotation = 0;
+            }
+        }
         if(gameData.keys['e']){
             let previewPos = getPreviewCoordinates()
             let checkObject = gameData.objects.find(object => { 
@@ -189,7 +223,8 @@
             // place object ============
         }
         if(gameData.keys['1']){
-            gameData.selectedObject = 'conveyer';
+            gameData.selectedObject = 'straightConveyer';
+
         }
         if(gameData.keys['2']){
             gameData.selectedObject = 'square';
@@ -209,12 +244,12 @@
             setGridLines(true);
         }
 
-        x = Math.round(x / (gameData.zoomMultiplier * gameData.zoom)) * (gameData.zoomMultiplier * gameData.zoom);
-        y = Math.round(y / (gameData.zoomMultiplier * gameData.zoom)) * (gameData.zoomMultiplier * gameData.zoom);
+        x = Math.round(x / (gameData.sizer)) * (gameData.sizer);
+        y = Math.round(y / (gameData.sizer)) * (gameData.sizer);
         
-        placementPreview.translation.set(x, y);
-        placementPreview.width = gameData.zoomMultiplier * gameData.zoom;
-        placementPreview.height = gameData.zoomMultiplier * gameData.zoom;
+        gameData.placementSprite.translation.set(x, y);
+        gameData.placementSprite.width = gameData.sizer;
+        gameData.placementSprite.height = gameData.sizer;
     }
 
 
