@@ -65,6 +65,13 @@
             square.objectType = 'square';
             gameData.objects.push(square);
         },
+        conveyer(x, y){
+            let conveyer1 = two.makeRectangle(x - (gameData.zoomMultiplier * gameData.zoom / 2), y, 1, gameData.zoomMultiplier * gameData.zoom);
+            let conveyer2 = two.makeRectangle(x + (gameData.zoomMultiplier * gameData.zoom / 2), y, 1, gameData.zoomMultiplier * gameData.zoom);
+            let conveyer = two.makeGroup(conveyer1, conveyer2);
+            conveyer.objectType = 'conveyer';
+            gameData.objects.push(conveyer);
+        }
     }
 
     document.onmousemove = e => {
@@ -119,15 +126,6 @@
             y = Math.round(y / (gameData.zoomMultiplier * gameData.zoom)) * (gameData.zoomMultiplier * gameData.zoom);
 
             object.translation.set(x, y);
-
-            if(object.objectType == 'square'){
-                object.width = gameData.zoomMultiplier * gameData.zoom;
-                object.height = gameData.zoomMultiplier * gameData.zoom;
-            }
-
-            if(object.objectType == 'circle'){
-                object.radius = gameData.zoomMultiplier * gameData.zoom / 2;
-            }
         })
 
     }
@@ -191,7 +189,7 @@
             // place object ============
         }
         if(gameData.keys['1']){
-            gameData.selectedObject = 'circle';
+            gameData.selectedObject = 'conveyer';
         }
         if(gameData.keys['2']){
             gameData.selectedObject = 'square';
