@@ -27,7 +27,7 @@
 
     const gameData = {
         gridLines: [],
-        zoom: 0.7,
+        zoom: 0.5,
         zoomMultiplier: 40,
         mouseX: 0,
         mouseY: 0,
@@ -35,6 +35,7 @@
         objects: [],
         keys: {},
         selectedObject: null,
+        mouselock: false,
     }
 
     placementPreview = two.makeRectangle(0, 0, gameData.zoomMultiplier * gameData.zoom, gameData.zoomMultiplier * gameData.zoom);
@@ -52,35 +53,22 @@
 
 
     const place = {
-        circle(x, y, radius){
-            let circle = two.makeCircle(x, y, radius);
+        circle(x, y){
+            let circle = two.makeCircle(x, y, gameData.zoomMultiplier * gameData.zoom / 2);
             circle.fill = 'red';
             circle.objectType = 'circle';
             gameData.objects.push(circle);
         },
-        square(x, y, width, height){
-            let square = two.makeRectangle(x, y, width, height);
+        square(x, y){
+            let square = two.makeRectangle(x, y, gameData.zoomMultiplier * gameData.zoom, gameData.zoomMultiplier * gameData.zoom);
             square.fill = 'blue';
             square.objectType = 'square';
             gameData.objects.push(square);
         },
-        diamond(x, y, width, height){
-            let diamond = two.square(x, y, width, height);
-            square.translation.rotate(Math.PI / 4);
-            diamond.fill = 'green';
-            diamond.objectType = 'diamond';
-            gameData.objects.push(diamond);
-        }
     }
 
-    let zoomText = two.makeText("Zoom: " + gameData.zoom, window.innerWidth - 120, 20, {
-        size: 20,
-        family: 'Arial',
-        fill: 'black',
-        alignment: 'left',
-    });
-
     document.onmousemove = e => {
+        if(gameData.mouselock) return;
         gameData.mouseX = e.clientX;
         gameData.mouseY = e.clientY;
     }
@@ -131,7 +119,7 @@
 
             object.translation.set(x, y);
 
-            if(object.objectType == 'square' || object.objectType == 'diamond'){
+            if(object.objectType == 'square'){
                 object.width = gameData.zoomMultiplier * gameData.zoom;
                 object.height = gameData.zoomMultiplier * gameData.zoom;
             }
@@ -157,41 +145,56 @@
     document.onkeydown = e => {
         let key = e.key
         gameData.keys[key] = true;
-
         if(gameData.keys['ArrowUp']){
-            gameData.zoom += 0.1;
-        } 
+            gameData.mouseY -= gameData.zoomMultiplier * gameData.zoom;
+        }
         if(gameData.keys['ArrowDown']){
-            if(gameData.zoom > -0.1){
-                gameData.zoom -= 0.1;
+            gameData.mouseY += gameData.zoomMultiplier * gameData.zoom;
+        }
+        if(gameData.keys['ArrowLeft']){
+            gameData.mouseX -= gameData.zoomMultiplier * gameData.zoom;
+        }
+        if(gameData.keys['ArrowRight']){
+            gameData.mouseX += gameData.zoomMultiplier * gameData.zoom;
+        }
+
+        if(gameData.keys['m']){
+            gameData.mouselock = !gameData.mouselock;
+            if(gameData.mouselock){
+                document.body.style.cursor = 'none';
+            } else {
+                document.body.style.cursor = 'default';
             }
-        } 
-        if(gameData.keys['d']){
+        }
+        if(gameData.keys['g']){
             gameData.buildMode = !gameData.buildMode;
             if(gameData.buildMode){
                 setGridLines();
-                buildMenuKeyframes[0].bottom = '50px';
-                buildMenu.animate(buildMenuKeyframes, buildMenuKeyframeOptions);
+                // buildMenuKeyframes[0].bottom = '50px';
+                // buildMenu.animate(buildMenuKeyframes, buildMenuKeyframeOptions);
             } else {
                 removeGridLines();
-                buildMenuKeyframes[0].bottom = '-110px';
-                buildMenu.animate(buildMenuKeyframes, buildMenuKeyframeOptions);
+                // buildMenuKeyframes[0].bottom = '-110px';
+                // buildMenu.animate(buildMenuKeyframes, buildMenuKeyframeOptions);
             }
         }
-        if(gameData.buildMode){
-            if(gameData.keys['e']){
-                let previewPos = getPreviewCoordinates()
-                let checkObject = gameData.objects.find(object => {
-                    return object.translation.x == previewPos.x && object.translation.y == previewPos.y;
-                });
-
-                console.log(checkObject.id)
-                
-                // place object ============
+        if(gameData.keys['e']){
+            let previewPos = getPreviewCoordinates()
+            let checkObject = gameData.objects.find(object => { 
+                return object.id !== 'placementPreview' && object.translation.x == previewPos.x && object.translation.y == previewPos.y;
+            });
+            if(checkObject == undefined && gameData.selectedObject !== null){
+                place[gameData.selectedObject](previewPos.x, previewPos.y);
             }
-            if(gameData.keys['1']){
-                gameData.selectedObject = 'circle';
-            }
+            
+            
+            // place object ============
+        }
+        if(gameData.keys['1']){
+            gameData.selectedObject = 'circle';
+        }
+        if(gameData.keys['2']){
+            gameData.selectedObject = 'square';
         }
     }
 
@@ -214,9 +217,6 @@
         placementPreview.translation.set(x, y);
         placementPreview.width = gameData.zoomMultiplier * gameData.zoom;
         placementPreview.height = gameData.zoomMultiplier * gameData.zoom;
-
-        zoomText.translation.set(window.innerWidth - 120, 20);
-        zoomText.value = "Zoom: " + (gameData.zoom + 0.3).toFixed(1) + "x";
     }
 
 
