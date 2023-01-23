@@ -40,6 +40,7 @@
     placementPreview = two.makeRectangle(0, 0, gameData.zoomMultiplier * gameData.zoom, gameData.zoomMultiplier * gameData.zoom);
     placementPreview.fill = 'black';
     placementPreview.opacity = 0.3;
+    placementPreview.id = 'placementPreview';
 
     gameData.objects.push(placementPreview);
 
@@ -183,6 +184,8 @@
                 let checkObject = gameData.objects.find(object => {
                     return object.translation.x == previewPos.x && object.translation.y == previewPos.y;
                 });
+
+                console.log(checkObject.id)
                 
                 // place object ============
             }
