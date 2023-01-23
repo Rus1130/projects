@@ -20,6 +20,7 @@
         mouseX: 0,
         mouseY: 0,
         redrawGrid: false,
+        buildMode: false,
     }
 
     let placementPreview = two.makeCircle(0, 0, gameData.zoom * (gameData.zoomMultiplier / 2));
@@ -43,7 +44,7 @@
         gameData.gridLines.forEach(line => {
             line.remove();
         });
-        for(let i = 0; i < window.innerWidth; i += (gameData.zoom * gameData.zoomMultiplier)){
+        for(let i = -(gameData.zoom * gameData.zoomMultiplier) / 2; i < window.innerWidth; i += (gameData.zoom * gameData.zoomMultiplier)){
             let line = two.makeLine(i, 0, i, window.innerHeight);
             line.stroke = 'black';
             line.linewidth = 1;
@@ -51,13 +52,19 @@
             gameData.gridLines.push(line);
         }
 
-        for(let i = 0; i < window.innerHeight; i += (gameData.zoom * gameData.zoomMultiplier)){
+        for(let i = -(gameData.zoom * gameData.zoomMultiplier) / 2; i < window.innerHeight; i += (gameData.zoom * gameData.zoomMultiplier)){
             let line = two.makeLine(0, i, window.innerWidth, i);
             line.stroke = 'black';
             line.linewidth = 1;
 
             gameData.gridLines.push(line);
         }
+    }
+
+    function removeGridLines(){
+        gameData.gridLines.forEach(line => {
+            line.remove();
+        });
     }
 
     document.onkeyup = e => {
@@ -68,6 +75,8 @@
         } else if(key == 'ArrowDown'){
             gameData.zoom -= 0.1;
             gameData.redrawGrid = true;
+        } else if(key == 'e'){
+            gameData.buildMode = !gameData.buildMode;
         }
     }
 
@@ -82,23 +91,28 @@
         
         placementPreview.translation.set(x, y);
 
-        if(gameData.redrawGrid){
-            setGridLines();
-            placementPreview.radius = gameData.zoom * (gameData.zoomMultiplier / 2);
-            gameData.redrawGrid = false;
-        } 
+        
+        placementPreview.radius = gameData.zoom * (gameData.zoomMultiplier / 2);
 
         zoomText.translation.set(20, window.innerHeight - 20);
         zoomText.value = "Zoom: " + gameData.zoom.toFixed(1) + "x";
     }
 
+    function gridUpdate(){
+        setGridLines();
+    }
+
     two.bind('update', function(frameCount) {
         update(frameCount);
+
+        if(gameData.buildMode){
+            gridUpdate();
+        } else {
+            removeGridLines();
+        }
     })
 
     window.onresize = e => {
         update();
     }
-
-    setGridLines();
 </script>
