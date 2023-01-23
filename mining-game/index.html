@@ -26,14 +26,17 @@
         showGrid: false,
     }
 
-    let placementPreview = two.makeRoundedRectangle(0, 0, gameData.zoomMultiplier, gameData.zoomMultiplier, 4);
+
+    placementPreview = two.makeRectangle(0, 0, gameData.zoomMultiplier * gameData.zoom, gameData.zoomMultiplier * gameData.zoom);
+    gameData.objects.push(placementPreview);
     placementPreview.fill = 'black';
-    placementPreview.opacity = 0.5;
+    placementPreview.opacity = 0.3;
 
 
     function getPreviewCoordinates(){
         return {x: placementPreview.translation.x, y: placementPreview.translation.y};
     }
+
 
 
     const place = {
@@ -45,8 +48,7 @@
         },
     }
 
-    
-    let zoomText = two.makeText("Zoom: " + gameData.zoom, 20, window.innerHeight - 20, {
+    let zoomText = two.makeText("Zoom: " + gameData.zoom, window.innerWidth - 120, 20, {
         size: 20,
         family: 'Arial',
         fill: 'black',
@@ -57,6 +59,8 @@
         gameData.mouseX = e.clientX;
         gameData.mouseY = e.clientY;
     }
+
+    let buildMenu;
 
     function setGridLines(){
         gameData.gridLines.forEach(line => {
@@ -79,6 +83,12 @@
 
             gameData.gridLines.push(line);
         }
+
+
+        // add animation to build menu
+        buildMenu = two.makeRectangle(window.innerWidth / 2, window.innerHeight - 70, window.innerWidth - 100, 100);
+        buildMenu.fill = 'white';
+        buildMenu.opacity = 1;
     }
 
     function removeGridLines(){
@@ -101,7 +111,6 @@
             y = Math.round(y / (gameData.zoomMultiplier * gameData.zoom)) * (gameData.zoomMultiplier * gameData.zoom);
 
             object.translation.set(x, y);
-
 
             if(object.objectType == 'circle'){
                 object.radius = gameData.zoomMultiplier * gameData.zoom / 2;
@@ -130,6 +139,9 @@
             
         } else if(gameData.keys['e']){
             gameData.buildMode = !gameData.buildMode;
+            if(gameData.buildMode){
+
+            }
         }
     }
 
@@ -137,13 +149,6 @@
     document.onkeyup = e => {
         let key = e.key
         gameData.keys[key] = false;
-    }
-
-    document.onmouseup = e => {
-        let button = e.button;
-        if(button == 0){
-            place.circle(getPreviewCoordinates().x, getPreviewCoordinates().y, gameData.zoomMultiplier * gameData.zoom / 2);
-        }
     }
 
     function update(fc){
@@ -167,7 +172,7 @@
 
         } 
 
-        zoomText.translation.set(20, window.innerHeight - 20);
+        zoomText.translation.set(window.innerWidth - 120, 20);
         zoomText.value = "Zoom: " + (gameData.zoom + 0.3).toFixed(1) + "x";
     }
 
