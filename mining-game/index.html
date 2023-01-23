@@ -1,17 +1,29 @@
 <style>
-
+    #buildMenu {
+        left: 50px;
+        position: absolute;
+        bottom: -110px;
+        width: calc(100% - 100px);
+        height: 100px;
+        background-color: white;
+        border: 1px black solid;
+        z-index: 100;
+    }
 </style>
 <head>
-
+    <script src="two.js"></script>
 </head>
 <body>
-    <script src="two.js"></script>
+    <div id="buildMenu"></div>
+    <div id="two"></div>
 </body>
 <script>
     var two = new Two({
         fullscreen: true,
         autostart: true
-    }).appendTo(document.body);
+    }).appendTo(document.getElementById('two'));
+
+    const buildMenu = document.getElementById('buildMenu')
 
     const gameData = {
         gridLines: [],
@@ -19,13 +31,10 @@
         zoomMultiplier: 40,
         mouseX: 0,
         mouseY: 0,
-        redrawGrid: false,
         buildMode: false,
         objects: [],
         keys: {},
-        showGrid: false,
     }
-
 
     placementPreview = two.makeRectangle(0, 0, gameData.zoomMultiplier * gameData.zoom, gameData.zoomMultiplier * gameData.zoom);
     gameData.objects.push(placementPreview);
@@ -60,8 +69,6 @@
         gameData.mouseY = e.clientY;
     }
 
-    let buildMenu;
-
     function setGridLines(){
         gameData.gridLines.forEach(line => {
             line.remove();
@@ -83,12 +90,6 @@
 
             gameData.gridLines.push(line);
         }
-
-
-        // add animation to build menu
-        buildMenu = two.makeRectangle(window.innerWidth / 2, window.innerHeight - 70, window.innerWidth - 100, 100);
-        buildMenu.fill = 'white';
-        buildMenu.opacity = 1;
     }
 
     function removeGridLines(){
@@ -117,9 +118,17 @@
             }
         })
 
+    }
 
-        
-        gameData.redrawGrid = false;
+    let buildMenuKeyframes = [
+        {bottom: '50px'},
+    ]
+
+    let buildMenuKeyframeOptions = {
+        duration: 90,
+        iterations: 1,
+        fill: 'forwards',
+        easing: 'ease-in-out',
     }
 
     document.onkeydown = e => {
@@ -128,23 +137,25 @@
 
         if(gameData.keys['ArrowUp']){
             gameData.zoom += 0.1;
-            gameData.redrawGrid = true;
 
         } else if(gameData.keys['ArrowDown']){
             if(gameData.zoom > 0.1){
                 gameData.zoom -= 0.1;
-                gameData.redrawGrid = true;
             }
-            gameData.redrawGrid = true;
             
         } else if(gameData.keys['e']){
             gameData.buildMode = !gameData.buildMode;
             if(gameData.buildMode){
-
+                setGridLines();
+                buildMenuKeyframes[0].bottom = '50px';
+                buildMenu.animate(buildMenuKeyframes, buildMenuKeyframeOptions);
+            } else {
+                removeGridLines();
+                buildMenuKeyframes[0].bottom = '-110px';
+                buildMenu.animate(buildMenuKeyframes, buildMenuKeyframeOptions);
             }
         }
     }
-
 
     document.onkeyup = e => {
         let key = e.key
@@ -155,7 +166,7 @@
         let x = gameData.mouseX;
         let y = gameData.mouseY;
 
-        // make it snap to grid squares
+        console.log(gameData.buildMode);
 
         x = Math.round(x / (gameData.zoomMultiplier * gameData.zoom)) * (gameData.zoomMultiplier * gameData.zoom);
         y = Math.round(y / (gameData.zoomMultiplier * gameData.zoom)) * (gameData.zoomMultiplier * gameData.zoom);
@@ -165,35 +176,19 @@
         
         placementPreview.radius = gameData.zoom * (gameData.zoomMultiplier / 2);
 
-        if(gameData.redrawGrid){
-            if(gameData.showGrid) setGridLines();
-
-            redrawAllObjects()
-
-        } 
-
         zoomText.translation.set(window.innerWidth - 120, 20);
         zoomText.value = "Zoom: " + (gameData.zoom + 0.3).toFixed(1) + "x";
     }
 
-    function gridUpdate(){
-        setGridLines();
-    }
 
     two.bind('update', function(frameCount) {
         update(frameCount);
-
-        if(gameData.buildMode){
-            gridUpdate();
-        } else {
-            removeGridLines();
-        }
     })
 
     window.onresize = e => {
-        gameData.redrawGrid = true;
-        update();
+        if(gameData.buildMode){
+            setGridLines();
+        }
+        redrawAllObjects();
     }
-
-    if(gameData.showGrid) setGridLines();
 </script>
