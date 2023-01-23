@@ -120,12 +120,14 @@
         if(gameData.keys['ArrowUp']){
             gameData.zoom += 0.1;
             gameData.redrawGrid = true;
+
         } else if(gameData.keys['ArrowDown']){
             if(gameData.zoom > 0.1){
                 gameData.zoom -= 0.1;
                 gameData.redrawGrid = true;
             }
             gameData.redrawGrid = true;
+            
         } else if(gameData.keys['e']){
             gameData.buildMode = !gameData.buildMode;
         }
