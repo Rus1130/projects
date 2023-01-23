@@ -71,6 +71,7 @@
         if(gameData.mouselock) return;
         gameData.mouseX = e.clientX;
         gameData.mouseY = e.clientY;
+        document.body.style.cursor = 'default';
     }
 
     function setGridLines(remove){
@@ -147,24 +148,23 @@
         gameData.keys[key] = true;
         if(gameData.keys['ArrowUp']){
             gameData.mouseY -= gameData.zoomMultiplier * gameData.zoom;
+            document.body.style.cursor = 'none';
         }
         if(gameData.keys['ArrowDown']){
             gameData.mouseY += gameData.zoomMultiplier * gameData.zoom;
+            document.body.style.cursor = 'none';
         }
         if(gameData.keys['ArrowLeft']){
             gameData.mouseX -= gameData.zoomMultiplier * gameData.zoom;
+            document.body.style.cursor = 'none';
         }
         if(gameData.keys['ArrowRight']){
             gameData.mouseX += gameData.zoomMultiplier * gameData.zoom;
+            document.body.style.cursor = 'none';
         }
 
         if(gameData.keys['m']){
             gameData.mouselock = !gameData.mouselock;
-            if(gameData.mouselock){
-                document.body.style.cursor = 'none';
-            } else {
-                document.body.style.cursor = 'default';
-            }
         }
         if(gameData.keys['g']){
             gameData.buildMode = !gameData.buildMode;
