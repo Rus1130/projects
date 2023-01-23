@@ -69,8 +69,8 @@
         gameData.mouseY = e.clientY;
     }
 
-    function setGridLines(){
-        gameData.gridLines.forEach(line => {
+    function setGridLines(remove){
+        if(remove) gameData.gridLines.forEach(line => {
             line.remove();
         });
         for(let i = -(gameData.zoom * gameData.zoomMultiplier) / 2; i < window.innerWidth; i += (gameData.zoom * gameData.zoomMultiplier)){
@@ -139,7 +139,7 @@
             gameData.zoom += 0.1;
 
         } else if(gameData.keys['ArrowDown']){
-            if(gameData.zoom > 0.1){
+            if(gameData.zoom > -0.1){
                 gameData.zoom -= 0.1;
             }
             
