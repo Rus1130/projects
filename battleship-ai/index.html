@@ -54,6 +54,19 @@
     let enemyRadar = {};
     let letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
+    const mouse = {
+        x: 0,
+        y: 0
+    }
+
+    let hoveredCell = null;
+    let lastedHoveredCell = null;
+
+    const data = {
+        hoveredCell: null,
+        lastedHoveredCell: null,
+    }
+
     const gameboard = document.getElementById('gameboard');
 
     let twoShips = new Two({
@@ -72,6 +85,9 @@
         for(j = 0; j < 11; j++){
             let shipCell = twoShips.makeRectangle((i * 40) + 20, (j * 40) + 20, 40, 40);
             let radarCell = twoRadar.makeRectangle((i * 40) + 20, (j * 40) + 20, 40, 40);
+
+            shipCell.cellType = 'ship';
+            radarCell.cellType = 'radar';
 
             if(i == 0 || j == 0){
                 if(j == 0) shipCell.id =  `${i}`;
@@ -111,32 +127,37 @@
                 radarCell.id = `${letters[j - 1]}${i}`;
 
                 let shipPin = twoShips.makeCircle((i * 40) + 20, (j * 40) + 20, 6);
-                shipPin.id = `pin-${shipCell.id}`;
+                shipPin.id = `pin_ship-${shipCell.id}`;
                 shipPin.fill = 'black';
                 shipPin.opacity = 0.5;
                 shipPin.noStroke();
 
                 let radarPin = twoRadar.makeCircle((i * 40) + 20, (j * 40) + 20, 6);
-                radarPin.id = `pin-${radarCell.id}`;
+                radarPin.id = `pin_radar-${radarCell.id}`;
                 radarPin.fill = 'black';
                 radarPin.opacity = 0.5;
                 radarPin.noStroke();
                 
             }
 
-            
-
+            shipCell.id = "ship-" + shipCell.id;
+            radarCell.id = "radar-" + radarCell.id;
         }
     }
 
+    gameboard.onmousemove = e => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+    }
 
-
-
-
-
-
-
-    
+    function getHoveredCell(filter){
+        hoveredCell = document.elementFromPoint(mouse.x, mouse.y);
+        if(hoveredCell.id.split("-")[0] == filter){
+            data.lastedHoveredCell = data.hoveredCell;
+            data.hoveredCell = hoveredCell.id;
+            return data.hoveredCell;
+        }
+    }
 
 
 
