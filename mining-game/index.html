@@ -39,20 +39,27 @@
         sizer: 20,
     }
 
-    function addObject(srcs){
-        gameData.objects.push()
-    }
-
-    gameData.placementSprite = two.makeRectangle(0, 0, gameData.sizer, gameData.sizer);
-    gameData.placementSprite.fill = 'black';
-    gameData.placementSprite.opacity = 0.3;
-    gameData.placementSprite.id = 'placementPreview';
+    gameData.placementSprite[0] = two.makeRectangle(0, 0, gameData.sizer, gameData.sizer);
+    gameData.placementSprite[0].fill = 'black';
+    gameData.placementSprite[0].opacity = 0.3;
+    gameData.placementSprite[0].id = 'placementPreview';
+    
+    gameData.placementSprite[1] = two.makePolygon(0, 0, 10, 3);
+    gameData.placementSprite[1].fill = 'red';
+    gameData.placementSprite[1].stroke = 'red';
+    gameData.placementSprite[0].opacity = 0.3;
 
 
     function getPreviewCoordinates(){
-        return {x: gameData.placementSprite.translation.x, y: gameData.placementSprite.translation.y};
+        return {x: gameData.placementSprite[0].translation.x, y: gameData.placementSprite[0].translation.y};
     }
 
+    function modPlacementSprite(fn, skipArrow){
+        gameData.placementSprite.forEach(sprite => {
+            if(skipArrow && sprite.id == 'placementPreview') return;
+            fn(sprite);
+        });
+    }
 
 
 
@@ -89,6 +96,7 @@
             conveyer3.stroke = 'red';
 
             conveyerHood.stroke = 'white'
+            conveyerHood.fill = 'white'
             conveyerHood.id = 'conveyerHood';
 
             edge1.stroke = 'black'
@@ -97,7 +105,6 @@
 
             
             conveyerHood.objectType = 'conveyer';
-
             gameData.objects.push(conveyerHood);
         },
     }
@@ -142,8 +149,11 @@
 
     
     function redrawAllObjects(){
-        gameData.placementSprite.width = gameData.sizer;
-        gameData.placementSprite.height = gameData.sizer;
+        modPlacementSprite(sprite => {
+            sprite.width = gameData.sizer;
+            sprite.height = gameData.sizer;
+        }, true);
+
 
         gameData.objects.forEach(object => {
 
@@ -246,10 +256,15 @@
 
         x = Math.round(x / (gameData.sizer)) * (gameData.sizer);
         y = Math.round(y / (gameData.sizer)) * (gameData.sizer);
+
         
-        gameData.placementSprite.translation.set(x, y);
-        gameData.placementSprite.width = gameData.sizer;
-        gameData.placementSprite.height = gameData.sizer;
+        modPlacementSprite(sprite => {
+            sprite.translation.set(x, y);
+        });
+        modPlacementSprite(sprite => {
+            sprite.width = gameData.sizer;
+            sprite.height = gameData.sizer;
+        }, true);
     }
 
 
