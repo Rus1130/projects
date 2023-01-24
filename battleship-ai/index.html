@@ -1,0 +1,119 @@
+<style>
+    #wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+
+    #gameboard {
+        display: grid;
+        width: 1100px;
+        height: 550px;
+        grid-template-columns: 550px 550px;
+        grid-gap: 10px;
+    }
+
+    #gameboardShips, #gameboardRadar {
+        border: 1px solid black;
+        width: 550px;
+        height: 550px;
+        display: grid;
+        grid-template-columns: repeat(11, 50px);
+        grid-template-rows: repeat(11, 50px);
+        row-gap: 0px;
+        column-gap: 0px;
+    }
+
+</style>
+<head>
+
+</head>
+<body>
+    <div id="wrapper">
+        <div id="gameboard">
+            <div id="gameboardShips"></div>
+            <div id="gameboardRadar"></div>
+        </div>
+    </div>
+</body>
+<script>
+    let gameState = 0;
+
+    let enemyShips = {};
+    let enemyRadar = {};
+    let letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+
+    for(i = 0; i < 10; i++){
+        enemyShips[letters[i]] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        enemyRadar[letters[i]] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    }
+
+    let gameboardShips = document.getElementById('gameboardShips');
+    let gameboardRadar = document.getElementById('gameboardRadar');
+
+    for(k = 0; k < 2; k++){
+        for(i = 0; i < 11; i++){
+            for(j = 0; j < 11; j++){
+                let div = document.createElement('div');
+                div.style.width = '50px';
+                div.style.height = '50px';
+                div.style.border = '1px solid black';
+                div.style.display = 'flex';
+                div.style.justifyContent = 'center';
+                div.style.alignItems = 'center';
+                div.style.fontFamily = 'monospace';
+                div.style.fontSize = '20px';
+                if(k == 0) div.id = 'ships-' + i + "-" + j;
+                else div.id = 'radar-' + i + "-" + j;
+                if(j > 0 && i == 0){
+                    div.innerHTML = j
+                }
+                if(i > 0 && j == 0){
+                    div.innerHTML = letters[i - 1];
+                }
+
+                if(i > 0 && j > 0){
+                    let peg = document.createElement('div');
+                    peg.style.width = '10px';
+                    peg.style.height = '10px';
+                    peg.style.backgroundColor = 'black';
+                    peg.style.borderRadius = '50%';
+                    if(k == 0) peg.id = 'peg-ships-' + i + "-" + j;
+                    else peg.id = 'peg-radar-' + i + "-" + j;
+                    div.appendChild(peg);
+                    
+
+                }
+
+                if(k == 0) gameboardShips.appendChild(div);
+                else gameboardRadar.appendChild(div);
+            }
+        }
+    }
+
+    gameboardShips.onmouseover = e => {
+        if(gameState != 0) return;
+        if (e.target !== e.currentTarget) {
+            let div = e.target;
+            let divID = div.id.split('-');
+            if(divID[1] != '0' && divID[2] != '0'){
+                div.style.backgroundColor = 'red';
+            }
+        }
+    }
+
+    gameboardShips.onmouseout = e => {
+        if(gameState != 0) return;
+        if (e.target !== e.currentTarget) {
+            let div = e.target;
+            let divID = div.id.split('-');
+            if(divID[1] != '0' && divID[2] != '0'){
+                div.style.backgroundColor = 'transparent';
+            }
+        }
+    }
+
+
+
+</script>
