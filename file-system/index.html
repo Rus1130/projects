@@ -1,0 +1,85 @@
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+    }
+    #input {
+        position: absolute;
+        resize: none;
+        border: 1px solid black;
+        width: 100%;
+        font-size: 25px;
+        bottom: 0;
+        height: 34px;
+    }
+
+    #command-history, #file-tree {
+        position: absolute;
+        width: calc(50% - 1px);
+        border: 1px solid black;
+        font-size: 25px;
+        font-family: monospace;
+    }
+
+    #file-tree {
+        top: 0;
+        bottom: 33px;
+
+    }
+
+    #command-history {
+        top: 0;
+        right: 0;
+        bottom: 33px;
+        text-align: end;
+    }
+
+
+    #input:focus {
+        outline: none;
+    }
+</style>
+<head>
+
+</head>
+<body>
+    <div id="file-tree"></div>
+    <div id="command-history"></div>
+    <textarea id="input"></textarea>
+</body>
+<script>
+    const input = document.getElementById('input');
+    const fileTree = document.getElementById('file-tree');
+    const commandHistory = document.getElementById('command-history');
+
+    const data = {
+        currentDrive: 0,
+    }
+
+    input.onkeydown = e => {
+        if(input.value.length > ((Math.ceil(commandHistory.offsetWidth / 25)) * 2) - 12){
+            e.preventDefault();
+        }
+
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            commandHistory.innerHTML += input.value + '<br>';
+            let commandHistoryArray = commandHistory.innerHTML.split('<br>');
+            if(commandHistoryArray.length > 41){
+                commandHistoryArray.shift();
+                commandHistory.innerHTML = commandHistoryArray.join('<br>');
+            }
+
+
+
+
+
+
+            input.value = '';
+        }
+    }
+
+</script>
