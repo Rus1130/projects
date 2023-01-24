@@ -85,6 +85,8 @@
                 div.style.alignItems = 'center';
                 div.style.fontFamily = 'monospace';
                 div.style.fontSize = '20px';
+                div.style.userSelect = 'none';
+                div.style.cursor = 'pointer';
 
                 if(k == 0) div.id = 'ships-' + i + "-" + j;
                 else div.id = 'radar-' + i + "-" + j;
@@ -102,7 +104,7 @@
                     peg.style.height = '10px';
                     peg.style.backgroundColor = 'black';
                     peg.style.borderRadius = '50%';
-                    peg.style.opacity = '0.5';
+                    peg.style.opacity = '0.2';
                     if(k == 0) peg.id = 'peg-ships-' + i + "-" + j;
                     else peg.id = 'peg-radar-' + i + "-" + j;
                     div.appendChild(peg);
@@ -127,7 +129,7 @@
                 divID = div.id.split('-');
             }
             if(divID[1] != '0' && divID[2] != '0'){
-                div.style.backgroundColor = 'grey';
+                div.style.backgroundColor = 'lightgray';
             }
         }
     }
