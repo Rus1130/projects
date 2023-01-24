@@ -11,18 +11,7 @@
         width: 890px;
         height: 450px;
         grid-template-columns: 440px 440px;
-        grid-gap: 20px;
-    }
-
-    #gameboardShips, #gameboardRadar {
-        border: 1px solid black;
-        width: 450px;
-        height: 450px;
-        display: grid;
-        grid-template-columns: repeat(11, 40px);
-        grid-template-rows: repeat(11, 40px);
-        row-gap: 1px;
-        column-gap: 1px;
+        grid-gap: 32px;
     }
 
     #dialogue-box-wrapper {
@@ -37,24 +26,25 @@
 
     #dialogue-box {
         border: 1px solid black;
-        display: grid;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         width: 910px;
         height: 157px;
+        font-family: monospace;
+        font-size: 50px;
     }
 
 </style>
 <head>
-
+    <script src="two.js"></script>
 </head>
 <body>
     <div id="dialogue-box-wrapper">
         <div id="dialogue-box"></div>
     </div>
     <div id="wrapper">
-        <div id="gameboard">
-            <div id="gameboardShips"></div>
-            <div id="gameboardRadar"></div>
-        </div>
+        <div id="gameboard"></div>
     </div>
 </body>
 <script>
@@ -64,90 +54,89 @@
     let enemyRadar = {};
     let letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
-    for(i = 0; i < 10; i++){
-        enemyShips[letters[i]] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        enemyRadar[letters[i]] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    }
+    const gameboard = document.getElementById('gameboard');
 
-    let gameboardShips = document.getElementById('gameboardShips');
-    let gameboardRadar = document.getElementById('gameboardRadar');
-    let dialogueBox = document.getElementById('dialogue-box');
+    let twoShips = new Two({
+        width: 440,
+        height: 440,
+        autostart: true
+    }).appendTo(gameboard);
 
-    for(k = 0; k < 2; k++){
-        for(i = 0; i < 11; i++){
-            for(j = 0; j < 11; j++){
-                let div = document.createElement('div');
-                div.style.width = '40px';
-                div.style.height = '40px';
-                div.style.outline = '1px solid black';
-                div.style.display = 'flex';
-                div.style.justifyContent = 'center';
-                div.style.alignItems = 'center';
-                div.style.fontFamily = 'monospace';
-                div.style.fontSize = '20px';
-                div.style.userSelect = 'none';
-                div.style.cursor = 'pointer';
+    let twoRadar = new Two({
+        width: 440,
+        height: 440,
+        autostart: true
+    }).appendTo(gameboard);
 
-                if(k == 0) div.id = 'ships-' + i + "-" + j;
-                else div.id = 'radar-' + i + "-" + j;
+    for(i = 0; i < 11; i++){
+        for(j = 0; j < 11; j++){
+            let shipCell = twoShips.makeRectangle((i * 40) + 20, (j * 40) + 20, 40, 40);
+            let radarCell = twoRadar.makeRectangle((i * 40) + 20, (j * 40) + 20, 40, 40);
 
-                if(j > 0 && i == 0){
-                    div.innerHTML = j
-                }
-                if(i > 0 && j == 0){
-                    div.innerHTML = letters[i - 1];
-                }
+            if(i == 0 || j == 0){
+                if(j == 0) shipCell.id =  `${i}`;
+                if(j == 0) radarCell.id =  `${i}`;
 
-                if(i > 0 && j > 0){
-                    let peg = document.createElement('div');
-                    peg.style.width = '10px';
-                    peg.style.height = '10px';
-                    peg.style.backgroundColor = 'black';
-                    peg.style.borderRadius = '50%';
-                    peg.style.opacity = '0.2';
-                    if(k == 0) peg.id = 'peg-ships-' + i + "-" + j;
-                    else peg.id = 'peg-radar-' + i + "-" + j;
-                    div.appendChild(peg);
-                    
+                if(i == 0) shipCell.id =  `${letters[j - 1]}`;
+                if(i == 0) radarCell.id =  `${letters[j - 1]}`;
 
+                if(shipCell.id == 'undefined') shipCell.id = '*';
+                if(radarCell.id == 'undefined') radarCell.id = '*';
+
+                if(j == 0 && i != 0){
+                    let shipCellText = twoShips.makeText(i, (i * 40) + 20, (j * 40) + 22);
+                    let radarCellText = twoRadar.makeText(i, (i * 40) + 20, (j * 40) + 22);
+
+                    shipCellText.family = 'monospace';
+                    radarCellText.family = 'monospace';
+
+                    shipCellText.size = 20;
+                    radarCellText.size = 20;
                 }
 
-                if(k == 0) gameboardShips.appendChild(div);
-                else gameboardRadar.appendChild(div);
+                if(i == 0 && j != 0){
+                    let shipCellText = twoShips.makeText(letters[j - 1], (i * 40) + 20, (j * 40) + 22);
+                    let radarCellText = twoRadar.makeText(letters[j - 1], (i * 40) + 20, (j * 40) + 22);
+
+                    shipCellText.family = 'monospace';
+                    radarCellText.family = 'monospace';
+
+                    shipCellText.size = 20;
+                    radarCellText.size = 20;
+                }
             }
+
+            if(j != 0 && i != 0){
+                shipCell.id = `${letters[j - 1]}${i}`;
+                radarCell.id = `${letters[j - 1]}${i}`;
+
+                let shipPin = twoShips.makeCircle((i * 40) + 20, (j * 40) + 20, 6);
+                shipPin.id = `pin-${shipCell.id}`;
+                shipPin.fill = 'black';
+                shipPin.opacity = 0.5;
+                shipPin.noStroke();
+
+                let radarPin = twoRadar.makeCircle((i * 40) + 20, (j * 40) + 20, 6);
+                radarPin.id = `pin-${radarCell.id}`;
+                radarPin.fill = 'black';
+                radarPin.opacity = 0.5;
+                radarPin.noStroke();
+                
+            }
+
+            
+
         }
     }
 
 
-    gameboardShips.onmouseover = e => {
-        if(gameState != 0) return;
-        if (e.target !== e.currentTarget) {
-            let div = e.target;
-            let divID = div.id.split('-');
-            if(divID[0] == 'peg'){
-                div = div.parentNode;
-                divID = div.id.split('-');
-            }
-            if(divID[1] != '0' && divID[2] != '0'){
-                div.style.backgroundColor = 'lightgray';
-            }
-        }
-    }
 
-    gameboardShips.onmouseout = e => {
-        if(gameState != 0) return;
-        if (e.target !== e.currentTarget) {
-            let div = e.target;
-            let divID = div.id.split('-');
-            if(divID[0] == 'peg'){
-                div = div.parentNode;
-                divID = div.id.split('-');
-            }
-            if(divID[1] != '0' && divID[2] != '0'){
-                div.style.backgroundColor = 'transparent';
-            }
-        }
-    }
+
+
+
+
+
+    
 
 
 
