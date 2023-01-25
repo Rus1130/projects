@@ -131,10 +131,11 @@
     playerShips.onmousemove = e => {
         if(e.target.id.split("-")[0] == 'shipCell'){
             currentCell = e.target.id;
+            console.log(currentCell)
         }
     }
 
-    function getCellsToPlace(shipType, direction){
+    function getCellsToPlace(template){
         // direction: x or y
         // offsets:
         // example: x-2, x-1, x, x+1, x+2
