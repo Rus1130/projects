@@ -8,31 +8,19 @@
 
     #gameboard {
         display: grid;
-        width: 890px;
+        width: 920px;
         height: 450px;
-        grid-template-columns: 440px 440px;
-        grid-gap: 32px;
+        grid-template-columns: 450px 450px;
+        grid-gap: 20px;
     }
 
-    #dialogue-box-wrapper {
-        position: absolute;
-        left: 50%;
-        transform: translateX(calc(-50% + 11px));
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1;
-    }
 
-    #dialogue-box {
+    #player-ships, #player-radar {
+        display: grid;
+        grid-template-columns: repeat(11, 40px);
+        grid-template-rows: repeat(11, 40px);
+        grid-gap: 1px;
         border: 1px solid black;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 910px;
-        height: 157px;
-        font-family: monospace;
-        font-size: 50px;
     }
 
 </style>
@@ -40,11 +28,11 @@
     <script src="two.js"></script>
 </head>
 <body>
-    <div id="dialogue-box-wrapper">
-        <div id="dialogue-box"></div>
-    </div>
     <div id="wrapper">
-        <div id="gameboard"></div>
+        <div id="gameboard">
+            <div id="player-ships"></div>
+            <div id="player-radar"></div>
+        </div>
     </div>
 </body>
 <script>
@@ -54,111 +42,83 @@
     let enemyRadar = {};
     let letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
-    const mouse = {
-        x: 0,
-        y: 0
-    }
-
-    let hoveredCell = null;
-    let lastedHoveredCell = null;
-
-    const data = {
-        hoveredCell: null,
-        lastedHoveredCell: null,
-    }
-
     const gameboard = document.getElementById('gameboard');
+    const playerShips = document.getElementById('player-ships');
+    const playerRadar = document.getElementById('player-radar');
 
-    let twoShips = new Two({
-        width: 440,
-        height: 440,
-        autostart: true
-    }).appendTo(gameboard);
+    let currentCell = undefined;
+    const whitelistedCells = [];
 
-    let twoRadar = new Two({
-        width: 440,
-        height: 440,
-        autostart: true
-    }).appendTo(gameboard);
+    const shipCells = [];
 
-    for(i = 0; i < 11; i++){
-        for(j = 0; j < 11; j++){
-            let shipCell = twoShips.makeRectangle((i * 40) + 20, (j * 40) + 20, 40, 40);
-            let radarCell = twoRadar.makeRectangle((i * 40) + 20, (j * 40) + 20, 40, 40);
+    for(i = 0; i < 11; i++) {
+        for(j = 0; j < 11; j++) {
+            let shipCell = document.createElement('div');
+            let radarCell = document.createElement('div');
 
-            shipCell.cellType = 'ship';
-            radarCell.cellType = 'radar';
+            shipCell.style.width = '40px';
+            shipCell.style.height = '40px';
 
-            if(i == 0 || j == 0){
-                if(j == 0) shipCell.id =  `${i}`;
-                if(j == 0) radarCell.id =  `${i}`;
+            radarCell.style.width = '40px';
+            radarCell.style.height = '40px';
 
-                if(i == 0) shipCell.id =  `${letters[j - 1]}`;
-                if(i == 0) radarCell.id =  `${letters[j - 1]}`;
+            shipCell.style.backgroundColor = 'white';
+            radarCell.style.backgroundColor = 'white';
 
-                if(shipCell.id == 'undefined') shipCell.id = '*';
-                if(radarCell.id == 'undefined') radarCell.id = '*';
+            shipCell.style.outline = '1px solid black';
+            radarCell.style.outline = '1px solid black';
 
-                if(j == 0 && i != 0){
-                    let shipCellText = twoShips.makeText(i, (i * 40) + 20, (j * 40) + 22);
-                    let radarCellText = twoRadar.makeText(i, (i * 40) + 20, (j * 40) + 22);
+            shipCell.style.display = 'flex';
+            radarCell.style.display = 'flex';
 
-                    shipCellText.family = 'monospace';
-                    radarCellText.family = 'monospace';
+            shipCell.style.alignItems = 'center';
+            radarCell.style.alignItems = 'center';
 
-                    shipCellText.size = 20;
-                    radarCellText.size = 20;
-                }
+            shipCell.style.justifyContent = 'center';
+            radarCell.style.justifyContent = 'center';
 
-                if(i == 0 && j != 0){
-                    let shipCellText = twoShips.makeText(letters[j - 1], (i * 40) + 20, (j * 40) + 22);
-                    let radarCellText = twoRadar.makeText(letters[j - 1], (i * 40) + 20, (j * 40) + 22);
+            shipCell.style.fontSize = '20px';
+            radarCell.style.fontSize = '20px';
 
-                    shipCellText.family = 'monospace';
-                    radarCellText.family = 'monospace';
+            shipCell.style.fontFamily = 'monospace';
+            radarCell.style.fontFamily = 'monospace';
 
-                    shipCellText.size = 20;
-                    radarCellText.size = 20;
-                }
+            shipCell.defaultBackgrounColor = 'white'
+
+            if(j == 0){
+                shipCell.innerHTML = letters[i - 1]
+            }
+
+            if(i == 0){
+                shipCell.innerHTML = j;
             }
 
             if(j != 0 && i != 0){
-                shipCell.id = `${letters[j - 1]}${i}`;
-                radarCell.id = `${letters[j - 1]}${i}`;
-
-                let shipPin = twoShips.makeCircle((i * 40) + 20, (j * 40) + 20, 6);
-                shipPin.id = `pin_ship-${shipCell.id}`;
-                shipPin.fill = 'black';
-                shipPin.opacity = 0.5;
-                shipPin.noStroke();
-
-                let radarPin = twoRadar.makeCircle((i * 40) + 20, (j * 40) + 20, 6);
-                radarPin.id = `pin_radar-${radarCell.id}`;
-                radarPin.fill = 'black';
-                radarPin.opacity = 0.5;
-                radarPin.noStroke();
-                
+                shipCell.id = "shipCell-" + letters[i - 1] + j;
             }
 
-            shipCell.id = "ship-" + shipCell.id;
-            radarCell.id = "radar-" + radarCell.id;
+            shipCells.push(shipCell);
+
+            playerShips.appendChild(shipCell);
+            playerRadar.appendChild(radarCell);
+
         }
     }
 
-    gameboard.onmousemove = e => {
-        mouse.x = e.clientX;
-        mouse.y = e.clientY;
-    }
-
-    function getHoveredCell(filter){
-        hoveredCell = document.elementFromPoint(mouse.x, mouse.y);
-        if(hoveredCell.id.split("-")[0] == filter){
-            data.lastedHoveredCell = data.hoveredCell;
-            data.hoveredCell = hoveredCell.id;
-            return data.hoveredCell;
+    setInterval(function(){
+        if(currentCell != undefined){
+            let cell = document.getElementById(currentCell);
+            cell.style.backgroundColor = 'grey';
         }
-    }
+    }, 1)
 
+    playerShips.onmousemove = e => {
+        if(e.target.id.split("-")[0] == 'shipCell'){
+            currentCell = e.target.id;
+        }
+
+        console.log(currentCell)
+    }
 
 
 </script>
