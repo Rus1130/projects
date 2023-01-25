@@ -59,12 +59,9 @@
         y: 0
     }
 
-    let hoveredCell = null;
-    let lastedHoveredCell = null;
-
     const data = {
-        hoveredCell: null,
-        lastedHoveredCell: null,
+        hoveredCell: undefined,
+        lastHoveredCell: undefined,
     }
 
     const gameboard = document.getElementById('gameboard');
@@ -90,14 +87,14 @@
             radarCell.cellType = 'radar';
 
             if(i == 0 || j == 0){
-                if(j == 0) shipCell.id =  `${i}`;
-                if(j == 0) radarCell.id =  `${i}`;
+                if(j == 0) shipCell.id =  `start_${i}`;
+                if(j == 0) radarCell.id =  `start_${i}`;
 
-                if(i == 0) shipCell.id =  `${letters[j - 1]}`;
-                if(i == 0) radarCell.id =  `${letters[j - 1]}`;
+                if(i == 0) shipCell.id =  `start_${letters[j - 1]}`;
+                if(i == 0) radarCell.id =  `start_${letters[j - 1]}`;
 
-                if(shipCell.id == 'undefined') shipCell.id = '*';
-                if(radarCell.id == 'undefined') radarCell.id = '*';
+                if(shipCell.id == 'start_undefined') shipCell.id = 'start_*';
+                if(radarCell.id == 'start_undefined') radarCell.id = 'start_*';
 
                 if(j == 0 && i != 0){
                     let shipCellText = twoShips.makeText(i, (i * 40) + 20, (j * 40) + 22);
@@ -150,14 +147,31 @@
         mouse.y = e.clientY;
     }
 
-    function getHoveredCell(filter){
-        hoveredCell = document.elementFromPoint(mouse.x, mouse.y);
-        if(hoveredCell.id.split("-")[0] == filter){
-            data.lastedHoveredCell = data.hoveredCell;
-            data.hoveredCell = hoveredCell.id;
-            return data.hoveredCell;
+    function setHoveredCell(filter){
+        cell = document.elementFromPoint(mouse.x, mouse.y);
+        if(cell.id.split("-")[0] == filter){
+            data.lastHoveredCell = data.hoveredCell;
+            data.hoveredCell = cell;
         }
     }
+
+
+
+    twoShips.bind('update', function(frameCount){
+        if(gameState == 0){
+            setHoveredCell('ship');
+            if(data.hoveredCell !== undefined && data.hoveredCell.id.split("_")[0] != 'ship-start'){
+                data.hoveredCell.style.fill = 'grey';
+            }
+            if(data.lastHoveredCell !== undefined && data.hoveredCell != data.lastHoveredCell || document.elementFromPoint(mouse.x, mouse.y).id == 'gameboard'){
+                data.lastHoveredCell.style.fill = 'white';
+            }
+
+            
+        }
+
+
+    }).play();
 
 
 
