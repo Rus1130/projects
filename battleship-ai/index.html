@@ -44,7 +44,10 @@
         <div id="dialogue-box"></div>
     </div>
     <div id="wrapper">
-        <div id="gameboard"></div>
+        <div id="gameboard">
+            <div id='shipsWrapper'></div>
+            <div id='radarWrapper'></div>
+        </div>
     </div>
 </body>
 <script>
@@ -53,30 +56,60 @@
     let enemyShips = {};
     let enemyRadar = {};
     let letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+    let numbers = {
+        'A': 1,
+        'B': 2,
+        'C': 3,
+        'D': 4,
+        'E': 5,
+        'F': 6,
+        'G': 7,
+        'H': 8,
+        'I': 9,
+        'J': 10
+    }
 
     const mouse = {
         x: 0,
         y: 0
     }
 
+    let placingDirection = 'x'
+    let currentlyPlacingShip = 0
+
+    // Carrier, Battleship, Cruiser, Submarine, Destroyer
+
+    const shipCells = []
+
     const data = {
         hoveredCell: undefined,
-        lastHoveredCell: undefined,
+        previousHoveredCell: undefined,
+        hoveredCellTimeline: []
+    }
+
+    const placingData = {
+        Carrier: [],
+        Battleship: [],
+        Cruiser: [],
+        Submarine: [],
+        Destroyer: []
     }
 
     const gameboard = document.getElementById('gameboard');
+    const shipsWrapper = document.getElementById('shipsWrapper');
+    const radarWrapper = document.getElementById('radarWrapper');
 
     let twoShips = new Two({
         width: 440,
         height: 440,
         autostart: true
-    }).appendTo(gameboard);
+    }).appendTo(shipsWrapper);
 
     let twoRadar = new Two({
         width: 440,
         height: 440,
         autostart: true
-    }).appendTo(gameboard);
+    }).appendTo(radarWrapper);
 
     for(i = 0; i < 11; i++){
         for(j = 0; j < 11; j++){
@@ -137,8 +170,14 @@
                 
             }
 
+            shipCell.backgroundSetDefault = 'grey'
+            shipCell.backgroundResetDefault = 'white';
+
+            shipCells.push(shipCell);
+
             shipCell.id = "ship-" + shipCell.id;
             radarCell.id = "radar-" + radarCell.id;
+            
         }
     }
 
@@ -150,7 +189,6 @@
     function setHoveredCell(filter){
         cell = document.elementFromPoint(mouse.x, mouse.y);
         if(cell.id.split("-")[0] == filter){
-            data.lastHoveredCell = data.hoveredCell;
             data.hoveredCell = cell;
         }
     }
@@ -160,14 +198,77 @@
     twoShips.bind('update', function(frameCount){
         if(gameState == 0){
             setHoveredCell('ship');
-            if(data.hoveredCell !== undefined && data.hoveredCell.id.split("_")[0] != 'ship-start'){
-                data.hoveredCell.style.fill = 'grey';
-            }
-            if(data.lastHoveredCell !== undefined && data.hoveredCell != data.lastHoveredCell || document.elementFromPoint(mouse.x, mouse.y).id == 'gameboard'){
-                data.lastHoveredCell.style.fill = 'white';
-            }
+            let hoveredCellID = data.hoveredCell == undefined ? undefined : data.hoveredCell.id
 
-            
+            if(data.hoveredCell !== undefined){
+
+                let shipParts = [data.hoveredCell.id.split("-")[1].split(""), data.hoveredCell.id.split("-")[1].split(""), data.hoveredCell.id.split("-")[1].split(""), data.hoveredCell.id.split("-")[1].split("")]
+
+                if(data.hoveredCell.id.split("_")[0] != "ship-start"){
+                    if(placingDirection == 'x'){
+
+                        shipParts[0][0] += "+";
+                        shipParts[1][0] += "+";
+                        shipParts[2][0] += "+";
+                        shipParts[3][0] += "+";
+
+                        shipParts[0] = shipParts[0].join("").split("+");
+                        shipParts[1] = shipParts[1].join("").split("+");
+                        shipParts[2] = shipParts[2].join("").split("+");
+                        shipParts[3] = shipParts[3].join("").split("+");
+
+                        shipParts[0][1] = +shipParts[0][1] - 2;
+                        shipParts[1][1] = +shipParts[1][1] - 1;
+                        shipParts[2][1] = +shipParts[2][1] + 1;
+                        shipParts[3][1] = +shipParts[3][1] + 2;
+
+                        shipParts[0] = shipParts[0].join("")
+                        shipParts[1] = shipParts[1].join("")
+                        shipParts[2] = shipParts[2].join("")
+                        shipParts[3] = shipParts[3].join("")
+
+                        shipParts[0] = document.getElementById("ship-" + shipParts[0]);
+                        shipParts[1] = document.getElementById("ship-" + shipParts[1]);
+                        shipParts[2] = document.getElementById("ship-" + shipParts[2]);
+                        shipParts[3] = document.getElementById("ship-" + shipParts[3]);
+
+                    }
+                }
+                data.hoveredCellTimeline.push(data.hoveredCell);
+                if(data.hoveredCellTimeline.length > 3){
+                    data.hoveredCellTimeline.shift();
+                }
+
+                if(data.hoveredCellTimeline[1] !== data.hoveredCell){
+                    data.previousHoveredCell = data.hoveredCellTimeline[1];
+                }
+
+                let cell = shipCells.find(cell => cell.id == data.hoveredCell.id);
+
+
+                if(data.previousHoveredCell !== undefined){
+                    if(data.hoveredCell.id.split("_")[0] != "ship-start"){
+                        data.hoveredCell.style.fill = cell.backgroundSetDefault
+                    }
+
+                    data.previousHoveredCell.style.fill = cell.backgroundResetDefault
+
+
+                    if(document.elementFromPoint(mouse.x, mouse.y).id.split("-")[0] != 'ship' &&
+                        document.elementFromPoint(mouse.x, mouse.y).id.split("-")[0] != 'pin_ship'){
+                        data.hoveredCell.style.fill = cell.backgroundResetDefault
+                    }
+
+
+
+
+                    
+
+
+
+
+                }
+            }
         }
 
 
