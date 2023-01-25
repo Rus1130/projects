@@ -41,6 +41,8 @@
     let currentShip = "Carrier";
     let whitelistedCells = [];
 
+    let forceUpdateShip = false;
+
     let enemyShips = {};
     let enemyRadar = {};
     let letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
@@ -56,6 +58,11 @@
         'I': 9,
         'J': 10
     }
+    
+    let shipTemplates = {
+        Carrier: [-2, -1, 0, 1, 2],
+    }
+
 
     const gameboard = document.getElementById('gameboard');
     const playerShips = document.getElementById('player-ships');
@@ -110,6 +117,15 @@
 
             if(j != 0 && i != 0){
                 shipCell.id = "shipCell-" + letters[i - 1] + j;
+                let pin = document.createElement('div');
+                pin.id = "pin-" + letters[i - 1] + j;
+                pin.style.width = '10px';
+                pin.style.height = '10px';
+                pin.style.backgroundColor = 'black';
+                pin.style.borderRadius = '50%';
+                pin.style.opacity = '0.5'
+
+                shipCell.appendChild(pin);
                 shipCells.push(shipCell);
             }
 
@@ -122,7 +138,21 @@
     setInterval(function(){
         if(gameState == 0){
             if(currentCell != undefined){
+                shipCells.forEach(cell => {
+                    if(!whitelistedCells.includes(cell.id)){
+                        cell.style.backgroundColor = cell.defaultBackgroundColor;
+                        cell.children[0].style.opacity = '0.5';
+                        
+                    } else {
+                        cell.style.backgroundColor = '#919493';
+                        cell.children[0].style.opacity = '1';
+                    }
+                })
 
+                if(forceUpdateShip){
+                    whitelistedCells = colorShipCells([placingDirection, shipTemplates[currentShip]])
+                    forceUpdateShip = false;
+                }
             }
         }
         
@@ -131,26 +161,39 @@
     playerShips.onmousemove = e => {
         if(e.target.id.split("-")[0] == 'shipCell'){
             currentCell = e.target.id;
-            if(currentShip == "Carrier"){
-                console.log(colorShipCells(["x", [-2, -1, 0, 1, 2]]))
-            }
+            whitelistedCells = colorShipCells([placingDirection, shipTemplates[currentShip]])
         }
     }
 
     // template looks like this:
     // [direction, [offset1, offset2, ... ]]
 
+    onkeyup = e => {
+        if(e.key == 'r'){
+            placingDirection = placingDirection == 'x' ? 'y' : 'x';
+            forceUpdateShip = true;
+        }
+    }
+
     function colorShipCells(template){
         let direction = template[0];
         let offsets = template[1];
 
         let result = [];
+        let offsetBase;
 
         for(i = 0; i < offsets.length; i++){
-            let offsetBase = currentCell.split("-")[1]
-            result.push(offsetBase);
+            let base = currentCell.split("-")[1]
+            if(offsets[i] == 0){
+                offsetBase = base;
+                offsetBase = offsetBase.split("");
+                offsetBase.shift();
+                offsetBase = +(offsetBase.join(""));
+            }
+            result.push(base);
         }
 
+        
 
         result = result.map(x => x[0] + " " + x.substring(1));
         result = result.map(x => x.split(" "));
@@ -160,15 +203,47 @@
             return x;
         })
 
-
+        let greatestOffset = Math.max(...offsets);
+        let smallestOffset = Math.min(...offsets);
 
         if(direction == "x"){
             for(j = 0; j < result.length; j++){
-                result[j][1] += offsets[j];
+                result[j][1] = result[j][1] + offsets[j];
+            }
 
-                console.log(currentCell)
+            if((result[result.length - 1][1] - 10) > 0){
+                for(k = 0; k < result.length; k++){
+                    result[k][1] = result[k][1] - (result[result.length - 1][1] - 10);
+                }
+            }
+
+            if(result[0][1] < 1){
+                for(k = 0; k < result.length; k++){
+                    result[k][1] = result[k][1] - (result[result.length - 1][1] - 5)
+                }
             }
         }
+
+        if(direction == "y"){
+            for(j = 0; j < result.length; j++){
+                result[j][0] = result[j][0] + offsets[j];
+            }
+
+            if((result[result.length - 1][0] - 10) > 0){
+                for(k = 0; k < result.length; k++){
+                    result[k][0] = result[k][0] - (result[result.length - 1][0] - 10);
+                }
+            }
+
+            if(result[0][0] < 1){
+                for(k = 0; k < result.length; k++){
+                    result[k][0] = result[k][0] - (result[result.length - 1][0] - 5)
+                }
+            }
+        }
+
+        result = result.map(x => "shipCell-" + letters[x[0] - 1] + x[1]);
+        
         return result;
     }
 
