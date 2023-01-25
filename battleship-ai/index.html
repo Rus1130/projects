@@ -37,6 +37,9 @@
 </body>
 <script>
     let gameState = 0;
+    let placingDirection = 'x';
+    let currentShip = "Carrier";
+    let whitelistedCells = [];
 
     let enemyShips = {};
     let enemyRadar = {};
@@ -59,8 +62,6 @@
     const playerRadar = document.getElementById('player-radar');
 
     let currentCell = undefined;
-    const whitelistedCells = [];
-
     const shipCells = [];
 
     for(i = 0; i < 11; i++) {
@@ -95,21 +96,22 @@
             shipCell.style.fontFamily = 'monospace';
             radarCell.style.fontFamily = 'monospace';
 
-            shipCell.defaultBackgrounColor = 'white'
+            shipCell.defaultBackgroundColor = 'white'
 
             if(j == 0){
                 shipCell.innerHTML = letters[i - 1]
+                shipCell.id = "row" + letters[i - 1];
             }
 
             if(i == 0){
                 shipCell.innerHTML = j;
+                shipCell.id = "column" + j;
             }
 
             if(j != 0 && i != 0){
                 shipCell.id = "shipCell-" + letters[i - 1] + j;
+                shipCells.push(shipCell);
             }
-
-            shipCells.push(shipCell);
 
             playerShips.appendChild(shipCell);
             playerRadar.appendChild(radarCell);
@@ -118,100 +120,24 @@
     }
 
     setInterval(function(){
-        if(currentCell != undefined){
-            let cell = document.getElementById(currentCell);
-            cell.style.backgroundColor = 'grey';
+        if(gameState == 0){
+            if(currentCell != undefined){
+
+            }
         }
+        
     }, 1)
 
     playerShips.onmousemove = e => {
         if(e.target.id.split("-")[0] == 'shipCell'){
             currentCell = e.target.id;
         }
-
-        console.log(currentCell)
     }
 
-
-    twoShips.bind('update', function(frameCount){
-        if(gameState == 0){
-            setHoveredCell('ship');
-            let hoveredCellID = data.hoveredCell == undefined ? undefined : data.hoveredCell.id
-
-            if(data.hoveredCell !== undefined){
-
-                let shipParts = [data.hoveredCell.id.split("-")[1].split(""), data.hoveredCell.id.split("-")[1].split(""), data.hoveredCell.id.split("-")[1].split(""), data.hoveredCell.id.split("-")[1].split("")]
-
-                if(data.hoveredCell.id.split("_")[0] != "ship-start"){
-                    if(placingDirection == 'x'){
-
-                        shipParts[0][0] += "+";
-                        shipParts[1][0] += "+";
-                        shipParts[2][0] += "+";
-                        shipParts[3][0] += "+";
-
-                        shipParts[0] = shipParts[0].join("").split("+");
-                        shipParts[1] = shipParts[1].join("").split("+");
-                        shipParts[2] = shipParts[2].join("").split("+");
-                        shipParts[3] = shipParts[3].join("").split("+");
-
-                        shipParts[0][1] = +shipParts[0][1] - 2;
-                        shipParts[1][1] = +shipParts[1][1] - 1;
-                        shipParts[2][1] = +shipParts[2][1] + 1;
-                        shipParts[3][1] = +shipParts[3][1] + 2;
-
-                        shipParts[0] = shipParts[0].join("")
-                        shipParts[1] = shipParts[1].join("")
-                        shipParts[2] = shipParts[2].join("")
-                        shipParts[3] = shipParts[3].join("")
-
-                        shipParts[0] = document.getElementById("ship-" + shipParts[0]);
-                        shipParts[1] = document.getElementById("ship-" + shipParts[1]);
-                        shipParts[2] = document.getElementById("ship-" + shipParts[2]);
-                        shipParts[3] = document.getElementById("ship-" + shipParts[3]);
-
-                    }
-                }
-                data.hoveredCellTimeline.push(data.hoveredCell);
-                if(data.hoveredCellTimeline.length > 3){
-                    data.hoveredCellTimeline.shift();
-                }
-
-                if(data.hoveredCellTimeline[1] !== data.hoveredCell){
-                    data.previousHoveredCell = data.hoveredCellTimeline[1];
-                }
-
-                let cell = shipCells.find(cell => cell.id == data.hoveredCell.id);
+    function getCellsToPlace(shipType, direction){
 
 
-                if(data.previousHoveredCell !== undefined){
-                    if(data.hoveredCell.id.split("_")[0] != "ship-start"){
-                        data.hoveredCell.style.fill = cell.backgroundSetDefault
-                    }
-
-                    data.previousHoveredCell.style.fill = cell.backgroundResetDefault
-
-
-                    if(document.elementFromPoint(mouse.x, mouse.y).id.split("-")[0] != 'ship' &&
-                        document.elementFromPoint(mouse.x, mouse.y).id.split("-")[0] != 'pin_ship'){
-                        data.hoveredCell.style.fill = cell.backgroundResetDefault
-                    }
-
-
-
-
-                    
-
-
-
-
-                }
-            }
-        }
-
-
-    }).play();
-
-
+        return result;
+    }
 
 </script>
