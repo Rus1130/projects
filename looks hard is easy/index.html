@@ -1,0 +1,62 @@
+<style>
+    #container {
+        width: 600px;
+        height: 600px;
+        border: 1px solid black;
+    }
+</style>
+<head>
+    <script src="./two.js"></script>
+</head>
+<body>
+    <div id="container"></div>
+</body>
+<script>
+    const container = document.getElementById('container')
+    let two = new Two({
+        width: 600,
+        height: 600,
+        autostart: true
+    }).appendTo(container);
+
+    const lines = [];
+    const circles = [];
+
+    const displayLines = true;
+    let circleDistanceModifier = 200;
+
+    const amount = 10; 
+
+    const center = offset => (600 / 2) + offset;
+    
+
+    for(i = 0; i < amount; i++){
+        let line = two.makeLine(0, -200, 0, 200);
+
+        if(displayLines) line.stroke = 'black';
+        else line.stroke = 'transparent';
+        line.linewidth = 1;
+        line.id = `line${i}`;
+        
+        line.rotation = (i / amount) * Math.PI; 
+        line.translation.set(center(0), center(0));    
+        lines.push(line);
+    }
+
+
+    for(i = 0; i < lines.length; i++){
+        let circle = two.makeCircle(0, 0, 10);
+        circle.fill = 'black';
+        circle.id = `circle${i}`;
+        
+
+        // put a circle on the line
+        let circleX = Math.sin((i / amount) * Math.PI) * 200;
+        let circleY = Math.cos((i / amount) * Math.PI) * 200;
+        circle.translation.set(center(circleX), center(circleY));
+
+        circles.push(circle);
+    }
+
+
+</script>
