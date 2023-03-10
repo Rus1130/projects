@@ -33,12 +33,13 @@
     outline.linewidth = 2;
 
     let lines = []
+    let guidelines = [];
     let points = []
 
     let rotation = Math.PI;
     let speed = 0.05
 
-    let paused = true;
+    let paused = false;
 
     function getGuidePoints(){
         return {
@@ -80,14 +81,25 @@
             line.translation.set(offset(0), offset(0));
             lines.push(line);
 
-            let point = two.makeCircle(offset(0), offset(0), 10);
+            let x = Math.sin((i / pointsAmount) * Math.PI) * 200;
+            let y = Math.cos((i / pointsAmount) * Math.PI) * 200;
+
+            let point = two.makeCircle(offset(x), offset(y), 10);
             point.fill = 'black';
             points.push(point);
+
+            let guideline = two.makeLine(0, -200, 0, 200);
+            guideline.linewidth = 2;
+            guideline.stroke = 'red';
+            guideline.id = `guideline${i}`;
+            guideline.rotation = (i / pointsAmount) * Math.PI;
+            guideline.translation.set(offset(0), offset(0));
+
+            guidelines.push(guideline);
         }
     }
 
     drawLines(pointsAmount);
-
 
     const guideCircle = two.makeCircle(getGuidePoints().x, getGuidePoints().y, outline.radius / 2);    
     guideCircle.linewidth = 2;
@@ -100,12 +112,11 @@
         guideCircle.translation.set(getGuidePoints().x, getGuidePoints().y);
 
         for(i = 0; i < pointsAmount; i++){
+            
+            // move the points along the red lines
 
-            // have the point track the guide circle on the line
-            let x = offset(-200 * Math.cos(rotation + (i / pointsAmount) * Math.PI));
-            let y = offset(0);
 
-            points[i].translation.set(x, y);
+            points[i].translation.set(lines[i].translation.x, lines[i].translation.y);
         }
     }).play();
 
