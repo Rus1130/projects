@@ -10,6 +10,11 @@
 </head>
 <body>
     <div id="container"></div>
+    <button id="toggleLineOpacity">Toggle Line</button>
+    <button id="toggleGuideCircle">Toggle Guide Circle</button>
+    <button id="togglePause">Toggle Pause</button>
+    <label for="speedControl">Speed</label>
+    <input type="range" min="0.1" max="50" value="5" id="speedControl">
 </body>
 <script>
     const container = document.getElementById('container')
@@ -19,44 +24,90 @@
         autostart: true
     }).appendTo(container);
 
-    const lines = [];
-    const circles = [];
+    const offset = offset => 300 + offset;
+    let pointsAmount = 3
 
-    const displayLines = true;
-    let circleDistanceModifier = 200;
-
-    const amount = 10; 
-
-    const center = offset => (600 / 2) + offset;
+    const outline = two.makeCircle(offset(0), offset(0), 200);
     
+    outline.stroke = 'black';
+    outline.linewidth = 2;
 
-    for(i = 0; i < amount; i++){
-        let line = two.makeLine(0, -200, 0, 200);
+    let lines = []
+    let points = []
 
-        if(displayLines) line.stroke = 'black';
-        else line.stroke = 'transparent';
-        line.linewidth = 1;
-        line.id = `line${i}`;
-        
-        line.rotation = (i / amount) * Math.PI; 
-        line.translation.set(center(0), center(0));    
-        lines.push(line);
+    let rotation = Math.PI;
+    let speed = 0.05
+
+    let paused = true;
+
+    function getGuidePoints(){
+        return {
+            x: offset(-100 * Math.cos(rotation)),
+            y: offset(-100 * Math.sin(-rotation))
+        }
     }
 
+    document.getElementById('toggleLineOpacity').addEventListener('click', () => {
+        lines.forEach(line => {
+            line.opacity = line.opacity === 0.8 ? 0 : 0.8;
+        });
+    });
 
-    for(i = 0; i < lines.length; i++){
-        let circle = two.makeCircle(0, 0, 10);
-        circle.fill = 'black';
-        circle.id = `circle${i}`;
-        
+    document.getElementById('speedControl').addEventListener('input', (e) => {
+        speed = e.target.value / 100;
+    });
 
-        // put a circle on the line
-        let circleX = Math.sin((i / amount) * Math.PI) * 200;
-        let circleY = Math.cos((i / amount) * Math.PI) * 200;
-        circle.translation.set(center(circleX), center(circleY));
+    document.getElementById('toggleGuideCircle').addEventListener('click', () => {
+        guideCircle.opacity = guideCircle.opacity === 0 ? 1 : 0;
+    });
 
-        circles.push(circle);
+    document.getElementById('togglePause').addEventListener('click', () => {
+        paused = !paused;
+    });
+
+    function drawLines(p){
+        lines.forEach(line => {
+            two.remove(line);
+        });
+        for(i = 0; i < pointsAmount; i++){
+            let line = two.makeLine(0, -500, 0, 500);
+            line.rotation = (i / pointsAmount) * Math.PI;
+            line.linewidth = 1;
+            line.stroke = 'black';
+            line.id = `line${i}`;
+            line.opacity = 0.8;
+
+            line.translation.set(offset(0), offset(0));
+            lines.push(line);
+
+            let point = two.makeCircle(offset(0), offset(0), 10);
+            point.fill = 'black';
+            points.push(point);
+        }
     }
+
+    drawLines(pointsAmount);
+
+
+    const guideCircle = two.makeCircle(getGuidePoints().x, getGuidePoints().y, outline.radius / 2);    
+    guideCircle.linewidth = 2;
+    guideCircle.noFill();
+
+
+    two.bind('update', function(frameCount) {
+        if (paused) return;
+        rotation += speed;
+        guideCircle.translation.set(getGuidePoints().x, getGuidePoints().y);
+
+        for(i = 0; i < pointsAmount; i++){
+
+            // have the point track the guide circle on the line
+            let x = offset(-200 * Math.cos(rotation + (i / pointsAmount) * Math.PI));
+            let y = offset(0);
+
+            points[i].translation.set(x, y);
+        }
+    }).play();
 
 
 </script>
