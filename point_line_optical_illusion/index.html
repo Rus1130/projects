@@ -1,0 +1,185 @@
+<style>
+    #container {
+        width: 600px;
+        height: 600px;
+        border: 1px solid black;
+    }
+</style>
+<head>
+    <script src="./two.js"></script>
+</head>
+<body>
+    <div id="container"></div>
+    <button id="toggleLineOpacity" title="-">Toggle Line</button>
+    <button id="toggleGuideCircle" title="o">Toggle Guide Circle</button>
+    <button id="togglePause" title="Space">Toggle Pause</button><br>
+    <div style="display: inline" id="speedDis">Speed: 0.03</div>
+    <button onclick="speed <= 0.01 ? speed = 0.01 : speed -= 0.01;document.getElementById('speedDis').textContent = 'Speed: ' + Math.round(speed * 100) / 100;" title="Left Arrow">speed--</button>
+    <button onclick="speed >= 6.28 ? speed = 6.28 : speed += 0.01;document.getElementById('speedDis').textContent = 'Speed: ' + Math.round(speed * 100) / 100;" title="Right Arrow">speed++</button>
+    <button onclick="render(-1)" title="Down Arrow">points--</button>
+    <button onclick="render(1)" title="Up Arrow">points++</button>
+    <button onclick="render(0)" title="0">Reset Points</button>
+</body>
+<script>
+    const container = document.getElementById('container')
+    let two = new Two({
+        width: 600,
+        height: 600,
+        autostart: true
+    }).appendTo(container);
+
+    const offset = offset => 300 + offset;
+    let pointsAmount = 1
+
+    const outline = two.makeCircle(offset(0), offset(0), 200);
+    
+    outline.stroke = 'black';
+    outline.linewidth = 2;
+
+    let lines = []
+    let points = []
+
+    let globalRotation = 0;
+    let speed = 0.03
+
+    let paused = false;
+
+    function getGuidePoints(){
+        return {
+            x: offset(100 * Math.cos(globalRotation)),
+            y: offset(100 * Math.sin(globalRotation))
+        }
+    }
+
+    function calculatePointPos(n, p){
+        const sec = x => 1 / Math.cos(x);
+
+        function d(n2, p2){
+            n2++;
+            
+            let num = 200 * Math.cos(globalRotation) + 200 * Math.tan((n * Math.PI) / p) * Math.sin(globalRotation);
+            let den = (sec((n * Math.PI)/p)) ** 2
+
+            return num / den;
+        }
+
+        return {
+            x: d(n, p),
+            y: d(n, p) * Math.tan((n * Math.PI) / p)
+        }
+    }
+
+    document.getElementById('toggleLineOpacity').addEventListener('click', () => {
+        lines.forEach(line => {
+            line.opacity = line.opacity === 0.8 ? 0 : 0.8;
+        });
+    });
+
+    document.getElementById('toggleGuideCircle').addEventListener('click', () => {
+        guideCircle.opacity = guideCircle.opacity === 0 ? 1 : 0;
+    });
+
+    document.getElementById('togglePause').addEventListener('click', () => {
+        paused = !paused;
+    });
+
+    const guideCircle = two.makeCircle(getGuidePoints().x, getGuidePoints().y, outline.radius / 2);   
+
+    function drawLines(p, o){
+        for(i = 0; i < p; i++){
+            let line = two.makeLine(0, -500, 0, 500);
+            line.rotation = (i * Math.PI) / p;
+            // rotate the lines by an 8th of a radian
+            if(p % 2 === 1) line.rotation += Math.PI / 2;
+            line.linewidth = 1;
+            line.stroke = 'black';
+            line.id = `line${i}`;
+            line.opacity = o;
+
+            line.translation.set(offset(0), offset(0));
+            lines.push(line);
+
+            let point = two.makeCircle(0, 0, 5);
+            point.fill = 'black';
+            point.linewidth = 2;
+            points.push(point);
+
+        }
+        
+    }
+
+    drawLines(pointsAmount, 0);
+
+    
+
+             
+    guideCircle.linewidth = 3;
+    guideCircle.stroke = 'red';
+    guideCircle.opacity = 0;
+    guideCircle.noFill();
+
+    guideCircle.translation.set(getGuidePoints().x, getGuidePoints().y);
+    two.remove(guideCircle);
+
+
+    function update(){
+        if (paused) return;
+ 
+        globalRotation += speed;
+        if(globalRotation > Math.PI * 2) globalRotation = 0;
+
+        guideCircle.translation.set(getGuidePoints().x, getGuidePoints().y);
+        points.forEach((point, i) => {
+            let x = calculatePointPos(i, pointsAmount).x
+            let y = calculatePointPos(i, pointsAmount).y
+            point.translation.set(offset(x), offset(y));
+        });
+
+        two.add(guideCircle);
+    }
+
+    two.bind('update', update).play();
+
+    function render(n){
+        let opac = lines[0].opacity;
+        lines.forEach(line => {
+            two.remove(line);
+        });
+        points.forEach(point => {
+            two.remove(point);
+        });
+        if(n === 0) pointsAmount = 1;
+        else pointsAmount += n;
+        if(pointsAmount < 1) pointsAmount = 1;
+        drawLines(pointsAmount, opac);
+
+        points.forEach((point, i) => {
+            let x = calculatePointPos(i, pointsAmount).x
+            let y = calculatePointPos(i, pointsAmount).y
+            point.translation.set(offset(x), offset(y));
+        });
+    }
+
+    document.onkeydown = e => {
+        let key = e.key
+        if(key == " ") paused = !paused;
+        if(key == "ArrowUp") render(1);
+        if(key == "ArrowDown") render(-1);
+        if(key == "0") render(0);
+        if(key == "ArrowLeft") speed <= 0.01 ? speed = 0.01 : speed -= 0.01;
+        if(key == "ArrowRight") speed >= 6.28 ? speed = 6.28 : speed += 0.01;
+        if(key == "-"){
+            lines.forEach(line => {
+                line.opacity = line.opacity === 0.8 ? 0 : 0.8;
+            });
+        }
+        if(key == "o"){
+            guideCircle.opacity = guideCircle.opacity === 0 ? 1 : 0;
+        }
+        document.getElementById('speedDis').textContent = "Speed: " + Math.round(speed * 100) / 100;
+    }
+
+
+
+
+</script>
