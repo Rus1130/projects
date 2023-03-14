@@ -1,0 +1,94 @@
+<style>
+    body {
+        margin: 0px;
+    }
+    .grid {
+        height: 100%;
+        width: 100%;
+        position: relative;
+        z-index: 2;
+        
+        display: grid;
+        grid-template-columns: repeat(var(--columns), 1fr);
+        grid-template-rows: repeat(var(--rows), 1fr);
+
+        overflow: hidden;
+    }
+    .grid > div {
+        width: 0px;
+        height: 10px;
+        background-color: black;
+        position: relative;
+        outline: 1px solid black;
+    }
+</style>
+<head>
+ <!--get anime.js-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+</head>
+<body>
+    <div class="grid" id="grid">
+
+    </div>
+</body>
+<script>
+    const grid = document.getElementById("grid");
+
+    let tiles = document.querySelectorAll(".grid > div");
+
+    const rowSize = 10;
+    const columnSize = 100;
+
+    let trackedTile = 0;
+
+    document.onmousemove = e => {
+        let x = e.clientX;
+        let y = e.clientY;
+
+        let tile = tiles[Math.floor(y / rowSize)];
+        let tileIndex = [...tiles].indexOf(tile);
+
+        // start animation after 10 sec of inactivity
+        anime({
+            targets: tiles,
+            width: x,
+            easing: "easeInOutBounce",
+            duration: anime.stagger(10, {from: tileIndex}),
+            backgroundColor: 'red'
+        })
+    }
+
+    
+
+    const addDiv = index => {
+        // https://animejs.com/documentation/#staggeringFrom
+        const div = document.createElement("div");
+        return div;
+    }
+
+    const createDivs = quantity => {
+        Array.from(Array(quantity)).map((tile, index) => {
+            grid.appendChild(addDiv(index));
+        });
+
+        tiles = document.querySelectorAll(".grid > div");
+    }
+
+    const createGrid = () => {
+        grid.innerHTML = "";
+
+        
+        // let columns = Math.floor(document.body.clientWidth / columnSize);
+        let rows = Math.floor(document.body.clientHeight / rowSize);
+        
+        //grid.style.setProperty("--columns", columns);
+        grid.style.setProperty("--rows", rows);
+        
+        createDivs(rows);
+    }
+
+    createGrid();
+
+    window.onresize = () => createGrid();
+
+</script>
