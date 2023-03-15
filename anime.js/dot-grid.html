@@ -1,0 +1,142 @@
+<style>
+    body {
+        overflow: hidden;
+    }
+    body > div {
+        height: calc(100% - 1px);
+        width: calc(100% - 1px);
+        position: relative;
+        z-index: 2;
+        
+        display: grid;
+        grid-template-columns: repeat(var(--columns), 1fr);
+        grid-template-rows: repeat(var(--rows), 1fr);        
+    }
+
+    body > div > div {
+        position: relative;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    body > div > div > div {
+        position: absolute;
+        height: 20px;
+        width: 20px;
+        background: #000;
+        border-radius: 50%;
+    }
+
+    cursorCircle {
+        position: absolute;
+        height: 150px;
+        width: 150px;
+        /*make the background a radial gradient*/
+        background: radial-gradient(circle, #000 0%, #0000000f 50%, transparent 50%);
+        border-radius: 50%;
+        z-index: 3;
+    }
+</style>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+</head>
+<body>
+    <div></div>
+    <cursorCircle></cursorCircle>
+</body>
+<script>
+
+    let rows = 0;
+    let columns = 0;
+
+    const tileHolder = document.querySelector("body > div");
+    const cursor = document.querySelector("cursorCircle");
+    
+    const createTile = index => {
+        const tile = document.createElement("div");
+        const innerTile = document.createElement("div");
+        tile.appendChild(innerTile);
+
+        tile.onmouseleave = e => {
+            console.log("hi")
+        }
+        return tile;
+    }
+
+    onmousemove = e => {
+        cursor.style.setProperty("left", e.clientX - 75 + "px");
+        cursor.style.setProperty("top", e.clientY - 75 + "px");
+
+        // get all the tiles that collide with the cursorCircle
+    }
+
+    //onmouse
+
+    setInterval(() => {
+        const tiles = Array.from(document.querySelectorAll("body > div > div > div")).filter(tile => {
+            const tileRect = tile.getBoundingClientRect();
+            const cursorRect = cursor.getBoundingClientRect();
+            return tileRect.left < cursorRect.right && tileRect.right > cursorRect.left && tileRect.top < cursorRect.bottom && tileRect.bottom > cursorRect.top;
+        });
+        
+        tiles.forEach(tile => {
+            // get the angle between the cursor and the tile
+            const tileRect = tile.getBoundingClientRect();
+            const cursorRect = cursor.getBoundingClientRect();
+
+            // get the center of the tile
+            const tileCenterX = tileRect.left + tileRect.width / 2;
+            const tileCenterY = tileRect.top + tileRect.height / 2;
+
+            // get the center of the cursor
+            const cursorCenterX = cursorRect.left + cursorRect.width / 2;
+            const cursorCenterY = cursorRect.top + cursorRect.height / 2;
+
+            // get the angle between the cursor and the tile
+            const angle = Math.atan2(cursorCenterY - tileCenterY, cursorCenterX - tileCenterX) * 180 / Math.PI;
+            tile.angle = angle;
+            
+            anime({
+                targets: tile,
+                translateX: [
+                    {value: -15 * Math.cos(angle * Math.PI / 180), duration: 350},
+                ],
+                translateY: [
+                    {value: -15 * Math.sin(angle * Math.PI / 180), duration: 350},
+                ],
+                duration: 700,
+                easing: "easeOutExpo",
+            })
+        });
+    }, 10)
+
+
+    //
+
+    const createTiles = quantity => {
+        Array.from(Array(quantity)).map((tile, index) => {
+            tileHolder.appendChild(createTile(index));
+        });
+    }
+
+    const createGrid = () => {
+        tileHolder.innerHTML = "";
+        
+        const size = 50;
+        
+        columns = Math.floor(document.body.clientWidth / size);
+        rows = Math.floor(document.body.clientHeight / size);
+        
+        tileHolder.style.setProperty("--columns", columns);
+        tileHolder.style.setProperty("--rows", rows);
+        
+        createTiles(columns * rows);
+    }
+
+    createGrid();
+
+    window.onresize = () => createGrid();
+
+</script>
