@@ -1,0 +1,68 @@
+<style>
+    body {
+        margin: 0px;
+    }
+    body > div {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
+    body > div > div {
+        background-color: black;
+        border-radius: 50%;
+        box-shadow: 0px 0px 5px 0.5px red;
+    }
+</style>
+<head>
+ <!--get anime.js-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+</head>
+<body>
+    <div></div>
+</body>
+<script defer>
+    const grid = document.querySelector("body > div");
+
+    let mouseY = 0;
+    let mouseX = 0;
+
+    document.addEventListener("mousemove", e => {
+        mouseY = e.clientY;
+        mouseX = e.clientX - document.body.clientWidth / 2;
+    });
+   
+    const dotsPixels = 10;
+    onclick = e => {
+        const points = document.querySelectorAll("body > div > div");
+        anime({
+            targets: [...points],
+            translateX: mouseX,
+            direction: "alternate",
+            easing: 'spring(1, 80, 10, 0)',
+            autoplay: true,
+            loop: false,
+            delay: anime.stagger(10, {from: Math.floor(mouseY / dotsPixels)}),
+            duration: 100
+        });
+    }
+
+    function createObjects(){
+        let height = Math.ceil(document.body.clientHeight / dotsPixels);
+        for(let i = 0; i < height; i++){
+            let div = document.createElement("div");
+            div.style.height = dotsPixels + "px";
+            div.style.width = dotsPixels + "px";
+            grid.appendChild(div);
+        }
+    }
+
+
+
+
+
+    createObjects()
+
+</script>
