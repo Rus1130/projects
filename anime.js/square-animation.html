@@ -1,0 +1,95 @@
+<style>
+    :root {
+        --g1: #6200EA;
+        --g2: #EC407A;
+        --g3: #FFD166;
+    }
+
+    body {
+        margin: 0;
+        overflow: hidden;
+    }
+
+    @keyframes background-pan {
+        from {
+            background-position: 0% center;
+        }
+
+        to {
+            background-position: -200% center;
+        }
+    }
+
+    .center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transform: translateY(1000px);
+        height: 100%;
+    }
+
+    .squares {
+        background: #000;
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        animation: background-pan 3s linear infinite;
+        background: linear-gradient(to left, var(--g1), var(--g2), var(--g3), var(--g2), var(--g1));
+        background-size: 200%;
+    }
+</style>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+</head>
+<body>
+    <div class="center">
+        <div class="squares" id="square1"></div>
+    </div>
+</body>
+<script>
+    const squares = document.querySelectorAll(".squares");
+
+    const color1 = "#6200EA";
+    const color2 = "#EC407A";
+    const color3 = "#FFD166";
+
+    setTimeout(() => {
+        anime({
+            targets: squares,
+            translateY: -1000,
+            duration: 1000,
+
+            translateY: [
+                { value: -1000, duration: 4100 },
+                { value: 0, duration: 1000 },
+            ],
+
+            width: [
+                { value: 100, duration: 1000 },
+                { value: 200, duration: 3000 },
+            ],
+            height: [
+                { value: 100, duration: 2000 },
+                { value: 200, duration: 1500 },
+            ],
+            rotate: [
+                { value: 360, duration: 1000 },
+                { value: 0, duration: 2000 },
+                { value: 360, duration: 1000 },
+            ],
+
+            borderRadius: [
+                { value: "0%", duration: 3000 },
+                { value: "50%", duration: 1000 },
+            ],
+
+            scale: [
+                { value: 1, duration: 3000 },
+                { value: 0.2, duration: 1000 },
+            ],
+
+            loop: true,
+            easing: "spring(1, 80, 10, 0)"
+        });
+    }, 1000)   
+</script>

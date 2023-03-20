@@ -1,0 +1,52 @@
+<style>
+    body {
+        overflow: hidden;
+    }
+    .center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+</style>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="two.js"></script>
+</head>
+<body>
+    <div id="two-scene"></div>
+</body>
+<script>
+
+    let arcLength = 0.01;
+    let two = new Two({
+        fullscreen: true,
+        autostart: true
+    }).appendTo(document.getElementById("two-scene"));
+
+    let circle = two.makeCircle(two.width / 2, two.height / 2, 150);
+    circle.fill = "#FF8000";
+    circle.stroke = "#FF8000";
+
+    let innerCircle = two.makeCircle(two.width / 2, two.height / 2, 80);
+    innerCircle.fill = "white";
+    innerCircle.stroke = "white";
+
+    // make a slice of a circle
+    let slice = two.makeArcSegment(two.width / 2, two.height / 2, 151, 0, Math.PI * 2, arcLength);
+    slice.fill = "white";
+    slice.stroke = "white";
+
+    function increaseArc(){
+        two.remove(slice);
+        arcLength += 0.01;
+        slice = two.makeArcSegment(two.width / 2, two.height / 2, 151, 0, Math.PI * 2, arcLength);
+        slice.fill = "white";
+        slice.stroke = "white";
+
+        if(arcLength > 4 * Math.PI) arcLength = 0.01;
+    }
+
+    setInterval(increaseArc, 1);
+
+</script>
