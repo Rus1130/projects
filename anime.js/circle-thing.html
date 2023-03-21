@@ -1,0 +1,171 @@
+<style>
+    :root {
+        --size: 100px;
+    }
+    body {
+        overflow: hidden;
+    }
+    .center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        flex-direction: column;
+    }
+    .top-left {
+        height: var(--size);
+        width: var(--size);
+        border-radius: 100px 0 0 0;
+        background-color: black;
+    }
+
+    .top-right {
+        height: var(--size);
+        width: var(--size);
+        border-radius: 0 100px 0 0;
+        background-color: black;
+    }
+
+    .bottom-left {
+        height: var(--size);
+        width: var(--size);
+        border-radius: 0 0 0 100px;
+        background-color: black;
+    }
+
+    .bottom-right {
+        height: var(--size);
+        width: var(--size);
+        border-radius: 0 0 100px 0;
+        background-color: black;
+
+    }
+
+    .align {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+</head>
+<body>
+    <div class="center">
+        <div class="align">
+            <div class="top-left"></div>
+            <div class="top-right"></div>
+        </div>
+        <div class="align">
+            <div class="bottom-left"></div>
+            <div class="bottom-right"></div>
+        </div>
+    </div>
+</body>
+<script>
+
+    const sections = document.querySelectorAll('.top-left, .top-right, .bottom-left, .bottom-right');
+
+    setTimeout(function(){
+        let topLeftAnim = anime({
+            targets: '.top-left',
+            delay: 500,
+            borderRadius: [
+                {value: '100px 100px 100px 100px'},
+                {value: '100px 0px 0px 0px', delay: 4500, duration: 500},
+            ],
+            duration: 500,
+            translateX: [
+                {value: "-10px", duration: 500},
+                {value: "0px", delay: 4000, duration: 500},
+            ],
+            translateY: [
+                {value: "-10px", duration: 500},
+                {value: "0px", delay: 4000, duration: 500},
+            ],
+            easing: 'easeInOutQuad',
+            complete: function(anim){
+                topLeftAnim.restart();
+                topRightAnim.restart();
+                bottomLeftAnim.restart();
+                bottomRightAnim.restart();
+                centerAnim.restart();
+            }
+        })
+
+        let topRightAnim = anime({
+            targets: '.top-right',
+            delay: 500,
+            borderRadius: [
+                {value: '100px 100px 100px 100px'},
+                {value: '0px 100px 0px 0px', delay: 4500, duration: 500},
+            ],
+
+            duration: 500,
+            translateX: [
+                {value: "10px", duration: 500},
+                {value: "0px", delay: 4000, duration: 500},
+            ],
+            translateY: [
+                {value: "-10px", duration: 500},
+                {value: "0px", delay: 4000, duration: 500},
+            ],
+            easing: 'easeInOutQuad'
+        })
+
+        let bottomLeftAnim = anime({
+            targets: '.bottom-left',
+            delay: 500,
+            borderRadius: [
+                {value: '100px 100px 100px 100px'},
+                {value: '0px 0px 0px 100px', delay: 4500, duration: 500},
+            ],
+            duration: 500,
+            translateX: [
+                {value: "-10px", duration: 500},
+                {value: "0px", delay: 4000, duration: 500},
+            ],
+            translateY: [
+                {value: "10px", duration: 500},
+                {value: "0px", delay: 4000, duration: 500},
+            ],
+            easing: 'easeInOutQuad'
+        })
+
+        let bottomRightAnim = anime({
+            targets: '.bottom-right',
+            delay: 500,
+            borderRadius: [
+                {value: '100px 100px 100px 100px'},
+                {value: '0px 0px 100px 0px', delay: 4500, duration: 500},
+            ],
+            duration: 500,
+            translateX: [
+                {value: "10px", duration: 500},
+                {value: "0px", delay: 4000, duration: 500},
+            ],
+            translateY: [
+                {value: "10px", duration: 500},
+                {value: "0px", delay: 4000, duration: 500},
+            ],
+            easing: 'easeInOutQuad'
+        })
+
+        let centerAnim = anime({
+            targets: '.center',
+            rotate: [
+                {value: '+=45', duration: 500, delay: 1000},
+                {value: '+=45', duration: 500},
+                {value: '+=45', duration: 500},
+                {value: '+=45', duration: 500},
+                {value: '+=45', duration: 500},
+                {value: '+=45', duration: 500},
+                {value: '+=45', duration: 500},
+                {value: '+=45', duration: 500},
+                {value: '+=45', duration: 500},
+            ],
+            duration: 500,
+        })
+    }, 500)
+
+</script>
