@@ -2,6 +2,7 @@
     @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
     html {
         font-family: 'Lato', sans-serif;
+        user-select: none;
     }
     #case-spinner-menu {
         display: flex;
@@ -45,7 +46,6 @@
         color: white;
         background-color: orange;
         box-shadow: 0px 0px 20px 1px rgba(255, 69, 0, 0.75) inset;
-        user-select: none;
     }
 
     #ticker {
@@ -54,13 +54,23 @@
         width: 5px;
         transform: translateY(-36px);
         background-color: rgba(0, 0, 0, 0.387);
-        user-select: none;
     }
 
     #ui {
         position: fixed;
-    }    
+    }
 
+    .case-switcher-buttons {
+        outline: 1px solid black;
+        width: 100px;
+        height: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 20px;
+        border-radius: 1px;
+        margin-bottom: 4px;
+    }
 
 </style>
 <head>
@@ -70,16 +80,23 @@
     <div id="ui">
         <div id="money-counter">$100</div>
         <div id="current-case">Current Case: Shapes</div>
+        <div id="case-switcher">Cases:
+            <div class="case-switcher-buttons" onclick="switchCase('Shapes')">Shapes</div>
+            <div class="case-switcher-buttons" onclick="switchCase('Teachers')">Teachers</div>
+            <div class="case-switcher-buttons" onclick="switchCase('People')">People</div>
+            <div class="case-switcher-buttons" onclick="switchCase('YouTubers')">YouTubers</div>
+            <div class="case-switcher-buttons" onclick="//switchCase('VideoGames')">Video Games</div>
+        </div>
     </div>
     
     <div id="case-spinner-menu">
         <div id="case-spinner">
-            <div class="spinner-cell" id="spinner-cell-1" style="background: green;">Extra</div>
-            <div class="spinner-cell" id="spinner-cell-2">Start!</div>
-            <div class="spinner-cell" id="spinner-cell-3">1</div>
-            <div class="spinner-cell" id="spinner-cell-4">Middle!</div>
-            <div class="spinner-cell" id="spinner-cell-5">2</div>
-            <div class="spinner-cell" id="spinner-cell-6">End!</div>
+            <div class="spinner-cell" id="spinner-cell-1"></div>
+            <div class="spinner-cell" id="spinner-cell-2"></div>
+            <div class="spinner-cell" id="spinner-cell-3"></div>
+            <div class="spinner-cell" id="spinner-cell-4"></div>
+            <div class="spinner-cell" id="spinner-cell-5"></div>
+            <div class="spinner-cell" id="spinner-cell-6"></div>
         </div>
         <div id="ticker"></div>
         <div id="spin-again-button">Spin Again ($)</div>
@@ -102,14 +119,15 @@
 
     let currentMoney = 100;
 
-    // 0.5 + 0.29 + 0.15 + 0.03 + 0.02 + 0.01
+    // 0.5 + 0.29 + 0.15 + 0.03 + 0.02 + 0.0999 + 0.0001
     const probabilities = {
         common: 0.5,
         uncommon: 0.29,
         rare: 0.15,
         epic: 0.03,
         legendary: 0.02,
-        mythical: 0.01
+        mythical: 0.00099,
+        exotic: 0.0001
     }
 
     const colors = {
@@ -118,28 +136,20 @@
         rare: '#ff6600',
         epic: '#cc00ff',
         legendary: '#ffcc00',
-        mythical: '#ff0000'
+        mythical: '#ff0000',
+        exotic: '#0000ff'
     }
 
     const cases = {
         "Shapes": {
             cost: 8,
-            common: { circle: 1 },
-            uncommon: { triangle: 5 },
-            rare: { square: 7 },
-            epic: { star: 34 },
-            legendary: { hexagon: 65 },
-            mythical: { dodecagon: 138 }
-        },
-
-        "People": {
-            cost: 45,
-            common: { Noa: 10 },
-            uncommon: { Ehren: 15 },
-            rare: { Matthew: 39 },
-            epic: { CT: 100 },
-            legendary: { JT: 420 },
-            mythical: { Jax: 669 }
+            common: { Circle: 1 },
+            uncommon: { Triangle: 5 },
+            rare: { Square: 7 },
+            epic: { Star: 34 },
+            legendary: { Hexagon: 65 },
+            mythical: { Dodecagon: 138 },
+            exotic: { Tesseract: 1300 }
         },
 
         "Teachers": {
@@ -150,31 +160,56 @@
             epic: { "Mr. Jones": 50 },
             legendary: {"Ms. Hart": 120 },  
             mythical: { "Mr. Morrill": 280 },
+            exotic: { "Father George": 3801 }
+        },
+
+        "People": {
+            cost: 45,
+            common: { Sean: 10 },
+            uncommon: { Owen: 15 },
+            rare: { Matthew: 39 },
+            epic: { CT: 100 },
+            legendary: { JT: 420 },
+            mythical: { Ryan: 669 },
+            exotic: { Jax: 4948 }
+        },
+
+        "YouTubers": {
+            cost: 163,
+            common: { "MrBeast": 51 },
+            uncommon: { "Fuman14": 121 },
+            rare: { "ArkMaster26": 154 },
+            epic: { "FENU GAMER": 190 },
+            legendary: { "Wafelkoira": 592 },
+            mythical: { "Baby Ari": 891 },
+            exotic: { "GBTV": 9182 }
         }
     }
 
     function setStartingLook(){
-        let randomizations = [randomize(probabilities), randomize(probabilities), randomize(probabilities), randomize(probabilities), randomize(probabilities), randomize(probabilities)];
-        spinnerCell1.innerHTML = Object.keys(cases[currentCase][randomizations[0]]).join("");
-        spinnerCell2.innerHTML = Object.keys(cases[currentCase][randomizations[1]]).join("");
-        spinnerCell3.innerHTML = Object.keys(cases[currentCase][randomizations[2]]).join("");
-        spinnerCell4.innerHTML = Object.keys(cases[currentCase][randomizations[3]]).join("");
-        spinnerCell5.innerHTML = Object.keys(cases[currentCase][randomizations[4]]).join("");
-        spinnerCell6.innerHTML = Object.keys(cases[currentCase][randomizations[5]]).join("");
+        try{
+            let randomizations = [randomize(probabilities), randomize(probabilities), randomize(probabilities), randomize(probabilities), randomize(probabilities), randomize(probabilities)];
+            spinnerCell1.innerHTML = Object.keys(cases[currentCase][randomizations[0]]).join("");
+            spinnerCell2.innerHTML = Object.keys(cases[currentCase][randomizations[1]]).join("");
+            spinnerCell3.innerHTML = Object.keys(cases[currentCase][randomizations[2]]).join("");
+            spinnerCell4.innerHTML = Object.keys(cases[currentCase][randomizations[3]]).join("");
+            spinnerCell5.innerHTML = Object.keys(cases[currentCase][randomizations[4]]).join("");
+            spinnerCell6.innerHTML = Object.keys(cases[currentCase][randomizations[5]]).join("");
 
-        spinnerCell1.rarity = randomizations[0];
-        spinnerCell2.rarity = randomizations[1];
-        spinnerCell3.rarity = randomizations[2];
-        spinnerCell4.rarity = randomizations[3];
-        spinnerCell5.rarity = randomizations[4];
-        spinnerCell6.rarity = randomizations[5];
+            spinnerCell1.rarity = randomizations[0];
+            spinnerCell2.rarity = randomizations[1];
+            spinnerCell3.rarity = randomizations[2];
+            spinnerCell4.rarity = randomizations[3];
+            spinnerCell5.rarity = randomizations[4];
+            spinnerCell6.rarity = randomizations[5];
 
-        spinnerCell1.style.background = colors[randomizations[0]];
-        spinnerCell2.style.background = colors[randomizations[1]];
-        spinnerCell3.style.background = colors[randomizations[2]];
-        spinnerCell4.style.background = colors[randomizations[3]];
-        spinnerCell5.style.background = colors[randomizations[4]];
-        spinnerCell6.style.background = colors[randomizations[5]];
+            spinnerCell1.style.background = colors[randomizations[0]];
+            spinnerCell2.style.background = colors[randomizations[1]];
+            spinnerCell3.style.background = colors[randomizations[2]];
+            spinnerCell4.style.background = colors[randomizations[3]];
+            spinnerCell5.style.background = colors[randomizations[4]];
+            spinnerCell6.style.background = colors[randomizations[5]];
+        }catch{};
     }
 
     function switchCase(newCase){
@@ -205,28 +240,30 @@
         ]
 
         let keyframeOptions = {
-            duration: 100,
+            duration: 55, //100
             iterations: 1,
             fill: 'forwards',
         }
 
         function changeValues(){
-            let newRarity = randomize(probabilities);
-            let temp = Object.keys(cases[currentCase][newRarity]).join("");
-            spinnerCell6.innerHTML = spinnerCell5.innerHTML;
-            spinnerCell5.innerHTML = spinnerCell4.innerHTML;
-            spinnerCell4.innerHTML = spinnerCell3.innerHTML;
-            spinnerCell3.innerHTML = spinnerCell2.innerHTML;
-            spinnerCell2.innerHTML = spinnerCell1.innerHTML;
-            spinnerCell1.innerHTML = temp;
+            try{
+                let newRarity = randomize(probabilities);
+                let temp = Object.keys(cases[currentCase][newRarity]).join("");
+                spinnerCell6.innerHTML = spinnerCell5.innerHTML;
+                spinnerCell5.innerHTML = spinnerCell4.innerHTML;
+                spinnerCell4.innerHTML = spinnerCell3.innerHTML;
+                spinnerCell3.innerHTML = spinnerCell2.innerHTML;
+                spinnerCell2.innerHTML = spinnerCell1.innerHTML;
+                spinnerCell1.innerHTML = temp;
 
-            let tempColor = colors[newRarity];
-            spinnerCell6.style.background = spinnerCell5.style.background;
-            spinnerCell5.style.background = spinnerCell4.style.background;
-            spinnerCell4.style.background = spinnerCell3.style.background;
-            spinnerCell3.style.background = spinnerCell2.style.background;
-            spinnerCell2.style.background = spinnerCell1.style.background;
-            spinnerCell1.style.background = tempColor;
+                let tempColor = colors[newRarity];
+                spinnerCell6.style.background = spinnerCell5.style.background;
+                spinnerCell5.style.background = spinnerCell4.style.background;
+                spinnerCell4.style.background = spinnerCell3.style.background;
+                spinnerCell3.style.background = spinnerCell2.style.background;
+                spinnerCell2.style.background = spinnerCell1.style.background;
+                spinnerCell1.style.background = tempColor;
+            }catch{};
         }
 
         let randomSpin = Math.floor(Math.random() * 11) + 45;
@@ -243,7 +280,7 @@
                 let newSpin = times - 1
 
                 if(newSpin < randomDecelSpin){
-                    keyframeOptions.duration *= 1.08
+                    keyframeOptions.duration *= 1.1
                 }
 
                 if(newSpin > 0){
@@ -256,8 +293,8 @@
                     let spunItem = document.getElementById("spinner-cell-3").innerHTML;
                     setTimeout(() => {
                         spinning = false
+                        // get the items rarity
                         inventory[spunItem] = inventory[spunItem] ? inventory[spunItem] + 1 : 1;
-                        console.log(inventory)
                     }, (randomDecelSpin * 100) - 2600)
                     return;
                 }
@@ -265,7 +302,7 @@
         }
 
         // get a random integer between 45 and 55
-        spin(randomSpin)
+        spin(randomSpin) // randomSpin
 
     }
     
