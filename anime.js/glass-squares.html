@@ -1,6 +1,7 @@
 <style>
     body {
         overflow: hidden;
+        margin: 0;
     }
     body > div {
         height: calc(100% - 1px);
@@ -55,7 +56,7 @@
         const tile = document.createElement("div");
         const innerTile = document.createElement("div");
         innerTile.onclick = e => {
-            
+            toggled = !toggled;
             if(!toggled){
                 anime({
                     targets: "body > div > div > div",
@@ -63,11 +64,9 @@
                     translateY: () => anime.random(-50, 50),
                     rotate: () => anime.random(-360, 360),
                     scale: () => anime.random(0.5, 1.2),
+                    borderColor: () => `rgba(${anime.random(0, 255)}, ${anime.random(0, 100)}, ${anime.random(0, 255)}, ${anime.random(0.7, 1)})`,
                     duration: 1000,
                     delay: anime.stagger(80, {grid: [columns, rows], from: index}),
-                    complete(){
-                        toggled = !toggled;
-                    }
                 })
             } else {
                 anime({
@@ -78,10 +77,8 @@
                     scale: 1,
                     duration: 400,
                     delay: anime.stagger(80, {grid: [columns, rows], from: index}),
+                    borderColor: "#000",
                     easing: "easeInExpo",
-                    complete(){
-                        toggled = !toggled;
-                    }
                 })
             }
         }
@@ -98,7 +95,7 @@
     const createGrid = () => {
         tileHolder.innerHTML = "";
         
-        const size = 60;
+        const size = 30;
         
         columns = Math.floor(document.body.clientWidth / size);
         rows = Math.floor(document.body.clientHeight / size);
