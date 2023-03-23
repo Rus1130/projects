@@ -13,10 +13,10 @@
     }
 
     #case-spinner {
-        height: 350px;
-        width: 700px;
+        height: 150px;
+        width: 750px;
         outline: 1px solid black;
-        background: blue;
+        background: black;
         display: grid;
         grid-template-columns: repeat(6, 1fr);    
         overflow: hidden;
@@ -24,13 +24,13 @@
     }
 
     .spinner-cell {
-        height: 350px;
-        width: 140px;
+        height: 150px;
+        width: 150px;
         outline: 1px solid black;
         display: flex;
         justify-content: center;
         align-items: center;
-        transform: translateX(-140px);
+        transform: translateX(-150px);
     }
 
     #spin-again-button {
@@ -50,9 +50,9 @@
 
     #ticker {
         position: absolute;
-        height: 351px;
+        height: 151px;
         width: 5px;
-        transform: translateY(-36px);
+        transform: translate(0px, -36px);
         background-color: rgba(0, 0, 0, 0.387);
     }
 
@@ -60,7 +60,7 @@
         position: fixed;
     }
 
-    .case-switcher-buttons {
+    .side-button {
         outline: 1px solid black;
         width: 100px;
         height: 20px;
@@ -72,20 +72,48 @@
         margin-bottom: 4px;
     }
 
+    #inventory {
+        width: 80%;
+        height: 80%;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        outline: 1px solid black;
+        overflow-y: scroll;
+
+
+    }
+
+    .inventory-item {
+        height: 20%;
+        width: 33%;
+        outline: 1px solid black;
+        display: inline-block;
+        font-weight: 700;
+        font-size: 20px;
+    }
+
 </style>
 <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 </head>
 <body>
     <div id="ui">
-        <div id="money-counter">$100</div>
+        <div id="money-counter">$200</div>
         <div id="current-case">Current Case: Shapes</div>
+        Click on items in inventory to sell
         <div id="case-switcher">Cases:
-            <div class="case-switcher-buttons" onclick="switchCase('Shapes')">Shapes</div>
-            <div class="case-switcher-buttons" onclick="switchCase('Teachers')">Teachers</div>
-            <div class="case-switcher-buttons" onclick="switchCase('People')">People</div>
-            <div class="case-switcher-buttons" onclick="switchCase('YouTubers')">YouTubers</div>
-            <div class="case-switcher-buttons" onclick="//switchCase('VideoGames')">Video Games</div>
+            <div class="side-button" onclick="switchCase('Shapes')">Shapes</div>
+            <div class="side-button" onclick="switchCase('Teachers')">Teachers</div>
+            <div class="side-button" onclick="switchCase('People')">People</div>
+            <div class="side-button" onclick="switchCase('YouTubers')">YouTubers</div>
+            <div class="side-button" onclick="//switchCase('VideoGames')">Video Games</div>
+            <div class="side-button" onclick="//switchCase('Pets')">Pets</div>
+            <br>
+            <div class="side-button" onclick="openInventory()">Inventory</div>
+            <div class="side-button" onclick="clearInventory(); currentMoney=200;">Erase Data</div>
         </div>
     </div>
     
@@ -101,10 +129,16 @@
         <div id="ticker"></div>
         <div id="spin-again-button">Spin Again ($)</div>
     </div>
+
+    
+    <div id="inventory" style="display: none;">
+    </div>
 </body>
 <script>
     const spinAgainButton = document.getElementById('spin-again-button');
     const caseSpinner = document.getElementById('case-spinner');
+    const moneyCounter = document.getElementById('money-counter');
+    const inventoryDisplay = document.getElementById('inventory');
 
     let spinnerCell1 = document.getElementById('spinner-cell-1');
     let spinnerCell2 = document.getElementById('spinner-cell-2');
@@ -117,35 +151,62 @@
 
     let currentCase = 'Shapes'
 
-    let currentMoney = 100;
+    let currentMoney = 200;
 
-    // 0.5 + 0.29 + 0.15 + 0.03 + 0.02 + 0.0999 + 0.0001
+    // 0.45 + 0.25 + 0.16 + 0.08 + 0.05 + 0.0099 + 0.0001
     const probabilities = {
-        common: 0.5,
-        uncommon: 0.29,
-        rare: 0.15,
-        epic: 0.03,
-        legendary: 0.02,
-        mythical: 0.00099,
+        common: 0.45,
+        uncommon: 0.25,
+        rare: 0.16,
+        epic: 0.08,
+        legendary: 0.05,
+        mythical: 0.0099,
         exotic: 0.0001
     }
 
     const colors = {
-        common: '#b3b3b3',
-        uncommon: '#00cc00',
-        rare: '#ff6600',
-        epic: '#cc00ff',
-        legendary: '#ffcc00',
-        mythical: '#ff0000',
-        exotic: '#0000ff'
+        common: '#46bdc6',
+        uncommon: '#34a853',
+        rare: '#4285f4',
+        epic: '#ff6d01',
+        legendary: '#fbbc04',
+        mythical: '#ea4335',
+        exotic: '#ff37ff'
     }
+
+    /*
+        const colors = {
+            common: '#b3b3b3',
+            uncommon: '#00cc00',
+            rare: '#ff6600',
+            epic: '#cc00ff',
+            legendary: '#ffcc00',
+            mythical: '#ff0000',
+            exotic: '#0000ff'
+        }
+    */
+
+    // remove all items from inventory
+    function eraseData() {
+        const keys = Object.keys(inventory)
+        for (const key of keys) {
+            delete inventory[key]
+        }
+        currentMoney = 200;
+        currentCase = 'Shapes';
+        switchCase('Shapes');
+
+       moneyCounter.innerHTML = '$' + currentMoney;
+       inventoryDisplay.innerHTML = '';
+    }
+
 
     const cases = {
         "Shapes": {
             cost: 8,
-            common: { Circle: 1 },
-            uncommon: { Triangle: 5 },
-            rare: { Square: 7 },
+            common: { Circle: 4 },
+            uncommon: { Triangle: 7 },
+            rare: { Square: 15 },
             epic: { Star: 34 },
             legendary: { Hexagon: 65 },
             mythical: { Dodecagon: 138 },
@@ -153,10 +214,10 @@
         },
 
         "Teachers": {
-            cost: 12,
-            common: { Trudy: 4 },
-            uncommon: { "Mrs. Philipp": 5 },
-            rare: { "Mr. Cranston": 7 },
+            cost: 15,
+            common: { "Mrs. Sullivan": 8 },
+            uncommon: { "Mrs. Philipp": 13 },
+            rare: { "Mr. Cranston": 17 },
             epic: { "Mr. Jones": 50 },
             legendary: {"Ms. Hart": 120 },  
             mythical: { "Mr. Morrill": 280 },
@@ -165,9 +226,9 @@
 
         "People": {
             cost: 45,
-            common: { Sean: 10 },
-            uncommon: { Owen: 15 },
-            rare: { Matthew: 39 },
+            common: { Sean: 37 },
+            uncommon: { Owen: 43 },
+            rare: { Matthew: 57 },
             epic: { CT: 100 },
             legendary: { JT: 420 },
             mythical: { Ryan: 669 },
@@ -176,19 +237,20 @@
 
         "YouTubers": {
             cost: 163,
-            common: { "MrBeast": 51 },
-            uncommon: { "Fuman14": 121 },
-            rare: { "ArkMaster26": 154 },
+            common: { MrBeast: 82 },
+            uncommon: { Fuman14: 131 },
+            rare: { ArkMaster26: 176 },
             epic: { "FENU GAMER": 190 },
-            legendary: { "Wafelkoira": 592 },
-            mythical: { "Baby Ari": 891 },
-            exotic: { "GBTV": 9182 }
+            legendary: { Wafelkoira: 592 },
+            mythical: { GBTV: 891 },
+            exotic: { "Baby Ari": 9182 }
         }
     }
 
     function setStartingLook(){
         try{
             let randomizations = [randomize(probabilities), randomize(probabilities), randomize(probabilities), randomize(probabilities), randomize(probabilities), randomize(probabilities)];
+            
             spinnerCell1.innerHTML = Object.keys(cases[currentCase][randomizations[0]]).join("");
             spinnerCell2.innerHTML = Object.keys(cases[currentCase][randomizations[1]]).join("");
             spinnerCell3.innerHTML = Object.keys(cases[currentCase][randomizations[2]]).join("");
@@ -218,9 +280,17 @@
         document.getElementById('current-case').innerHTML = `Current Case: ${currentCase}`;
         spinAgainButton.innerHTML = `Spin Again ($${cases[currentCase].cost})`;
         setStartingLook();
+
+        if(spinnerCell1.style.backgroundColor == "black") setStartingLook();
     }
     const inventory = {};
+
     switchCase(currentCase);
+
+    function openInventory(){
+        // toggle between display none and display grid
+        document.getElementById('inventory').style.display = document.getElementById('inventory').style.display == "none" ? "inline-block" : "none";
+    }
 
     function randomize(prob) {
         let i
@@ -235,12 +305,12 @@
 
     function animateSpinner(){
         let keyframes = [
-            {transform: 'translateX(-140px)'},
+            {transform: 'translateX(-150px)'},
             {transform: 'translateX(0px)'}
         ]
 
         let keyframeOptions = {
-            duration: 55, //100
+            duration: 40, //55
             iterations: 1,
             fill: 'forwards',
         }
@@ -266,7 +336,7 @@
             }catch{};
         }
 
-        let randomSpin = Math.floor(Math.random() * 11) + 45;
+        let randomSpin = Math.floor(Math.random() * 11) + 30;
         let randomDecelSpin = Math.floor(Math.floor(Math.random() * 10) + (randomSpin / 2) - 5);
 
         function spin(times){
@@ -280,35 +350,100 @@
                 let newSpin = times - 1
 
                 if(newSpin < randomDecelSpin){
-                    keyframeOptions.duration *= 1.1
+                    keyframeOptions.duration *= 1.2
                 }
 
-                if(newSpin > 0){
+                if(newSpin > 5){
                     spin(newSpin)
                     changeValues()
                 }
 
-                if(newSpin == 0){
+                if(newSpin <= 5){
                     keyframeOptions.duration = 30
                     let spunItem = document.getElementById("spinner-cell-3").innerHTML;
                     setTimeout(() => {
                         spinning = false
-                        // get the items rarity
-                        inventory[spunItem] = inventory[spunItem] ? inventory[spunItem] + 1 : 1;
+                        inventory[currentCase] = inventory[currentCase] ? inventory[currentCase] : {};
+                        inventory[currentCase][spunItem] = inventory[currentCase][spunItem] ? inventory[currentCase][spunItem] + 1 : 1;
+
+                        let newDiv = document.createElement("div");
+                        let rarity = Object.keys(cases[currentCase]).find(key => cases[currentCase][key][spunItem]);
+
+                        newDiv.style.background = spinnerCell3.style.background;
+                        newDiv.className = "inventory-item";
+                        newDiv.id = "inventory-item-" + spunItem;
+
+                        newDiv.onclick = () => {
+                            let itemCase = Object.keys(inventory).find(key => inventory[key][spunItem]);
+
+                            inventory[itemCase][spunItem] -= 1;
+                            currentMoney += cases[itemCase][rarity][spunItem];
+                            moneyCounter.innerHTML = `$${currentMoney}`;
+                            if(inventory[itemCase][spunItem] == 0){
+                                delete inventory[itemCase][spunItem];
+                                document.getElementById("inventory").removeChild(document.getElementById("inventory-item-" + spunItem));
+                            } else {
+                                let topText = document.getElementById("top-text-" + spunItem);
+                                topText.innerHTML = `${spunItem} x${inventory[itemCase][spunItem]}`;
+                            }
+                        }
+
+                        let topTextDiv = document.createElement("div");
+                        topTextDiv.id = "top-text-" + spunItem; 
+                        topTextDiv.innerHTML = `${spunItem} x${inventory[currentCase][spunItem]}`
+
+                        let extraTextDiv = document.createElement("div");
+                        extraTextDiv.id = "extra-text-" + spunItem;
+                        extraTextDiv.innerHTML = `Value: $${cases[currentCase][rarity][spunItem]}<br>Rarity: ${rarity}<br>Case: ${currentCase}`;
+                        
+                        if(document.getElementById("inventory-item-" + spunItem)){
+                            let topText = document.getElementById("top-text-" + spunItem);
+                            topText.innerHTML = `${spunItem} x${inventory[currentCase][spunItem]}`;
+                        } else {
+                            newDiv.appendChild(topTextDiv);
+                            newDiv.appendChild(extraTextDiv);
+                            document.getElementById("inventory").appendChild(newDiv);
+                        }
                     }, (randomDecelSpin * 100) - 2600)
                     return;
                 }
             });
         }
 
-        // get a random integer between 45 and 55
-        spin(randomSpin) // randomSpin
+        let casePrice = cases[currentCase].cost;
+        if(casePrice > currentMoney){
+            anime({
+                targets: "#spin-again-button",
+                backgroundColor: [
+                    {value: '#ff0000', duration: 250},
+                    {value: 'rgb(265,165,0)', duration: 250},
+                ],
+                duration: 500,
+                easing: 'linear',
+            })
+
+            anime({
+                targets: "#money-counter",
+                color: [
+                    {value: '#ff0000', duration: 250},
+                    {value: '#000000', duration: 250},
+                ],
+                duration: 500,
+                easing: 'linear',
+            })
+        } else {
+            spinning = true;
+            currentMoney -= casePrice;
+            moneyCounter.innerHTML = `$${currentMoney}`;
+            spin(randomSpin) // randomSpin
+        }
+       
 
     }
     
     spinAgainButton.addEventListener('click', () => {
         if(spinning) return;
         animateSpinner();
-        spinning = true;
+        
     });
 </script>

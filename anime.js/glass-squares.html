@@ -1,0 +1,116 @@
+<style>
+    body {
+        overflow: hidden;
+    }
+    body > div {
+        height: calc(100% - 1px);
+        width: calc(100% - 1px);
+        position: relative;
+        z-index: 2;
+        
+        display: grid;
+        grid-template-columns: repeat(var(--columns), 1fr);
+        grid-template-rows: repeat(var(--rows), 1fr);        
+    }
+
+    body > div > div {
+        position: relative;
+        height: calc(100%-1px);
+        width: calc(100%-1px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    body > div > div > div {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        border: 1px solid #000;
+    }
+</style>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+</head>
+<body>
+    <div></div>
+</body>
+<script>
+    const tileHolder = document.querySelector("body > div");
+
+    let columns = 0;
+    let rows = 0;
+
+    let toggled = false;
+
+    let mouseX = 0;
+    let mouseY = 0;
+
+    document.onmousemove = e => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    }
+
+    const createTile = index => {
+        const tile = document.createElement("div");
+        const innerTile = document.createElement("div");
+        innerTile.onclick = e => {
+            
+            if(!toggled){
+                anime({
+                    targets: "body > div > div > div",
+                    translateX: () => anime.random(-50, 50),
+                    translateY: () => anime.random(-50, 50),
+                    rotate: () => anime.random(-360, 360),
+                    scale: () => anime.random(0.5, 1.2),
+                    duration: 1000,
+                    delay: anime.stagger(80, {grid: [columns, rows], from: index}),
+                    complete(){
+                        toggled = !toggled;
+                    }
+                })
+            } else {
+                anime({
+                    targets: "body > div > div > div",
+                    translateX: 0,
+                    translateY: 0,
+                    rotate: 0,
+                    scale: 1,
+                    duration: 400,
+                    delay: anime.stagger(80, {grid: [columns, rows], from: index}),
+                    easing: "easeInExpo",
+                    complete(){
+                        toggled = !toggled;
+                    }
+                })
+            }
+        }
+        tile.appendChild(innerTile);
+        return tile;
+    }
+
+    const createTiles = quantity => {
+        Array.from(Array(quantity)).map((tile, index) => {
+            tileHolder.appendChild(createTile(index));
+        });
+    }
+
+    const createGrid = () => {
+        tileHolder.innerHTML = "";
+        
+        const size = 60;
+        
+        columns = Math.floor(document.body.clientWidth / size);
+        rows = Math.floor(document.body.clientHeight / size);
+        
+        tileHolder.style.setProperty("--columns", columns);
+        tileHolder.style.setProperty("--rows", rows);
+        
+        createTiles(columns * rows);
+    }
+
+    createGrid();
+
+    window.onresize = () => createGrid();
+
+</script>
