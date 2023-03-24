@@ -68,7 +68,7 @@
         const tile = document.createElement("div");
         const innerTile = document.createElement("div");
         innerTile.onclick = e => {
-            toggled = true
+            
             anime({
                 targets: "body > div > div > div",
                 translateX: () => anime.random(-50, 50),
@@ -79,6 +79,7 @@
                 borderColor: () => `rgb(${anime.random(0, 255)}, ${anime.random(0, 255)}, ${anime.random(0, 255)})`,
                 duration: 1000,
                 delay: anime.stagger(80, {grid: [columns, rows], from: index}),
+                complete: () => toggled = true,
             })
         }
         tile.appendChild(innerTile);
