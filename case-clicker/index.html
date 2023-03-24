@@ -88,7 +88,7 @@
 
     .inventory-item {
         height: 20%;
-        width: 33%;
+        width: 20%;
         outline: 1px solid black;
         display: inline-block;
         font-weight: 700;
@@ -101,7 +101,7 @@
 </head>
 <body>
     <div id="ui">
-        <div id="money-counter">$200</div>
+        <div id="money-counter">$300</div>
         <div id="current-case">Current Case: Shapes</div>
         Click on items in inventory to sell
         <div id="case-switcher">Cases:
@@ -113,7 +113,7 @@
             <div class="side-button" onclick="//switchCase('Pets')">Pets</div>
             <br>
             <div class="side-button" onclick="openInventory()">Inventory</div>
-            <div class="side-button" onclick="clearInventory(); currentMoney=200;">Erase Data</div>
+            <div class="side-button" onclick="eraseData();">Erase Data</div>
         </div>
     </div>
     
@@ -151,55 +151,10 @@
 
     let currentCase = 'Shapes'
 
-    let currentMoney = 200;
+    let currentMoney = +localStorage.getItem('money') || 300;
+    moneyCounter.innerHTML = '$' + currentMoney;
 
-    // 0.45 + 0.25 + 0.16 + 0.08 + 0.05 + 0.0099 + 0.0001
-    const probabilities = {
-        common: 0.45,
-        uncommon: 0.25,
-        rare: 0.16,
-        epic: 0.08,
-        legendary: 0.05,
-        mythical: 0.0099,
-        exotic: 0.0001
-    }
-
-    const colors = {
-        common: '#46bdc6',
-        uncommon: '#34a853',
-        rare: '#4285f4',
-        epic: '#ff6d01',
-        legendary: '#fbbc04',
-        mythical: '#ea4335',
-        exotic: '#ff37ff'
-    }
-
-    /*
-        const colors = {
-            common: '#b3b3b3',
-            uncommon: '#00cc00',
-            rare: '#ff6600',
-            epic: '#cc00ff',
-            legendary: '#ffcc00',
-            mythical: '#ff0000',
-            exotic: '#0000ff'
-        }
-    */
-
-    // remove all items from inventory
-    function eraseData() {
-        const keys = Object.keys(inventory)
-        for (const key of keys) {
-            delete inventory[key]
-        }
-        currentMoney = 200;
-        currentCase = 'Shapes';
-        switchCase('Shapes');
-
-       moneyCounter.innerHTML = '$' + currentMoney;
-       inventoryDisplay.innerHTML = '';
-    }
-
+    const inventory = {};
 
     const cases = {
         "Shapes": {
@@ -247,6 +202,107 @@
         }
     }
 
+    // 0.45 + 0.25 + 0.16 + 0.08 + 0.05 + 0.0099 + 0.0001
+    const probabilities = {
+        common: 0.45,
+        uncommon: 0.25,
+        rare: 0.16,
+        epic: 0.08,
+        legendary: 0.05,
+        mythical: 0.0099,
+        exotic: 0.0001
+    }
+
+    const colors = {
+        common: '#46bdc6',
+        uncommon: '#34a853',
+        rare: '#4285f4',
+        epic: '#ff6d01',
+        legendary: '#fbbc04',
+        mythical: '#ea4335',
+        exotic: '#ff37ff'
+    }
+
+
+    function setInventoryDisplay(){
+        let inventoryCases = Object.keys(inventory);
+        for(i = 0; i < inventoryCases.length; i++){
+            let itemCase = inventoryCases[i];
+
+            let itemNames = Object.keys(inventory[itemCase]);
+            for(j = 0; j < itemNames.length; j++){
+                let itemName = itemNames[j];
+                let numberOfItems = inventory[itemCase][itemName];
+                let itemRarity = Object.keys(cases[itemCase]).find(key => cases[itemCase][key][itemName]);
+                let itemValue = cases[itemCase][itemRarity][itemName];
+                for(k = 0; k < numberOfItems; k++){
+                    addItem(itemCase, itemRarity, itemName, itemValue);
+                }
+            }
+        }
+    }
+
+    if(localStorage.getItem('inventory')) {
+        const inventoryData = JSON.parse(localStorage.getItem('inventory'));
+        for(let item in inventoryData) {
+            inventory[item] = inventoryData[item];
+        }
+        setInventoryDisplay();
+    }
+
+    function addItem(itemCase, itemRarity, itemName, itemValue){
+        let itemDiv = document.createElement('div');
+        itemDiv.style.background = colors[itemRarity];
+        itemDiv.className = "inventory-item";
+        itemDiv.id = "inventory-item-" + itemName;
+
+        itemDiv.innerHTML = `<div>${itemName}</div><div>${itemRarity}</div><div>Value: $${cases[itemCase][itemRarity][itemName]}</div><div>Case: ${itemCase}</div>`;
+        itemDiv.onclick = e => {
+            let item = e.target;
+            if(item.className != "inventory-item") item = item.parentElement;
+            let itemName = item.id.split("-").slice(2).join(" ");
+            let itemRarity = Object.keys(cases[currentCase]).find(key => cases[currentCase][key][itemName]);
+            let itemValue = cases[currentCase][itemRarity][itemName];
+            currentMoney += itemValue;
+            moneyCounter.innerHTML = `$${currentMoney}`;
+            inventory[currentCase][itemName] -= 1;
+            // remove the div
+            item.remove();
+        }
+        inventoryDisplay.appendChild(itemDiv);
+
+    }
+    /*
+        const colors = {
+            common: '#b3b3b3',
+            uncommon: '#00cc00',
+            rare: '#ff6600',
+            epic: '#cc00ff',
+            legendary: '#ffcc00',
+            mythical: '#ff0000',
+            exotic: '#0000ff'
+        }
+    */
+
+    // remove all items from inventory
+    function eraseData() {
+        let confirmation = confirm("U sure buddy?");
+        if(!confirmation) return;
+        const keys = Object.keys(inventory)
+        for (const key of keys) {
+            delete inventory[key]
+        }
+        currentMoney = 300;
+        currentCase = 'Shapes';
+        switchCase('Shapes');
+
+        moneyCounter.innerHTML = '$' + currentMoney;
+        inventoryDisplay.innerHTML = '';
+
+        localStorage.setItem("inventory", JSON.stringify(inventory));
+        localStorage.setItem("money", currentMoney);
+    }
+
     function setStartingLook(){
         try{
             let randomizations = [randomize(probabilities), randomize(probabilities), randomize(probabilities), randomize(probabilities), randomize(probabilities), randomize(probabilities)];
@@ -283,7 +339,6 @@
 
         if(spinnerCell1.style.backgroundColor == "black") setStartingLook();
     }
-    const inventory = {};
 
     switchCase(currentCase);
 
@@ -366,44 +421,29 @@
                         inventory[currentCase] = inventory[currentCase] ? inventory[currentCase] : {};
                         inventory[currentCase][spunItem] = inventory[currentCase][spunItem] ? inventory[currentCase][spunItem] + 1 : 1;
 
-                        let newDiv = document.createElement("div");
+                        let itemDiv = document.createElement("div");
                         let rarity = Object.keys(cases[currentCase]).find(key => cases[currentCase][key][spunItem]);
 
-                        newDiv.style.background = spinnerCell3.style.background;
-                        newDiv.className = "inventory-item";
-                        newDiv.id = "inventory-item-" + spunItem;
+                        itemDiv.style.background = spinnerCell3.style.background;
+                        itemDiv.className = "inventory-item";
+                        itemDiv.id = "inventory-item-" + spunItem;
 
-                        newDiv.onclick = () => {
-                            let itemCase = Object.keys(inventory).find(key => inventory[key][spunItem]);
-
-                            inventory[itemCase][spunItem] -= 1;
-                            currentMoney += cases[itemCase][rarity][spunItem];
+                        itemDiv.innerHTML = `<div>${spunItem}</div><div>${rarity}</div><div>Value: $${cases[currentCase][rarity][spunItem]}</div><div>Case: ${currentCase}</div>`;
+                        itemDiv.onclick = e => {
+                            let item = e.target;
+                            if(item.className != "inventory-item") item = item.parentElement;
+                            let itemName = item.id.split("-").slice(2).join(" ");
+                            let itemRarity = Object.keys(cases[currentCase]).find(key => cases[currentCase][key][itemName]);
+                            let itemValue = cases[currentCase][itemRarity][itemName];
+                            currentMoney += itemValue;
                             moneyCounter.innerHTML = `$${currentMoney}`;
-                            if(inventory[itemCase][spunItem] == 0){
-                                delete inventory[itemCase][spunItem];
-                                document.getElementById("inventory").removeChild(document.getElementById("inventory-item-" + spunItem));
-                            } else {
-                                let topText = document.getElementById("top-text-" + spunItem);
-                                topText.innerHTML = `${spunItem} x${inventory[itemCase][spunItem]}`;
-                            }
+                            inventory[currentCase][itemName] -= 1;
+                            // remove the div
+                            item.remove();
                         }
+                        inventoryDisplay.appendChild(itemDiv);
 
-                        let topTextDiv = document.createElement("div");
-                        topTextDiv.id = "top-text-" + spunItem; 
-                        topTextDiv.innerHTML = `${spunItem} x${inventory[currentCase][spunItem]}`
 
-                        let extraTextDiv = document.createElement("div");
-                        extraTextDiv.id = "extra-text-" + spunItem;
-                        extraTextDiv.innerHTML = `Value: $${cases[currentCase][rarity][spunItem]}<br>Rarity: ${rarity}<br>Case: ${currentCase}`;
-                        
-                        if(document.getElementById("inventory-item-" + spunItem)){
-                            let topText = document.getElementById("top-text-" + spunItem);
-                            topText.innerHTML = `${spunItem} x${inventory[currentCase][spunItem]}`;
-                        } else {
-                            newDiv.appendChild(topTextDiv);
-                            newDiv.appendChild(extraTextDiv);
-                            document.getElementById("inventory").appendChild(newDiv);
-                        }
                     }, (randomDecelSpin * 100) - 2600)
                     return;
                 }
@@ -444,6 +484,10 @@
     spinAgainButton.addEventListener('click', () => {
         if(spinning) return;
         animateSpinner();
-        
     });
+
+    addEventListener('beforeunload', () => {
+        localStorage.setItem("inventory", JSON.stringify(inventory));
+        localStorage.setItem("money", currentMoney);
+    })
 </script>
