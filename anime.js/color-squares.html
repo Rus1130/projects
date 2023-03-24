@@ -8,6 +8,8 @@
         width: calc(100% - 1px);
         position: relative;
         z-index: 2;
+        row-gap: 1px;
+        column-gap: 1px;
         
         display: grid;
         grid-template-columns: repeat(var(--columns), 1fr);
@@ -44,24 +46,30 @@
 
     let toggled = false;
 
-    // highlight all divs that are close to the cursor
+    setInterval(() => {
+        if(toggled === false){
+            const tiles = document.querySelectorAll("body > div > div > div");
+            tiles.forEach(tile => {
+                tile.style.backgroundColor = "transparent";
+            })
+        }
+    }, 1)
     document.onmousemove = e => {
         const x = e.clientX;
         const y = e.clientY;
         const tiles = document.querySelectorAll("body > div > div > div");
-        tiles.forEach(tile => {
-            const rect = tile.getBoundingClientRect();
-            const distance = Math.sqrt(Math.pow(x - rect.x, 2) + Math.pow(y - rect.y, 2));
-            if(distance < 100){
-                let borderColor = tile.style.borderColor;
-                borderColor = borderColor.split(", ");
-                borderColor[3] = "1)";
-                borderColor = borderColor.join(", ");
-                tile.style.backgroundColor = borderColor;
-            } else {
-                tile.style.backgroundColor = "transparent";
-            }
-        })
+        if(toggled === true){
+            tiles.forEach(tile => {
+                const rect = tile.getBoundingClientRect();
+                const distance = Math.sqrt(Math.pow(x - rect.x, 2) + Math.pow(y - rect.y, 2));
+                if(distance < 100){
+                    let borderColor = tile.style.borderColor;
+                    if(borderColor !== 'rgb(0, 0, 0)') tile.style.backgroundColor = borderColor;
+                } else {
+                    tile.style.backgroundColor = "transparent";
+                }
+            })
+        }
     }
 
     const createTile = index => {
@@ -77,7 +85,7 @@
                     borderRadius: () => anime.random(0, 15),
                     rotate: () => anime.random(-360, 360),
                     scale: () => Math.round((Math.random() * 1.1 + 0.3) * 100) / 100,
-                    borderColor: () => `rgba(${anime.random(0, 255)}, ${anime.random(0, 255)}, ${anime.random(0, 255)}, ${anime.random(0.7, 1)})`,
+                    borderColor: () => `rgb(${anime.random(0, 255)}, ${anime.random(0, 255)}, ${anime.random(0, 255)})`,
                     duration: 1000,
                     delay: anime.stagger(80, {grid: [columns, rows], from: index}),
                 })
