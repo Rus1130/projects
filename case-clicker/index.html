@@ -135,359 +135,361 @@
     </div>
 </body>
 <script>
-    const spinAgainButton = document.getElementById('spin-again-button');
-    const caseSpinner = document.getElementById('case-spinner');
-    const moneyCounter = document.getElementById('money-counter');
-    const inventoryDisplay = document.getElementById('inventory');
+    {
+        const spinAgainButton = document.getElementById('spin-again-button');
+        const caseSpinner = document.getElementById('case-spinner');
+        const moneyCounter = document.getElementById('money-counter');
+        const inventoryDisplay = document.getElementById('inventory');
 
-    let spinnerCell1 = document.getElementById('spinner-cell-1');
-    let spinnerCell2 = document.getElementById('spinner-cell-2');
-    let spinnerCell3 = document.getElementById('spinner-cell-3');
-    let spinnerCell4 = document.getElementById('spinner-cell-4');
-    let spinnerCell5 = document.getElementById('spinner-cell-5');
-    let spinnerCell6 = document.getElementById('spinner-cell-6');
+        let spinnerCell1 = document.getElementById('spinner-cell-1');
+        let spinnerCell2 = document.getElementById('spinner-cell-2');
+        let spinnerCell3 = document.getElementById('spinner-cell-3');
+        let spinnerCell4 = document.getElementById('spinner-cell-4');
+        let spinnerCell5 = document.getElementById('spinner-cell-5');
+        let spinnerCell6 = document.getElementById('spinner-cell-6');
 
-    let spinning = false;
+        let spinning = false;
 
-    let currentCase = 'Shapes'
+        let currentCase = 'Shapes'
 
-    let currentMoney = +localStorage.getItem('money') || 300;
-    moneyCounter.innerHTML = '$' + currentMoney;
+        let currentMoney = +localStorage.getItem('money') || 300;
+        moneyCounter.innerHTML = '$' + currentMoney;
 
-    const inventory = {};
+        const inventory = {};
 
-    const cases = {
-        "Shapes": {
-            cost: 8,
-            common: { Circle: 4 },
-            uncommon: { Triangle: 7 },
-            rare: { Square: 15 },
-            epic: { Star: 34 },
-            legendary: { Hexagon: 65 },
-            mythical: { Dodecagon: 138 },
-            exotic: { Tesseract: 1300 }
-        },
+        const cases = {
+            "Shapes": {
+                cost: 8,
+                common: { Circle: 4 },
+                uncommon: { Triangle: 7 },
+                rare: { Square: 15 },
+                epic: { Star: 34 },
+                legendary: { Hexagon: 65 },
+                mythical: { Dodecagon: 138 },
+                exotic: { Tesseract: 1300 }
+            },
 
-        "Teachers": {
-            cost: 15,
-            common: { "Mrs. Sullivan": 8 },
-            uncommon: { "Mrs. Philipp": 13 },
-            rare: { "Mr. Cranston": 17 },
-            epic: { "Mr. Jones": 50 },
-            legendary: {"Ms. Hart": 120 },  
-            mythical: { "Mr. Morrill": 280 },
-            exotic: { "Father George": 3801 }
-        },
+            "Teachers": {
+                cost: 15,
+                common: { "Mrs. Sullivan": 8 },
+                uncommon: { "Mrs. Philipp": 13 },
+                rare: { "Mr. Cranston": 17 },
+                epic: { "Mr. Jones": 50 },
+                legendary: {"Ms. Hart": 120 },  
+                mythical: { "Mr. Morrill": 280 },
+                exotic: { "Father George": 3801 }
+            },
 
-        "People": {
-            cost: 45,
-            common: { Sean: 37 },
-            uncommon: { Owen: 43 },
-            rare: { Matthew: 57 },
-            epic: { CT: 100 },
-            legendary: { JT: 420 },
-            mythical: { Ryan: 669 },
-            exotic: { Jax: 4948 }
-        },
+            "People": {
+                cost: 45,
+                common: { Sean: 37 },
+                uncommon: { Owen: 43 },
+                rare: { Matthew: 57 },
+                epic: { CT: 100 },
+                legendary: { JT: 420 },
+                mythical: { Ryan: 669 },
+                exotic: { Jax: 4948 }
+            },
 
-        "YouTubers": {
-            cost: 163,
-            common: { MrBeast: 82 },
-            uncommon: { Fuman14: 131 },
-            rare: { ArkMaster26: 176 },
-            epic: { "FENU GAMER": 190 },
-            legendary: { Wafelkoira: 592 },
-            mythical: { GBTV: 891 },
-            exotic: { "Baby Ari": 9182 }
+            "YouTubers": {
+                cost: 163,
+                common: { MrBeast: 82 },
+                uncommon: { Fuman14: 131 },
+                rare: { ArkMaster26: 176 },
+                epic: { "FENU GAMER": 190 },
+                legendary: { Wafelkoira: 592 },
+                mythical: { GBTV: 891 },
+                exotic: { "Baby Ari": 9182 }
+            }
         }
-    }
 
-    // 0.45 + 0.25 + 0.16 + 0.08 + 0.05 + 0.0099 + 0.0001
-    const probabilities = {
-        common: 0.45,
-        uncommon: 0.25,
-        rare: 0.16,
-        epic: 0.08,
-        legendary: 0.05,
-        mythical: 0.0099,
-        exotic: 0.0001
-    }
+        // 0.45 + 0.25 + 0.16 + 0.08 + 0.05 + 0.0099 + 0.0001
+        const probabilities = {
+            common: 0.45,
+            uncommon: 0.25,
+            rare: 0.16,
+            epic: 0.08,
+            legendary: 0.05,
+            mythical: 0.0099,
+            exotic: 0.0001
+        }
 
-    const colors = {
-        common: '#46bdc6',
-        uncommon: '#34a853',
-        rare: '#4285f4',
-        epic: '#ff6d01',
-        legendary: '#fbbc04',
-        mythical: '#ea4335',
-        exotic: '#ff37ff'
-    }
+        const colors = {
+            common: '#46bdc6',
+            uncommon: '#34a853',
+            rare: '#4285f4',
+            epic: '#ff6d01',
+            legendary: '#fbbc04',
+            mythical: '#ea4335',
+            exotic: '#ff37ff'
+        }
 
 
-    function setInventoryDisplay(){
-        let inventoryCases = Object.keys(inventory);
-        for(i = 0; i < inventoryCases.length; i++){
-            let itemCase = inventoryCases[i];
+        function setInventoryDisplay(){
+            let inventoryCases = Object.keys(inventory);
+            for(i = 0; i < inventoryCases.length; i++){
+                let itemCase = inventoryCases[i];
 
-            let itemNames = Object.keys(inventory[itemCase]);
-            for(j = 0; j < itemNames.length; j++){
-                let itemName = itemNames[j];
-                let numberOfItems = inventory[itemCase][itemName];
-                let itemRarity = Object.keys(cases[itemCase]).find(key => cases[itemCase][key][itemName]);
-                let itemValue = cases[itemCase][itemRarity][itemName];
-                for(k = 0; k < numberOfItems; k++){
-                    addItem(itemCase, itemRarity, itemName, itemValue);
+                let itemNames = Object.keys(inventory[itemCase]);
+                for(j = 0; j < itemNames.length; j++){
+                    let itemName = itemNames[j];
+                    let numberOfItems = inventory[itemCase][itemName];
+                    let itemRarity = Object.keys(cases[itemCase]).find(key => cases[itemCase][key][itemName]);
+                    let itemValue = cases[itemCase][itemRarity][itemName];
+                    for(k = 0; k < numberOfItems; k++){
+                        addItem(itemCase, itemRarity, itemName, itemValue);
+                    }
                 }
             }
         }
-    }
 
-    if(localStorage.getItem('inventory')) {
-        const inventoryData = JSON.parse(localStorage.getItem('inventory'));
-        for(let item in inventoryData) {
-            inventory[item] = inventoryData[item];
-        }
-        setInventoryDisplay();
-    }
-
-    function addItem(itemCase, itemRarity, itemName, itemValue){
-        let itemDiv = document.createElement('div');
-        itemDiv.style.background = colors[itemRarity];
-        itemDiv.className = "inventory-item";
-        itemDiv.id = "inventory-item-" + itemName;
-
-        itemDiv.innerHTML = `<div>${itemName}</div><div>${itemRarity}</div><div>Value: $${cases[itemCase][itemRarity][itemName]}</div><div>Case: ${itemCase}</div>`;
-        itemDiv.onclick = e => {
-            let item = e.target;
-            if(item.className != "inventory-item") item = item.parentElement;
-            let itemName = item.id.split("-").slice(2).join(" ");
-            let itemRarity = Object.keys(cases[currentCase]).find(key => cases[currentCase][key][itemName]);
-            let itemValue = cases[currentCase][itemRarity][itemName];
-            currentMoney += itemValue;
-            moneyCounter.innerHTML = `$${currentMoney}`;
-            inventory[currentCase][itemName] -= 1;
-            // remove the div
-            item.remove();
-        }
-        inventoryDisplay.appendChild(itemDiv);
-
-    }
-    /*
-        const colors = {
-            common: '#b3b3b3',
-            uncommon: '#00cc00',
-            rare: '#ff6600',
-            epic: '#cc00ff',
-            legendary: '#ffcc00',
-            mythical: '#ff0000',
-            exotic: '#0000ff'
-        }
-    */
-
-    // remove all items from inventory
-    function eraseData() {
-        let confirmation = confirm("U sure buddy?");
-        if(!confirmation) return;
-        const keys = Object.keys(inventory)
-        for (const key of keys) {
-            delete inventory[key]
-        }
-        currentMoney = 300;
-        currentCase = 'Shapes';
-        switchCase('Shapes');
-
-        moneyCounter.innerHTML = '$' + currentMoney;
-        inventoryDisplay.innerHTML = '';
-
-        localStorage.setItem("inventory", JSON.stringify(inventory));
-        localStorage.setItem("money", currentMoney);
-    }
-
-    function setStartingLook(){
-        try{
-            let randomizations = [randomize(probabilities), randomize(probabilities), randomize(probabilities), randomize(probabilities), randomize(probabilities), randomize(probabilities)];
-            
-            spinnerCell1.innerHTML = Object.keys(cases[currentCase][randomizations[0]]).join("");
-            spinnerCell2.innerHTML = Object.keys(cases[currentCase][randomizations[1]]).join("");
-            spinnerCell3.innerHTML = Object.keys(cases[currentCase][randomizations[2]]).join("");
-            spinnerCell4.innerHTML = Object.keys(cases[currentCase][randomizations[3]]).join("");
-            spinnerCell5.innerHTML = Object.keys(cases[currentCase][randomizations[4]]).join("");
-            spinnerCell6.innerHTML = Object.keys(cases[currentCase][randomizations[5]]).join("");
-
-            spinnerCell1.rarity = randomizations[0];
-            spinnerCell2.rarity = randomizations[1];
-            spinnerCell3.rarity = randomizations[2];
-            spinnerCell4.rarity = randomizations[3];
-            spinnerCell5.rarity = randomizations[4];
-            spinnerCell6.rarity = randomizations[5];
-
-            spinnerCell1.style.background = colors[randomizations[0]];
-            spinnerCell2.style.background = colors[randomizations[1]];
-            spinnerCell3.style.background = colors[randomizations[2]];
-            spinnerCell4.style.background = colors[randomizations[3]];
-            spinnerCell5.style.background = colors[randomizations[4]];
-            spinnerCell6.style.background = colors[randomizations[5]];
-        }catch{};
-    }
-
-    function switchCase(newCase){
-        if(spinning) return;
-        currentCase = newCase;
-        document.getElementById('current-case').innerHTML = `Current Case: ${currentCase}`;
-        spinAgainButton.innerHTML = `Spin Again ($${cases[currentCase].cost})`;
-        setStartingLook();
-
-        if(spinnerCell1.style.backgroundColor == "black") setStartingLook();
-    }
-
-    switchCase(currentCase);
-
-    function openInventory(){
-        // toggle between display none and display grid
-        document.getElementById('inventory').style.display = document.getElementById('inventory').style.display == "none" ? "inline-block" : "none";
-    }
-
-    function randomize(prob) {
-        let i
-        let sum = 0
-        let r = Math.random();
-        for (i in prob) {
-            sum += prob[i];
-            if (r <= sum) return i;
-        }
-    }
-
-
-    function animateSpinner(){
-        let keyframes = [
-            {transform: 'translateX(-150px)'},
-            {transform: 'translateX(0px)'}
-        ]
-
-        let keyframeOptions = {
-            duration: 40, //55
-            iterations: 1,
-            fill: 'forwards',
+        if(localStorage.getItem('inventory')) {
+            const inventoryData = JSON.parse(localStorage.getItem('inventory'));
+            for(let item in inventoryData) {
+                inventory[item] = inventoryData[item];
+            }
+            setInventoryDisplay();
         }
 
-        function changeValues(){
+        function addItem(itemCase, itemRarity, itemName, itemValue){
+            let itemDiv = document.createElement('div');
+            itemDiv.style.background = colors[itemRarity];
+            itemDiv.className = "inventory-item";
+            itemDiv.id = "inventory-item-" + itemName;
+
+            itemDiv.innerHTML = `<div>${itemName}</div><div>${itemRarity}</div><div>Value: $${cases[itemCase][itemRarity][itemName]}</div><div>Case: ${itemCase}</div>`;
+            itemDiv.onclick = e => {
+                let item = e.target;
+                if(item.className != "inventory-item") item = item.parentElement;
+                let itemName = item.id.split("-").slice(2).join(" ");
+                let itemRarity = Object.keys(cases[currentCase]).find(key => cases[currentCase][key][itemName]);
+                let itemValue = cases[currentCase][itemRarity][itemName];
+                currentMoney += itemValue;
+                moneyCounter.innerHTML = `$${currentMoney}`;
+                inventory[currentCase][itemName] -= 1;
+                // remove the div
+                item.remove();
+            }
+            inventoryDisplay.appendChild(itemDiv);
+
+        }
+        /*
+            const colors = {
+                common: '#b3b3b3',
+                uncommon: '#00cc00',
+                rare: '#ff6600',
+                epic: '#cc00ff',
+                legendary: '#ffcc00',
+                mythical: '#ff0000',
+                exotic: '#0000ff'
+            }
+        */
+
+        // remove all items from inventory
+        function eraseData() {
+            let confirmation = confirm("U sure buddy?");
+            if(!confirmation) return;
+            const keys = Object.keys(inventory)
+            for (const key of keys) {
+                delete inventory[key]
+            }
+            currentMoney = 300;
+            currentCase = 'Shapes';
+            switchCase('Shapes');
+
+            moneyCounter.innerHTML = '$' + currentMoney;
+            inventoryDisplay.innerHTML = '';
+
+            localStorage.setItem("inventory", JSON.stringify(inventory));
+            localStorage.setItem("money", currentMoney);
+        }
+
+        function setStartingLook(){
             try{
-                let newRarity = randomize(probabilities);
-                let temp = Object.keys(cases[currentCase][newRarity]).join("");
-                spinnerCell6.innerHTML = spinnerCell5.innerHTML;
-                spinnerCell5.innerHTML = spinnerCell4.innerHTML;
-                spinnerCell4.innerHTML = spinnerCell3.innerHTML;
-                spinnerCell3.innerHTML = spinnerCell2.innerHTML;
-                spinnerCell2.innerHTML = spinnerCell1.innerHTML;
-                spinnerCell1.innerHTML = temp;
+                let randomizations = [randomize(probabilities), randomize(probabilities), randomize(probabilities), randomize(probabilities), randomize(probabilities), randomize(probabilities)];
+                
+                spinnerCell1.innerHTML = Object.keys(cases[currentCase][randomizations[0]]).join("");
+                spinnerCell2.innerHTML = Object.keys(cases[currentCase][randomizations[1]]).join("");
+                spinnerCell3.innerHTML = Object.keys(cases[currentCase][randomizations[2]]).join("");
+                spinnerCell4.innerHTML = Object.keys(cases[currentCase][randomizations[3]]).join("");
+                spinnerCell5.innerHTML = Object.keys(cases[currentCase][randomizations[4]]).join("");
+                spinnerCell6.innerHTML = Object.keys(cases[currentCase][randomizations[5]]).join("");
 
-                let tempColor = colors[newRarity];
-                spinnerCell6.style.background = spinnerCell5.style.background;
-                spinnerCell5.style.background = spinnerCell4.style.background;
-                spinnerCell4.style.background = spinnerCell3.style.background;
-                spinnerCell3.style.background = spinnerCell2.style.background;
-                spinnerCell2.style.background = spinnerCell1.style.background;
-                spinnerCell1.style.background = tempColor;
+                spinnerCell1.rarity = randomizations[0];
+                spinnerCell2.rarity = randomizations[1];
+                spinnerCell3.rarity = randomizations[2];
+                spinnerCell4.rarity = randomizations[3];
+                spinnerCell5.rarity = randomizations[4];
+                spinnerCell6.rarity = randomizations[5];
+
+                spinnerCell1.style.background = colors[randomizations[0]];
+                spinnerCell2.style.background = colors[randomizations[1]];
+                spinnerCell3.style.background = colors[randomizations[2]];
+                spinnerCell4.style.background = colors[randomizations[3]];
+                spinnerCell5.style.background = colors[randomizations[4]];
+                spinnerCell6.style.background = colors[randomizations[5]];
             }catch{};
         }
 
-        let randomSpin = Math.floor(Math.random() * 11) + 30;
-        let randomDecelSpin = Math.floor(Math.floor(Math.random() * 10) + (randomSpin / 2) - 5);
+        function switchCase(newCase){
+            if(spinning) return;
+            currentCase = newCase;
+            document.getElementById('current-case').innerHTML = `Current Case: ${currentCase}`;
+            spinAgainButton.innerHTML = `Spin Again ($${cases[currentCase].cost})`;
+            setStartingLook();
 
-        function spin(times){
-            document.getElementById("spinner-cell-1").animate(keyframes, keyframeOptions);
-            document.getElementById("spinner-cell-2").animate(keyframes, keyframeOptions);
-            document.getElementById("spinner-cell-3").animate(keyframes, keyframeOptions);
-            document.getElementById("spinner-cell-4").animate(keyframes, keyframeOptions);
-            document.getElementById("spinner-cell-5").animate(keyframes, keyframeOptions);
-            document.getElementById("spinner-cell-6").animate(keyframes, keyframeOptions).addEventListener('finish', () => {
-
-                let newSpin = times - 1
-
-                if(newSpin < randomDecelSpin){
-                    keyframeOptions.duration *= 1.2
-                }
-
-                if(newSpin > 5){
-                    spin(newSpin)
-                    changeValues()
-                }
-
-                if(newSpin <= 5){
-                    keyframeOptions.duration = 30
-                    let spunItem = document.getElementById("spinner-cell-3").innerHTML;
-                    setTimeout(() => {
-                        spinning = false
-                        inventory[currentCase] = inventory[currentCase] ? inventory[currentCase] : {};
-                        inventory[currentCase][spunItem] = inventory[currentCase][spunItem] ? inventory[currentCase][spunItem] + 1 : 1;
-
-                        let itemDiv = document.createElement("div");
-                        let rarity = Object.keys(cases[currentCase]).find(key => cases[currentCase][key][spunItem]);
-
-                        itemDiv.style.background = spinnerCell3.style.background;
-                        itemDiv.className = "inventory-item";
-                        itemDiv.id = "inventory-item-" + spunItem;
-
-                        itemDiv.innerHTML = `<div>${spunItem}</div><div>${rarity}</div><div>Value: $${cases[currentCase][rarity][spunItem]}</div><div>Case: ${currentCase}</div>`;
-                        itemDiv.onclick = e => {
-                            let item = e.target;
-                            if(item.className != "inventory-item") item = item.parentElement;
-                            let itemName = item.id.split("-").slice(2).join(" ");
-                            let itemRarity = Object.keys(cases[currentCase]).find(key => cases[currentCase][key][itemName]);
-                            let itemValue = cases[currentCase][itemRarity][itemName];
-                            currentMoney += itemValue;
-                            moneyCounter.innerHTML = `$${currentMoney}`;
-                            inventory[currentCase][itemName] -= 1;
-                            // remove the div
-                            item.remove();
-                        }
-                        inventoryDisplay.appendChild(itemDiv);
-
-
-                    }, (randomDecelSpin * 100) - 2600)
-                    return;
-                }
-            });
+            if(spinnerCell1.style.backgroundColor == "black") setStartingLook();
         }
 
-        let casePrice = cases[currentCase].cost;
-        if(casePrice > currentMoney){
-            anime({
-                targets: "#spin-again-button",
-                backgroundColor: [
-                    {value: '#ff0000', duration: 250},
-                    {value: 'rgb(265,165,0)', duration: 250},
-                ],
-                duration: 500,
-                easing: 'linear',
-            })
+        switchCase(currentCase);
 
-            anime({
-                targets: "#money-counter",
-                color: [
-                    {value: '#ff0000', duration: 250},
-                    {value: '#000000', duration: 250},
-                ],
-                duration: 500,
-                easing: 'linear',
-            })
-        } else {
-            spinning = true;
-            currentMoney -= casePrice;
-            moneyCounter.innerHTML = `$${currentMoney}`;
-            spin(randomSpin) // randomSpin
+        function openInventory(){
+            // toggle between display none and display grid
+            document.getElementById('inventory').style.display = document.getElementById('inventory').style.display == "none" ? "inline-block" : "none";
         }
-       
 
+        function randomize(prob) {
+            let i
+            let sum = 0
+            let r = Math.random();
+            for (i in prob) {
+                sum += prob[i];
+                if (r <= sum) return i;
+            }
+        }
+
+
+        function animateSpinner(){
+            let keyframes = [
+                {transform: 'translateX(-150px)'},
+                {transform: 'translateX(0px)'}
+            ]
+
+            let keyframeOptions = {
+                duration: 40, //55
+                iterations: 1,
+                fill: 'forwards',
+            }
+
+            function changeValues(){
+                try{
+                    let newRarity = randomize(probabilities);
+                    let temp = Object.keys(cases[currentCase][newRarity]).join("");
+                    spinnerCell6.innerHTML = spinnerCell5.innerHTML;
+                    spinnerCell5.innerHTML = spinnerCell4.innerHTML;
+                    spinnerCell4.innerHTML = spinnerCell3.innerHTML;
+                    spinnerCell3.innerHTML = spinnerCell2.innerHTML;
+                    spinnerCell2.innerHTML = spinnerCell1.innerHTML;
+                    spinnerCell1.innerHTML = temp;
+
+                    let tempColor = colors[newRarity];
+                    spinnerCell6.style.background = spinnerCell5.style.background;
+                    spinnerCell5.style.background = spinnerCell4.style.background;
+                    spinnerCell4.style.background = spinnerCell3.style.background;
+                    spinnerCell3.style.background = spinnerCell2.style.background;
+                    spinnerCell2.style.background = spinnerCell1.style.background;
+                    spinnerCell1.style.background = tempColor;
+                }catch{};
+            }
+
+            let randomSpin = Math.floor(Math.random() * 11) + 30;
+            let randomDecelSpin = Math.floor(Math.floor(Math.random() * 10) + (randomSpin / 2) - 5);
+
+            function spin(times){
+                document.getElementById("spinner-cell-1").animate(keyframes, keyframeOptions);
+                document.getElementById("spinner-cell-2").animate(keyframes, keyframeOptions);
+                document.getElementById("spinner-cell-3").animate(keyframes, keyframeOptions);
+                document.getElementById("spinner-cell-4").animate(keyframes, keyframeOptions);
+                document.getElementById("spinner-cell-5").animate(keyframes, keyframeOptions);
+                document.getElementById("spinner-cell-6").animate(keyframes, keyframeOptions).addEventListener('finish', () => {
+
+                    let newSpin = times - 1
+
+                    if(newSpin < randomDecelSpin){
+                        keyframeOptions.duration *= 1.2
+                    }
+
+                    if(newSpin > 5){
+                        spin(newSpin)
+                        changeValues()
+                    }
+
+                    if(newSpin <= 5){
+                        keyframeOptions.duration = 30
+                        let spunItem = document.getElementById("spinner-cell-3").innerHTML;
+                        setTimeout(() => {
+                            spinning = false
+                            inventory[currentCase] = inventory[currentCase] ? inventory[currentCase] : {};
+                            inventory[currentCase][spunItem] = inventory[currentCase][spunItem] ? inventory[currentCase][spunItem] + 1 : 1;
+
+                            let itemDiv = document.createElement("div");
+                            let rarity = Object.keys(cases[currentCase]).find(key => cases[currentCase][key][spunItem]);
+
+                            itemDiv.style.background = spinnerCell3.style.background;
+                            itemDiv.className = "inventory-item";
+                            itemDiv.id = "inventory-item-" + spunItem;
+
+                            itemDiv.innerHTML = `<div>${spunItem}</div><div>${rarity}</div><div>Value: $${cases[currentCase][rarity][spunItem]}</div><div>Case: ${currentCase}</div>`;
+                            itemDiv.onclick = e => {
+                                let item = e.target;
+                                if(item.className != "inventory-item") item = item.parentElement;
+                                let itemName = item.id.split("-").slice(2).join(" ");
+                                let itemRarity = Object.keys(cases[currentCase]).find(key => cases[currentCase][key][itemName]);
+                                let itemValue = cases[currentCase][itemRarity][itemName];
+                                currentMoney += itemValue;
+                                moneyCounter.innerHTML = `$${currentMoney}`;
+                                inventory[currentCase][itemName] -= 1;
+                                // remove the div
+                                item.remove();
+                            }
+                            inventoryDisplay.appendChild(itemDiv);
+
+
+                        }, (randomDecelSpin * 100) - 2600)
+                        return;
+                    }
+                });
+            }
+
+            let casePrice = cases[currentCase].cost;
+            if(casePrice > currentMoney){
+                anime({
+                    targets: "#spin-again-button",
+                    backgroundColor: [
+                        {value: '#ff0000', duration: 250},
+                        {value: 'rgb(265,165,0)', duration: 250},
+                    ],
+                    duration: 500,
+                    easing: 'linear',
+                })
+
+                anime({
+                    targets: "#money-counter",
+                    color: [
+                        {value: '#ff0000', duration: 250},
+                        {value: '#000000', duration: 250},
+                    ],
+                    duration: 500,
+                    easing: 'linear',
+                })
+            } else {
+                spinning = true;
+                currentMoney -= casePrice;
+                moneyCounter.innerHTML = `$${currentMoney}`;
+                spin(randomSpin) // randomSpin
+            }
+        
+
+        }
+        
+        spinAgainButton.addEventListener('click', () => {
+            if(spinning) return;
+            animateSpinner();
+        });
+
+        addEventListener('beforeunload', () => {
+            localStorage.setItem("inventory", JSON.stringify(inventory));
+            localStorage.setItem("money", currentMoney);
+        })
     }
-    
-    spinAgainButton.addEventListener('click', () => {
-        if(spinning) return;
-        animateSpinner();
-    });
-
-    addEventListener('beforeunload', () => {
-        localStorage.setItem("inventory", JSON.stringify(inventory));
-        localStorage.setItem("money", currentMoney);
-    })
 </script>
