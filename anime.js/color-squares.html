@@ -46,18 +46,10 @@
 
     let toggled = false;
 
-    setInterval(() => {
-        if(toggled === false){
-            const tiles = document.querySelectorAll("body > div > div > div");
-            tiles.forEach(tile => {
-                tile.style.backgroundColor = "transparent";
-            })
-        }
-    }, 1)
     document.onmousemove = e => {
+        const tiles = document.querySelectorAll("body > div > div > div");
         const x = e.clientX;
         const y = e.clientY;
-        const tiles = document.querySelectorAll("body > div > div > div");
         if(toggled === true){
             tiles.forEach(tile => {
                 const rect = tile.getBoundingClientRect();
@@ -76,34 +68,18 @@
         const tile = document.createElement("div");
         const innerTile = document.createElement("div");
         innerTile.onclick = e => {
-            if(!toggled){
-                toggled = true
-                anime({
-                    targets: "body > div > div > div",
-                    translateX: () => anime.random(-50, 50),
-                    translateY: () => anime.random(-50, 50),
-                    borderRadius: () => anime.random(0, 15),
-                    rotate: () => anime.random(-360, 360),
-                    scale: () => Math.round((Math.random() * 1.1 + 0.3) * 100) / 100,
-                    borderColor: () => `rgb(${anime.random(0, 255)}, ${anime.random(0, 255)}, ${anime.random(0, 255)})`,
-                    duration: 1000,
-                    delay: anime.stagger(80, {grid: [columns, rows], from: index}),
-                })
-            } else {
-                toggled = false
-                anime({
-                    targets: "body > div > div > div",
-                    translateX: 0,
-                    translateY: 0,
-                    rotate: 0,
-                    scale: 1,
-                    duration: 500,
-                    borderRadius: 0,
-                    delay: anime.stagger(80, {grid: [columns, rows], from: index}),
-                    borderColor: {value: "#000", delay: anime.stagger(160, {grid: [columns, rows], from: index})},
-                    easing: "easeOutQuint"
-                })
-            }
+            toggled = true
+            anime({
+                targets: "body > div > div > div",
+                translateX: () => anime.random(-50, 50),
+                translateY: () => anime.random(-50, 50),
+                borderRadius: () => anime.random(0, 15),
+                rotate: () => anime.random(-360, 360),
+                scale: () => Math.round((Math.random() * 1.1 + 0.3) * 100) / 100,
+                borderColor: () => `rgb(${anime.random(0, 255)}, ${anime.random(0, 255)}, ${anime.random(0, 255)})`,
+                duration: 1000,
+                delay: anime.stagger(80, {grid: [columns, rows], from: index}),
+            })
         }
         tile.appendChild(innerTile);
         return tile;
