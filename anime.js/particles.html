@@ -1,0 +1,61 @@
+<style>
+    body {
+        overflow: hidden;
+    }
+</style>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+</head>
+<body>
+    <div></div>
+</body>
+<script>
+    let held = false;
+    let holder = document.querySelector("body > div");
+
+    let x = 0;
+    let y = 0;
+
+    document.onmousemove = e => {
+        x = e.clientX;
+        y = e.clientY;
+    }
+
+    document.onmousedown = e => {
+        held = !held;   
+    }
+
+    setInterval(() => {
+        if(!held) return;
+        let div = document.createElement("div");
+        div.style.width = "10px";
+        div.style.height = "10px";
+        div.style.borderRadius = "50%";
+        div.style.backgroundColor = "black";
+        div.style.position = "absolute";
+        div.style.left = x + "px";
+        div.style.top = y + "px";
+        anime({
+            targets: div,
+            translateY: () => anime.random(-100, 100),
+            translateX: () => anime.random(-100, 100),
+            duration: () => anime.random(250, 500),
+            update: (anim) => {
+                if(anim.progress > 40){
+                    anime({
+                        targets: div,
+                        scale: 0,
+                        duration: 100,
+                        easing: "linear",
+                        complete: () => {
+                            div.remove();
+                        }
+                    })
+                }
+            },
+            easing: "easeInOutQuad",
+        })
+
+        holder.appendChild(div);
+    }, 1)
+</script>
