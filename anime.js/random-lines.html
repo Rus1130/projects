@@ -1,0 +1,96 @@
+<style>
+    body {
+        overflow: hidden;
+        margin: 0;
+    }
+    body > div {
+        height: calc(100% - 1px);
+        width: calc(100% - 1px);
+        position: relative;
+        z-index: 2;
+        row-gap: 1px;
+        column-gap: 1px;
+        
+        display: grid;
+        grid-template-columns: repeat(var(--columns), 1fr);
+        grid-template-rows: repeat(var(--rows), 1fr);        
+    }
+
+    body > div > div {
+        position: relative;
+        height: calc(100%-1px);
+        width: calc(100%-1px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    body > div > div > div {
+        position: absolute;
+        height: 50px;
+        width: 1px;
+        border: 1px solid #000;
+    }
+</style>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+</head>
+<body>
+    <div></div>
+</body>
+<script>
+    const tileHolder = document.querySelector("body > div");
+
+    let columns = 0;
+    let rows = 0;
+
+    let toggled = false;
+
+    document.onmousemove = e => {
+        const tiles = document.querySelectorAll("body > div > div > div");
+        const x = e.clientX - 10;
+        const y = e.clientY - 10;
+        tiles.forEach(tile => {
+            const rect = tile.getBoundingClientRect();
+            const distance = Math.sqrt(Math.pow(x - rect.x, 2) + Math.pow(y - rect.y, 2));
+            if(distance < 100){
+                let angle = Math.atan2(y - rect.y, x - rect.x) * 90 / Math.PI;
+                tile.style.transform = `rotate(${angle}deg)`;
+            } else {
+                tile.parentElement.style.backgroundColor = "transparent";
+            }
+        })
+    }
+
+    const createTile = index => {
+        const tile = document.createElement("div");
+        const innerTile = document.createElement("div");
+        
+        tile.appendChild(innerTile);
+        return tile;
+    }
+
+    const createTiles = quantity => {
+        Array.from(Array(quantity)).map((tile, index) => {
+            tileHolder.appendChild(createTile(index));
+        });
+    }
+
+    const createGrid = () => {
+        tileHolder.innerHTML = "";
+        
+        const size = 30;
+        
+        columns = Math.floor(document.body.clientWidth / size);
+        rows = Math.floor(document.body.clientHeight / size);
+        
+        tileHolder.style.setProperty("--columns", columns);
+        tileHolder.style.setProperty("--rows", rows);
+        
+        createTiles(columns * rows);
+    }
+
+    createGrid();
+
+    window.onresize = () => createGrid();
+</script>
