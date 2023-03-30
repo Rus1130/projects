@@ -27,9 +27,10 @@
 
     body > div > div > div {
         position: absolute;
-        height: 20px;
-        width: 1px;
+        height: 26px;
+        width: 26px;
         border: 1px solid #000;
+        background-color: transparent;
     }
 </style>
 <head>
@@ -44,23 +45,49 @@
     let columns = 0;
     let rows = 0;
 
+    let x = 0;
+    let y = 0;
+
     let toggled = false;
+
+    document.onkeyup = e => {
+        if(e.key === " "){
+            if(toggled === false){
+                toggled = true;
+                anime({
+                    targets: "body > div > div > div",
+                    translateX: 0,
+                    translateY: 0,
+                    delay: anime.stagger(10, {grid: [columns, rows]}),
+                    complete: toggled = false,
+                    duration: 700,
+                    complete: () => toggled = false,
+                })
+            }
+        }
+    }
+    
 
     document.onmousemove = e => {
         const tiles = document.querySelectorAll("body > div > div > div");
-        const x = e.clientX - 10;
-        const y = e.clientY - 10;
+        x = e.clientX - 10;
+        y = e.clientY - 10;
         tiles.forEach(tile => {
             const rect = tile.getBoundingClientRect();
             const distance = Math.sqrt(Math.pow(x - rect.x, 2) + Math.pow(y - rect.y, 2));
             if(distance < 100){
-                // make the angle so it its facing the mouse with the shortest face
-                const angle = Math.atan2(x - rect.x, y - rect.y) * -180 / Math.PI;
+                const angle = Math.atan2(y - rect.y, x - rect.x) * 180 / Math.PI;
                 anime({
-                    targets: tile.parentElement,
-                    rotate: angle,
+                    targets: tile,
+                    translateX: Math.cos(angle * Math.PI / 310) * 50,
+                    translateY: Math.sin(angle * Math.PI / 310) * 50,
                     duration: 700,
-                    easing: "easeOutElastic(1, .8)",
+                    easing: "easeOutExpo",
+                    begin: () => {
+                        let color = `rgb(${anime.random(0, 255)}, ${anime.random(0, 255)}, ${anime.random(0, 255)})`;
+                        tile.style.setProperty("border-color", color);
+                        tile.style.setProperty("background-color", color);
+                    }
                 })
             }
         })
