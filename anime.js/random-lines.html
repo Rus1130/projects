@@ -27,7 +27,7 @@
 
     body > div > div > div {
         position: absolute;
-        height: 50px;
+        height: 20px;
         width: 1px;
         border: 1px solid #000;
     }
@@ -54,18 +54,21 @@
             const rect = tile.getBoundingClientRect();
             const distance = Math.sqrt(Math.pow(x - rect.x, 2) + Math.pow(y - rect.y, 2));
             if(distance < 100){
-                let angle = Math.atan2(y - rect.y, x - rect.x) * 90 / Math.PI;
-                tile.style.transform = `rotate(${angle}deg)`;
-            } else {
-                tile.parentElement.style.backgroundColor = "transparent";
+                // make the angle so it its facing the mouse with the shortest face
+                const angle = Math.atan2(x - rect.x, y - rect.y) * -180 / Math.PI;
+                anime({
+                    targets: tile.parentElement,
+                    rotate: angle,
+                    duration: 700,
+                    easing: "easeOutElastic(1, .8)",
+                })
             }
         })
     }
-
     const createTile = index => {
         const tile = document.createElement("div");
         const innerTile = document.createElement("div");
-        
+
         tile.appendChild(innerTile);
         return tile;
     }
