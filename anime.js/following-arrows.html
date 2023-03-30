@@ -1,0 +1,122 @@
+<style>
+    body {
+        overflow: hidden;
+        margin: 0;
+    }
+    body > div {
+        height: calc(100% - 1px);
+        width: calc(100% - 1px);
+        position: relative;
+        z-index: 2;
+        row-gap: 1px;
+        column-gap: 1px;
+        
+        display: grid;
+        grid-template-columns: repeat(var(--columns), 1fr);
+        grid-template-rows: repeat(var(--rows), 1fr);        
+    }
+
+    body > div > div {
+        position: relative;
+        height: calc(100%-1px);
+        width: calc(100%-1px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    body > div > div > div {
+        position: absolute;
+        height: 20px;
+        width: 1px;
+        background-color: #000;
+    }
+
+    body > div > div > div::after {
+        content: "^";
+        height: 5px;
+        width: 20px;
+        margin-left: -3px;
+        padding-top: 10px;
+    }
+</style>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+</head>
+<body>
+    <div></div>
+</body>
+<script>
+    const tileHolder = document.querySelector("body > div");
+
+    let columns = 0;
+    let rows = 0;
+
+    let x = 0;
+    let y = 0;
+
+
+    const rotateTiles = () => {
+        const tiles = document.querySelectorAll("body > div > div > div");
+        tiles.forEach(tile => {
+            
+            const rect = tile.getBoundingClientRect();
+            const angle = Math.atan2(x - rect.x, y - rect.y) * -180 / Math.PI;
+            const distance = getDistance(x,y,tile, 100);
+            if(distance){
+                anime({
+                    targets: tile,
+                    rotate: angle,
+                    duration: 0
+                });
+            }
+        });
+    }
+
+    function getDistance(x,y,tile, max){
+        const rect = tile.getBoundingClientRect();
+        const distance = Math.sqrt(Math.pow(x - rect.x, 2) + Math.pow(y - rect.y, 2));
+        if(distance < max){
+            return true;
+        }
+        return false;
+    }
+
+    document.onmousemove = e => {
+        x = e.clientX;
+        y = e.clientY;
+        rotateTiles();
+    }
+    
+    const createTile = index => {
+        const tile = document.createElement("div");
+        const innerTile = document.createElement("div");
+
+        tile.appendChild(innerTile);
+        return tile;
+    }
+
+    const createTiles = quantity => {
+        Array.from(Array(quantity)).map((tile, index) => {
+            tileHolder.appendChild(createTile(index));
+        });
+    }
+
+    const createGrid = () => {
+        tileHolder.innerHTML = "";
+        
+        const size = 20;
+        
+        columns = Math.floor(document.body.clientWidth / size);
+        rows = Math.floor(document.body.clientHeight / size);
+        
+        tileHolder.style.setProperty("--columns", columns);
+        tileHolder.style.setProperty("--rows", rows);
+        
+        createTiles(columns * rows);
+    }
+
+    createGrid();
+
+    window.onresize = () => createGrid();
+</script>
