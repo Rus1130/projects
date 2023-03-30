@@ -1,0 +1,39 @@
+<style>
+    :root {
+        --g1: rgba(131,58,180,1);
+        --g2: rgba(253,29,29,1);
+        --g3: rgba(255,184,85,1);
+    }
+    body {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    div {
+        height: 100px;
+        width: 100px;
+        border-radius: 50%;
+        background: linear-gradient(60deg, var(--g1) 10%, var(--g2) 50%, var(--g3) 90%);
+    }
+</style>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+</head>
+<body>
+    <div></div>
+</body>
+<script>
+    let rotation = 360;
+    anime({
+        targets: "div",
+        duration: 1000,
+        rotate: rotation,
+        loop: true,
+        easing: "linear",
+        
+    })
+</script>
