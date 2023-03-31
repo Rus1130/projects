@@ -1,0 +1,51 @@
+<style>
+    textarea {
+        resize: none;
+    }
+
+    textarea:focus {
+        outline: none;
+    }
+</style>
+<head>
+
+</head>
+<body>
+    Encrypt:<br>
+    <textarea id="messageInput" placeholder=""></textarea>
+    <textarea id="keyInput"></textarea>
+    DATE INPUT
+    <button id="encryptButton">Encrypt</button>
+    <br><br>
+    Decrypt:<br>
+    <textarea id="encryptedMessageInput"></textarea>
+    <textarea id="keyInput2"></textarea><br>
+    <button id="decryptButton">Decrypt</button>
+    <br><br>
+    output:
+    <div id="output"></div>
+</body>
+<script>
+    const encryptButton = document.getElementById('encryptButton');
+    const decryptButton = document.getElementById('decryptButton');
+    const messageInput = document.getElementById('messageInput');
+    const keyInput = document.getElementById('keyInput');
+    const keyInput2 = document.getElementById('keyInput2');
+    const encryptedMessageInput = document.getElementById('encryptedMessageInput');
+    const dateInput = document.getElementById('dateInput');
+    const dateCheckbox = document.getElementById('dateCheckbox');
+    const output = document.getElementById('output');
+
+    dateCheckbox.addEventListener('change', () => {
+        dateInput.disabled = dateCheckbox.checked;
+    });
+
+    // encryptButton.addEventListener('click', () => {
+    //     const message = messageInput.value;
+    //     const key = keyInput.value;
+    //     const expiration = dateInput.value;
+    //     const encryptedMessage = encrypt(message, key, expiration);
+    //     output.innerHTML = encryptedMessage;
+    // });
+
+</script>
