@@ -4,6 +4,20 @@
         --g2: rgba(253,29,29,1);
         --g3: rgba(255,184,85,1);
     }
+
+    @keyframes background-pan {
+        /*make it cycle through the colors in the gradient */
+        0% {
+            background-position: 0% center;
+        }
+        50% {
+            background-position: 100% center;
+        }
+        100% {
+            background-position: 200% center;
+        }
+    }
+
     body {
         margin: 0;
         display: flex;
@@ -11,13 +25,36 @@
         align-items: center;
         height: 100%;
         overflow: hidden;
+        background: linear-gradient(to right, var(--g1), var(--g2), var(--g3), var(--g2), var(--g1));
+        animation: background-pan 15s linear infinite; 
+        background-size: 400% 400%;
     }
 
-    div {
-        height: 100px;
-        width: 100px;
-        border-radius: 50%;
-        background: linear-gradient(60deg, var(--g1) 10%, var(--g2) 50%, var(--g3) 90%);
+    body > div {
+        height: calc(100% - 1px);
+        width: calc(100% - 1px);
+        position: relative;
+        row-gap: 1px;
+        display: grid;
+        z-index: 2;
+        grid-template-columns: repeat(1, 1fr);
+        grid-template-rows: repeat(var(--rows), 1fr);        
+    }
+
+    body > div > div {
+        position: relative;
+        height: calc(100%-1px);
+        width: calc(100%-1px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    body > div > div > div {
+        position: absolute;
+        height: 50px;
+        width: 50px;
+        border: 1px solid #000;
     }
 </style>
 <head>
@@ -25,24 +62,42 @@
 </head>
 <body>
     <div></div>
+    <span></span>
 </body>
 <script>
-    let div = document.querySelector('div');
-    anime({
-        targets: div,
-        borderRadius: "0%",
-        width: 200,
-        duration: 400,
-        delay: 1000,
-        rotate: [
-            { value: 120, duration: 1000 },
-        ],
-        scale: [
-            { value: 1, duration: 200 },
-            { value: 1.5, duration: 1000 },
-        ],
-        borderTopLeftRadius: "100%",
-        borderBottomRightRadius: "100%",
-        easing: "spring(1, 80, 10, 0)",
-    })
+    const tileHolder = document.querySelector("body > div");
+
+    let rows = 0;
+    let columns = 0;
+
+    const createTile = index => {
+        const tile = document.createElement("div");
+        const innerTile = document.createElement("div");
+        tile.appendChild(innerTile);
+        return tile;
+    }
+
+    const createTiles = quantity => {
+        Array.from(Array(quantity)).map((tile, index) => {
+            tileHolder.appendChild(createTile(index));
+        });
+    }
+
+    const createGrid = () => {
+        tileHolder.innerHTML = "";
+        
+        const size = 50;
+        
+        columns = Math.floor(document.body.clientWidth / size);
+        rows = Math.floor(document.body.clientHeight / size);
+        
+        tileHolder.style.setProperty("--rows", rows);
+        tileHolder.style.setProperty("--columns", 1);
+        
+        createTiles(rows);
+    }
+
+    createGrid();
+
+    window.onresize = () => createGrid();
 </script>
