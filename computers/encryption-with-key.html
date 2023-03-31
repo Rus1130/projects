@@ -12,9 +12,10 @@
 </head>
 <body>
     Encrypt:<br>
-    <textarea id="messageInput" placeholder=""></textarea>
-    <textarea id="keyInput"></textarea>
-    DATE INPUT
+    <textarea id="messageInput" placeholder="message to encrypt">Hello, World!</textarea>
+    <textarea id="keyInput" placeholder="special key to decrypt">Very Special Key</textarea>
+    <textarea id="expirationInput" placeholder="how long message lasts in seconds">100</textarea>
+    <input type="checkbox" id="noExpirationCheckbox">No expiration</input><br>
     <button id="encryptButton">Encrypt</button>
     <br><br>
     Decrypt:<br>
@@ -32,20 +33,42 @@
     const keyInput = document.getElementById('keyInput');
     const keyInput2 = document.getElementById('keyInput2');
     const encryptedMessageInput = document.getElementById('encryptedMessageInput');
-    const dateInput = document.getElementById('dateInput');
-    const dateCheckbox = document.getElementById('dateCheckbox');
+    const expirationInput = document.getElementById('expirationInput');
+    const noExpirationCheckbox = document.getElementById('noExpirationCheckbox');
     const output = document.getElementById('output');
 
-    dateCheckbox.addEventListener('change', () => {
-        dateInput.disabled = dateCheckbox.checked;
+    noExpirationCheckbox.addEventListener('change', () => {
+        expirationInput.disabled = noExpirationCheckbox.checked;
     });
 
-    // encryptButton.addEventListener('click', () => {
-    //     const message = messageInput.value;
-    //     const key = keyInput.value;
-    //     const expiration = dateInput.value;
-    //     const encryptedMessage = encrypt(message, key, expiration);
-    //     output.innerHTML = encryptedMessage;
-    // });
+    expirationInput.addEventListener('input', () => {
+        // check if expiration is a number
+        if (isNaN(expirationInput.value)) {
+            expirationInput.value = "";
+        }
+    });
+
+    encryptButton.addEventListener('click', () => {
+        let message = messageInput.value;
+        let key = keyInput.value;
+        let expiration = noExpirationCheckbox.checked ? "no-exp" : expirationInput.value;
+
+        if(message == "" || key == "" || (expiration == "" && !noExpirationCheckbox.checked)) {
+            output.innerHTML = "Please fill out all fields";
+            return;
+        }
+        let encryptedMessage = encrypt(message, key, expiration);
+        output.innerHTML = encryptedMessage;
+    });
+
+    function encrypt(message, key, expiration) {
+        let timeToExpire = expiration == 'no-exp' ? 'no-exp' : +expiration + +Date.now();
+
+        timeToExpire = timeToExpire.toString(36).split('')
+        let messageToEncrypt = message.split('')
+        let keyToEncrypt = key.split('')
+
+        console.log(messageToEncrypt, keyToEncrypt);
+    }
 
 </script>
