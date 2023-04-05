@@ -1,12 +1,43 @@
 <style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        margin: 0;
+    }
 
+    #gameboard {
+        height: 700px;
+        width: 700px;
+        border: 1px solid black;
+        display: grid;
+        grid-template-columns: repeat(15, 1fr);
+        grid-template-rows: repeat(15, 1fr);
+    }
+
+    .snake-head {
+        background-color: red;
+    }
+
+    .snake-body {
+        background-color: green;
+    }
 </style>
 <head>
 
 </head>
 <body>
-
+    <div id="gameboard"></div>
 </body>
 <script>
-    
+let gameboard = document.getElementById("gameboard");
+for(let i = 0; i < 225; i++) {
+    let tile = document.createElement("div");
+    tile.style.border = "1px solid black";
+    tile.id = i;
+    gameboard.appendChild(tile);
+}
+
+document.getElementById("112").classList.add("snake-head");
 </script>
