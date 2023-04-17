@@ -2,11 +2,18 @@
 
 </style>
 <head>
-
+    <script src="two.js"></script>
 </head>
 <body>
-
+    <div id="container"></div>
 </body>
 <script>
+
+const container = document.getElementById('container');
+
+const two = new Two({
+    fullscreen: true,
+    autostart: true
+}).appendTo(container);
 
 </script>
