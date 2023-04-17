@@ -32,12 +32,14 @@
 </body>
 <script>
 let gameboard = document.getElementById("gameboard");
-for(let i = 0; i < 225; i++) {
+
+let gameboardArray = [];
+
+for(i = 0; i < 225; i++) {
     let tile = document.createElement("div");
     tile.style.border = "1px solid black";
     tile.id = i;
     gameboard.appendChild(tile);
 }
 
-document.getElementById("112").classList.add("snake-head");
 </script>
