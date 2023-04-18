@@ -122,11 +122,10 @@ let elements = [
     // /[₀-₉]/g
 let elemental = {
     /**
-     * 
-     * @param {string} symbol return the element data from the given symbol
-     * @returns 
+     * @param {string|string[]} symbol return the element data from the given symbol
+     * @returns {Object[]}
      */
-    get: function (symbol) {
+    get(symbol) {
         let result = typeof symbol === "object" ? elements[symbol] : elements[symbol - 1];
         if(result == undefined) elements.forEach(function (el) {
             if(el.symbol == symbol) result = el;
@@ -136,10 +135,10 @@ let elemental = {
 
     /**
      * 
-     * @param {compound} compound the compound to parse
+     * @param {string|string[]} compound the compound to parse
      * @returns 
      */
-    parse: function (compound){
+    parse(compound){
         let array = compound.split("")
         let tokenized = [];
         let inSubscript = false;
@@ -208,10 +207,9 @@ let elemental = {
     /**
      * 
      * @param {string} compound the compound to get the elements from
-     * @param {boolean} [unique] whether to return only unique elements
-     * @returns 
+     * @returns {string[]}
      */
-    getElements(compound, unique){
+    element(compound){
         let parsed = this.parse(compound)
         let elements = []
         parsed.forEach(function (token) {
@@ -228,5 +226,3 @@ let elemental = {
 
 console.log(elemental.parse("Fe₃(SO₄)₃"))
 console.log(elemental.parse("Ca3(PO4)2"))
-
-elemental.getElements
