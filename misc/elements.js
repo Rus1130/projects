@@ -141,67 +141,118 @@ let elemental = {
     parse(compound){
         let array = compound.split("")
         let tokenized = [];
-        let inSubscript = false;
-        let inParen = false;
-        // replace all subscript with numbers and surround with {}
+
         for(let i = 0; i < array.length; i++){
             if(/[0-9₀-₉]/g.test(array[i])){
                 let num = array[i]
                 if(/[₀-₉]/g.test(array[i])) num = array[i].charCodeAt(0) - 8320
-                array[i] = "{" + num + "}"
+                array[i] = num;
             }
         }
 
-        array = array.join("").replaceAll("}{", "").split("")
-
-        let parenLayer = 0;
+        let pairing = 0;
         for(i = 0; i < array.length; i++){
             let token = {}
             token.value = array[i]
 
-            if(array[i] == "(") parenLayer++;
-            if(array[i] == ")") parenLayer--;
-
-            if(array[i] == "{") inSubscript = true;
-            if(array[i] == "}") inSubscript = false;
-
             if(/[A-Z]/g.test(token.value)) token.type = "el"
-            if(/[a-z]/g.test(token.value)) token.type = "el_cont"
-            if(token.value == "{") token.type = "sub_start"
-            if(token.value == "}") token.type = "sub_end"
-            if(token.value == "(") token.type = "paren_start"
-            if(token.value == ")") token.type = "paren_end"
-            if(/[0-9]/g.test(token.value)) token.type = "number"
+            if(/[a-z]/g.test(token.value)){
+                tokenized[tokenized.length - 1].value += token.value
+                continue
+            }
+            if(token.value == "(") token.type = "open"
+            if(token.value == ")") token.type = "close"
+            if(/[0-9]/g.test(token.value)){
+                token.type = "number"
+                token.value = token.value+[]
+            }
 
-            token.inSubscript = inSubscript
-            token.parenLayer = parenLayer
-            if(token.value == "{") token.paired = false
+
+            token.pairing = pairing
+
+            if(token.value == "(") pairing++
+            if(token.value == ")") pairing--
+
             
+
+
             tokenized.push(token)
         }
-
+        
         for(i = 0; i < tokenized.length; i++){
-            let token = tokenized[i]
-            if(token.type == "sub_end"){
-                let substartIndex = tokenized.findIndex((t) => {
-                    return t.type == "sub_start" && t.paired == false
-                })
-
-                tokenized[substartIndex].paired = true
+            if(tokenized[i].type == "number"&& tokenized[i - 1].type == "number"){
+                tokenized[i - 1].value += tokenized[i].value
+                tokenized.splice(i, 1)
             }
         }
 
         for(i = 0; i < tokenized.length; i++){
-            let token = tokenized[i]
-            if(token.type == "sub_start"){
-                if(tokenized[i - 1].type == "el_cont"){
-                    tokenized[i - 2].attachedSubscript = i;
-                } else {
-                    tokenized[i - 1].attachedSubscript = i;
+            tokenized[i].subscript = 1;
+            if(tokenized[i].type == "number"){
+                tokenized[i - 1].subscript = tokenized[i].value
+                tokenized.splice(i, 1)
+            }
+        }
+
+        for(i = 0; i < tokenized.length; i++){
+            if(tokenized[i].subscript == undefined) tokenized[i].subscript = 1;
+        }
+
+        tokenized.reverse()
+
+        let subscripts = [];
+
+        for(i = 0; i < tokenized.length; i++){
+            if(tokenized[i].type == "close"){
+                subscripts.push(tokenized[i].subscript)
+            }
+
+            if(tokenized[i].type == "open"){
+                subscripts.pop()
+            }
+
+            if(tokenized[i].type == "el"){
+                for(j = 0; j < subscripts.length; j++){
+                    tokenized[i].subscript *= subscripts[j]
                 }
             }
         }
-        return tokenized
+
+        // get rid of open and close
+        for(i = 0; i < tokenized.length; i++){
+            if(tokenized[i].type == "open" || tokenized[i].type == "close"){
+                tokenized.splice(i, 1)
+            }
+        }
+
+        for(i = 0; i < tokenized.length; i++){
+            tokenized[i].subscript = parseInt(tokenized[i].subscript)
+        }
+
+        let elements = {}
+        for(i = 0; i < tokenized.length; i++){
+            if(elements[tokenized[i].value] == undefined) elements[tokenized[i].value] = 0;
+            elements[tokenized[i].value] += tokenized[i].subscript
+        }
+
+        let names = Object.keys(elements)
+        
+        names.forEach(function (symbol, i) {
+            names[i] = elemental.get(symbol).name
+        })
+
+        let amounts = Object.values(elements)
+
+        let symbols = Object.keys(elements)
+        symbols.forEach(function (symbol, i) {
+            symbols[i] = elemental.get(symbol).symbol
+        })
+
+        result = [];
+        for(i = 0; i < names.length; i++){
+            result.push(`${amounts[i]} ${names[i]} (${symbols[i]})`)
+        }
+        return result;
     },
 
     /**
@@ -210,19 +261,12 @@ let elemental = {
      * @returns {string[]}
      */
     element(compound){
-        let parsed = this.parse(compound)
-        let elements = []
-        parsed.forEach(function (token) {
-            if(token.type == "el"){
-                elements.push(token.value)
-                if(parsed[parsed.indexOf(token) + 1].type == "el_cont"){
-                    elements[elements.length - 1] += parsed[parsed.indexOf(token) + 1].value
-                }
-            }
-        })
-        return elements
+        return "not done xD"
     }
 }
 
 console.log(elemental.parse("Fe₃(SO₄)₃"))
 console.log(elemental.parse("Ca3(PO4)2"))
+console.log(elemental.parse("O(Ca10)2PTi"))
+console.log(elemental.parse("C(W2(HgY)2Au)3"))
+console.log(elemental.parse("CO2(Ca3)4Br(Ca6)5"))
