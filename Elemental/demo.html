@@ -1,0 +1,16 @@
+<style>
+
+</style>
+<head>
+    <script src="elemental.js"></script>
+</head>
+<body>
+    http://127.0.0.1:5501/Elemental/demo.html<br>
+    <textarea id="input"></textarea><br>
+    <div id="output"></div>
+</body>
+<script defer>
+    document.getElementById("input").oninput = function(){
+        document.getElementById("output").textContent = Elemental.simplify(document.getElementById("input").value, {joinedResult: true, resultOnly: true });
+    }
+</script>

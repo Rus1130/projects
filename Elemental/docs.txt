@@ -1,0 +1,35 @@
+Passing a single element as an input can be done in multiple ways, for example:
+using the name: Elemental.get("Hydrogen")
+using the symbol: Elemental.get("H")
+using the atomic number: Elemental.get(1)
+using the index: Elemental.get([0])
+
+Elemental.get(element)
+Get a single element's data
+
+Elemental.simplify(compound, {options})
+Simplify a compound
+Options:
+    joinedResult: bool - Join result into a single string
+    resultOnly: bool - Return only the result
+    quantifyResult: bool - Quantify the results
+
+Elemental.balance(equation, {options})
+Balance a chemical equation
+Options:
+    joinedResult: bool - Join result into a single string
+
+Elemental.protons(element)
+Get the number of protons in an element
+
+Elemental.neutrons(element)
+Get the number of neutrons in an element
+
+Elemental.electrons(element)
+Get the number of electrons in an element
+
+Elemental.color(element, {options})
+Get the color of an element
+Options:
+    logPreview: bool - console log a preview of the color
+

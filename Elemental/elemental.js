@@ -122,11 +122,7 @@ let elementData = [
 // data source: https://github.com/andrejewski/periodic-table/blob/master/data.json
 
     // /[₀-₉]/g
-let elemental = {
-    /**
-     * @param {string|string[]} symbol return the element data from the given symbol. accepts name, symbol, atomic number, or index (surround with brackets, e.g. [0])
-     * @returns {Object[]}
-     */
+const Elemental = {
     get(element) {
         let result = typeof element === "object" ? elementData[element] : elementData[element - 1];
         if(result == undefined) elementData.forEach(function (el) {
@@ -137,22 +133,22 @@ let elemental = {
             if(el.name == element) result = el;
         });
 
-        if(result == undefined) return "N/A"
+        if(result == undefined) return "Not Found"
+
+        let resultKeys = Object.keys(result);
+        for(let i = 0; i < resultKeys.length; i++){
+            if(result[resultKeys[i]] == "") result[resultKeys[i]] = "No Data"
+        }
         return result
     },
 
-    /**
-     * 
-     * @param {string|string[]} compound the compound to parse
-     * @returns 
-     */
     simplify(compound, options){
         let array = compound.split("")
         options = options || {};
 
         options.joinedResult = options.joinedResult || false;
         options.resultOnly = options.resultOnly || false;
-        options.resultTotal = options.resultTotal || false;
+        options.quantifyResult = options.quantifyResult || false;
         let tokenized = [];
 
         
@@ -165,7 +161,8 @@ let elemental = {
                 // split at space
                 let num = compound.split(" ")[0]
                 array = compound.split(" ")[1].split("")
-                if(/[a-zA-Z]/g.test(num)) errors.push("Parse Error: Unexpected character '" + num + "'")
+                if(/[a-zA-Z]/g.test(num)) errors.push(`Parse Error: Invalid Coefficient '${num}' at index ${i}`)
+
                 coefficient = num
             }
 
@@ -200,8 +197,6 @@ let elemental = {
 
             if(token.value == ")") pairing--
 
-            
-
             tokenized.push(token)
         }
 
@@ -213,7 +208,7 @@ let elemental = {
                     tokenized.splice(i, 1)
                     i--
                 } else {
-                    errors.push("Parse Error: Unexpected character '" + token.value + "'")
+                    errors.push(`Parse Error: Unexpected character '${token.value}' at index ${i}`)
                 }
             }
         }
@@ -222,8 +217,8 @@ let elemental = {
             let token = tokenized[i]
             if(token.type == "el"){
                 token.sub = 1
-                if(elemental.get(token.value) == "N/A"){
-                    errors.push("Parse Error: Unknown element '" + token.value + "'")
+                if(this.get(token.value) == "Not Found"){
+                    errors.push(`Parse Error: Unknown element '${token.value}' at index ${i}`)
                 }
             }
         }
@@ -232,7 +227,7 @@ let elemental = {
             let token = tokenized[i]
             if(token.type == "num"){
                 if(tokenized[i - 1] === undefined){
-                    errors.push("Parse Error: Unexpected subscript '" + token.value + "'")
+                    errors.push(`Parse Error: Unexpected subscript '${token.value}' at index ${i}`)
                 } else {
                     if(tokenized[i - 1].type == "num"){
                         tokenized[i - 1].value += token.value
@@ -246,21 +241,31 @@ let elemental = {
         for(i = 0; i < tokenized.length; i++){
             let token = tokenized[i]
             if(token.type == "num"){
-                if(tokenized[i - 1].type == "el" || tokenized[i - 1].type == "close"){
-                    tokenized[i - 1].sub = token.value * coefficient
-                    tokenized.splice(i, 1)
-                    i--
+                if(tokenized[i - 1] === undefined){
+                    errors.push(`Parse Error: Unexpected subscript '${token.value}' at index ${i}`)
+                } else {
+                    if(tokenized[i - 1].type == "el" || tokenized[i - 1].type == "close"){
+                        tokenized[i - 1].sub = token.value * coefficient
+                        tokenized.splice(i, 1)
+                        i--
+                    }
                 }
             }
         }
 
+        for(i = 0; i < tokenized.length; i++){
+            let token = tokenized[i]
+            if(token.type == 'unknown'){
+                errors.push(`Parse Error: Unexpected character '${token.value}' at index ${i}`)
+            }
+        }
+        
         tokenized.reverse()
 
         let pairings = []
 
         for(i = 0; i < tokenized.length; i++){
             let token = tokenized[i]
-            tokenized[i].test = 1
             if(token.type == "close"){
                 pairings.push(token.pairing)
             }
@@ -278,12 +283,14 @@ let elemental = {
                 }
                 if(token.type == "el"){
                     if(token.pairing >= pairings[i]){
-                        // multiply all the numbers in the subscript array
                         let sub = 1;
+                        
                         subscript.forEach(function (i) {
                             sub *= i
                         })
                         token.sub *= sub
+                        if(isNaN(token.sub)) errors.push(`Redundant Parenthesis at index ${i}`)
+                        
                         token.pairing--;
                     }
                 }
@@ -293,174 +300,230 @@ let elemental = {
         tokenized.reverse()
         
         if(errors.length > 0) return errors[0]
-        else return tokenized
+        else {
+            for(i = 0; i < tokenized.length; i++){
+                if(tokenized[i].type == "open" || tokenized[i].type == "close"){
+                    tokenized.splice(i, 1)
+                    i--
+                }
+            }
+
+            let groupedElements = {}
+            for(i = 0; i < tokenized.length; i++){
+                if(groupedElements[tokenized[i].value] == undefined) groupedElements[tokenized[i].value] = 0
+                groupedElements[tokenized[i].value] += tokenized[i].sub
+            }
+
+            let result = [];
+            for(i = 0; i < Object.keys(groupedElements).length; i++){
+                let el = Object.keys(groupedElements)[i]
+                let sub = groupedElements[el]
+
+                result.push(`${sub} ${this.get(el).name} (${el})`)
+            }
+
+            // sort result based on how big the number is
+            result.sort(function (a, b) {
+                let aNum = a.split(" ")[0]
+                let bNum = b.split(" ")[0]
+                return bNum - aNum
+            })
+
+            if(options.joinedResult) result = result.join(", ")
+            if(options.quantifyResult) result = groupedElements
+
+            let fancifiedCompound = compound.split("")
+            for(i = 0; i < fancifiedCompound.length; i++){
+                if(/[0-9]/g.test(fancifiedCompound[i])){
+                    let sub = {"0":"₀", "1":"₁", "2":"₂", "3":"₃", "4":"₄", "5":"₅", "6":"₆", "7":"₇", "8":"₈", "9":"₉"}
+                    fancifiedCompound[i] = sub[fancifiedCompound[i]]
+                }
+            }
+
+            fancifiedCompound = fancifiedCompound.join("")
+            let resultObj = {
+                result: result,
+                "original input": fancifiedCompound
+            }
+
+            if(options.resultOnly) resultObj = result
+            return resultObj
+        }
     },
 
-    // balance(equation, options){
-    //     options = options || {};
-    //     options.joinedResult = options.joinedResult || false;
+    balance(equation, options){
+        options = options || {};
+        options.joinedResult = options.joinedResult || false;
 
-    //     let reactantsCompounds = equation.split("->")[0].trim().split("+")
-    //     let productsCompounds = equation.split("->")[1].trim().split("+")
+        if(/->/g.test(equation) == false) return "Parse Error: Invalid Equation (Missing '->')"
 
-    //     reactantsCompounds = reactantsCompounds.map(i => i.trim())
-    //     productsCompounds = productsCompounds.map(i => i.trim())
+        let reactantsCompounds = equation.split("->")[0].trim().split("+")
+        let productsCompounds = equation.split("->")[1].trim().split("+")
 
-    //     let reactants = {}
-    //     let products = {}
+        reactantsCompounds = reactantsCompounds.map(i => i.trim())
+        productsCompounds = productsCompounds.map(i => i.trim())
 
-    //     let errors = []
+        let reactants = {}
+        let products = {}
 
-    //     reactantsCompounds.forEach(function (compound, i) {
-    //         let simplified = elemental.simplify(compound, {resultTotal: true, resultOnly: true})
-    //         if(typeof simplified == "string"){
-    //             errors.push(simplified + " in reactant " + "'" + compound +  "'");
-    //         }
+        let errors = []
 
-    //         if(errors.length > 0) return;
+        reactantsCompounds.forEach(function (compound, i) {
+            let simplified = Elemental.simplify(compound, {quantifyResult: true, resultOnly: true})
+            if(typeof simplified == "string"){
+                errors.push(`Parse Error: ${simplified} (reactant ${compound})`);
+            }
 
-    //         for(i = 0; i < Object.keys(simplified).length; i++){
-    //             if(reactants[Object.keys(simplified)[i]] == undefined) reactants[Object.keys(simplified)[i]] = 0;
-    //             reactants[Object.keys(simplified)[i]] += Object.values(simplified)[i]
-    //         }
-    //     })
+            if(errors.length > 0) return;
 
-    //     productsCompounds.forEach(function (compound, i) {
-    //         let simplified = elemental.simplify(compound, {resultTotal: true, resultOnly: true})
-    //         if(typeof simplified == "string"){
-    //             errors.push(simplified + " in product " + "'" + compound +  "'");
-    //         }
+            for(i = 0; i < Object.keys(simplified).length; i++){
+                if(reactants[Object.keys(simplified)[i]] == undefined) reactants[Object.keys(simplified)[i]] = 0;
+                reactants[Object.keys(simplified)[i]] += Object.values(simplified)[i]
+            }
+        })
 
-    //         if(errors.length > 0) return;
+        productsCompounds.forEach(function (compound, i) {
+            let simplified = Elemental.simplify(compound, {quantifyResult: true, resultOnly: true})
+            if(typeof simplified == "string"){
+                errors.push(`Parse Error: ${simplified} (product ${compound})`);
+            }
 
-    //         for(i = 0; i < Object.keys(simplified).length; i++){
-    //             if(products[Object.keys(simplified)[i]] == undefined) products[Object.keys(simplified)[i]] = 0;
-    //             products[Object.keys(simplified)[i]] += Object.values(simplified)[i]
-    //         }
-    //     })
+            if(errors.length > 0) return;
 
-    //     if(errors.length > 0) return errors[0];
+            for(i = 0; i < Object.keys(simplified).length; i++){
+                if(products[Object.keys(simplified)[i]] == undefined) products[Object.keys(simplified)[i]] = 0;
+                products[Object.keys(simplified)[i]] += Object.values(simplified)[i]
+            }
+        })
 
-    //     let balancedElements = []
-    //     let excessElements = {}
-    //     let generatedElements = {}
-    //     let usedElements = {}
+        if(errors.length > 0) return errors[0];
 
-    //     // get the common elements
-    //     let commonElements = []
-    //     for(i = 0; i < Object.keys(reactants).length; i++){
-    //         if(Object.keys(products).includes(Object.keys(reactants)[i])){
-    //             commonElements.push(Object.keys(reactants)[i])
-    //         }
-    //     }
+        let balancedElements = []
+        let excessElements = {}
+        let generatedElements = {}
+        let usedElements = {}
 
-    //     for(i = 0; i < commonElements.length; i++){
-    //         if(reactants[commonElements[i]] == products[commonElements[i]]){
-    //             balancedElements.push(commonElements[i])
-    //             usedElements[commonElements[i]] = reactants[commonElements[i]]
-    //             delete reactants[commonElements[i]]
-    //             delete products[commonElements[i]]
-    //         }
-    //     }
-    //     commonElements = []
-    //     for(i = 0; i < Object.keys(reactants).length; i++){
-    //         if(Object.keys(products).includes(Object.keys(reactants)[i])){
-    //             commonElements.push(Object.keys(reactants)[i])
-    //         }
-    //     }
+        // get the common elements
+        let commonElements = []
+        for(i = 0; i < Object.keys(reactants).length; i++){
+            if(Object.keys(products).includes(Object.keys(reactants)[i])){
+                commonElements.push(Object.keys(reactants)[i])
+            }
+        }
 
-    //     for(i = 0; i < commonElements.length; i++){
-    //         let element = commonElements[i]
-    //         let amount = reactants[element] - products[element]
+        for(i = 0; i < commonElements.length; i++){
+            if(reactants[commonElements[i]] == products[commonElements[i]]){
+                balancedElements.push(commonElements[i])
+                usedElements[commonElements[i]] = reactants[commonElements[i]]
+                delete reactants[commonElements[i]]
+                delete products[commonElements[i]]
+            }
+        }
+        commonElements = []
+        for(i = 0; i < Object.keys(reactants).length; i++){
+            if(Object.keys(products).includes(Object.keys(reactants)[i])){
+                commonElements.push(Object.keys(reactants)[i])
+            }
+        }
 
-    //         if(amount > 0) usedElements[element] = amount
+        for(i = 0; i < commonElements.length; i++){
+            let element = commonElements[i]
+            let amount = reactants[element] - products[element]
 
-    //         if(amount > 0){
-    //             excessElements[element] = amount
-    //         } else {
-    //             generatedElements[element] = amount * -1
-    //         }
+            if(amount > 0) usedElements[element] = amount
 
-    //         delete reactants[element]
-    //         delete products[element]
-    //     }
+            if(amount > 0){
+                excessElements[element] = amount
+            } else {
+                generatedElements[element] = amount * -1
+            }
 
-    //     for(i = 0; i < Object.keys(reactants).length; i++){
-    //         excessElements[Object.keys(reactants)[i]] = Object.values(reactants)[i]
-    //     }
+            delete reactants[element]
+            delete products[element]
+        }
 
-    //     for(i = 0; i < Object.keys(products).length; i++){
-    //         generatedElements[Object.keys(products)[i]] = Object.values(products)[i]
-    //     }
+        for(i = 0; i < Object.keys(reactants).length; i++){
+            excessElements[Object.keys(reactants)[i]] = Object.values(reactants)[i]
+        }
+
+        for(i = 0; i < Object.keys(products).length; i++){
+            generatedElements[Object.keys(products)[i]] = Object.values(products)[i]
+        }
 
 
-    //     let balancedElementsResult = []
-    //     let usedElementsResult = []
-    //     let excessElementsResult = []
-    //     let generatedElementsResult = []
+        let balancedElementsResult = []
+        let usedElementsResult = []
+        let excessElementsResult = []
+        let generatedElementsResult = []
 
-    //     for(i = 0; i < balancedElements.length; i++){
-    //         balancedElementsResult.push(`${balancedElements[i]} (${elemental.get(balancedElements[i]).name})`)
-    //     }
+        for(i = 0; i < balancedElements.length; i++){
+            balancedElementsResult.push(`${balancedElements[i]} (${Elemental.get(balancedElements[i]).name})`)
+        }
 
-    //     for(i = 0; i < Object.keys(usedElements).length; i++){
-    //         usedElementsResult.push(`${usedElements[Object.keys(usedElements)[i]]} ${Object.keys(usedElements)[i]} (${elemental.get(Object.keys(usedElements)[i]).name})`)
-    //     }
+        for(i = 0; i < Object.keys(usedElements).length; i++){
+            usedElementsResult.push(`${usedElements[Object.keys(usedElements)[i]]} ${Object.keys(usedElements)[i]} (${Elemental.get(Object.keys(usedElements)[i]).name})`)
+        }
 
-    //     for(i = 0; i < Object.keys(excessElements).length; i++){
-    //         excessElementsResult.push(`${excessElements[Object.keys(excessElements)[i]]} ${Object.keys(excessElements)[i]} (${elemental.get(Object.keys(excessElements)[i]).name})`)
-    //     }
+        for(i = 0; i < Object.keys(excessElements).length; i++){
+            excessElementsResult.push(`${excessElements[Object.keys(excessElements)[i]]} ${Object.keys(excessElements)[i]} (${Elemental.get(Object.keys(excessElements)[i]).name})`)
+        }
 
-    //     for(i = 0; i < Object.keys(generatedElements).length; i++){
-    //         generatedElementsResult.push(`${generatedElements[Object.keys(generatedElements)[i]]} ${Object.keys(generatedElements)[i]} (${elemental.get(Object.keys(generatedElements)[i]).name})`)
-    //     }
+        for(i = 0; i < Object.keys(generatedElements).length; i++){
+            generatedElementsResult.push(`${generatedElements[Object.keys(generatedElements)[i]]} ${Object.keys(generatedElements)[i]} (${Elemental.get(Object.keys(generatedElements)[i]).name})`)
+        }
 
-    //     if(options.joinedResult){
-    //         usedElementsResult = usedElementsResult.join(", ")
-    //         excessElementsResult = excessElementsResult.join(", ")
-    //         generatedElementsResult = generatedElementsResult.join(", ")
-    //         balancedElementsResult = balancedElementsResult.join(", ")
-    //         productsCompounds = productsCompounds.join(" + ")
-    //         reactantsCompounds = reactantsCompounds.join(" + ")
-    //     }
+        if(options.joinedResult){
+            usedElementsResult = usedElementsResult.join(", ")
+            excessElementsResult = excessElementsResult.join(", ")
+            generatedElementsResult = generatedElementsResult.join(", ")
+            balancedElementsResult = balancedElementsResult.join(", ")
+            productsCompounds = productsCompounds.join(" + ")
+            reactantsCompounds = reactantsCompounds.join(" + ")
+        }
 
-    //     let result = {
-    //         "used elements": usedElementsResult,
-    //         "excess elements": excessElementsResult,
-    //         "generated elements": generatedElementsResult,
-    //         "products": productsCompounds,
-    //         "reactants": reactantsCompounds,
-    //     }
+        let result = {
+            "used elements": usedElementsResult,
+            "excess elements": excessElementsResult,
+            "generated elements": generatedElementsResult,
+            "products": productsCompounds,
+            "reactants": reactantsCompounds,
+            "original input": equation
+        }
 
-    //     return result
-    // },
-    // protons(element){
-    //     if(elemental.get(element) == "N/A") return "N/A"
-    //     return elemental.get(element).atomicNumber
-    // },
-    // neutrons(element){
-    //     if(elemental.get(element) == "N/A") return "N/A"
-    //     let mass = elemental.get(element).atomicMass
-    //     let protons = elemental.get(element).atomicNumber
-    //     return parseInt(mass - protons)
-    // },
-    // electrons(element){
-    //     return elemental.neutrons(element)
-    // },
-    // color(element, options){
-    //     options = options || {}
-    //     options.logPreview = options.logPreview || false
-    //     if(elemental.get(element) == "N/A") return "N/A"
-    //     let hex = elemental.get(element).cpkHexColor
-    //     if(hex == "") return "N/A"
-    //     if(options.logPreview) console.log(`${elemental.get(element).name} `+`%c########`, `background: #${hex}; color: #${hex}; border: 1px solid black;`);
-    //     return "#" + elemental.get(element).cpkHexColor
-    // }
+        return result
+    },
+
+    protons(element){
+        if(this.get(element) == "Not Found") return `not available`
+        return this.get(element).atomicNumber
+    },
+
+    neutrons(element){
+        if(this.get(element) == "Not Found") return `not available`
+        let mass = this.get(element).atomicMass
+        let protons = this.get(element).atomicNumber
+        return parseInt(mass - protons)
+    },
+
+    electrons(element){
+        return this.neutrons(element)
+    },
+
+    color(element, options){
+        options = options || {}
+        options.logPreview = options.logPreview || false
+        if(this.get(element) == "Not Found") return `not available`
+        let hex = this.get(element).cpkHexColor
+        if(hex == "No Data") return `specified element has no hex color`
+        if(options.logPreview) console.log(`${this.get(element).name} `+`%c########`, `background: #${hex}; color: #${hex}; border: 1px solid black;`);
+        return "#" + this.get(element).cpkHexColor
+    }
 }
 
-console.log(elemental.simplify("AcCoC6H12O6"))
-console.log(elemental.simplify("U((FeC)2O4)3Zn(PtC)4"))
-console.log(elemental.simplify("Zn(Au(CN)3B)2"))
-// console.log(elemental.simplify("Au(Hs2)BF(Pb)2"))
-// console.log(elemental.simplify("zAu(Hs2)BF(Pb)2"))
-// console.log(elemental.simplify("ZAu(Hs2)BF(Pb)2"))
+console.log(Elemental.simplify("AuHs2BF(Pb)2"))
+console.log(Elemental.simplify("AcCoC6H12O6"))
+console.log(Elemental.simplify("U((FeC)2O4)3Zn(PtC)4"))
+console.log(Elemental.simplify("Zn(Au(CN)3B)2"))
+
+
+// console.log(Elemental.balance("H2 + O2 -> CO2 + Na2Cl"))
