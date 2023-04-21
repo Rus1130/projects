@@ -1,3 +1,31 @@
-<div>hello!</div><br>
-Textarea: <textarea></textarea>
-<button>Button!</button>
+<script>
+
+    let template = document.getElementById('JSExample');
+	if(template == undefined) return;
+
+    let greeting = document.createElement("div");
+    let input = document.createElement("textarea");
+    let repeater = document.createElement("div");
+    let button = document.createElement("button");
+
+    button.innerHTML = "Click me!";
+    input.oninput = e => {
+        repeater.innerHTML = input.value
+    }
+
+    button.onclick = e => {
+        alert(repeater.innerHTML);
+    }
+
+    greeting.innerHTML = "Hello!"
+    greeting.style.fontSize = "20px";
+
+    let packer = document.createElement("div");
+    packer.appendChild(greeting);
+    packer.appendChild(input);
+    packer.appendChild(repeater);
+    packer.appendChild(button);
+
+    template.appendChild(packer);
+
+</script>
