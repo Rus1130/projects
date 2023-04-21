@@ -1,5 +1,1 @@
 hello!
-<script>
-    let iframe = document.createElement('iframe');
-    
-</script>
