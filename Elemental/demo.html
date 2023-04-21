@@ -13,4 +13,6 @@
     document.getElementById("input").oninput = function(){
         document.getElementById("output").textContent = Elemental.simplify(document.getElementById("input").value, {joinedResult: true, resultOnly: true });
     }
+
+    document.getElementById("input").setAttribute("resize", "none")
 </script>

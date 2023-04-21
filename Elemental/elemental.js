@@ -519,11 +519,3 @@ const Elemental = {
         return "#" + this.get(element).cpkHexColor
     }
 }
-
-console.log(Elemental.simplify("AuHs2BF(Pb)2"))
-console.log(Elemental.simplify("AcCoC6H12O6"))
-console.log(Elemental.simplify("U((FeC)2O4)3Zn(PtC)4"))
-console.log(Elemental.simplify("Zn(Au(CN)3B)2"))
-
-
-// console.log(Elemental.balance("H2 + O2 -> CO2 + Na2Cl"))
