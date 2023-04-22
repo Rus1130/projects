@@ -1,0 +1,17 @@
+Utils.classAdd(name, {properties})
+create a class
+    name: the name of the class
+    properties: the properties of the class
+
+Utils.classRemove(name)
+remove a class
+    name: the name of the class
+
+Utils.create(tag, {properties}?)
+create an HTML element
+    tag: the HTMLElement tag (e.g. "div" for <div>)
+    properties: the properties of the element
+
+Utils.bundle([elements])
+appends elemente to a single element
+    elements: the elements to bundle
