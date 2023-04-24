@@ -161,7 +161,7 @@ const Elemental = {
                 // split at space
                 let num = compound.split(" ")[0]
                 array = compound.split(" ")[1].split("")
-                if(/[a-zA-Z]/g.test(num)) errors.push(`Parse Error: Invalid Coefficient '${num}' at index ${i}`)
+                if(/[a-zA-Z]/g.test(num)) errors.push(`Parse Error: Invalid Coefficient '${num}'`)
 
                 coefficient = num
             }
@@ -208,7 +208,7 @@ const Elemental = {
                     tokenized.splice(i, 1)
                     i--
                 } else {
-                    errors.push(`Parse Error: Unexpected character '${token.value}' at index ${i}`)
+                    errors.push(`Parse Error: Unexpected character '${token.value}'`)
                 }
             }
         }
@@ -218,7 +218,7 @@ const Elemental = {
             if(token.type == "el"){
                 token.sub = 1
                 if(this.get(token.value) == "Not Found"){
-                    errors.push(`Parse Error: Unknown element '${token.value}' at index ${i}`)
+                    errors.push(`Parse Error: Unknown element '${token.value}'`)
                 }
             }
         }
@@ -227,7 +227,7 @@ const Elemental = {
             let token = tokenized[i]
             if(token.type == "num"){
                 if(tokenized[i - 1] === undefined){
-                    errors.push(`Parse Error: Unexpected subscript '${token.value}' at index ${i}`)
+                    errors.push(`Parse Error: Unexpected subscript '${token.value}'`)
                 } else {
                     if(tokenized[i - 1].type == "num"){
                         tokenized[i - 1].value += token.value
@@ -242,7 +242,7 @@ const Elemental = {
             let token = tokenized[i]
             if(token.type == "num"){
                 if(tokenized[i - 1] === undefined){
-                    errors.push(`Parse Error: Unexpected subscript '${token.value}' at index ${i}`)
+                    errors.push(`Parse Error: Unexpected subscript '${token.value}'`)
                 } else {
                     if(tokenized[i - 1].type == "el" || tokenized[i - 1].type == "close"){
                         tokenized[i - 1].sub = token.value * coefficient
@@ -256,7 +256,7 @@ const Elemental = {
         for(i = 0; i < tokenized.length; i++){
             let token = tokenized[i]
             if(token.type == 'unknown'){
-                errors.push(`Parse Error: Unexpected character '${token.value}' at index ${i}`)
+                errors.push(`Parse Error: Unexpected character '${token.value}'`)
             }
         }
         
@@ -289,7 +289,7 @@ const Elemental = {
                             sub *= i
                         })
                         token.sub *= sub
-                        if(isNaN(token.sub)) errors.push(`Redundant Parenthesis at index ${i}`)
+                        if(isNaN(token.sub)) errors.push(`Parenthesis Error`)
                         
                         token.pairing--;
                     }
