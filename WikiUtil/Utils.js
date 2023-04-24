@@ -39,13 +39,15 @@ const Utils = {
         return el;
     },
     bundle(elements){
-        let p = Utils.createElement("div");
+        let b = Utils.createElement("bundle");
         for(i = 0; i < elements.length; i++) {
-            p.appendChild(elements[i])
+            b.appendChild(elements[i])
         }
-        return p;
+        return b;
+    },
+    get(id){
+    	return document.getElementById(id)
     }
 }
-
 
 setTimeout(() => {document.body.appendChild(Utils.createElement("div"));}, 1);

@@ -15,3 +15,7 @@ create an HTML element
 Utils.bundle([elements])
 appends elemente to a single element
     elements: the elements to bundle
+
+Utils.get(id)
+alias for document.getElementById(id)
+    id: the id of the element
