@@ -363,6 +363,7 @@ const Elemental = {
         options = options || {};
         options.joinedResult = options.joinedResult || false;
         options.stringified = options.stringified || false;
+        options.quantifyResult = options.quantifyResult || false;
 
         if(/->/g.test(equation) == false) return "Parse Error: Invalid Equation (Missing '->')"
 
@@ -466,7 +467,7 @@ const Elemental = {
         let usedElementsResult = []
         let excessElementsResult = []
         let generatedElementsResult = []
-
+        
         for(i = 0; i < balancedElements.length; i++){
             balancedElementsResult.push(`${balancedElements[i]} (${Elemental.get(balancedElements[i]).name})`)
         }

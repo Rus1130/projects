@@ -18,6 +18,13 @@
     }
 
     document.getElementById("input-balance").oninput = function(){
-        document.getElementById("output-balance").textContent = Elemental.balance(document.getElementById("input-balance").value, {stringified: true })
+        let input = document.getElementById("input-balance");
+        let output = document.getElementById("output-balance");
+
+        let balanced = Elemental.balance(input.value, {quantifyResult: true});
+        if(typeof balanced === 'string') return output.textContent = balanced;
+        else {
+
+        }
     }
 </script>
