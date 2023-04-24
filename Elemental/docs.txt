@@ -19,6 +19,7 @@ Balance a chemical equation
 Options:
     joinedResult: bool - Join values into string
     stringified: bool - Return the result as a string
+    quantifyResult: bool - Return the amounts of each element
 
 Elemental.protons(element)
 Get the number of protons in an element

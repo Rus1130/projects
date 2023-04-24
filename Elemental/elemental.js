@@ -462,6 +462,8 @@ const Elemental = {
             generatedElements[Object.keys(products)[i]] = Object.values(products)[i]
         }
 
+        if(options.quantifyResult) return {excess: excessElements, generated: generatedElements, used: usedElements, balanced: balancedElements}
+
 
         let balancedElementsResult = []
         let usedElementsResult = []
@@ -500,12 +502,12 @@ const Elemental = {
         }
 
         let result = {
-            "used elements": usedElementsResult,
-            "excess elements": excessElementsResult,
-            "generated elements": generatedElementsResult,
-            "products": productsCompounds,
-            "reactants": reactantsCompounds,
-            "original input": equation
+            used: usedElementsResult,
+            excess: excessElementsResult,
+            generated: generatedElementsResult,
+            products: productsCompounds,
+            reactants: reactantsCompounds,
+            original: equation
         }
 
         if(options.stringified){
