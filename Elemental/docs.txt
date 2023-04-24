@@ -7,17 +7,18 @@ using the index: Elemental.get([0])
 Elemental.get(element)
 Get a single element's data
 
-Elemental.simplify(compound, {options})
+Elemental.simplify(compound, {options}?)
 Simplify a compound
 Options:
     joinedResult: bool - Join result into a single string
     resultOnly: bool - Return only the result
     quantifyResult: bool - Quantify the results
 
-Elemental.balance(equation, {options})
+Elemental.balance(equation, {options}?)
 Balance a chemical equation
 Options:
-    joinedResult: bool - Join result into a single string
+    joinedResult: bool - Join values into string
+    stringified: bool - Return the result as a string
 
 Elemental.protons(element)
 Get the number of protons in an element
@@ -28,7 +29,7 @@ Get the number of neutrons in an element
 Elemental.electrons(element)
 Get the number of electrons in an element
 
-Elemental.color(element, {options})
+Elemental.color(element, {options}?)
 Get the color of an element
 Options:
     logPreview: bool - console log a preview of the color

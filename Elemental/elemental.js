@@ -362,6 +362,7 @@ const Elemental = {
     balance(equation, options){
         options = options || {};
         options.joinedResult = options.joinedResult || false;
+        options.stringified = options.stringified || false;
 
         if(/->/g.test(equation) == false) return "Parse Error: Invalid Equation (Missing '->')"
 
@@ -375,6 +376,8 @@ const Elemental = {
         let products = {}
 
         let errors = []
+
+        if(productsCompounds[0] == "") return "Parse Error: Invalid Equation (Missing Products)"
 
         reactantsCompounds.forEach(function (compound, i) {
             let simplified = Elemental.simplify(compound, {quantifyResult: true, resultOnly: true})
@@ -480,6 +483,12 @@ const Elemental = {
             generatedElementsResult.push(`${generatedElements[Object.keys(generatedElements)[i]]} ${Object.keys(generatedElements)[i]} (${Elemental.get(Object.keys(generatedElements)[i]).name})`)
         }
 
+        if(usedElementsResult.length == 0) usedElementsResult.push("none")
+        if(excessElementsResult.length == 0) excessElementsResult.push("none")
+        if(generatedElementsResult.length == 0) generatedElementsResult.push("none")
+
+        if(options.stringified) options.joinedResult = true
+
         if(options.joinedResult){
             usedElementsResult = usedElementsResult.join(", ")
             excessElementsResult = excessElementsResult.join(", ")
@@ -498,6 +507,14 @@ const Elemental = {
             "original input": equation
         }
 
+        if(options.stringified){
+            let array = [];
+            for(i = 0; i < Object.keys(result).length; i++){
+                array.push(`${Object.keys(result)[i]}: ${Object.values(result)[i]}`)
+            }
+
+            return array.join("\n")
+        }
         return result
     },
 

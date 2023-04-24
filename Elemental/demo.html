@@ -6,11 +6,18 @@
 </head>
 <body>
     http://127.0.0.1:5501/Elemental/demo.html<br>
-    <textarea id="input"></textarea><br>
-    <div id="output"></div>
+    <textarea id="input-simplify"></textarea><br>
+    <div id="output-simplify"></div>
+
+    <textarea id="input-balance"></textarea>
+    <div id="output-balance"></div>
 </body>
 <script defer>
-    document.getElementById("input").oninput = function(){
-        document.getElementById("output").textContent = Elemental.simplify(document.getElementById("input").value, {joinedResult: true, resultOnly: true });
+    document.getElementById("input-simplify").oninput = function(){
+        document.getElementById("output-simplify").textContent = Elemental.simplify(document.getElementById("input-simplify").value, {joinedResult: true, resultOnly: true });
+    }
+
+    document.getElementById("input-balance").oninput = function(){
+        document.getElementById("output-balance").textContent = Elemental.balance(document.getElementById("input-balance").value, {stringified: true })
     }
 </script>
