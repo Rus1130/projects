@@ -245,7 +245,7 @@ const Elemental = {
                     errors.push(`Parse Error: Unexpected subscript '${token.value}'`)
                 } else {
                     if(tokenized[i - 1].type == "el" || tokenized[i - 1].type == "close"){
-                        tokenized[i - 1].sub = token.value * coefficient
+                        tokenized[i - 1].sub = token.value * 1;
                         tokenized.splice(i, 1)
                         i--
                     }
@@ -313,6 +313,14 @@ const Elemental = {
                 if(groupedElements[tokenized[i].value] == undefined) groupedElements[tokenized[i].value] = 0
                 groupedElements[tokenized[i].value] += tokenized[i].sub
             }
+
+            // multiply each value in groupedElements by the coefficient
+            for(i = 0; i < Object.keys(groupedElements).length; i++){
+                let el = Object.keys(groupedElements)[i]
+                let sub = groupedElements[el]
+                groupedElements[el] = sub * coefficient
+            }
+                     
 
             let result = [];
             for(i = 0; i < Object.keys(groupedElements).length; i++){
