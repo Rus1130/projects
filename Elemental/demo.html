@@ -24,7 +24,6 @@
         let balanced = Elemental.balance(input.value, {quantifyResult: true});
         if(typeof balanced === 'string') return output.textContent = balanced;
         else {
-            output.textContent = Elemental.balance(input.value, {stringified: true});
             let mana = 0;
 
             let totalReactantProtons = 0;
@@ -50,7 +49,22 @@
                 totalReactantNeutrons += Elemental.neutrons(reactantElements[i]) * balanced.reactants[reactantElements[i]];
             }
 
-            console.log(totalProductProtons, totalProductElectrons, totalProductNeutrons, totalReactantProtons, totalReactantElectrons, totalReactantNeutrons);
+            totalProductProtons *= 100
+            totalReactantProtons *= 100
+
+            totalProductElectrons *= 10
+            totalReactantElectrons *= 10
+
+            totalProductNeutrons *= 50
+            totalReactantNeutrons *= 50
+
+            let totalProductPrecursor = totalProductProtons + totalProductElectrons + totalProductNeutrons;
+            let totalReactantPrecursor = totalReactantProtons + totalReactantElectrons + totalReactantNeutrons;
+
+            mana = totalReactantPrecursor - totalProductPrecursor;
+            if(mana > 0) mana = mana / 4
+            mana = Math.round(Math.abs(mana))
+            output.textContent = `Mana Used: ${mana}`
         }
     }
 </script>

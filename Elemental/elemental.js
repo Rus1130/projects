@@ -161,7 +161,7 @@ const Elemental = {
                 // split at space
                 let num = compound.split(" ")[0]
                 array = compound.split(" ")[1].split("")
-                if(/[a-zA-Z]/g.test(num)) errors.push(`Parse Error: Invalid Coefficient '${num}'`)
+                if(/[a-zA-Z]/g.test(num) || num == "0") errors.push(`Parse Error: Invalid Coefficient '${num}'`)
 
                 coefficient = num
             }
@@ -246,11 +246,14 @@ const Elemental = {
                 } else {
                     if(tokenized[i - 1].type == "el" || tokenized[i - 1].type == "close"){
                         tokenized[i - 1].sub = token.value * 1;
+                        if(tokenized[i - 1].sub == 0) errors.push(`Parse Error: 0 cannot be a subscript value '${token.value}'`)
                         tokenized.splice(i, 1)
                         i--
                     }
                 }
             }
+
+            
         }
 
         for(i = 0; i < tokenized.length; i++){
@@ -288,6 +291,7 @@ const Elemental = {
                         subscript.forEach(function (i) {
                             sub *= i
                         })
+                        console.log(token.sub)
                         token.sub *= sub
                         if(isNaN(token.sub)) errors.push(`Parenthesis Error`)
                         
