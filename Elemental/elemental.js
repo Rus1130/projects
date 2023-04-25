@@ -379,6 +379,8 @@ const Elemental = {
         let errors = []
 
         if(productsCompounds[0] == "") return "Parse Error: Invalid Equation (Missing Products)"
+        if(reactantsCompounds[reactantsCompounds.length - 1] == "") return "Parse Error: Invalid Equation (Missing Reactant)"
+        if(productsCompounds[productsCompounds.length - 1] == "") return "Parse Error: Invalid Equation (Missing Product)"
 
         reactantsCompounds.forEach(function (compound, i) {
             let simplified = Elemental.simplify(compound, {quantifyResult: true, resultOnly: true})
@@ -414,6 +416,9 @@ const Elemental = {
         let excessElements = {}
         let generatedElements = {}
         let usedElements = {}
+
+        let currentReactants = {...reactants}
+        let currentProducts = {...products}
 
         // get the common elements
         let commonElements = []
@@ -462,7 +467,7 @@ const Elemental = {
             generatedElements[Object.keys(products)[i]] = Object.values(products)[i]
         }
 
-        if(options.quantifyResult) return {excess: excessElements, generated: generatedElements, used: usedElements, balanced: balancedElements}
+        if(options.quantifyResult) return {excess: excessElements, generated: generatedElements, used: usedElements, balanced: balancedElements, reactants: currentReactants, products: currentProducts}
 
 
         let balancedElementsResult = []

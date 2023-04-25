@@ -25,58 +25,32 @@
         if(typeof balanced === 'string') return output.textContent = balanced;
         else {
             output.textContent = Elemental.balance(input.value, {stringified: true});
-            
-            let excessElements = [];
-            let generatedElements = [];
-            let usedElements = [];
-
             let mana = 0;
-            for(i = 0; i < Object.keys(balanced.excess).length;i++){
-                for(j = 0; j < balanced.excess[Object.keys(balanced.excess)[i]];j++){
-                    excessElements.push(Object.keys(balanced.excess)[i]);
-                }
-            }
-            for(i = 0; i < Object.keys(balanced.generated).length;i++){
-                for(j = 0; j < balanced.generated[Object.keys(balanced.generated)[i]];j++){
-                    generatedElements.push(Object.keys(balanced.generated)[i]);
-                }
-            }
-            for(i = 0; i < Object.keys(balanced.used).length;i++){
-                for(j = 0; j < balanced.used[Object.keys(balanced.used)[i]];j++){
-                    usedElements.push(Object.keys(balanced.used)[i]);
-                }
+
+            let totalReactantProtons = 0;
+            let totalReactantElectrons = 0;
+            let totalReactantNeutrons = 0;
+
+            let totalProductProtons = 0;
+            let totalProductElectrons = 0;
+            let totalProductNeutrons = 0;
+
+            let productElements = Object.keys(balanced.products);
+            let reactantElements = Object.keys(balanced.reactants);
+
+            for(i = 0; i < productElements.length; i++){
+                totalProductProtons += Elemental.protons(productElements[i]) * balanced.products[productElements[i]];
+                totalProductElectrons += Elemental.electrons(productElements[i]) * balanced.products[productElements[i]];
+                totalProductNeutrons += Elemental.neutrons(productElements[i]) * balanced.products[productElements[i]];
             }
 
-            for(i = 0; i < excessElements.length; i++){
-                excessElements[i] = Elemental.get(excessElements[i]).atomicMass
+            for(i = 0; i < reactantElements.length; i++){
+                totalReactantProtons += Elemental.protons(reactantElements[i]) * balanced.reactants[reactantElements[i]];
+                totalReactantElectrons += Elemental.electrons(reactantElements[i]) * balanced.reactants[reactantElements[i]];
+                totalReactantNeutrons += Elemental.neutrons(reactantElements[i]) * balanced.reactants[reactantElements[i]];
             }
 
-            for(i = 0; i < generatedElements.length; i++){
-                generatedElements[i] = Elemental.get(generatedElements[i]).atomicMass
-            }
-
-            for(i = 0; i < usedElements.length; i++){
-                usedElements[i] = Elemental.get(usedElements[i]).atomicMass
-            }
-
-            let totalGeneratedAtomicMass = 0;
-            let totalExcessAtomicMass = 0;
-            let totalUsedAtomicMass = 0;
-            for(i = 0; i < generatedElements.length; i++){
-                totalGeneratedAtomicMass += generatedElements[i];
-            }
-            for(i = 0; i < excessElements.length; i++){
-                totalExcessAtomicMass += excessElements[i];
-            }
-            for(i = 0; i < usedElements.length; i++){
-                totalUsedAtomicMass += usedElements[i];
-            }
-
-            mana = Math.abs(totalExcessAtomicMass - totalGeneratedAtomicMass)
-
-            console.log(mana);
-
-            
+            console.log(totalProductProtons, totalProductElectrons, totalProductNeutrons, totalReactantProtons, totalReactantElectrons, totalReactantNeutrons);
         }
     }
 </script>
