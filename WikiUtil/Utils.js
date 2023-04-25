@@ -6,7 +6,7 @@ const Utils = {
     classRemove(name) {
         delete Utils.classes[name];
     },
-    createElement(tag, properties) {
+    create(tag, properties) {
         if(properties == undefined) properties = {};
         let el = document.createElement(tag);
         for(i = 0; i < Object.keys(properties).length; i++) {
@@ -39,7 +39,7 @@ const Utils = {
         return el;
     },
     bundle(elements){
-        let b = Utils.createElement("bundle");
+        let b = Utils.create("bundle");
         for(i = 0; i < elements.length; i++) {
             b.appendChild(elements[i])
         }
@@ -50,4 +50,4 @@ const Utils = {
     }
 }
 
-setTimeout(() => {document.body.appendChild(Utils.createElement("div"));}, 1);
+setTimeout(() => {document.body.appendChild(Utils.create("div"));}, 1);
