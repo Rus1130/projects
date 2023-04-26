@@ -80,10 +80,10 @@
             let totalProductPrecursor = totalProductProtons + totalProductElectrons + totalProductNeutrons;
             let totalReactantPrecursor = totalReactantProtons + totalReactantElectrons + totalReactantNeutrons;
 
-            mana = totalReactantPrecursor - totalProductPrecursor;
-            if(mana > 0) mana = mana / 4
-            mana = Math.round(Math.abs(mana)).toLocaleString()
-            output.textContent = `Mana Used: ${mana}`
+            mana = ((totalReactantPrecursor + totalProductPrecursor) / totalReactantPrecursor) * totalProductPrecursor;
+
+            mana = Math.round(mana)
+            output.textContent = `Mana used: ${mana}`;
         }
     }
 

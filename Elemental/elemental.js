@@ -165,7 +165,6 @@ const Elemental = {
 
                 coefficient = num
             }
-
         }
 
         for(let i = 0; i < array.length; i++){
@@ -246,7 +245,7 @@ const Elemental = {
                 } else {
                     if(tokenized[i - 1].type == "el" || tokenized[i - 1].type == "close"){
                         tokenized[i - 1].sub = token.value * 1;
-                        if(tokenized[i - 1].sub == 0) errors.push(`Parse Error: 0 cannot be a subscript value '${token.value}'`)
+                        if(tokenized[i - 1].sub == 0) errors.push(`Parse Error: 0 cannot be a subscript value`)
                         tokenized.splice(i, 1)
                         i--
                     }
@@ -388,7 +387,7 @@ const Elemental = {
         reactantsCompounds.forEach(function (compound, i) {
             let simplified = Elemental.simplify(compound, {quantifyResult: true, resultOnly: true})
             if(typeof simplified == "string"){
-                errors.push(`Parse Error: ${simplified} (reactant ${compound})`);
+                errors.push(`${simplified} (reactant ${compound})`);
             }
 
             if(errors.length > 0) return;
@@ -402,7 +401,7 @@ const Elemental = {
         productsCompounds.forEach(function (compound, i) {
             let simplified = Elemental.simplify(compound, {quantifyResult: true, resultOnly: true})
             if(typeof simplified == "string"){
-                errors.push(`Parse Error: ${simplified} (product ${compound})`);
+                errors.push(`${simplified} (product ${compound})`);
             }
 
             if(errors.length > 0) return;
