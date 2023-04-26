@@ -1,6 +1,7 @@
 <style>
     body {
         margin: 0;
+        overflow: hidden;
     }
     div {
         width: 20px;
@@ -8,6 +9,11 @@
         border-radius: 50%;
         background-color: orange;
         position: absolute;
+    }
+    :root {
+        --g1: rgba(131,58,180,1);
+        --g2: rgba(253,29,29,1);
+        --g3: rgba(255,184,85,1);
     }
 </style>
 <head>
@@ -25,10 +31,13 @@
         
             x = e.clientX - 10;
             y = e.clientY - 10;
-
+            let background = 'linear-gradient(45deg, var(--g1), var(--g2), var(--g3))'
             let div = document.createElement("div");
             div.style.left = x + "px";
             div.style.top = y + "px";
+            div.style.background = background;
+            div.style.backgroundSize = `${window.innerWidth}px ${window.innerHeight}px`;
+            div.style.backgroundPosition = `${x}px ${y}px`;
 
             // if the body has 10 or more children, remove the first child
 
