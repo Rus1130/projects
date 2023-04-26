@@ -291,7 +291,6 @@ const Elemental = {
                         subscript.forEach(function (i) {
                             sub *= i
                         })
-                        console.log(token.sub)
                         token.sub *= sub
                         if(isNaN(token.sub)) errors.push(`Parenthesis Error`)
                         

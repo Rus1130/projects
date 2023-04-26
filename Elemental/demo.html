@@ -14,14 +14,32 @@
     <div id="output-balance"></div>
 </body>
 <script defer>
-    document.getElementById("input-simplify").oninput = function(){
-        document.getElementById("output-simplify").textContent = Elemental.simplify(document.getElementById("input-simplify").value, {joinedResult: true, resultOnly: true });
+    Utils.addMixin("shared", {
+        "min-height": "50px",
+        width: "50%",
+        fontSize: "18px",
+    })
+    let input = Utils.create("textarea", {
+        include: "shared",
+        resize: "none",
+        placeholder: "Input goes here... (ex. C6H12O6 + O2 -> CO2 + H2O)",
+    })
+    let output = Utils.create("div", {
+        include: "shared",
+        textContent: "Output",
+        'margin-top': '5px',
+        border: "1px solid black",
+        display: 'flex',
+        'align-items': 'center',
+        'justify-content': 'center',
+    })
+
+
+    input.oninput = function(){
+        output.textContent = Elemental.simplify(input.value, {joinedResult: true, resultOnly: true });
     }
 
-    document.getElementById("input-balance").oninput = function(){
-        let input = document.getElementById("input-balance");
-        let output = document.getElementById("output-balance");
-
+    input.oninput = function(){
         let balanced = Elemental.balance(input.value, {quantifyResult: true});
         if(typeof balanced === 'string') return output.textContent = balanced;
         else {
@@ -64,8 +82,10 @@
 
             mana = totalReactantPrecursor - totalProductPrecursor;
             if(mana > 0) mana = mana / 4
-            mana = Math.round(Math.abs(mana))
+            mana = Math.round(Math.abs(mana)).toLocaleString()
             output.textContent = `Mana Used: ${mana}`
         }
     }
+
+    document.body.appendChild(Utils.bundle([input, output]))
 </script>

@@ -1,10 +1,10 @@
 const Utils = {
-    classes: {},
-    classAdd(name, properties) {
-        Utils.classes[name] = properties;
+    mixins: {},
+    addMixin(name, properties) {
+        Utils.mixins[name] = properties;
     }, 
-    classRemove(name) {
-        delete Utils.classes[name];
+    removeMixin(name) {
+        delete Utils.mixins[name];
     },
     create(tag, properties) {
         if(properties == undefined) properties = {};
@@ -18,19 +18,15 @@ const Utils = {
                 el[key] = value;
             }
 
-            if(key == "class"){
-                for(j = 0; j < value.split(" ").length; j++) {
-                    let className = value.split(" ")[j];
-                    if(Utils.classes[className] != undefined){
-                        for(k = 0; k < Object.keys(Utils.classes[className]).length; k++) {
-                            let key = Object.keys(Utils.classes[className])[k]
-                            let value =  Object.values(Utils.classes[className])[k]
-                            if(el[key] == undefined){
-                                el.style[key] = value;
-                            } else {
-                                el[key] = value;
-                            }
-                        }
+            if(key == "include"){
+                let mixin = Utils.mixins[value];
+                for(j = 0; j < Object.keys(mixin).length; j++) {
+                    let mixinKey = Object.keys(mixin)[j]
+                    let mixinValue =  Object.values(mixin)[j]
+                    if(el[mixinKey] == undefined){
+                        el.style[mixinKey] = mixinValue;
+                    } else {
+                        el[mixinKey] = mixinValue;
                     }
                 }
             }

@@ -1,11 +1,11 @@
-Utils.classAdd(name, {properties})
-create a class
-    name: the name of the class
-    properties: the properties of the class
+Utils.addMixin(name, {properties})
+create a mixin
+    name: the name of the mixin
+    properties: the properties of the mixin
 
-Utils.classRemove(name)
-remove a class
-    name: the name of the class
+Utils.removeMixin(name)
+remove a mixin
+    name: the name of the mixin
 
 Utils.create(tag, {properties}?)
 create an HTML element
