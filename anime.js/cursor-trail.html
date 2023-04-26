@@ -25,7 +25,6 @@
     let x = 0;
     let y = 0;
 
-
     document.onmousemove = function(e){
         setTimeout(function(){
             let cursor = document.createElement('div');
@@ -36,12 +35,11 @@
             cursor.style.backgroundPosition = `${x + 60}px ${y + 60}px`;
             cursor.style.transform = `translateX(${x}px) translateY(${y}px)`;
 
-            if(document.body.children.length > 100){
+            if(document.body.children.length > 200){
                 document.body.removeChild(document.body.children[0]);
             }
             document.body.appendChild(cursor);
         }, 50)
     }
-
 
 </script>
