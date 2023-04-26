@@ -1,0 +1,43 @@
+<style>
+    body {
+        margin: 0;
+    }
+    div {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: orange;
+        position: absolute;
+    }
+</style>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+</head>
+<body>
+</body>
+<script>
+    let x = 0;
+    let y = 0;
+
+    document.onmousemove = function(e){
+        setTimeout(function(){
+
+        
+            x = e.clientX - 10;
+            y = e.clientY - 10;
+
+            let div = document.createElement("div");
+            div.style.left = x + "px";
+            div.style.top = y + "px";
+
+            // if the body has 10 or more children, remove the first child
+
+            if(document.body.children.length >= 100){
+                document.body.removeChild(document.body.children[0]);
+            }
+            document.body.appendChild(div);
+        }, 50)
+    }
+
+
+</script>
