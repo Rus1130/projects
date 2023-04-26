@@ -1,0 +1,31 @@
+<style>
+
+</style>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="two.js"></script>
+</head>
+<body>
+</body>
+<script>
+    let two = new Two({
+        fullscreen: true,
+        autostart: true
+    }).appendTo(document.body);
+
+    let x = 0;
+    let y = 0;
+
+    document.body.onmousemove = function(e){
+        x = e.clientX;
+        y = e.clientY;
+
+        let randX = Math.floor(Math.random() * (x + 50 - (x - 50) + 1)) + (x - 50);
+        let randY = Math.floor(Math.random() * (y + 50 - (y - 50) + 1)) + (y - 50);
+        let randRotation = Math.floor(Math.random() * (360 - 0 + 1)) + 0;
+        let triangle = two.makePolygon(randX, randY, 3, 4);
+
+        triangle.rotation = randRotation;
+    }
+
+</script>
