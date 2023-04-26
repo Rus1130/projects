@@ -68,22 +68,27 @@
                 totalReactantNeutrons += Elemental.neutrons(reactantElements[i]) * balanced.reactants[reactantElements[i]];
             }
 
-            totalProductProtons *= 100
-            totalReactantProtons *= 100
+            totalProductProtons *= 5
+            totalReactantProtons *= 5
 
-            totalProductElectrons *= 10
-            totalReactantElectrons *= 10
+            totalProductElectrons *= 3
+            totalReactantElectrons *= 3
 
-            totalProductNeutrons *= 50
-            totalReactantNeutrons *= 50
+            totalProductNeutrons *= 2
+            totalReactantNeutrons *= 2
 
             let totalProductPrecursor = totalProductProtons + totalProductElectrons + totalProductNeutrons;
             let totalReactantPrecursor = totalReactantProtons + totalReactantElectrons + totalReactantNeutrons;
 
-            mana = ((totalReactantPrecursor + totalProductPrecursor) / totalReactantPrecursor) * totalProductPrecursor;
+            mana = (totalProductProtons / totalReactantProtons) + (totalProductElectrons + totalReactantElectrons) + (totalProductNeutrons ** 2 + totalReactantNeutrons);
+
+            // if everything is balanced, mana should be 1
+            
+            let balancedProductElements = Object.keys(balanced.products);
+            let balancedReactantElements = Object.keys(balanced.reactants);
 
             mana = Math.round(mana)
-            output.textContent = `Mana used: ${mana}`;
+            output.textContent = `Mana used: ${mana.toLocaleString()}`;
         }
     }
 
