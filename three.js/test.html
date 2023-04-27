@@ -2,14 +2,6 @@
     body {
         margin: 0;
     }
-    #info {
-        position: absolute;
-        top: 10px;
-        width: 100%;
-        text-align: left;
-        z-index: 100;
-        display:block;
-    }
 </style>
 <head>
     <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
@@ -23,23 +15,27 @@
       }
     </script>
 </head>
-<body>
-    <div id="info">Axis: X</div>
-</body>
 <script type="module" defer>
     import * as THREE from 'three';
+    import { FirstPersonControls } from 'three/addons/controls/FirstPersonControls.js';
+
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+    const player = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
     const renderer = new THREE.WebGLRenderer({ alpha: true });
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
-    camera.position.z = 5;
+    player.position.z = 5;
 
-    function createCube(coords){
-        const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-        const material = new THREE.MeshBasicMaterial( { color: 0x000000 } );
+    // const fpc = new FirstPersonControls(player, renderer.domElement);
+    // fpc.activeLook = false;
+
+    function createCube(dimensions, coords, color){
+        const geometry = new THREE.BoxGeometry( ...dimensions );
+        // make the edges of the cube a different color from the faces
+        const material = new THREE.MeshBasicMaterial( { color: color })
+        
         const cube = new THREE.Mesh( geometry, material );
         
         scene.add( cube );
@@ -56,23 +52,39 @@
         return cube;
     }
 
-    let cube = createCube({z:0});
+    let keys = {};
 
-    let mouseX = 0;
-    let mouseY = 0;
-
-    document.onmousemove = function(e){
-        if(!mouseDown) return;
-        mouseX = e.clientX;
-        mouseY = e.clientY;
+    document.onkeydown = e => {
+        keys[e.key] = true;
     }
+
+    document.onkeyup = e => {
+        keys[e.key] = false;
+    }
+
+    createCube([1,1,1], {x: 2, z: -4}, 0x000000);
+    createCube([1,1,1], {x: -2}, 0x00ff00);
+    createCube([100,0,100], {y: -1}, 0x0000ff);
+
 
     function animate() {
         requestAnimationFrame( animate );
-        // if the mouse is moved while being held down
-            cube.rotation.x = mouseX/180;
 
-        renderer.render( scene, camera );
+        if(keys['w']){
+            player.position.z -= 0.1;
+        }
+        if(keys['s']){
+            player.position.z += 0.1;
+        }
+        if(keys['a']){
+            player.position.x -= 0.1;
+        }
+        if(keys['d']){
+            player.position.x += 0.1;
+        }
+
+        //fpc.update();
+        renderer.render( scene, player );
     }
     animate();
 </script>
