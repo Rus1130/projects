@@ -1,0 +1,78 @@
+<style>
+    body {
+        margin: 0;
+    }
+    #info {
+        position: absolute;
+        top: 10px;
+        width: 100%;
+        text-align: left;
+        z-index: 100;
+        display:block;
+    }
+</style>
+<head>
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.152.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.152.0/examples/jsm/"
+        }
+      }
+    </script>
+</head>
+<body>
+    <div id="info">Axis: X</div>
+</body>
+<script type="module" defer>
+    import * as THREE from 'three';
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+    const renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    document.body.appendChild( renderer.domElement );
+    camera.position.z = 5;
+
+    function createCube(coords){
+        const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+        const material = new THREE.MeshBasicMaterial( { color: 0x000000 } );
+        const cube = new THREE.Mesh( geometry, material );
+        
+        scene.add( cube );
+
+        coords = coords || {};
+        coords.x = coords.x || 0;
+        coords.y = coords.y || 0;
+        coords.z = coords.z || 0;
+
+        cube.position.x = coords.x;
+        cube.position.y = coords.y;
+        cube.position.z = coords.z;
+
+        return cube;
+    }
+
+    let cube = createCube({z:0});
+
+    let mouseX = 0;
+    let mouseY = 0;
+
+    document.onmousemove = function(e){
+        if(!mouseDown) return;
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    }
+
+    function animate() {
+        requestAnimationFrame( animate );
+        // if the mouse is moved while being held down
+            cube.rotation.x = mouseX/180;
+
+        renderer.render( scene, camera );
+    }
+    animate();
+</script>
