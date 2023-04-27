@@ -11,12 +11,18 @@
         outline: none;
         font-family: monospace;
     }
+
+    div {
+        display: inline-block;
+    }
 </style>
 <head>
 
 </head>
 <body>
-
+    <textarea></textarea><br>
+    Encrypted: <div id="encrypted"></div><br>
+    Key: <div id="key"></div><br>
 </body>
 <script>
     const base60 = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y']
@@ -44,6 +50,16 @@
     */ 
     const messageModifierAmount = 600;
     const keyModifierAmount = 950;
+
+    const input = document.querySelector('textarea')
+    const output = document.getElementById('encrypted')
+    const keyOutput = document.getElementById('key')
+
+    input.oninput = () => {
+        let encrypted = encrypt(input.value);
+        output.textContent = encrypted["Encrypted Message"]
+        keyOutput.textContent = encrypted["Key"]
+    }
 
     function encrypt(string){
         let decimalValues = string.split('').map(char => char.charCodeAt(0))
