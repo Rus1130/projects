@@ -4,8 +4,10 @@
         user-select: none;
     }
     textarea {
+        width: 500px;
         resize: none;
         font-family: monospace;
+        height: 80px;
     }
     textarea:focus {
         outline: none;
@@ -15,14 +17,31 @@
     div {
         display: inline-block;
     }
+
+    span {
+        display: flex;
+    }
+
+    input {
+        transform: translateY(-1.5px);
+    }
 </style>
 <head>
 
 </head>
 <body>
     <textarea></textarea><br>
+    Original Message: <div id="original"></div><br>
     Encrypted: <div id="encrypted"></div><br>
     Key: <div id="key"></div><br>
+    <br>
+    <span>Encrypted Error Chance: <input type="range" min="0" max="100" value="50" id="encryptedErrorChanceSlider"><span id="encryptedErrorChance">50%</span></span>
+    <span>Key Error Chance: <input type="range" min="0" max="100" value="50" id="keyErrorChanceSlider"><span id="keyErrorChance">50%</span></span>
+
+    <br><button id="resend">Resend message</button><br><br>
+    Recieved Encrypted: <div id="recievedEncrypted"></div><br>
+    Recieved Key: <div id="recievedKey"></div><br>
+    Decrypted: <div id="recievedDecrypted"></div>
 </body>
 <script>
     const base60 = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y']
@@ -54,11 +73,68 @@
     const input = document.querySelector('textarea')
     const output = document.getElementById('encrypted')
     const keyOutput = document.getElementById('key')
+    const originalOutput = document.getElementById('original')
+
+    const messageErrorChanceSlider = document.getElementById('messageErrorChanceSlider')
+    const encryptedErrorChanceSlider = document.getElementById('encryptedErrorChanceSlider')
+    const keyErrorChanceSlider = document.getElementById('keyErrorChanceSlider')
+
+    const resendButton = document.getElementById('resend')
+
+    const recievedEncryptedOutput = document.getElementById('recievedEncrypted')
+    const recievedKeyOutput = document.getElementById('recievedKey')
+    const recievedDecryptedOutput = document.getElementById('recievedDecrypted')
+
+    let encryptedErrorChance = 50;
+    let keyErrorChance = 50;
+
+    encryptedErrorChanceSlider.oninput = () => {
+        encryptedErrorChance = encryptedErrorChanceSlider.value
+        document.getElementById('encryptedErrorChance').textContent = `${encryptedErrorChance}%`
+    }
+
+    keyErrorChanceSlider.oninput = () => {
+        keyErrorChance = keyErrorChanceSlider.value
+        document.getElementById('keyErrorChance').textContent = `${keyErrorChance}%`
+    }
+
+    resendButton.onclick = e => {
+        let originalMessage = input.value
+        let encryptedMessage = output.textContent
+        let encryptedKey = keyOutput.textContent
+
+        for(i = 0; i < encryptedMessage.length; i++){
+            if(random(0, 100) < encryptedErrorChance){
+                let randomIndex = random(0, encryptedMessage.length - 1)
+                let randomChar = String.fromCharCode(random(encryptedMessage[randomIndex].charCodeAt(0) - 20, encryptedMessage[randomIndex].charCodeAt(0) + 20))
+                encryptedMessage = encryptedMessage.slice(0, randomIndex) + randomChar + encryptedMessage.slice(randomIndex + 1)
+            }
+        }
+
+        for(i = 0; i < encryptedKey.length; i++){
+            if(random(0, 100) < keyErrorChance){
+                let randomIndex = random(0, encryptedKey.length - 1)
+                let randomChar = String.fromCharCode(random(encryptedKey[randomIndex].charCodeAt(0) - 20, encryptedKey[randomIndex].charCodeAt(0) + 20))
+                encryptedKey = encryptedKey.slice(0, randomIndex) + randomChar + encryptedKey.slice(randomIndex + 1)
+            }
+        }
+
+        recievedEncryptedOutput.textContent = encryptedMessage
+        recievedKeyOutput.textContent = encryptedKey
+        recievedDecryptedOutput.textContent = decrypt(encryptedMessage, encryptedKey)
+        
+    }
 
     input.oninput = () => {
-        let encrypted = encrypt(input.value);
-        output.textContent = encrypted["Encrypted Message"]
-        keyOutput.textContent = encrypted["Key"]
+        let value = input.value
+        let encrypted = encrypt(value);
+
+        let encryptedMessage = encrypted["Encrypted Message"]
+        let key = encrypted["Key"]
+
+        output.textContent = encryptedMessage
+        keyOutput.textContent = key
+        originalOutput.textContent = value
     }
 
     function encrypt(string){
@@ -115,19 +191,11 @@
                 reorderingArray.push(keysArray[i])
                 reorderingArray.push(encryptedMessageArray[i])
                 reorderingArray.push(keyModifierOverflowCount[i])
-                
-                
-                
             }
         }
-        
 
+        console.log(reorderingArray)
 
-        // get the index of the longest array in reorderingArray
-
-
-
-        // split reorderingArray into 2 arrays
         let finalEncryptedMessage = reorderingArray.slice(0, reorderingArray.length / 2).map(x => String.fromCharCode(x + messageModifierAmount)).join("")
         let finalKey = reorderingArray.slice(reorderingArray.length / 2).map(x => String.fromCharCode(x + keyModifierAmount)).join("")
 
