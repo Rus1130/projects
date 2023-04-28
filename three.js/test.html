@@ -19,38 +19,33 @@
     import * as THREE from 'three';
     import { FirstPersonControls } from 'three/addons/controls/FirstPersonControls.js';
 
-
-    const scene = new THREE.Scene();
-    const player = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-
-    const renderer = new THREE.WebGLRenderer({ alpha: true });
+    const scene = new THREE.Scene(); 
+    scene.background = new THREE.Color( 0xffffff );   
+    const camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 1000 );
+    const renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
-    player.position.z = 5;
 
-    // const fpc = new FirstPersonControls(player, renderer.domElement);
-    // fpc.activeLook = false;
+    camera.position.z = 5;
+    camera.position.y = 2;
 
-    function createCube(dimensions, coords, color){
-        const geometry = new THREE.BoxGeometry( ...dimensions );
-        // make the edges of the cube a different color from the faces
-        const material = new THREE.MeshBasicMaterial( { color: color })
-        
-        const cube = new THREE.Mesh( geometry, material );
-        
-        scene.add( cube );
+    // var direction = new THREE.Vector3();
 
-        coords = coords || {};
-        coords.x = coords.x || 0;
-        coords.y = coords.y || 0;
-        coords.z = coords.z || 0;
+    // camera.getWorldDirection(direction);
+    // camera.position.add(direction);
 
-        cube.position.x = coords.x;
-        cube.position.y = coords.y;
-        cube.position.z = coords.z;
+    // distance = 10;
+    // camera.position.add(direction.multiplyScalar(distance));
 
-        return cube;
-    }
+    let floor = new THREE.Mesh(
+        new THREE.PlaneGeometry( 1000, 1000 ),
+        new THREE.MeshBasicMaterial({color: 0xff0000, side: THREE.DoubleSide})
+    );
+
+    floor.rotation.x = -Math.PI / 2;
+
+    scene.add(floor);
+
 
     let keys = {};
 
@@ -62,29 +57,36 @@
         keys[e.key] = false;
     }
 
-    createCube([1,1,1], {x: 2, z: -4}, 0x000000);
-    createCube([1,1,1], {x: -2}, 0x00ff00);
-    createCube([100,0,100], {y: -1}, 0x0000ff);
+    let cube = new THREE.Mesh(
+        new THREE.BoxGeometry( 1, 1, 1 ),
+        new THREE.MeshBasicMaterial({color: 0x00ff00})
+    );
+
+    cube.position.z = -5;
+    cube.position.x = 1;
+    cube.position.y = 2;
+
+    scene.add(cube);
+
 
 
     function animate() {
         requestAnimationFrame( animate );
 
         if(keys['w']){
-            player.position.z -= 0.1;
+            camera.translateZ(-0.1);
         }
         if(keys['s']){
-            player.position.z += 0.1;
+            camera.translateZ(0.1);
         }
         if(keys['a']){
-            player.position.x -= 0.1;
+            camera.rotation.y += 0.025;
         }
         if(keys['d']){
-            player.position.x += 0.1;
+            camera.rotation.y -= 0.025;
         }
 
-        //fpc.update();
-        renderer.render( scene, player );
+        renderer.render( scene, camera );
     }
     animate();
 </script>
