@@ -196,6 +196,8 @@ const Elemental = {
 
             if(token.value == ")") pairing--
 
+            token.sub = 1;
+
             tokenized.push(token)
         }
 
@@ -215,8 +217,7 @@ const Elemental = {
         for(i = 0; i < tokenized.length; i++){
             let token = tokenized[i]
             if(token.type == "el"){
-                token.sub = 1
-                if(this.get(token.value) == "Not Found"){
+                if(Elemental.get(token.value) == "Not Found"){
                     errors.push(`Parse Error: Unknown element '${token.value}'`)
                 }
             }
@@ -286,16 +287,17 @@ const Elemental = {
                 if(token.type == "el"){
                     if(token.pairing >= pairings[i]){
                         let sub = 1;
-                        
                         subscript.forEach(function (i) {
                             sub *= i
                         })
+
                         token.sub *= sub
-                        if(isNaN(token.sub)) errors.push(`Parenthesis Error`)
                         
                         token.pairing--;
                     }
                 }
+
+                
             }
         }
 
@@ -363,8 +365,8 @@ const Elemental = {
 
     balance(equation, options){
         options = options || {};
-        options.joinedResult = options.joinedResult || false;
-        options.stringified = options.stringified || false;
+        options.joinedValues = options.joinedValues || false; // joined result
+        options.joinedResult = options.joinedResult || false; // stringified
         options.quantifyResult = options.quantifyResult || false;
 
         if(/->/g.test(equation) == false) return "Parse Error: Invalid Equation (Missing '->')"
@@ -497,9 +499,9 @@ const Elemental = {
         if(excessElementsResult.length == 0) excessElementsResult.push("none")
         if(generatedElementsResult.length == 0) generatedElementsResult.push("none")
 
-        if(options.stringified) options.joinedResult = true
+        if(options.joinedResult) options.joinedResult = true
 
-        if(options.joinedResult){
+        if(options.joinedValues){
             usedElementsResult = usedElementsResult.join(", ")
             excessElementsResult = excessElementsResult.join(", ")
             generatedElementsResult = generatedElementsResult.join(", ")
@@ -517,7 +519,7 @@ const Elemental = {
             original: equation
         }
 
-        if(options.stringified){
+        if(options.joinedResult){
             let array = [];
             for(i = 0; i < Object.keys(result).length; i++){
                 array.push(`${Object.keys(result)[i]}: ${Object.values(result)[i]}`)

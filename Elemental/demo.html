@@ -1,11 +1,18 @@
 <style>
-
+    .js-template {
+        width: 100vw;
+    }
+    .js-template::after {
+        content: " (JS)";
+        border: 1px solid black;
+    }
 </style>
 <head>
     <script src="elemental.js"></script>
     <script src="../WikiUtil/Utils.js"></script>
 </head>
 <body>
+    <h1 class="js-template"></h1>
     http://127.0.0.1:5501/Elemental/demo.html<br>
     <textarea id="input-simplify"></textarea><br>
     <div id="output-simplify"></div>
@@ -13,6 +20,22 @@
     <textarea id="input-balance"></textarea>
     <div id="output-balance"></div>
 </body>
+<script defer>
+    let inputSimplify = document.getElementById("input-simplify");
+    let outputSimplify = document.getElementById("output-simplify");
+
+    inputSimplify.oninput = function(){
+        outputSimplify.textContent = Elemental.simplify(inputSimplify.value, {joinedResult: true, resultOnly: true });
+    }
+
+    let inputBalance = document.getElementById("input-balance");
+    let outputBalance = document.getElementById("output-balance");
+
+    inputBalance.oninput = function(){
+        console.log(Elemental.balance(inputBalance.value, {joinedResult: true, resultOnly: true}))
+        outputBalance.textContent = Elemental.balance(inputBalance.value, {joinedResult: true, resultOnly: true});
+    }
+</script>
 <script defer>
     Utils.addMixin("shared", {
         "min-height": "50px",

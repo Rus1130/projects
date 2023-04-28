@@ -19,3 +19,8 @@ appends elemente to a single element
 Utils.get(id)
 alias for document.getElementById(id)
     id: the id of the element
+
+Utils.Main(template, fn)
+handles error display
+    template: the template element
+    fn: your JS code

@@ -43,7 +43,7 @@ const Utils = {
     },
     get(id){
     	return document.getElementById(id)
-    }
+    },
 }
 
 setTimeout(() => {document.body.appendChild(Utils.create("div"));}, 1);
