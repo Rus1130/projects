@@ -60,56 +60,21 @@
         else {
             let mana = 0;
 
-            let totalReactantProtons = 0;
-            let totalReactantElectrons = 0;
-            let totalReactantNeutrons = 0;
+            let excess = Object.keys(balanced.excess);
+            let generated = Object.keys(balanced.generated);
 
-            let totalProductProtons = 0;
-            let totalProductElectrons = 0;
-            let totalProductNeutrons = 0;
+            let excessAtomicMass = 0;
+            let generatedAtomicMass = 0;
 
-            let productElements = Object.keys(balanced.products);
-            let reactantElements = Object.keys(balanced.reactants);
-
-            for(i = 0; i < productElements.length; i++){
-                totalProductProtons += Elemental.protons(productElements[i]) * balanced.products[productElements[i]];
-                totalProductElectrons += Elemental.electrons(productElements[i]) * balanced.products[productElements[i]];
-                totalProductNeutrons += Elemental.neutrons(productElements[i]) * balanced.products[productElements[i]];
+            for(i = 0; i < excess.length; i++){
+                excessAtomicMass += Elemental.get(excess[i]).atomicMass * balanced.excess[excess[i]];
             }
 
-            for(i = 0; i < reactantElements.length; i++){
-                totalReactantProtons += Elemental.protons(reactantElements[i]) * balanced.reactants[reactantElements[i]];
-                totalReactantElectrons += Elemental.electrons(reactantElements[i]) * balanced.reactants[reactantElements[i]];
-                totalReactantNeutrons += Elemental.neutrons(reactantElements[i]) * balanced.reactants[reactantElements[i]];
+            for(i = 0; i < generated.length; i++){
+                generatedAtomicMass += Elemental.get(generated[i]).atomicMass * balanced.generated[generated[i]];
             }
 
-            totalProductProtons *= 20
-            totalReactantProtons *= 20
-
-            totalProductElectrons *= 20
-            totalReactantElectrons *= 20
-
-            totalProductNeutrons *= 20
-            totalReactantNeutrons *= 20
-
-            let protonDiff = totalProductProtons > totalReactantProtons ? totalProductProtons - totalReactantProtons : totalReactantProtons - totalProductProtons;
-            protonDiff *= 20;
-
-            let electronDiff = totalProductElectrons > totalReactantElectrons ? totalProductElectrons - totalReactantElectrons : totalReactantElectrons - totalProductElectrons;
-            electronDiff *= 20;
-
-            let neutronDiff = totalProductNeutrons > totalReactantNeutrons ? totalProductNeutrons - totalReactantNeutrons : totalReactantNeutrons - totalProductNeutrons;
-            neutronDiff *= 20;
-
-            protonDiff = protonDiff / 8;
-
-            console.log(protonDiff, electronDiff, neutronDiff)
-
-            mana = protonDiff + electronDiff + neutronDiff;
-
-            if(mana < 0) mana = Math.abs(mana) / 2;
-
-            mana = Math.round(mana)
+            mana = Math.abs(Math.round(excessAtomicMass - generatedAtomicMass));
             output.textContent = `Mana used: ${mana.toLocaleString()}`;
         }
     }
