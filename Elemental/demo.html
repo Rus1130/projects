@@ -31,7 +31,7 @@
 <script defer>
     Utils.addMixin("shared", {
         "min-height": "50px",
-        width: "50%",
+        width: "80%",
         fontSize: "18px",
     })
     let input = Utils.create("textarea", {
@@ -66,6 +66,9 @@
             let excessAtomicMass = 0;
             let generatedAtomicMass = 0;
 
+            let excessNeutrons = 0;
+            let generatedNeutrons = 0;
+
             for(i = 0; i < excess.length; i++){
                 excessAtomicMass += Elemental.get(excess[i]).atomicMass * balanced.excess[excess[i]];
             }
@@ -74,10 +77,21 @@
                 generatedAtomicMass += Elemental.get(generated[i]).atomicMass * balanced.generated[generated[i]];
             }
 
-            mana = Math.abs(Math.round(excessAtomicMass - generatedAtomicMass));
+            for(i = 0; i < excess.length; i++){
+                excessNeutrons += Elemental.neutrons(excess[i]) * balanced.excess[excess[i]];
+            }
+
+            for(i = 0; i < generated.length; i++){
+                generatedNeutrons += Elemental.neutrons(generated[i]) * balanced.generated[generated[i]];
+            }
+
+            console.log()
+            console.log(excessNeutrons, generatedNeutrons)
+            mana = Math.abs(Math.round(excessAtomicMass - generatedAtomicMass)) * Object.keys(balanced.reactants).length
             output.textContent = `Mana used: ${mana.toLocaleString()}`;
         }
     }
 
+    // (H2O)1000 + (C)1000 + (Au)1000 -> (SiO2Al2O3MgO)1000
     document.body.appendChild(Utils.bundle([input, output]))
 </script>
