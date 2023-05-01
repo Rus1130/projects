@@ -83,18 +83,31 @@
                 totalReactantNeutrons += Elemental.neutrons(reactantElements[i]) * balanced.reactants[reactantElements[i]];
             }
 
-            totalProductProtons *= 10
-            totalReactantProtons *= 10
+            totalProductProtons *= 20
+            totalReactantProtons *= 20
 
-            totalProductElectrons *= 3
-            totalReactantElectrons *= 3
+            totalProductElectrons *= 20
+            totalReactantElectrons *= 20
 
-            totalProductNeutrons *= 2
-            totalReactantNeutrons *= 2
-            
-            mana = (totalProductProtons - totalReactantProtons) + (totalProductElectrons - totalReactantElectrons) + (totalProductNeutrons - totalReactantNeutrons);
+            totalProductNeutrons *= 20
+            totalReactantNeutrons *= 20
 
-            if(mana < 0) mana = Math.abs(mana) / 10;
+            let protonDiff = totalProductProtons > totalReactantProtons ? totalProductProtons - totalReactantProtons : totalReactantProtons - totalProductProtons;
+            protonDiff *= 20;
+
+            let electronDiff = totalProductElectrons > totalReactantElectrons ? totalProductElectrons - totalReactantElectrons : totalReactantElectrons - totalProductElectrons;
+            electronDiff *= 20;
+
+            let neutronDiff = totalProductNeutrons > totalReactantNeutrons ? totalProductNeutrons - totalReactantNeutrons : totalReactantNeutrons - totalProductNeutrons;
+            neutronDiff *= 20;
+
+            protonDiff = protonDiff / 8;
+
+            console.log(protonDiff, electronDiff, neutronDiff)
+
+            mana = protonDiff + electronDiff + neutronDiff;
+
+            if(mana < 0) mana = Math.abs(mana) / 2;
 
             mana = Math.round(mana)
             output.textContent = `Mana used: ${mana.toLocaleString()}`;
