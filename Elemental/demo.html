@@ -85,13 +85,27 @@
                 generatedNeutrons += Elemental.neutrons(generated[i]) * balanced.generated[generated[i]];
             }
 
-            console.log()
-            console.log(excessNeutrons, generatedNeutrons)
             mana = Math.abs(Math.round(excessAtomicMass - generatedAtomicMass)) * Object.keys(balanced.reactants).length
+
+            if(mana < Math.round(generatedAtomicMass)) mana = Math.round(generatedAtomicMass);
             output.textContent = `Mana used: ${mana.toLocaleString()}`;
         }
     }
 
-    // (H2O)1000 + (C)1000 + (Au)1000 -> (SiO2Al2O3MgO)1000
+    // 5100 H2O -> 1000 SiO4
     document.body.appendChild(Utils.bundle([input, output]))
 </script>
+
+
+<!--
+    Normal clear glass: 5100 H2O -> 1000 SiO4 (28,086 mana)
+    strengthened glass: 5100 H2O -> (SiO4Al2O3MgO)1000
+
+
+
+
+
+
+
+    
+-->
