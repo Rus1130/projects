@@ -5,49 +5,40 @@
 </style>
 <head>
     <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
-
     <script type="importmap">
-      {
-        "imports": {
-          "three": "https://unpkg.com/three@0.152.0/build/three.module.js",
-          "three/addons/": "https://unpkg.com/three@0.152.0/examples/jsm/"
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.152.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.152.0/examples/jsm/"
+            }
         }
-      }
     </script>
 </head>
 <script type="module" defer>
-    import * as THREE from 'three';
+    import * as THREE from "three";
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-    scene.background = new THREE.Color( 0xffffff );
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    scene.background = new THREE.Color(0xffffff);
 
     const renderer = new THREE.WebGLRenderer();
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    document.body.appendChild( renderer.domElement );
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
 
-    camera.position.z = 5;
+    camera.position.z = 10;
 
-    function createCube(vertices, coordinates){
-        vertices = vertices || [1, 1, 1];
-        coordinates = coordinates || [0, 0, 0];
-        let geo = new THREE.BoxGeometry(...vertices);
-        let mat = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-        let cube = new THREE.Mesh( geo, mat );
-        cube.position.x = coordinates[0];
-        cube.position.y = coordinates[1];
-        cube.position.z = coordinates[2];
-        scene.add( cube );
-    }
+    let ring = new THREE.Mesh(
+        new THREE.TorusGeometry( 3, 1, 16, 100 ),
+        new THREE.MeshBasicMaterial( { color: 0x00ffff } )
+    );
 
-    createCube([1,1,1], [0,0,0]);
-
+    scene.add(ring);
 
     function animate() {
-        requestAnimationFrame( animate );
-
-        renderer.render( scene, camera );
+        requestAnimationFrame(animate);
+        ring.rotation.x += 0.01;
+        renderer.render(scene, camera);
     }
 
-    animate()
+    animate();
 </script>
