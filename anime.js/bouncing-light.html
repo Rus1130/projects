@@ -3,6 +3,9 @@ container {
     border: 1px solid black;
     height: 500px;
     width: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 body {
@@ -10,42 +13,179 @@ body {
     justify-content: center;
     align-items: center;
 }
+
+center {
+    width: 20px;
+    height: 20px;
+    background-color: black;
+    border-radius: 50%;
+
+    z-index: 1;
+}
+
+xRect {
+    position: absolute;
+    top: calc(50% - 4px);
+    left: 50%;
+    width: 100px;
+    height: 10px;
+    background-color: red;
+}
+
+yRect {
+    position: absolute;
+    top: 50%;
+    left: calc(50% - 4px);
+    width: 10px;
+    height: 100px;
+    background-color: blue;
+}
+
+hypoRect {
+    position: absolute;
+    top: 50%;
+    left: calc(50% - 4px);
+    width: 10px;
+    height: 100px;
+    background-color: green;
+}
+
+xMid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 500px;
+    background-color: black;
+}
+
+yMid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 500px;
+    height: 1px;
+    background-color: black;
+}
+
+xEnd {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 500px;
+    background-color: orangered;
+}
+
+yEnd {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 500px;
+    height: 1px;
+    background-color: orangered;
+}
+
+#stats {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
 </style>
 <head>
 
 </head>
 <body>
     <script src="./two.js"></script>
-    <container></container>
+    <div id="stats">
+    </div>
+    <container>
+        <center></center>
+        <xRect></xRect>
+        <yRect></yRect>
+        <hypoRect></hypoRect>
+        <xMid></xMid>
+        <yMid></yMid>
+        <xEnd></xEnd>
+        <yEnd></yEnd>
+    </container>
 </body>
 <script>
     let container = document.querySelector("container");
+    let center = document.querySelector("center");
+    let xRect = document.querySelector("xRect");
+    let yRect = document.querySelector("yRect");
+    let hypoRect = document.querySelector("hypoRect");
+
+    let xMid = document.querySelector("xMid");
+    let yMid = document.querySelector("yMid");
+
+    let xEnd = document.querySelector("xEnd");
+    let yEnd = document.querySelector("yEnd");
+
+    let stats = document.querySelector("#stats");
 
     let mouseX = 0;
     let mouseY = 0;
 
-    let center = document.createElement("div");
-    center.style.position = "absolute";
-    center.style.top = "calc(50% - 5px)";
-    center.style.left = "calc(50% - 5px)";
-    center.style.width = "20px";
-    center.style.height = "20px";
-    center.style.backgroundColor = "black";
-    center.style.borderRadius = "50%";
-    container.appendChild(center);
 
-    let xRect = document.createElement("div");
-    xRect.style.position = "absolute";
-    xRect.style.top = "50%";
-    xRect.style.left = "50%";
-    xRect.style.width = "100px";
-    xRect.style.height = "10px";
-    xRect.style.backgroundColor = "red";
-    container.appendChild(xRect);
+    xMid.style.top = container.offsetTop + "px";
+    yMid.style.left = container.offsetLeft + "px";
+
+    xEnd.style.top = container.offsetTop + "px";
+    yEnd.style.left = container.offsetLeft + "px";
 
     container.addEventListener("mousemove", e => {
         mouseX = e.clientX;
         mouseY = e.clientY;
+
+        let xLength = mouseX - container.offsetLeft - 250;
+        let yLength = mouseY - container.offsetTop - 250;
+
+        let hypoLength = Math.sqrt(Math.pow(xLength, 2) + Math.pow(yLength, 2));
+
+        yMid.style.top = container.offsetTop + 255 + yLength / 2 + "px";
+        xMid.style.left = container.offsetLeft + 255 + xLength / 2 + "px";
+
+        hypoRect.style.top = yMid.offsetTop - hypoRect.clientHeight / 2 + 'px';
+
+        
+        let angle = Math.atan(yLength / xLength) * 180 / Math.PI;
+        hypoRect.style.transform = `rotate(${angle}deg)`;
+        hypoRect.style.height = hypoLength + "px";
+
+        if(yLength > 0){
+            yRect.style.height = yLength + "px";
+            yRect.style.top = "50%";
+
+            yEnd.style.top = container.offsetTop + 250 + yLength + 'px';
+        } else {
+            yRect.style.height = Math.abs(yLength) + "px";
+            yRect.style.top = mouseY + "px";
+
+            
+            yEnd.style.top = container.offsetTop + 250 + yLength + 'px';
+        }
+
+        if(xLength > 0){
+            xRect.style.width = xLength + "px";
+            xRect.style.left = "50%";
+
+            hypoRect.style.left = container.offsetLeft + 250 + xLength / 2 + 'px';
+
+            xEnd.style.left = container.offsetLeft + 250 + xLength + 'px';
+
+        } else {
+            xRect.style.width = Math.abs(xLength) + "px";
+            xRect.style.left = mouseX + "px";
+
+            hypoRect.style.left = container.offsetLeft + 250 + xLength / 2 + 'px';
+
+            xEnd.style.left = container.offsetLeft + 250 + xLength + 'px';
+        }
+
+        
+        stats.innerHTML = `X Length: ${Math.abs(xLength)} <br> Y Length: ${Math.abs(yLength)}`;
     });
 
 </script>
