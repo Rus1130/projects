@@ -56,16 +56,16 @@ xMid {
     left: 0;
     width: 1px;
     height: 500px;
-    background-color: black;
+    background-color: red;
 }
 
-yMid {
+yMid, yEnd {
     position: absolute;
     top: 0;
     left: 0;
     width: 500px;
     height: 1px;
-    background-color: black;
+    background-color: blue;
 }
 
 xEnd {
@@ -74,16 +74,7 @@ xEnd {
     left: 0;
     width: 1px;
     height: 500px;
-    background-color: orangered;
-}
-
-yEnd {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 500px;
-    height: 1px;
-    background-color: orangered;
+    background-color: red;
 }
 
 #stats {
@@ -142,15 +133,14 @@ yEnd {
         let xLength = mouseX - container.offsetLeft - 250;
         let yLength = mouseY - container.offsetTop - 250;
 
-        let hypoLength = Math.sqrt(Math.pow(xLength, 2) + Math.pow(yLength, 2));
 
         yMid.style.top = container.offsetTop + 255 + yLength / 2 + "px";
         xMid.style.left = container.offsetLeft + 255 + xLength / 2 + "px";
 
-        hypoRect.style.top = yMid.offsetTop - hypoRect.clientHeight / 2 + 'px';
+        let hypoLength = Math.sqrt(Math.pow(xLength, 2) + Math.pow(yLength, 2));
 
         
-        let angle = Math.atan(yLength / xLength) * 180 / Math.PI;
+        let angle = Math.atan(xLength / yLength) * 180 / Math.PI;
         hypoRect.style.transform = `rotate(${angle}deg)`;
         hypoRect.style.height = hypoLength + "px";
 
@@ -159,12 +149,15 @@ yEnd {
             yRect.style.top = "50%";
 
             yEnd.style.top = container.offsetTop + 250 + yLength + 'px';
+
+            hypoRect.style.top = (yMid.offsetTop - hypoRect.clientHeight / 2) - 5 + "px";
         } else {
             yRect.style.height = Math.abs(yLength) + "px";
             yRect.style.top = mouseY + "px";
 
-            
             yEnd.style.top = container.offsetTop + 250 + yLength + 'px';
+
+            hypoRect.style.top = (yMid.offsetTop - hypoRect.clientHeight / 2) - 5 + "px";
         }
 
         if(xLength > 0){
