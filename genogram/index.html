@@ -10,5 +10,12 @@
 <script>
     const diagram = document.getElementById('diagram');
 
-    const gen = new Genogram(diagram, {height: 700, fullscreen: false});
+    const gen = new Genogram();
+
+    
+    gen.createNode('bob').addChild(gen.createNode("joe")).addChild(gen.createNode("mary")).addPartner(gen.createNode("jane"))
+
+    gen.createNode("robert")
+    console.log(gen.getNode('bob'))
+    console.log(gen.getNode('robert'))
 </script>

@@ -1,37 +1,50 @@
 class Genogram {
-    static genogramTree = {};
-    static nodes = [];
-    
-    constructor(container, options){
-        this.HTMLElement = container;
-        this.HTMLElement.style.display = "inline-block";
+    static nodes = {};
 
-        options = options || {};
-        options.height = options.height || 500;
-        options.width = options.width || 500;
-        options.fullscreen = options.fullscreen || false;
-
-        document.body.style.margin = "0";
-
-        if(options.fullscreen){
-            this.HTMLElement.style.width = document.body.clientWidth + "px";
-            this.HTMLElement.style.height = document.body.clientHeight + "px";
-
-            options.height = this.HTMLElement.clientHeight;
-            options.width = this.HTMLElement.clientWidth;
-        }
-
-
-
-        let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        svg.setAttribute("height", options.height);
-        svg.setAttribute("width", options.width);
-        svg.setAttribute("viewBox", `0 0 ${options.width} ${options.height}`); 
-
-        this.HTMLElement.appendChild(svg);
+    static analyze(){
 
     }
-    get container() {
-        return this.HTMLElement;
+
+    constructor(){}
+
+    createNode(name){
+        let node = {
+            name: name,
+            description: '',
+            parents: [],
+            partners: [],
+            children: [],
+            addChild(childName){
+                if(typeof childName === "string"){
+                    if(Genogram.nodes[childName] == undefined) throw new Error(`Node "${childName}" does not exist`);
+                    this.children[childName] = Genogram.nodes[childName]
+                } else {
+                    if(typeof childName === "object"){
+                        if(Genogram.nodes[childName.name] == undefined) throw new Error(`Node "${childName.name}" does not exist`);
+                        this.children[childName.name] = Genogram.nodes[childName.name]
+                    }
+                }
+                return this;
+            },
+            addPartner(partnerName){
+                if(typeof partnerName === "string"){
+                    if(Genogram.nodes[partnerName] == undefined) throw new Error(`Node "${partnerName}" does not exist`);
+                    this.partners[partnerName] = Genogram.nodes[partnerName]
+                } else {
+                    if(typeof partnerName === "object"){
+                        if(Genogram.nodes[partnerName.name] == undefined) throw new Error(`Node "${partnerName.name}" does not exist`);
+                        this.partners[partnerName.name] = Genogram.nodes[partnerName.name]
+                    }
+                }
+                return this;
+            }
+        }
+        Genogram.nodes[name] = node;
+        return node;
+    }
+
+    getNode(name){
+        if(Genogram.nodes[name] == undefined) throw new Error(`Node "${name}" does not exist`);
+        else return Genogram.nodes[name];
     }
 }

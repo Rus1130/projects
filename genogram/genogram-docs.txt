@@ -1,18 +1,22 @@
-=== Constructor ===
-gen = new Genogram(container, options);
-    container (type: HTMLElement): HTML element to hold the genogram
-    options (type: object) (optional): options to use
-        height (type: integer): height of the genogram (default: 500)
-        width (type: integer): width of the genogram (default: 500)
-        fullscreen (type: bool): overrides height and width to fill the container (default: false)
+let gen = new Genogram();
 
-initialize the genogram
+gen.createNode(name, description)
+create a new node with the given name and description
+    name (string) - the name of the node
+    description (string) - the description of the node
+returns type GenogramNode
 
-=== Methods ===
+GenogramNode.addChild(childName)
+add a child to the node
+    childName (string/object) - string: the name of the child node, object: the child node
 
+GenogramNode.addPartner(partnerName)
+add a partner to the node
+    partnerName (string/object) - string: the name of the partner node, object: the partner node
 
+gen.getNode(name)
+get a node by name
+    name (string) - the name of the node
 
-
-=== Getters ===
-gen.container
-returns the container element
+gen.getAllNodes()
+get all nodes
