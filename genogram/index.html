@@ -13,9 +13,19 @@
     const gen = new Genogram();
 
     
-    gen.createNode('bob').addChild(gen.createNode("joe")).addChild(gen.createNode("mary")).addPartner(gen.createNode("jane"))
+    let jack = gen.createNode('Jack');
+    let jill = gen.createNode('Jill');
+    let jane = gen.createNode('Jane');
+    let john = gen.createNode('John');
+    let joe = gen.createNode('Joe');
+    let jerry = gen.createNode('Jerry');
 
-    gen.createNode("robert")
-    console.log(gen.getNode('bob'))
-    console.log(gen.getNode('robert'))
+
+    let parents = gen.createPlink(jack, jill)
+    let jacksChildren = gen.createMonoParLink(jack, jane, john)
+    let sharedChildren = gen.createDualParLink(0, joe)
+    console.log(parents)
+    console.log(jacksChildren);
+    console.log(Genogram.nodes);
+    console.log(jill.isOffspringOf(jack, jill));
 </script>
