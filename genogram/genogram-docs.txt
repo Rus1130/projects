@@ -1,0 +1,18 @@
+=== Constructor ===
+gen = new Genogram(container, options);
+    container (type: HTMLElement): HTML element to hold the genogram
+    options (type: object) (optional): options to use
+        height (type: integer): height of the genogram (default: 500)
+        width (type: integer): width of the genogram (default: 500)
+        fullscreen (type: bool): overrides height and width to fill the container (default: false)
+
+initialize the genogram
+
+=== Methods ===
+
+
+
+
+=== Getters ===
+gen.container
+returns the container element
