@@ -10,7 +10,7 @@
 <script>
     const diagram = document.getElementById('diagram');
 
-    const gen = new Genogram();
+    const gen = new Genogram(diagram, {fullscreen: true});
 
     
     let jack = gen.createNode('Jack');
@@ -28,4 +28,6 @@
     console.log(jacksChildren);
     console.log(Genogram.nodes);
     console.log(jill.isOffspringOf(jack, jill));
+
+    Genogram.drawNode(jack)
 </script>

@@ -1,7 +1,14 @@
 ? - optional
 ... - repeatable
 
-let gen = new Genogram();
+let gen = new Genogram(genogram, options?);
+initialize the genogram
+    options (object) -  options available
+        options.height (integer) - the height of the genogram (default 500)
+        options.width (integer) - the width of the genogram (default 500)
+        options.fullscreen (boolean) - whether to make the genogram fullscreen (default false) (overrides height and width)
+            NOTE: fullscreen with not resize with the window
+            
 let Node = gen.createNode("Name");
  
 gen.createNode(name)

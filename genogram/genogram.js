@@ -1,8 +1,58 @@
 class Genogram {
     static nodes = {};
     static links = [];
+    static SVG = '';
+    static SVGNodes = [];
+    static drawNode(node){
+        let svg = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        svg.setAttribute("r", 50);
+        svg.setAttribute("fill", "white");
+        svg.setAttribute("stroke", "black");
+        svg.setAttribute("stroke-width", 2);
+        svg.setAttribute("cx", Genogram.SVG.clientWidth / 2);
+        svg.setAttribute("cy", Genogram.SVG.clientHeight / 2);
 
-    constructor(){}
+        Genogram.SVG.appendChild(svg);
+    }
+
+    constructor(element, options){
+        options = options || {};
+        options.width = options.width || 500;
+        options.height = options.height || 500;
+        options.fullscreen = options.fullscreen || false;
+
+        Genogram.HTMLElement = element;
+
+        document.body.style.margin = "0";
+        element.style.display = "inline-block";
+
+        if(options.fullscreen){
+            element.style.width = "100%";
+            element.style.height = "100%";
+
+            options.width = element.clientWidth;
+            options.height = element.clientHeight;
+        }
+
+        Genogram.SVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        Genogram.SVG.setAttribute("width", options.width);
+        Genogram.SVG.setAttribute("height", options.height);
+        Genogram.SVG.setAttribute("viewBox", `0 0 ${options.width} ${options.height}`);
+        Genogram.SVG.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        Genogram.SVG.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+
+        if(options.fullscreen){
+            window.onresize = e => {
+                options.width = element.clientWidth;
+                options.height = element.clientHeight;
+                Genogram.SVG.setAttribute("width", options.width);
+                Genogram.SVG.setAttribute("height", options.height);
+                Genogram.SVG.setAttribute("viewBox", `0 0 ${options.width} ${options.height}`);
+            }
+        }
+
+        element.appendChild(Genogram.SVG);
+    }
 
     createNode(name){
         let node = {
@@ -28,7 +78,7 @@ class Genogram {
 
                 if(parent2.type == "node" && typeof parent2 === "object") parent2 = parent2.name;
                 else throw new TypeError(`Node "${parent2}" is not type of Node`);
-                
+
                 return this.parents.includes(parent1) && this.parents.includes(parent2);
             }
         }
@@ -153,3 +203,5 @@ class Genogram {
 
 
 }
+
+
