@@ -126,6 +126,24 @@ xEnd {
     xEnd.style.top = container.offsetTop + "px";
     yEnd.style.left = container.offsetLeft + "px";
 
+    function toggleDevVisibility(){
+        xRect.style.backgroundColor = xRect.style.backgroundColor == "transparent" ? "red" : "transparent";
+        yRect.style.backgroundColor = yRect.style.backgroundColor == "transparent" ? "blue" : "transparent";
+        hypoRect.style.backgroundColor = hypoRect.style.backgroundColor == "transparent" ? "green" : "transparent";
+
+        xMid.style.backgroundColor = xMid.style.backgroundColor == "transparent" ? "red" : "transparent";
+        yMid.style.backgroundColor = yMid.style.backgroundColor == "transparent" ? "blue" : "transparent";
+
+        xEnd.style.backgroundColor = xEnd.style.backgroundColor == "transparent" ? "red" : "transparent";
+        yEnd.style.backgroundColor = yEnd.style.backgroundColor == "transparent" ? "blue" : "transparent";
+    }
+
+    document.body.addEventListener("keyup", e => {
+        if(e.key == " "){
+            toggleDevVisibility();
+        }
+    })
+
     container.addEventListener("mousemove", e => {
         mouseX = e.clientX;
         mouseY = e.clientY;
@@ -178,7 +196,9 @@ xEnd {
         }
 
         
-        stats.innerHTML = `X Length: ${Math.abs(xLength)} <br> Y Length: ${Math.abs(yLength)}`;
+        stats.innerHTML = `X Length: ${Math.abs(xLength)}<br>`+
+        `Y Length: ${Math.abs(yLength)}`+
+        `<br>Hypo Length: ${Math.abs(hypoLength)}`;
     });
 
 </script>
