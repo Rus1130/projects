@@ -36,7 +36,13 @@ class Genogram {
         for(let i = 0; i < Genogram.tree.length; i++){
             let node = Genogram.tree[i];
             if(node == undefined) break;
-            let nodeHTML = `<div>${node.name} (id: ${node.id}) (pid: ${node.pid}) (mid: ${node.mid}) (fid: ${node.fid}) (generation: ${node.generation})</div>`;
+            let pid = Genogram.tree[node.pid - 1] === undefined ? "none" : Genogram.tree[node.pid - 1].name;
+            let fid = Genogram.tree[node.fid - 1] === undefined ? "none" : Genogram.tree[node.fid - 1].name;
+            let mid = Genogram.tree[node.mid - 1] === undefined ? "none" : Genogram.tree[node.mid - 1].name;
+
+
+
+            let nodeHTML = `<div>${node.name} (id: ${node.id}) (partner: ${pid}) (father: ${fid}) (mother: ${mid})</div>`;
             html += nodeHTML;
         }
 
@@ -74,9 +80,9 @@ class Genogram {
                 description: ''
             },
             id: Object.keys(Genogram.nodeList).length + 1,
-            pid: 0,
-            mid: 0,
-            fid: 0,
+            pid: null,
+            mid: null,
+            fid: null,
             generation: 0,
             setDetails(details){
                 let keys = Object.keys(details);
@@ -97,19 +103,11 @@ class Genogram {
         else return Genogram.memberList[name];
     }
 
-    createTree(foundingNode){
-        if(Genogram.nodeList[foundingNode.name] == undefined) throw new Error(`Node "${foundingNode.name}" does not exist`);
-
-        Genogram.tree.push(Genogram.treeNode(foundingNode.id, foundingNode.pid, foundingNode.mid, foundingNode.fid, foundingNode.name, foundingNode.description, foundingNode.generation));
-        return Genogram.tree;
-    }
-
     getTree(){
         return Genogram.tree;
     }
 
     addNode(node){
-        if(Genogram.tree.length == 0) throw new Error("Tree does not exist");
         if(Genogram.nodeList[node.name] == undefined) throw new Error(`Node "${node.name}" does not exist`);
 
         Genogram.tree.push(Genogram.treeNode(node.id, node.pid, node.mid, node.fid, node.name, node.details));

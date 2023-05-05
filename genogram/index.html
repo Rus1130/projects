@@ -12,7 +12,8 @@
 
     const gen = new Genogram(diagram, {fullscreen: true});
 
-    
+    diagram.innerHTML = ''
+
     let jack = gen.createNode('Jack');
     let jill = gen.createNode('Jill');
     let jane = gen.createNode('Jane');
@@ -20,14 +21,18 @@
     let joe = gen.createNode('Joe');
     let jerry = gen.createNode('Jerry');
 
-    gen.createTree(jack);
+    gen.addNode(jack);
     gen.addNode(jill);
-
     gen.addNode(jane);
     gen.addNode(john);
+    gen.addNode(joe)
+    gen.addNode(jerry)
 
     gen.link(jack, jill);
+    gen.link(joe, jane);
+
     gen.parentalLink(jack, jill, [jane, john])
+    gen.parentalLink(joe, jane, [jerry])
 
     diagram.innerHTML = Genogram.treeToHTML();
 
