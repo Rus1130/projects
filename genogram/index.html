@@ -20,14 +20,13 @@
     let joe = gen.createNode('Joe');
     let jerry = gen.createNode('Jerry');
 
+    gen.createTree(jack);
+    gen.addNode(jill);
 
-    let parents = gen.createPlink(jack, jill)
-    let jacksChildren = gen.createMonoParLink(jack, jane, john)
-    let sharedChildren = gen.createDualParLink(0, joe)
-    console.log(parents)
-    console.log(jacksChildren);
-    console.log(Genogram.nodes);
-    console.log(jill.isOffspringOf(jack, jill));
+    gen.addNode(jane);
+    gen.addNode(john);
 
-    Genogram.drawNode(jack)
+    gen.link(jack, jill);
+    gen.parentalLink(jack, jill, [jane, john])
+
 </script>

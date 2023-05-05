@@ -7,9 +7,12 @@ initialize the genogram
         options.height (integer) - the height of the genogram (default 500)
         options.width (integer) - the width of the genogram (default 500)
         options.fullscreen (boolean) - whether to make the genogram fullscreen (default false) (overrides height and width)
-            NOTE: fullscreen with not resize with the window
             
 let Node = gen.createNode("Name");
+
+Node.setDetails(details)
+adds details to the node, ('description' is the only predefined detail)
+    details (object) - the details to use
  
 gen.createNode(name)
 creates a new node with the given name
@@ -21,34 +24,33 @@ gets a node by name
     name (string) - the name of the node
     returns (object): the node object
 
-gen.createPlink(node1, node2)
+gen.createTree(foundingNode)
+creates a new node with the given founding member
+    foundingMember (object) - the founding node of the tree
+    returns (object): the new node object
+
+gen.getTree()
+gets the tree object
+    returns (object): the tree object
+
+gen.addNode(node)
+adds a node to the tree
+    node (object) - the node to add
+    returns (object): the tree
+
+gen.link(node1, node2)
 creates a partner link between two nodes
-    node1 (object) - first node
-    node2 (object) - second node
-    returns (object): the link object
+    node1 (object) - the first node
+    node2 (object) - the second node
+    returns (object): the tree
 
-gen.createMonoParLink(parentNode, ...childNodes)
-creates a parental link between two nodes
-    parentNode (object) - the node to be a parent
-    childNodes (object) - the nodes to be children
-    returns (object): the link object
-
-gen.createDualParLink(linkID, ...childNodes)
-creates a parental link between two nodes
-    linkID (integer) - the partner link to use as parents
-    childNodes (object) - the nodes to be children
-    returns (object): the link object
-
-Node.isChildOf(parent):
-returns true if the node is a child of the given parent
-    parent (object) - the parent node to check
-    returns (bool)
-
-Node.isOffspringOf(parent1, parent2):
-returns true if the node is a child of the given parents
-    parent1 (object) - the first parent node to check
-    parent2 (object) - the second parent node to check
-    returns (bool)
+gen.parentalLink(father, mother, children)
+give the children nodes parents
+    father (object) - the father node
+        mother (object) - the mother node
+    children (array) - the children nodes
+    returns (object): the tree
+        Note: to omit a parent, pass 0
 
 
 
