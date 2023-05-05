@@ -16,8 +16,6 @@ class Genogram {
             Genogram.tree[i].generation = Genogram.nodeList[nodeName].generation;
         }
 
-        console.log(Genogram.tree)
-
         return Genogram.tree;
     }
 
@@ -31,6 +29,18 @@ class Genogram {
             details: details,
             generation: generation
         }
+    }
+
+    static treeToHTML(){
+        let html = '';
+        for(let i = 0; i < Genogram.tree.length; i++){
+            let node = Genogram.tree[i];
+            if(node == undefined) break;
+            let nodeHTML = `<div>${node.name} (id: ${node.id}) (pid: ${node.pid}) (mid: ${node.mid}) (fid: ${node.fid}) (generation: ${node.generation})</div>`;
+            html += nodeHTML;
+        }
+
+        return html;
     }
 
     constructor(element, options){
@@ -53,10 +63,7 @@ class Genogram {
             Genogram.HTMLElement.style.height = '100%';
         }
 
-        element.appendChild(Genogram.HTMLElement);
-
-
-        
+        element.appendChild(Genogram.HTMLElement);        
     }
 
     createNode(name){
