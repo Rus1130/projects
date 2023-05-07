@@ -78,7 +78,7 @@
     }
 
     #inventory {
-        width: 80%;
+        width: 40%;
         height: 80%;
         position: fixed;
         top: 50%;
@@ -118,15 +118,14 @@
         <div id="current-case">Current Case: Shapes</div>
         Click on items in inventory to sell
         <div id="case-switcher">Cases:
-            <div class="side-button" onclick="switchCase('Shapes')">Shapes</div>
-            <div class="side-button" onclick="switchCase('Teachers')">Teachers</div>
-            <div class="side-button" onclick="switchCase('People')">People</div>
-            <div class="side-button" onclick="switchCase('YouTubers')">YouTubers</div>
-            <div class="side-button" onclick="switchCase('Pets')">Pets</div>
-            <div class="side-button disabled-button" onclick="//switchCase('VideoGames')">Video Games</div>
+            <div class="side-button" id="caseShapes">Shapes</div>
+            <div class="side-button" id="caseTeachers">Teachers</div>
+            <div class="side-button" id="caseYouTubers">YouTubers</div>
+            <div class="side-button" id="casePets">Pets</div>
+            <div class="side-button disabled-button">Video Games</div>
             <br>
-            <div class="side-button" onclick="openInventory()">Inventory</div>
-            <div class="side-button" onclick="eraseData();">Erase Data</div>
+            <div class="side-button" id="openInventory">Inventory</div>
+            <div class="side-button" id="eraseDataButton">Erase Data</div>
         </div>
     </div>
     
@@ -148,11 +147,20 @@
     </div>
 </body>
 <script>
-    {
+    (function(){
         const spinAgainButton = document.getElementById('spin-again-button');
         const caseSpinner = document.getElementById('case-spinner');
         const moneyCounter = document.getElementById('money-counter');
         const inventoryDisplay = document.getElementById('inventory');
+
+
+        document.getElementById('eraseDataButton').addEventListener('click', () => { eraseData() })
+        document.getElementById('caseShapes').addEventListener('click', () => { switchCase('Shapes') })
+        document.getElementById('caseTeachers').addEventListener('click', () => { switchCase('Teachers') })
+        document.getElementById('caseYouTubers').addEventListener('click', () => { switchCase('YouTubers') })
+        document.getElementById('casePets').addEventListener('click', () => { switchCase('Pets') })
+
+        document.getElementById('openInventory').addEventListener('click', () => { openInventory() })
 
         let spinnerCell1 = document.getElementById('spinner-cell-1');
         let spinnerCell2 = document.getElementById('spinner-cell-2');
@@ -515,5 +523,5 @@
             localStorage.setItem("inventory", JSON.stringify(inventory));
             localStorage.setItem("money", currentMoney);
         })
-    }
+    })();
 </script>
