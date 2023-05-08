@@ -1,0 +1,50 @@
+<style>
+</style>
+<head>
+
+</head>
+<body>
+encryption:<br>
+Input: <textarea id="en-in"></textarea><br>
+output value: <div id="en-oval"></div><br>
+<button id="encryptButton">Encrypt</button><br>
+output key: <div id="en-okey"></div><br><br>
+decryption:<br>
+value: <textarea id="de-val"></textarea><br>
+key: <textarea id="de-key"></textarea><br>
+<button id="decryptButton">Decrypt</button><br>
+output: <div id="de-out"></div>
+</body>
+<script>
+
+    let encryptionValue = document.getElementById('en-in');
+    let encryptionOutputValue = document.getElementById('en-oval');
+    let encryptionOutputKey = document.getElementById('en-okey');
+    let decryptionValue = document.getElementById('de-val');
+    let decryptionKey = document.getElementById('de-key');
+    let decryptionOutput = document.getElementById('de-out');   
+
+    let encryptButton = document.getElementById('encryptButton');
+    let decryptButton = document.getElementById('decryptButton');
+
+    function encrypt(value){
+        let allowedPatterns = ["a", "b", "c", "d"]
+        let patternIndex = Math.floor(Math.random() * allowedPatterns.length);
+        let charVals = value.split('').map(char => char.charCodeAt(0) + 300);
+
+        let shiftVals = [];
+
+        for(i = 0; i < charVals.length; i++){
+            shiftVals.push((charVals[i] >> 5) << 5);
+        }
+
+        charVals.map((char, index) => {
+            charVals[index] = char - shiftVals[index];
+        });
+
+    }
+
+
+    console.log(encrypt("Hello, World!"))
+
+</script>
