@@ -42,7 +42,7 @@ class Genogram {
 
 
 
-            let nodeHTML = `<div>${node.name} (id: ${node.id}) (partner: ${pid}) (father: ${fid}) (mother: ${mid})</div>`;
+            let nodeHTML = `<div>${node.name} (partner: ${pid})</div>`;
             html += nodeHTML;
         }
 
