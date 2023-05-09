@@ -67,6 +67,7 @@ output: <div id="de-out"></div>
         let charPattern = Object.keys(charPatterns)[Math.floor(Math.random() * Object.keys(charPatterns).length)];
         let charVals = value.split('').map(char => char.charCodeAt(0) + 300);
 
+
         let shiftPattern = Object.keys(shiftPatterns)[Math.floor(Math.random() * Object.keys(shiftPatterns).length)];
 
 
@@ -84,32 +85,53 @@ output: <div id="de-out"></div>
             mixedVals.push([toBase60(shiftVals[i] ^ shiftPatterns[shiftPattern]), toBase60(charVals[i] ^ charPatterns[charPattern])]);
         }
 
-        // console.log(charPattern)
-        // console.log(shiftPattern)
-
-        //console.log((shiftVal ^ shiftPattern) << 5) + (charVal ^ charPattern) - 300)
 
         let key = `${shiftPattern}${charPattern}`;
         let body = ``;
-
+        
         for(i = 0; i < mixedVals.length; i++){
-            body += mixedVals[i][0];
-            key += mixedVals[i][1];
+            key += mixedVals[i][0];
+            body += mixedVals[i][1];
         }
+
+        body = body.split("")
+
+        for(j = 0; j < body.length; j++){
+            // random from 1 and 20
+            let val = Math.floor(Math.random() * 20) + 1;
+            body[j] = toBase60(fromBase60(body[j]) + val)
+            key += toBase60(val)
+        }
+
+        body = body.join("")
 
         let result = {
             body: body,
             key: key,
         }
+
         return result;
 
-        // ((fromBase60(shiftVal) ^ shiftPattern) << 5) + (fromBase60(charVal) ^ charPattern) - 300
+        // ((fromBase60(keyVal) ^ shiftPatterns[firstPattern]) << 5) + (fromBase60(bodyVal) ^ charPatterns[secondPattern]) - 300
+    }
+
+    let charPatterns = {
+        "A": 3,
+        "B": 2,
+        "C": 4,
+        "D": 5,
+        "E": 1,
+    }
+
+    let shiftPatterns = {
+        "A": 2,
+        "B": 4,
+        "C": 5,
+        "D": 1,
+        "E": 3,
     }
 
     function decrypt(body, key){
-        function decryptSingle(charPattern, shiftPattern, charVal, shiftVal){
-            return ((fromBase60(shiftVal) ^ shiftPattern) << 5) + (fromBase60(charVal) ^ charPattern) - 300
-        }
 
         let charPatterns = {
             "A": 3,
@@ -127,24 +149,19 @@ output: <div id="de-out"></div>
             "E": 3,
         }
 
-        
-        key = key.slice(2);
+        // split key into two arrays
+        let firstPattern = key[0];
+        let secondPattern = key[1];
 
-        let charPattern = charPatterns[key[1]];
-        let shiftPattern = shiftPatterns[key[0]];
+        let keyArray = key.split("").slice(2);
+        let length = keyArray.length;
 
-        console.log(key.length, body.length)
+        let keyVal = key.slice(2, length / 2 + 2);
+        let randomVals = key.slice(length / 2 + 2, length);
 
-        let result = [];
+        console.log(keyVal, randomVals)
 
-        for(j = 0; j < key.length; j++){
-            console.log(key[j], body[j])
-        }
-
-
-        
-        return result;
-
+        // ((fromBase60(keyVal) ^ shiftPatterns[firstPattern]) << 5) + (fromBase60(bodyVal) ^ charPatterns[secondPattern]) - 300
     }
 
 
