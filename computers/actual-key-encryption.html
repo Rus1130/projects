@@ -17,6 +17,26 @@ output: <div id="de-out"></div>
 </body>
 <script>
 
+    const base60 = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x']
+
+    function toBase60(num){
+        let result = '';
+        while(num > 0){
+            result = base60[num % 60] + result;
+            num = Math.floor(num / 60);
+        }
+        result = result || "0";
+        return result;
+    }
+
+    function fromBase60(str){
+        let result = 0;
+        for(i = 0; i < str.length; i++){
+            result += base60.indexOf(str[i]) * Math.pow(60, str.length - i - 1);
+        }
+        return result;
+    }
+
     let encryptionValue = document.getElementById('en-in');
     let encryptionOutputValue = document.getElementById('en-oval');
     let encryptionOutputKey = document.getElementById('en-okey');
@@ -28,9 +48,27 @@ output: <div id="de-out"></div>
     let decryptButton = document.getElementById('decryptButton');
 
     function encrypt(value){
-        let patterns = ["a", "b", "c"]
-        let pattern = patterns[Math.floor(Math.random() * patterns.length)];
+        let charPatterns = {
+            "A": 3,
+            "B": 2,
+            "C": 4,
+            "D": 5,
+            "E": 1,
+        }
+
+        let shiftPatterns = {
+            "A": 2,
+            "B": 4,
+            "C": 5,
+            "D": 1,
+            "E": 3,
+        }
+
+        let charPattern = Object.keys(charPatterns)[Math.floor(Math.random() * Object.keys(charPatterns).length)];
         let charVals = value.split('').map(char => char.charCodeAt(0) + 300);
+
+        let shiftPattern = Object.keys(shiftPatterns)[Math.floor(Math.random() * Object.keys(shiftPatterns).length)];
+
 
         let shiftVals = [];
 
@@ -38,26 +76,81 @@ output: <div id="de-out"></div>
             shiftVals.push((charVals[i] >> 5));
         }
 
-        charVals = charVals.map((char, index) => (char - (shiftVals[index] << 5)) + 10);
+        charVals = charVals.map((char, index) => (char - (shiftVals[index] << 5)));
 
         let mixedVals = [];
 
         for(i = 0; i < shiftVals.length; i++){
-            mixedVals.push([shiftVals[i], charVals[i]]);
+            mixedVals.push([toBase60(shiftVals[i] ^ shiftPatterns[shiftPattern]), toBase60(charVals[i] ^ charPatterns[charPattern])]);
+        }
+
+        // console.log(charPattern)
+        // console.log(shiftPattern)
+
+        //console.log((shiftVal ^ shiftPattern) << 5) + (charVal ^ charPattern) - 300)
+
+        let key = `${shiftPattern}${charPattern}`;
+        let body = ``;
+
+        for(i = 0; i < mixedVals.length; i++){
+            body += mixedVals[i][0];
+            key += mixedVals[i][1];
+        }
+
+        let result = {
+            body: body,
+            key: key,
+        }
+        return result;
+
+        // ((fromBase60(shiftVal) ^ shiftPattern) << 5) + (fromBase60(charVal) ^ charPattern) - 300
+    }
+
+    function decrypt(body, key){
+        function decryptSingle(charPattern, shiftPattern, charVal, shiftVal){
+            return ((fromBase60(shiftVal) ^ shiftPattern) << 5) + (fromBase60(charVal) ^ charPattern) - 300
+        }
+
+        let charPatterns = {
+            "A": 3,
+            "B": 2,
+            "C": 4,
+            "D": 5,
+            "E": 1,
+        }
+
+        let shiftPatterns = {
+            "A": 2,
+            "B": 4,
+            "C": 5,
+            "D": 1,
+            "E": 3,
+        }
+
+        
+        key = key.slice(2);
+
+        let charPattern = charPatterns[key[1]];
+        let shiftPattern = shiftPatterns[key[0]];
+
+        console.log(key.length, body.length)
+
+        let result = [];
+
+        for(j = 0; j < key.length; j++){
+            console.log(key[j], body[j])
         }
 
 
+        
+        return result;
 
-        console.log(charVals);
-        console.log(shiftVals);
-
-        //console.log((mixedVals[2] << 5) + ((mixedVals[3] - 10)) - 300)
-        return mixedVals;
-
-        // ((shiftVal << 5) + charVal) - 300
     }
 
 
-    console.log(encrypt("Hello, World!\\"))
+    let encrypted = encrypt("Hello, World!")
+
+    console.log(encrypted)
+    console.log(decrypt(encrypted.body, encrypted.key))
 
 </script>
