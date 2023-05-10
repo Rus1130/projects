@@ -1,4 +1,7 @@
 <style>
+    html {
+        font-family: monospace;
+    }
 </style>
 <head>
 
@@ -6,8 +9,8 @@
 <body>
 encryption:<br>
 Input: <textarea id="en-in"></textarea><br>
-output value: <div id="en-oval"></div><br>
 <button id="encryptButton">Encrypt</button><br>
+output value: <div id="en-oval"></div><br>
 output key: <div id="en-okey"></div><br><br>
 decryption:<br>
 value: <textarea id="de-val"></textarea><br>
@@ -31,6 +34,7 @@ output: <div id="de-out"></div>
 
     function fromBase60(str){
         let result = 0;
+        if(str == undefined) return "0";
         for(i = 0; i < str.length; i++){
             result += base60.indexOf(str[i]) * Math.pow(60, str.length - i - 1);
         }
@@ -47,21 +51,36 @@ output: <div id="de-out"></div>
     let encryptButton = document.getElementById('encryptButton');
     let decryptButton = document.getElementById('decryptButton');
 
+    encryptButton.addEventListener('click', () => {
+        let result = encrypt(encryptionValue.value);
+        encryptionOutputValue.innerHTML = result.body;
+        encryptionOutputKey.innerHTML = result.key;
+    })
+
+    decryptButton.addEventListener('click', () => {
+        let result = decrypt(decryptionValue.value, decryptionKey.value);
+        decryptionOutput.innerHTML = result;
+    })
+
     function encrypt(value){
         let charPatterns = {
-            "A": 3,
-            "B": 2,
-            "C": 4,
-            "D": 5,
-            "E": 1,
+            "A": 7,
+            "B": 5,
+            "C": 3,
+            "D": 1,
+            "E": 2,
+            "F": 4,
+            "G": 6,
         }
 
         let shiftPatterns = {
-            "A": 2,
-            "B": 4,
-            "C": 5,
-            "D": 1,
+            "A": 6,
+            "B": 7,
+            "C": 4,
+            "D": 5,
             "E": 3,
+            "F": 1,
+            "G": 2,
         }
 
         let charPattern = Object.keys(charPatterns)[Math.floor(Math.random() * Object.keys(charPatterns).length)];
@@ -95,6 +114,7 @@ output: <div id="de-out"></div>
         }
 
         body = body.split("")
+        randomVals = [];
 
         for(j = 0; j < body.length; j++){
             // random from 1 and 20
@@ -112,56 +132,54 @@ output: <div id="de-out"></div>
 
         return result;
 
-        // ((fromBase60(keyVal) ^ shiftPatterns[firstPattern]) << 5) + (fromBase60(bodyVal) ^ charPatterns[secondPattern]) - 300
-    }
-
-    let charPatterns = {
-        "A": 3,
-        "B": 2,
-        "C": 4,
-        "D": 5,
-        "E": 1,
-    }
-
-    let shiftPatterns = {
-        "A": 2,
-        "B": 4,
-        "C": 5,
-        "D": 1,
-        "E": 3,
+        // ((fromBase60(keyVal) ^ shiftPatterns[firstPattern]) << 5) + ((fromBase60(bodyVal)-fromBase60(randVal)) ^ charPatterns[secondPattern]) - 300
     }
 
     function decrypt(body, key){
 
+        function decryptSingle(bodyVal, keyVal, randVal, firstPattern, secondPattern){
+            return ((fromBase60(keyVal) ^ shiftPatterns[firstPattern]) << 5) + ((fromBase60(bodyVal)-fromBase60(randVal)) ^ charPatterns[secondPattern]) - 300
+        }
+
         let charPatterns = {
-            "A": 3,
-            "B": 2,
-            "C": 4,
-            "D": 5,
-            "E": 1,
+            "A": 7,
+            "B": 5,
+            "C": 3,
+            "D": 1,
+            "E": 2,
+            "F": 4,
+            "G": 6,
         }
 
         let shiftPatterns = {
-            "A": 2,
-            "B": 4,
-            "C": 5,
-            "D": 1,
+            "A": 6,
+            "B": 7,
+            "C": 4,
+            "D": 5,
             "E": 3,
+            "F": 1,
+            "G": 2,
         }
 
         // split key into two arrays
         let firstPattern = key[0];
         let secondPattern = key[1];
 
-        let keyArray = key.split("").slice(2);
-        let length = keyArray.length;
+        key = key.slice(2).split("");
 
-        let keyVal = key.slice(2, length / 2 + 2);
-        let randomVals = key.slice(length / 2 + 2, length);
+        // split key array into two
+        let keyArray = key.slice(0, key.length / 2);
+        let randArray = key.slice(key.length / 2);
+        let bodyArray = body.split("");
 
-        console.log(keyVal, randomVals)
+        let result = '';
 
-        // ((fromBase60(keyVal) ^ shiftPatterns[firstPattern]) << 5) + (fromBase60(bodyVal) ^ charPatterns[secondPattern]) - 300
+        for(j = 0; j < bodyArray.length; j++){
+            result += String.fromCharCode(decryptSingle(bodyArray[j], keyArray[j], randArray[j], firstPattern, secondPattern));
+        }
+
+        return result;
+
     }
 
 
