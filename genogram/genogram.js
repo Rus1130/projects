@@ -2,9 +2,8 @@ class Genogram {
     static nodeList = {};
     static tree = [];
     static HTMLElement = '';
-    static HTMLContainer = '';
-    static rerenderTree(){
-        Genogram.HTMLElement.innerHTML = '';
+
+    static TreeConstruct(){
         for(let i = 0; i < Genogram.tree.length; i++){
             let nodeName = Genogram.tree[i].name;
             Genogram.tree[i].id = Genogram.nodeList[nodeName].id;
@@ -29,34 +28,18 @@ class Genogram {
         }
     }
 
-    static treeToHTML(){
-        let html = '';
-        for(let i = 0; i < Genogram.tree.length; i++){
-            let node = Genogram.tree[i];
-            if(node == undefined) break;
-            let pid = Genogram.tree[node.pid - 1] === undefined ? "none" : Genogram.tree[node.pid - 1].name;
-            let fid = Genogram.tree[node.fid - 1] === undefined ? "none" : Genogram.tree[node.fid - 1].name;
-            let mid = Genogram.tree[node.mid - 1] === undefined ? "none" : Genogram.tree[node.mid - 1].name;
-
-
-
-            let nodeHTML = `<div id="${node.id}" style="display: inline-block">${node.name}</div>`;
-            html += nodeHTML;
-        }
-
-        return html;
-    }
-
-    constructor(element, options){
+    constructor(id, options){
         options = options || {};
         options.width = options.width || 500;
         options.height = options.height || 500;
         options.fullscreen = options.fullscreen || false;
 
-        Genogram.HTMLElement = document.createElement('div');
+        Genogram.HTMLElement = document.getElementById(id)
+
         Genogram.HTMLElement.style.display = 'inline-block';
 
-        Genogram.HTMLElement.id = 'genogram';
+        Genogram.HTMLElement.classList.add('genogram-tree');
+
         Genogram.HTMLElement.style.margin = '0px';
 
         Genogram.HTMLElement.style.width = options.width + 'px';
@@ -67,7 +50,7 @@ class Genogram {
             Genogram.HTMLElement.style.height = '100%';
         }
 
-        element.appendChild(Genogram.HTMLElement);        
+        document.body.appendChild(Genogram.HTMLElement);  
     }
 
     createNode(name){
@@ -90,8 +73,11 @@ class Genogram {
         }
 
         if(Genogram.nodeList[name] !== undefined) throw new Error(`Node "${name}" already exists`);
-        Genogram.nodeList[name] = node;
+        if(Genogram.tree.filter(node => node.name == name).length > 0) throw new Error(`Node "${name}" already exists in tree`);
 
+        Genogram.nodeList[name] = node;
+        Genogram.tree.push(Genogram.treeNode(node.id, node.pid, node.mid, node.fid, node.name, node.details));
+        Genogram.TreeConstruct();
         return node;
     }
 
@@ -101,13 +87,6 @@ class Genogram {
     }
 
     getTree(){
-        return Genogram.tree;
-    }
-
-    addNode(node){
-        if(Genogram.nodeList[node.name] == undefined) throw new Error(`Node "${node.name}" does not exist`);
-
-        Genogram.tree.push(Genogram.treeNode(node.id, node.pid, node.mid, node.fid, node.name, node.details));
         return Genogram.tree;
     }
 
@@ -122,7 +101,8 @@ class Genogram {
 
         Genogram.nodeList[node1.name].pid = node2ID;
         Genogram.nodeList[node2.name].pid = node1ID;
-        Genogram.rerenderTree();
+
+        Genogram.TreeConstruct();
         return Genogram.tree;
     }
 
@@ -145,7 +125,7 @@ class Genogram {
             Genogram.nodeList[children[i].name].mid = motherID;
         }
 
-        Genogram.rerenderTree();
+        Genogram.TreeConstruct();
         return Genogram.tree;
     }
 

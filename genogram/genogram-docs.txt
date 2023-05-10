@@ -1,8 +1,9 @@
 ? - optional
 ... - repeatable
 
-let gen = new Genogram(genogram, options?);
+let gen = new Genogram(id, options?);
 initialize the genogram
+    id (string) - the id of the element to hold the genogram
     options (object) -  options available
         options.height (integer) - the height of the genogram (default 500)
         options.width (integer) - the width of the genogram (default 500)
@@ -32,11 +33,6 @@ creates a new node with the given founding member
 gen.getTree()
 gets the tree object
     returns (object): the tree object
-
-gen.addNode(node)
-adds a node to the tree
-    node (object) - the node to add
-    returns (object): the tree
 
 gen.link(node1, node2)
 creates a partner link between two nodes

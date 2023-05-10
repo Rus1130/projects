@@ -2,17 +2,17 @@
 
 </style>
 <head>
+    <link rel="stylesheet" href="./tree.css">
     <script src="./genogram.js"></script>
 </head>
 <body>
-    <div id="diagram"></div>
+    <div id="diagram">
+    </div>
 </body>
 <script>
     const diagram = document.getElementById('diagram');
 
-    const gen = new Genogram(diagram, {fullscreen: true});
-
-    diagram.innerHTML = ''
+    const gen = new Genogram("diagram", {fullscreen: true});
 
     let jack = gen.createNode('Jack');
     let jill = gen.createNode('Jill');
@@ -21,13 +21,6 @@
     let joe = gen.createNode('Joe');
     let jerry = gen.createNode('Jerry');
 
-    gen.addNode(jack);
-    gen.addNode(jill);
-    gen.addNode(jane);
-    gen.addNode(john);
-    gen.addNode(joe)
-    gen.addNode(jerry)
-
     gen.link(jack, jill);
     gen.link(joe, jane);
 
@@ -35,6 +28,5 @@
     gen.parentalLink(joe, jane, [jerry])
 
     console.log(gen.getTree())
-    diagram.innerHTML = Genogram.treeToHTML();
 
 </script>
