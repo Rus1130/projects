@@ -13,13 +13,12 @@ class Genogram {
             Genogram.tree[i].fid = Genogram.nodeList[nodeName].fid;
             Genogram.tree[i].name = Genogram.nodeList[nodeName].name;
             Genogram.tree[i].details = Genogram.nodeList[nodeName].details;
-            Genogram.tree[i].generation = Genogram.nodeList[nodeName].generation;
         }
 
         return Genogram.tree;
     }
 
-    static treeNode(id, pid, mid, fid, name, details, generation){
+    static treeNode(id, pid, mid, fid, name, details){
         return {
             id: id,
             pid: pid,
@@ -27,7 +26,6 @@ class Genogram {
             fid: fid,
             name: name,
             details: details,
-            generation: generation
         }
     }
 
@@ -42,7 +40,7 @@ class Genogram {
 
 
 
-            let nodeHTML = `<div>${node.name} (partner: ${pid})</div>`;
+            let nodeHTML = `<div id="${node.id}" style="display: inline-block">${node.name}</div>`;
             html += nodeHTML;
         }
 
@@ -83,7 +81,6 @@ class Genogram {
             pid: null,
             mid: null,
             fid: null,
-            generation: 0,
             setDetails(details){
                 let keys = Object.keys(details);
                 for(let i = 0; i < keys.length; i++){
@@ -146,7 +143,6 @@ class Genogram {
         for(let i = 0; i < children.length; i++){
             Genogram.nodeList[children[i].name].fid = fatherID;
             Genogram.nodeList[children[i].name].mid = motherID;
-            Genogram.nodeList[children[i].name].generation = Genogram.nodeList[father.name].generation + 1;
         }
 
         Genogram.rerenderTree();
