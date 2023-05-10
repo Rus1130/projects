@@ -293,13 +293,11 @@
             itemDiv.onclick = e => {
                 let item = e.target;
                 if(item.className != "inventory-item") item = item.parentElement;
-                let itemName = item.id.split("-").slice(2).join(" ");
-                let itemRarity = Object.keys(cases[currentCase]).find(key => cases[currentCase][key][itemName]);
-                let itemValue = cases[currentCase][itemRarity][itemName];
-                currentMoney += itemValue;
+                let name = Object.keys(cases[itemCase][itemRarity]).join("")
+                let value = +Object.values(cases[itemCase][itemRarity]).join("")
+                currentMoney += value;
                 moneyCounter.innerHTML = `$${currentMoney}`;
-                inventory[currentCase][itemName] -= 1;
-                // remove the div
+                inventory[itemCase][itemName] -= 1;
                 item.remove();
             }
             inventoryDisplay.appendChild(itemDiv);
@@ -466,12 +464,14 @@
                                 let item = e.target;
                                 if(item.className != "inventory-item") item = item.parentElement;
                                 let itemName = item.id.split("-").slice(2).join(" ");
-                                let itemRarity = Object.keys(cases[currentCase]).find(key => cases[currentCase][key][itemName]);
-                                let itemValue = cases[currentCase][itemRarity][itemName];
+
+                                let itemCase = Object.keys(inventory).find(key => inventory[key][itemName]);
+                                let itemRarity = Object.keys(cases[itemCase]).find(key => cases[itemCase][key][itemName]);
+
+                                let itemValue = cases[itemCase][itemRarity][itemName];
                                 currentMoney += itemValue;
                                 moneyCounter.innerHTML = `$${currentMoney}`;
-                                inventory[currentCase][itemName] -= 1;
-                                // remove the div
+                                inventory[itemCase][itemName] -= 1;
                                 item.remove();
                             }
                             inventoryDisplay.appendChild(itemDiv);
