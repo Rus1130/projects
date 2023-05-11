@@ -1,6 +1,31 @@
+<style>
+.js-error, .js-loading {
+	text-align: center;
+}
+
+.js-loading::after, .js-error::after {
+	font-size: 30px;
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+.js-error::after {
+	content: "JavaScript failed to load,\00a0or there was an error in your code.";
+	color: red;
+	border: 3px solid red;
+}
+
+.js-loading::after {
+	content: "JavaScript is loading...";
+	color: #F28C28;
+	border: 3px solid #F28C28;
+}
+</style>
+
 <head>
     <script src="Utils.js"></script>
 </head>
 <body>
-
+<div class="js-error"></div>
+<div class="js-loading"></div>
 </body>
