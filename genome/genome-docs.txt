@@ -1,0 +1,25 @@
+? - optional
+... - repeatable
+
+let gen = new Genome(genes)
+initialize Genome
+    genes (object) - the genes structured like so:
+        {
+            lowercaseGeneLetter: [dominantTrait, recessiveTrait],
+            lowercaseGeneLetter: [dominantTrait, recessiveTrait],
+        }
+
+        example:
+        {
+            t: ['tall', 'short'],
+            c: ['curly hair', 'straight hair'],
+        }
+
+gen.createParent(parentName, genotype)
+create a parent
+    parentName (string) - the name of the parent
+    genotype (string) - the genotype of the parent (ex: 'TtCC')
+
+gen.randomParent(parentName)
+creates a random parent from the defined genes
+    parentName (string) - the name of the parent

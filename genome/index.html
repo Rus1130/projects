@@ -1,0 +1,24 @@
+<style>
+
+</style>
+<head>
+    <script src="./genome.js"></script>
+</head>
+<body>
+
+</body>
+<script>
+    let genomes = {
+        t: ['tall', 'short'],
+        c: ['straight hair', 'curly hair'],
+        h: ['brown hair', 'red hair'],
+        e: ['brown eyes', 'blue eyes'],
+    }
+
+    let gen = new Genome(genomes);
+
+    let parent1 = gen.createParent("parent1", "ttCcEE")
+    let parent2 = gen.randomParent("parent2")
+
+    console.log(parent1)
+</script>
