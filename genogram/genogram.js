@@ -53,6 +53,62 @@ class Genogram {
         document.body.appendChild(Genogram.HTMLElement);  
     }
 
+    render(){
+        for(let i = 0; i < Genogram.tree.length; i++){
+            let node = Genogram.tree[i];
+            let element = document.createElement('ul');
+            let innerElem = document.createElement('li');
+            innerElem.innerHTML = `${node.name} (id: ${node.id})`;
+            element.setAttribute('data-id', node.id);
+            element.appendChild(innerElem);
+
+            Genogram.HTMLElement.appendChild(element);
+        }
+
+        for(let i = 0; i < Genogram.tree.length; i++){
+            let element = document.querySelector(`[data-id="${Genogram.tree[i].id}"]`);
+            let id = Genogram.tree[i].id;
+            
+            // get the node with that id
+            let node = Genogram.tree.filter(node => node.id == id)[0];
+            let fid = node.fid;
+            let mid = node.mid;
+
+            if(fid != null){
+                let fatherElement1 = document.createElement("ul")
+                let fatherElement2 = document.createElement("li")
+
+                // get fathers name'
+                let fatherName = Genogram.tree.filter(node => node.id == fid)[0].name;
+    
+                fatherElement1.setAttribute('data-id', node.fid);
+                fatherElement2.innerHTML = `father: ${fatherName} (id: ${fid})`;
+    
+                fatherElement1.appendChild(fatherElement2);
+                element.appendChild(fatherElement1);
+            }
+
+            if(mid != null){
+                let motherElement1 = document.createElement("ul")
+                let motherElement2 = document.createElement("li")
+
+                // get mothers name'
+                let motherName = Genogram.tree.filter(node => node.id == mid)[0].name;
+    
+                motherElement1.setAttribute('data-id', node.mid);
+                motherElement2.innerHTML = `mother: ${motherName} (id: ${mid})`;
+    
+                motherElement1.appendChild(motherElement2);
+                element.appendChild(motherElement1);
+            }
+
+
+
+            
+        }
+    }
+
+
     createNode(name){
         let node = {
             name: name,
@@ -69,7 +125,7 @@ class Genogram {
                 for(let i = 0; i < keys.length; i++){
                     this.details[keys[i]] = details[keys[i]];
                 }
-            }
+            },
         }
 
         if(Genogram.nodeList[name] !== undefined) throw new Error(`Node "${name}" already exists`);
