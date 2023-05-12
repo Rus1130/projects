@@ -1,6 +1,3 @@
-? - optional
-... - repeatable
-
 let gen = new Genome(genes)
 initialize Genome
     genes (object) - the genes structured like so:
@@ -15,11 +12,6 @@ initialize Genome
             c: ['curly hair', 'straight hair'],
         }
 
-gen.createParent(parentName, genotype)
-create a parent
-    parentName (string) - the name of the parent
-    genotype (string) - the genotype of the parent (ex: 'TtCC')
-
-gen.randomParent(parentName)
-creates a random parent from the defined genes
-    parentName (string) - the name of the parent
+gen.random(len)
+    returns a random genotype
+    len (number) - how many genes to return (Cc is 1 gene) - optional

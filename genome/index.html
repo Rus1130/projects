@@ -17,8 +17,8 @@
 
     let gen = new Genome(genomes);
 
-    let parent1 = gen.createParent("parent1", "ttCcEE")
-    let parent2 = gen.randomParent("parent2")
+    let parent1 = "ttCcEE"
+    let parent2 = gen.random(4)
 
-    console.log(parent1)
+    console.log(gen.cross(parent1, parent2))
 </script>
