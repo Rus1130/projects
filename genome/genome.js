@@ -167,10 +167,52 @@ class Genome {
 
         }
 
-        
-
-        console.log(parent1)
         return children
+    }
+
+    quantify(children){
+        let phenotypes = {};
+        let phenotypeArray = [];
+        for(let i = 0; i < children.length; i++){
+            let phenotype = this.getPhenotype(children[i]).split(", ");
+            for(let j = 0; j < phenotype.length; j++){
+                if(!phenotypeArray.includes(phenotype[j])){
+                    phenotypeArray.push(phenotype[j]);
+                }
+            }
+        }
+
+        for(let i = 0; i < phenotypeArray.length; i++){
+            phenotypes[phenotypeArray[i]] = 0;
+        }
+
+        for(let i = 0; i < children.length; i++){
+            let phenotype = this.getPhenotype(children[i]).split(", ");
+            for(let j = 0; j < phenotype.length; j++){
+                phenotypes[phenotype[j]]++;
+            }
+        }
+
+        let total = 0;
+        for(let i = 0; i < Object.values(phenotypes).length; i++){
+            total += Object.values(phenotypes)[i];
+        }
+
+        let returnArray = [];
+
+        for(let i = 0; i < Object.keys(phenotypes).length; i++){
+            phenotypes[Object.keys(phenotypes)[i]] = (phenotypes[Object.keys(phenotypes)[i]] / total) * 100;
+            // remove floating point errors
+            phenotypes[Object.keys(phenotypes)[i]] = Math.round(phenotypes[Object.keys(phenotypes)[i]] * 1000) / 1000;
+            phenotypes[Object.keys(phenotypes)[i]] += "%";
+
+        }
+
+        for(let i = 0; i < Object.keys(phenotypes).length; i++){
+            returnArray.push(Object.keys(phenotypes)[i] + ": " + Object.values(phenotypes)[i]);
+        }
+
+        return returnArray
     }
 
 

@@ -14,16 +14,23 @@
         h: ['brown hair', 'red hair'],
         e: ['brown eyes', 'blue eyes'],
         s: ['freckles', 'no freckles'],
-        l: ['left handed', 'right handed'],
+        l: ['right handed', 'left handed'],
         n: ['big nose', 'small nose']
     }
 
     let gen = new Genome(genomes);
 
-    let parent1 = "tt"
-    let parent2 = gen.random(100)
+    let parent1 = gen.random(1)
+    let parent2 = "TT"
 
-    let children = gen.chainCross(parent1, parent2).map(x =>`${x} ${gen.getPhenotype(x)}`)
-    document.body.innerHTML = children.join('<br>')
+    let children = [];
+
+    for (let i = 0; i < 100; i++) {
+        children.push(gen.cross(gen.random(1), parent2))
+    }
+    
+    console.log(gen.quantify(children))
+
+    document.body.innerHTML = gen.quantify(children).join(", ") + "<br><br>" + children.map(x => `${x} ${gen.getPhenotype(x)}`).join("<br>")
 
 </script>
