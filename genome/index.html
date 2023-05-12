@@ -1,5 +1,5 @@
 <style>
-
+    body {font-family: monospace;}
 </style>
 <head>
     <script src="./genome.js"></script>
@@ -13,12 +13,17 @@
         c: ['straight hair', 'curly hair'],
         h: ['brown hair', 'red hair'],
         e: ['brown eyes', 'blue eyes'],
+        s: ['freckles', 'no freckles'],
+        l: ['left handed', 'right handed'],
+        n: ['big nose', 'small nose']
     }
 
     let gen = new Genome(genomes);
 
-    let parent1 = "ttCcEE"
-    let parent2 = gen.random(4)
+    let parent1 = "tt"
+    let parent2 = gen.random(100)
 
-    console.log(gen.cross(parent1, parent2))
+    let children = gen.chainCross(parent1, parent2).map(x =>`${x} ${gen.getPhenotype(x)}`)
+    document.body.innerHTML = children.join('<br>')
+
 </script>

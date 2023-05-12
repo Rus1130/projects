@@ -1,5 +1,5 @@
 let gen = new Genome(genes)
-initialize Genome
+    initialize Genome
     genes (object) - the genes structured like so:
         {
             lowercaseGeneLetter: [dominantTrait, recessiveTrait],
@@ -12,6 +12,27 @@ initialize Genome
             c: ['curly hair', 'straight hair'],
         }
 
-gen.random(len)
+gen.random(amount, len)
     returns a random genotype
+    amount (number) - how many genotypes to return
     len (number) - how many genes to return (Cc is 1 gene) - optional
+
+gen.cross(parent1, parent2)
+    returns a new genotype based on the parents
+    parent1 (string) - the first parent
+    parent2 (string) - the second parent
+
+gen.bulkCross(parent1, parent2, amountOfChildren)
+    returns an array of new genotypes based on the parents
+    parent1 (string) - the first parent
+    parent2 (string) - the second parent
+    amountOfChildren (number) - how many children to have in the array
+
+gen.getPhenotype(genotype)
+    returns the phenotype of the genotype
+    genotype (string) - the genotype to get the phenotype of
+
+gen.chainCross(startingParent, parents)
+    breeds the result of the previous cross with the next parent in the array
+    startingParent (string) - the first parent
+    parents (array) - the parents to breed with
