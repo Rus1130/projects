@@ -8,7 +8,7 @@
 
 </body>
 <script>
-    let genomes = {
+    let genes = {
         t: ['tall', 'short'],
         c: ['straight hair', 'curly hair'],
         h: ['brown hair', 'red hair'],
@@ -18,19 +18,9 @@
         n: ['big nose', 'small nose']
     }
 
-    let gen = new Genome(genomes, 0);
-
-    let parent1 = gen.random(1, 2)
-    let parent2 = gen.random(1, 2)
-
-    console.log(parent1, parent2)
-
-    let children = [gen.cross(parent1, parent2), gen.cross(parent1, parent2)]
-    for(i = 0; i < 100; i++){
-        children.push(gen.cross(children[children.length - 1], children[children.length - 1]))
-    }
+    let gen = new Genome(genes, 0);
 
 
-    document.body.innerHTML = gen.quantify(children).join(", ") + "<br><br>" + children.map(x => `${x} ${gen.getPhenotype(x)}`).join("<br>")
+    // document.body.innerHTML = gen.quantify(children).join(", ") + "<br><br>" + children.map(x => `${x} ${gen.getPhenotype(x)}`).join("<br>")
 
 </script>
