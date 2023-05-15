@@ -1,4 +1,4 @@
-let gen = new Genome(genes)
+let gen = new Genome(genes, mutationRate)
     initialize Genome
     genes (object) - the genes structured like so:
         {
@@ -11,11 +11,12 @@ let gen = new Genome(genes)
             t: ['tall', 'short'],
             c: ['curly hair', 'straight hair'],
         }
+    mutationRate (number) - the chance of a mutation happening (0 ~ 1)
 
 gen.random(amount, len)
     returns a random genotype
     amount (number) - how many genotypes to return
-    len (number) - how many genes to return (Cc is 1 gene) - optional
+    len (number) - how long each genotype is
 
 gen.cross(parent1, parent2)
     returns a new genotype based on the parents

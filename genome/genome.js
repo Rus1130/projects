@@ -1,6 +1,7 @@
 class Genome {
     static dominantTraits = {}
     static recessiveTraits = {}
+    static mutationRate = 0
     static shuffleArray(d) {
         for(var c = d.length - 1; c > 0; c--){
             var b = Math.floor(Math.random() * (c + 1));
@@ -11,7 +12,14 @@ class Genome {
         return d
     };
 
-    constructor(genes){
+    constructor(genes, mutationRate){
+        if(genes == undefined) throw new Error("No genes provided");
+        if(mutationRate == undefined) throw new Error("No mutation rate provided");
+        if(typeof genes != "object") throw new Error("Genes must be an object");
+        if(typeof mutationRate != "number") throw new Error("Mutation rate must be a number");
+
+        Genome.mutationRate = mutationRate;
+
         let letters = Object.keys(genes);
         let dominantTraits = Object.values(genes).map(x => x[0]);
         let recessiveTraits = Object.values(genes).map(x => x[1]);
@@ -45,10 +53,7 @@ class Genome {
                 if(randomTrait2 == 0) gene += traits[j].toLowerCase();
                 else gene += traits[j].toUpperCase();
 
-                if(gene[0] == gene[0].toLowerCase() && gene[1] == gene[1].toUpperCase()){
-                    gene = gene.split("").reverse().join("");
-
-                }
+                gene = gene.split("").sort().join("");
 
                 genotype += gene;
             }
@@ -57,7 +62,7 @@ class Genome {
         }
 
         if(genotypes.length == 1) return genotypes[0];
-        else return genotypes
+        else return genotypes;
     }
 
     cross(parent1, parent2){
@@ -105,10 +110,7 @@ class Genome {
                 square.push(genes[0][1] + genes[1][1]);
 
                 for(let j = 0; j < square.length; j++){
-                    if(square[j][0] == square[j][0].toLowerCase() && square[j][1] == square[j][1].toUpperCase()){
-                        square[j] = square[j].split("").reverse().join("");
-                    }
-
+                    square[j].split("").sort().join("");
                 }
             } catch (e) {
                 childrenGenes.push(genes[0])
@@ -127,7 +129,31 @@ class Genome {
             childrenGenes.push(genes[randomGene]);
         }
 
-        return childrenGenes.sort().join("")
+        childrenGenes = childrenGenes.sort()
+
+        for(let i = 0; i < childrenGenes.length; i++){
+            if(Math.random() < Genome.mutationRate){
+
+                let randomTrait1 = Math.floor(Math.random() * 2);
+                let randomTrait2 = Math.floor(Math.random() * 2);
+
+                let newGene = '';
+
+                let randomGene = Math.floor(Math.random() * Object.keys(Genome.dominantTraits).length);
+
+                if(randomTrait1 == 0) newGene += Object.keys(Genome.dominantTraits)[randomGene].toLowerCase();
+                else newGene += Object.keys(Genome.dominantTraits)[randomGene].toUpperCase();
+
+                if(randomTrait2 == 0) newGene += Object.keys(Genome.dominantTraits)[randomGene].toUpperCase();
+                else newGene += Object.keys(Genome.dominantTraits)[randomGene].toLowerCase();
+
+                newGene = newGene.split("").sort().join("");
+
+                childrenGenes[i] = newGene
+            }
+        }
+
+        return childrenGenes.join("")
     }
 
     bulkCross(parent1, parent2, amountOfChildren){

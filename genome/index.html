@@ -18,18 +18,18 @@
         n: ['big nose', 'small nose']
     }
 
-    let gen = new Genome(genomes);
+    let gen = new Genome(genomes, 0);
 
-    let parent1 = gen.random(1)
-    let parent2 = "TT"
+    let parent1 = gen.random(1, 2)
+    let parent2 = gen.random(1, 2)
 
-    let children = [];
+    console.log(parent1, parent2)
 
-    for (let i = 0; i < 100; i++) {
-        children.push(gen.cross(gen.random(1), parent2))
+    let children = [gen.cross(parent1, parent2), gen.cross(parent1, parent2)]
+    for(i = 0; i < 100; i++){
+        children.push(gen.cross(children[children.length - 1], children[children.length - 1]))
     }
-    
-    console.log(gen.quantify(children))
+
 
     document.body.innerHTML = gen.quantify(children).join(", ") + "<br><br>" + children.map(x => `${x} ${gen.getPhenotype(x)}`).join("<br>")
 
