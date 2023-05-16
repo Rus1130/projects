@@ -1,0 +1,39 @@
+let gr = new Graphics(options)
+initializes the graphics library
+    options (object) - an object of options
+        width (number) (default 500) - the width of the graphics area
+        height (number) (default 500) - the height of the graphics area
+        fullscreen (boolean) (default false) - whether or not to make the graphics area fullscreen (overrides width and height)
+        border (boolean) (default false) - whether or not to draw a border around the canvas
+
+gr.appendTo(element)
+appends the graphics area to an element
+    element (HTMLElement) - the element to append the graphics area to
+
+gr.makeRect(x, y, w, h)
+creates a rect and adds it to the canvas
+    x (number) - the x position of the rect
+    y (number) - the y position of the rect
+    w (number) - the width of the rect
+    h (number) - the height of the rect
+    returns object
+        object.HTMLElement (HTMLElement) - the HTMLElement of the rect
+        object.props (object) - alias for HTMLElement.styles
+        object.x (number) - the x position of the rect
+        object.y (number) - the y position of the rect
+        object.w (number) - the width of the rect
+        object.h (number) - the height of the rect
+        object.center() - centers the rect around its x and y position
+
+gr.makeCircle(x, y, r)
+creates a circle and adds it to the canvas
+    x (number) - the x position of the circle
+    y (number) - the y position of the circle
+    r (number) - the radius of the circle
+    returns object
+        object.HTMLElement (HTMLElement) - the HTMLElement of the circle
+        object.props (object) - alias for HTMLElement.styles
+        object.x (number) - the x position of the circle
+        object.y (number) - the y position of the circle
+        object.r (number) - the radius of the circle
+        object.center() - centers the circle around its x and y position

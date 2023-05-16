@@ -1,0 +1,22 @@
+<style>
+
+</style>
+<head>
+    <script src="main.js"></script>
+</head>
+<body>
+</body>
+<script defer>
+
+    let gr = new Graphics({
+    fullscreen: true,
+    }).appendTo(document.body)
+
+    let circ = gr.makeCircle(100, 100, 100)
+    let circ2 = gr.makeCircle(100, 100, 100).center()
+    circ2.props.backgroundColor = "blue"
+    circ2.props.borderColor = "blue"
+
+    
+
+</script>
