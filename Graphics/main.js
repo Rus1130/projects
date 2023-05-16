@@ -1,22 +1,34 @@
 
-// jsdoc it
-
 /**
     * @class Graphics
     * @classdesc A class for creating graphics
     * @param {object} options - Options for the graphics
     * @example
-    * let graphics = new Graphics({
-    *    width: 500,
-    *    height: 500,
-    *    fullscreen: false,
-    *    border: false
-    * });
+    * <head>
+        <script src="main.js" type="module"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+      </head>
+      <body>
+      </body>
+      <script defer type="module">
+          import { Graphics } from "./main.js"
+          let gr = new Graphics({
+              width: 500,
+              height: 500,
+              fullscreen: false,
+              border: false
+          }).appendTo(document.body);
+      </script>
     */
-class Graphics {
+export class Graphics {
     static HTMLElement = null;
     static objects = {};
     constructor(options) {
+        try{
+            let animeCopy = anime;
+        } catch(e){
+            throw new Error("Anime.js is required for this library to work");
+        }
         options = options || {};
         options.width = options.width || 500;
         options.height = options.height || 500;
@@ -72,11 +84,15 @@ class Graphics {
      * @param {number} y - The y position of the rectangle
      * @param {number} w - The width of the rectangle
      * @param {number} h - The height of the rectangle
+     * @param {object} styling - The styling of the rectangle
      * @returns {object} - The rectangle object
      * @example
-     * let rect = graphics.makeRect(10, 10, 100, 100);
+     * let rect = graphics.makeRect(10, 10, 100, 100, {
+     *  backgroundColor: "red"
+     * });
      */
-    makeRect(x, y, w, h){
+    makeRect(x, y, w, h, styling){
+        styling = styling || {};
         let element = document.createElement("rect");
         element.style.position = "absolute";
         element.style.left = x + "px";
@@ -86,6 +102,12 @@ class Graphics {
         element.style.height = h + "px";
         element.style.backgroundColor = "black";
         element.style.border = "1px solid black";
+
+        for(let prop in styling){
+            element.style[prop] = styling[prop];
+        }
+
+
 
         let object = {
             HTMLElement: element,
@@ -122,11 +144,15 @@ class Graphics {
      * @param {number} x - The x position of the circle
      * @param {number} y - The y position of the circle
      * @param {number} r - The radius of the circle
+     * @param {object} styling - The styling of the circle
      * @returns {object} - The circle object
      * @example
-     * let circle = graphics.makeCircle(10, 10, 100);
+     * let circle = graphics.makeCircle(10, 10, 100, {
+     *  backgroundColor: "red"
+     * });
      */
-    makeCircle(x, y, r){
+    makeCircle(x, y, r, styling){
+        styling = styling || {};
         let element = document.createElement("circle");
         element.style.position = "absolute";
         element.style.left = x + "px";
@@ -138,6 +164,10 @@ class Graphics {
         element.style.borderRadius = "50%";
         element.style.backgroundColor = "black";
         element.style.border = "1px solid black";
+
+        for(let prop in styling){
+            element.style[prop] = styling[prop];
+        }
 
 
 
@@ -162,11 +192,67 @@ class Graphics {
 
                 return this;
             },
-            props: element.style
         }
 
         Graphics.HTMLElement.appendChild(element);
         return object;
     }
 
+    /**
+     * @function makeText
+     * @memberof Graphics
+     * @description Creates text
+     * @param {string} text - The text to display
+     * @param {number} x - The x position of the text
+     * @param {number} y - The y position of the text
+     * @param {object} styling - The styling of the text
+     * @returns {object} - The text object
+     * @example
+     * let text = graphics.makeText("Hello World", 10, 10, {
+     *  color: "red"
+     * });
+     */
+    makeText(text, x, y, styling){
+        styling = styling || {};
+        let element = document.createElement("text");
+        element.style.position = "absolute";
+        element.style.left = x + "px";
+        element.style.top = y + "px";
+
+        element.style.color = "black";
+        element.style.fontFamily = "Arial";
+
+        element.textContent = text;
+
+        for(let prop in styling){
+            element.style[prop] = styling[prop];
+        }
+
+        let object = {
+            HTMLElement: element,
+            type: "text",
+            x: x,
+            y: y,
+            text: text,
+            /**
+             * @function center
+             * @description Centers the text
+             * @returns {object} - The text object
+             * @example
+             * let text = graphics.makeText("Hello World", 10, 10).center();
+             */
+            center(){
+                element.style.left = (x - element.offsetWidth / 2) + "px";
+                element.style.top = (y - element.offsetHeight / 2) + "px";
+                this.x = x - element.offsetWidth / 2;
+                this.y = y - element.offsetHeight / 2;
+
+                return this;
+            },
+            props: element.style
+        }
+
+        Graphics.HTMLElement.appendChild(element);
+        return object;
+    }
 }

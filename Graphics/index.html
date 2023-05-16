@@ -2,20 +2,23 @@
 
 </style>
 <head>
-    <script src="main.js"></script>
+    <script src="main.js" type="module"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 </head>
 <body>
 </body>
-<script defer>
-
+<script defer type="module">
+    import { Graphics } from "./main.js"
     let gr = new Graphics({
     fullscreen: true,
     }).appendTo(document.body)
 
-    let circ = gr.makeCircle(100, 100, 100)
+    let circ = gr.makeCircle(100, 100, 100, {
+        backgroundColor: "blue",
+        borderColor: "blue"
+    })
     let circ2 = gr.makeCircle(100, 100, 100).center()
-    circ2.props.backgroundColor = "blue"
-    circ2.props.borderColor = "blue"
+    let text = gr.makeText("Hello World", 300, 150).center()
 
     
 
