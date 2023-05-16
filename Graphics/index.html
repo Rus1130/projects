@@ -7,19 +7,25 @@
 </head>
 <body>
 </body>
-<script defer type="module">
+<script type="module" defer>
     import { Graphics } from "./main.js"
+    import anime from "./anime.es.js"
+
     let gr = new Graphics({
-    fullscreen: true,
+        fullscreen: true,
     }).appendTo(document.body)
 
-    let circ = gr.makeCircle(100, 100, 100, {
+    let circ = gr.makeCircle("circle", 100, 100, 100, {
         backgroundColor: "blue",
         borderColor: "blue"
     })
-    let circ2 = gr.makeCircle(100, 100, 100).center()
-    let text = gr.makeText("Hello World", 300, 150).center()
+    let circ2 = gr.makeCircle("circle2", 100, 100, 100).center()
 
-    
+    let text = gr.makeText("hi","Hello World", 300, 150).center()
+
+
+    circ.animate({
+        left: 250,
+    })
 
 </script>

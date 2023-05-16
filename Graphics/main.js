@@ -1,4 +1,4 @@
-
+import anime from "./anime.es.js"
 /**
     * @class Graphics
     * @classdesc A class for creating graphics
@@ -6,7 +6,6 @@
     * @example
     * <head>
         <script src="main.js" type="module"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
       </head>
       <body>
       </body>
@@ -24,11 +23,6 @@ export class Graphics {
     static HTMLElement = null;
     static objects = {};
     constructor(options) {
-        try{
-            let animeCopy = anime;
-        } catch(e){
-            throw new Error("Anime.js is required for this library to work");
-        }
         options = options || {};
         options.width = options.width || 500;
         options.height = options.height || 500;
@@ -80,6 +74,7 @@ export class Graphics {
      * @function makeRect
      * @memberof Graphics
      * @description Creates a rectangle
+     * @param {number} id - The id of the rectangle
      * @param {number} x - The x position of the rectangle
      * @param {number} y - The y position of the rectangle
      * @param {number} w - The width of the rectangle
@@ -87,11 +82,11 @@ export class Graphics {
      * @param {object} styling - The styling of the rectangle
      * @returns {object} - The rectangle object
      * @example
-     * let rect = graphics.makeRect(10, 10, 100, 100, {
+     * let rect = graphics.makeRect("rect", 10, 10, 100, 100, {
      *  backgroundColor: "red"
      * });
      */
-    makeRect(x, y, w, h, styling){
+    makeRect(id, x, y, w, h, styling){
         styling = styling || {};
         let element = document.createElement("rect");
         element.style.position = "absolute";
@@ -102,6 +97,8 @@ export class Graphics {
         element.style.height = h + "px";
         element.style.backgroundColor = "black";
         element.style.border = "1px solid black";
+
+        element.id = id;
 
         for(let prop in styling){
             element.style[prop] = styling[prop];
@@ -121,7 +118,7 @@ export class Graphics {
              * @description Centers the rectangle
              * @returns {object} - The rectangle object
              * @example
-             * let rect = graphics.makeRect(10, 10, 100, 100).center();
+             * let rect = graphics.makeRect("rect", 10, 10, 100, 100).center();
              */
             center(){
                 element.style.left = (x - w / 2) + "px";
@@ -130,6 +127,21 @@ export class Graphics {
                 this.y = y - h / 2;
 
                 return this;
+            },
+            /**
+             * @function animate
+             * @description Animates the rectangle
+             * @param {object} options - The options for the animation
+             * @returns {object} - The rectangle object
+             * @example
+             * let rect = graphics.makeRect("rect", 10, 10, 100, 100).animate({
+             *  left: 100
+             * });
+             */
+            animate(options){
+                if(options.targets != undefined) throw new Error("Do not specify the targets");
+                options.targets = element;
+                anime(options)
             }
         }
 
@@ -141,17 +153,18 @@ export class Graphics {
      * @function makeCircle
      * @memberof Graphics
      * @description Creates a circle
+     * @param {number} id - The id of the circle
      * @param {number} x - The x position of the circle
      * @param {number} y - The y position of the circle
      * @param {number} r - The radius of the circle
      * @param {object} styling - The styling of the circle
      * @returns {object} - The circle object
      * @example
-     * let circle = graphics.makeCircle(10, 10, 100, {
+     * let circle = graphics.makeCircle("circ", 10, 10, 100, {
      *  backgroundColor: "red"
      * });
      */
-    makeCircle(x, y, r, styling){
+    makeCircle(id, x, y, r, styling){
         styling = styling || {};
         let element = document.createElement("circle");
         element.style.position = "absolute";
@@ -165,11 +178,11 @@ export class Graphics {
         element.style.backgroundColor = "black";
         element.style.border = "1px solid black";
 
+        element.id = id;
+
         for(let prop in styling){
             element.style[prop] = styling[prop];
         }
-
-
 
         let object = {
             HTMLElement: element,
@@ -182,7 +195,7 @@ export class Graphics {
              * @description Centers the circle
              * @returns {object} - The circle object
              * @example
-             * let circle = graphics.makeCircle(10, 10, 100).center();
+             * let circle = graphics.makeCircle("circ", 10, 10, 100).center();
              */
             center(){
                 element.style.left = (x - r / 2) + "px";
@@ -192,6 +205,21 @@ export class Graphics {
 
                 return this;
             },
+            /**
+             * @function animate
+             * @description Animates the circle
+             * @param {object} options - The options for the animation
+             * @returns {object} - The circle object
+             * @example
+             * let circle = graphics.makeCircle("circ", 10, 10, 100, 100).animate({
+             *  left: 100
+             * });
+             */
+            animate(options){
+                if(options.targets != undefined) throw new Error("Do not specify the targets");
+                options.targets = element;
+                anime(options)
+            }
         }
 
         Graphics.HTMLElement.appendChild(element);
@@ -202,17 +230,18 @@ export class Graphics {
      * @function makeText
      * @memberof Graphics
      * @description Creates text
+     * @param {number} id - The id of the text
      * @param {string} text - The text to display
      * @param {number} x - The x position of the text
      * @param {number} y - The y position of the text
      * @param {object} styling - The styling of the text
      * @returns {object} - The text object
      * @example
-     * let text = graphics.makeText("Hello World", 10, 10, {
+     * let text = graphics.makeText("text", "Hello World", 10, 10, {
      *  color: "red"
      * });
      */
-    makeText(text, x, y, styling){
+    makeText(id, text, x, y, styling){
         styling = styling || {};
         let element = document.createElement("text");
         element.style.position = "absolute";
@@ -223,6 +252,8 @@ export class Graphics {
         element.style.fontFamily = "Arial";
 
         element.textContent = text;
+
+        element.id = id;
 
         for(let prop in styling){
             element.style[prop] = styling[prop];
@@ -239,7 +270,7 @@ export class Graphics {
              * @description Centers the text
              * @returns {object} - The text object
              * @example
-             * let text = graphics.makeText("Hello World", 10, 10).center();
+             * let text = graphics.makeText("text", "Hello World", 10, 10).center();
              */
             center(){
                 element.style.left = (x - element.offsetWidth / 2) + "px";
@@ -249,7 +280,22 @@ export class Graphics {
 
                 return this;
             },
-            props: element.style
+            /**
+             * @function animate
+             * @description Animates the text
+             * @param {object} options - The options for the animation
+             * @returns {object} - The text object
+             * @example
+             * let text = graphics.makeText("text", "Hello World", 10, 10).animate({
+             *  left: 100
+             * });
+             */
+            animate(options){
+                if(options.targets != undefined) throw new Error("Do not specify the targets");
+                options.targets = element;
+                anime(options)
+                return this;
+            }
         }
 
         Graphics.HTMLElement.appendChild(element);

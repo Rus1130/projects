@@ -11,17 +11,18 @@
 
 initializes the graphics library
     options (object) - an object of options
-        width (number) (default 500) - the width of the graphics area
-        height (number) (default 500) - the height of the graphics area
-        fullscreen (boolean) (default false) - whether or not to make the graphics area fullscreen (overrides width and height)
-        border (boolean) (default false) - whether or not to draw a border around the canvas
+        width (number) (default 500) - the width of the scene
+        height (number) (default 500) - the height of the scene
+        fullscreen (boolean) (default false) - whether or not to make the scene fullscreen (overrides width and height)
+        border (boolean) (default false) - whether or not to draw a border around the scene
 
 gr.appendTo(element)
-appends the graphics area to an element
-    element (HTMLElement) - the element to append the graphics area to
+appends the scene to an element
+    element (HTMLElement) - the element to append the scene to
 
-gr.makeRect(x, y, w, h, styling)
-creates a rect and adds it to the canvas
+gr.makeRect(id, x, y, w, h, styling)
+creates a rect and adds it to the scene
+    id (number) - the id of the rect object
     x (number) - the x position of the rect
     y (number) - the y position of the rect
     w (number) - the width of the rect
@@ -35,8 +36,9 @@ creates a rect and adds it to the canvas
         object.h (number) - the height of the rect
         object.center() - centers the rect around its x and y position
 
-gr.makeCircle(x, y, r, styling)
-creates a circle and adds it to the canvas
+gr.makeCircle(id, x, y, r, styling)
+creates a circle and adds it to the scene
+    id (number) - the id of the circle object
     x (number) - the x position of the circle
     y (number) - the y position of the circle
     r (number) - the radius of the circle
@@ -48,8 +50,9 @@ creates a circle and adds it to the canvas
         object.r (number) - the radius of the circle
         object.center() - centers the circle around its x and y position
 
-gr.makeText(text, x, y, styling)
-creates text and adds it to the canvas
+gr.makeText(id, text, x, y, styling)
+creates text and adds it to the scene
+    id (number) - the id of the text object
     text (string) - the text to display
     x (number) - the x position of the text
     y (number) - the y position of the text
@@ -60,3 +63,7 @@ creates text and adds it to the canvas
         object.x (number) - the x position of the text
         object.y (number) - the y position of the text
         object.center() - centers the text around its x and y position
+
+Graphics object methods
+    object.center() - centers the object around its x and y position
+    object.animate(options) - animate this object using the anime.js library
