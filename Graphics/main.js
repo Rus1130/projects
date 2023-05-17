@@ -144,8 +144,6 @@ export class Graphics {
             return circle;
         }
 
-        console.log(circle)
-
         return circle;
     }
 
