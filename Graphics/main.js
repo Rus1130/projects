@@ -27,7 +27,6 @@ export class Graphics {
     static two = null;
     static defaultFill = "#000000";
     static defaultStroke = "#000000";
-    static anime = anime;
     constructor(options) {
         options = options || {};
         options.width = options.width || 500;
@@ -107,6 +106,13 @@ export class Graphics {
         rect.center = () => {
             rect.translation.set(x + width / 2, y + height / 2);
             return rect;
+        }
+
+        rect.animate = (options) => {
+            let keyframes = []
+            let animOptions = {}
+
+            let objectKeys = Object.keys(options);
         }
 
         return rect;

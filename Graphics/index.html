@@ -14,5 +14,10 @@
     }).appendTo(document.body)
 
     let rect = gr.createRect("rect", 100, 100, 50, 50)
-    rect.fill = "red"
+    
+    rect.animate({
+        duration: 2000,
+        transform: 'translateX(300px)',
+        iterations: 1
+    })
 </script>
