@@ -1,4 +1,4 @@
-import anime from "./anime.es.js"
+import Two from "./two.es.js"
 /**
     * @class Graphics
     * @classdesc A class for creating graphics
@@ -15,13 +15,19 @@ import anime from "./anime.es.js"
               width: 500,
               height: 500,
               fullscreen: false,
-              border: false
+              defaults: {
+                fill: "black",
+                stroke: "black",
+              }
           }).appendTo(document.body);
       </script>
     */
 export class Graphics {
-    static HTMLElement = null;
     static objects = {};
+    static two = null;
+    static defaultFill = "#000000";
+    static defaultStroke = "#000000";
+    static anime = anime;
     constructor(options) {
         options = options || {};
         options.width = options.width || 500;
@@ -29,10 +35,28 @@ export class Graphics {
         options.fullscreen = options.fullscreen || false;
         options.border = options.border || false;
 
+        options.defaults = options.defaults || {};
+        options.defaults.fill = options.defaults.fill || "#000000";
+        options.defaults.stroke = options.defaults.stroke || "#000000";
+
         Graphics.width = options.width;
         Graphics.height = options.height;
         Graphics.fullscreen = options.fullscreen;
         Graphics.border = options.border;
+
+        Graphics.defaultFill = options.defaults.fill;
+        Graphics.defaultStroke = options.defaults.stroke;
+
+        try {
+            Graphics.two = new Two({
+                width: Graphics.width,
+                height: Graphics.height,
+                fullscreen: Graphics.fullscreen,
+                autostart: true
+            })
+        } catch (err){
+            throw new Error("Two.js is a dependency. Please include the ES6 Module file with the name 'two.es.js' in the same directory as this file.")
+        }
     }
 
     /**
@@ -47,258 +71,117 @@ export class Graphics {
      * }).appendTo(document.body);
      */
     appendTo(element){
-        let elem = document.createElement("graphics");
-        elem.style.display = 'inline-block'
-
-        elem.style.width = Graphics.width + "px";
-        elem.style.height = Graphics.height + "px";
-
-        if(Graphics.fullscreen){
-            elem.style.height = "100%";
-            elem.style.width = "100%";
-            element.style.margin = "0";
-        }
-
-        if(Graphics.border){
-            elem.style.border = "1px solid black";
-            elem.style.boxSizing = "border-box";
-        }
-
-        Graphics.HTMLElement = elem;
-
-        element.appendChild(elem);
+        Graphics.two.appendTo(element);
         return this;
     }
 
     /**
-     * @function makeRect
+     * @function createRect
      * @memberof Graphics
      * @description Creates a rectangle
-     * @param {number} id - The id of the rectangle
+     * @param {string} id - The id of the rectangle
      * @param {number} x - The x position of the rectangle
      * @param {number} y - The y position of the rectangle
-     * @param {number} w - The width of the rectangle
-     * @param {number} h - The height of the rectangle
-     * @param {object} styling - The styling of the rectangle
-     * @returns {object} - The rectangle object
+     * @param {number} width - The width of the rectangle
+     * @param {number} height - The height of the rectangle
+     * @returns {Two.Rectangle} - The rectangle
      * @example
-     * let rect = graphics.makeRect("rect", 10, 10, 100, 100, {
-     *  backgroundColor: "red"
-     * });
+     * let rect = graphics.createRect("rect", 250, 250, 100, 100);
      */
-    makeRect(id, x, y, w, h, styling){
-        styling = styling || {};
-        let element = document.createElement("rect");
-        element.style.position = "absolute";
-        element.style.left = x + "px";
-        element.style.top = y + "px";
+    createRect(id, x, y, width, height) {
+        x = x - width / 2;
+        y = y - height / 2;
 
-        element.style.width = w + "px";
-        element.style.height = h + "px";
-        element.style.backgroundColor = "black";
-        element.style.border = "1px solid black";
+        let rect = Graphics.two.makeRectangle(x, y, width, height);
+        rect.id = id;
+        rect.fill = Graphics.defaultFill;
+        rect.stroke = Graphics.defaultStroke;
 
-        element.id = id;
-
-        for(let prop in styling){
-            element.style[prop] = styling[prop];
+        /**
+         * @function center
+         * @description Centers the rectangle around its x and y position
+         * @returns {Two.Rectangle} - The rectangle
+         * @example
+         * let rect = graphics.createRect("rect", 250, 250, 100, 100).center();
+         */
+        rect.center = () => {
+            rect.translation.set(x + width / 2, y + height / 2);
+            return rect;
         }
 
-
-
-        let object = {
-            HTMLElement: element,
-            type: "rect",
-            x: x,
-            y: y,
-            w: w,
-            h: h,
-            /**
-             * @function center
-             * @description Centers the rectangle
-             * @returns {object} - The rectangle object
-             * @example
-             * let rect = graphics.makeRect("rect", 10, 10, 100, 100).center();
-             */
-            center(){
-                element.style.left = (x - w / 2) + "px";
-                element.style.top = (y - h / 2) + "px";
-                this.x = x - w / 2;
-                this.y = y - h / 2;
-
-                return this;
-            },
-            /**
-             * @function animate
-             * @description Animates the rectangle
-             * @param {object} options - The options for the animation
-             * @returns {object} - The rectangle object
-             * @example
-             * let rect = graphics.makeRect("rect", 10, 10, 100, 100).animate({
-             *  left: 100
-             * });
-             */
-            animate(options){
-                if(options.targets != undefined) throw new Error("Do not specify the targets");
-                options.targets = element;
-                anime(options)
-            }
-        }
-
-        Graphics.HTMLElement.appendChild(element);
-        return object;
+        return rect;
     }
 
     /**
-     * @function makeCircle
+     * @function createCircle
      * @memberof Graphics
      * @description Creates a circle
-     * @param {number} id - The id of the circle
+     * @param {string} id - The id of the circle
      * @param {number} x - The x position of the circle
      * @param {number} y - The y position of the circle
-     * @param {number} r - The radius of the circle
-     * @param {object} styling - The styling of the circle
-     * @returns {object} - The circle object
+     * @param {number} radius - The radius of the circle
+     * @returns {Two.Circle} - The circle
      * @example
-     * let circle = graphics.makeCircle("circ", 10, 10, 100, {
-     *  backgroundColor: "red"
-     * });
+     * let circle = graphics.createCircle("circle", 50, 50, 100);
      */
-    makeCircle(id, x, y, r, styling){
-        styling = styling || {};
-        let element = document.createElement("circle");
-        element.style.position = "absolute";
-        element.style.left = x + "px";
-        element.style.top = y + "px";
+    createCircle(id, x, y, radius) {
+        x = x - radius / 2;
+        y = y - radius / 2;
 
-        element.style.width = r + "px";
-        element.style.height = r + "px";
+        let circle = Graphics.two.makeCircle(x, y, radius);
+        circle.id = id;
+        circle.fill = Graphics.defaultFill;
+        circle.stroke = Graphics.defaultStroke;
 
-        element.style.borderRadius = "50%";
-        element.style.backgroundColor = "black";
-        element.style.border = "1px solid black";
-
-        element.id = id;
-
-        for(let prop in styling){
-            element.style[prop] = styling[prop];
+        /**
+         * @function center
+         * @description Centers the circle around its x and y position
+         * @returns {Two.Circle} - The circle
+         * @example
+         * let circle = graphics.createCircle("circle", 50, 50, 100).center();
+         */
+        circle.center = () => {
+            circle.translation.set(x + radius / 2, y + radius / 2);
+            return circle;
         }
 
-        let object = {
-            HTMLElement: element,
-            type: "circ",
-            x: x,
-            y: y,
-            r: r,
-            /**
-             * @function center
-             * @description Centers the circle
-             * @returns {object} - The circle object
-             * @example
-             * let circle = graphics.makeCircle("circ", 10, 10, 100).center();
-             */
-            center(){
-                element.style.left = (x - r / 2) + "px";
-                element.style.top = (y - r / 2) + "px";
-                this.x = x - r / 2;
-                this.y = y - r / 2;
-
-                return this;
-            },
-            /**
-             * @function animate
-             * @description Animates the circle
-             * @param {object} options - The options for the animation
-             * @returns {object} - The circle object
-             * @example
-             * let circle = graphics.makeCircle("circ", 10, 10, 100, 100).animate({
-             *  left: 100
-             * });
-             */
-            animate(options){
-                if(options.targets != undefined) throw new Error("Do not specify the targets");
-                options.targets = element;
-                anime(options)
-            }
-        }
-
-        Graphics.HTMLElement.appendChild(element);
-        return object;
+        return circle;
     }
 
     /**
-     * @function makeText
+     * @function createPolygon
      * @memberof Graphics
-     * @description Creates text
-     * @param {number} id - The id of the text
-     * @param {string} text - The text to display
-     * @param {number} x - The x position of the text
-     * @param {number} y - The y position of the text
-     * @param {object} styling - The styling of the text
-     * @returns {object} - The text object
+     * @description Creates a polygon
+     * @param {string} id - The id of the polygon
+     * @param {number} x - The x position of the polygon
+     * @param {number} y - The y position of the polygon
+     * @param {number} radius - The radius of the polygon
+     * @param {number} sides - The number of sides of the polygon
+     * @returns {Two.Polygon} - The polygon
      * @example
-     * let text = graphics.makeText("text", "Hello World", 10, 10, {
-     *  color: "red"
-     * });
+     * let polygon = graphics.createPolygon("polygon", 50, 50, 100, 5);
      */
-    makeText(id, text, x, y, styling){
-        styling = styling || {};
-        let element = document.createElement("text");
-        element.style.position = "absolute";
-        element.style.left = x + "px";
-        element.style.top = y + "px";
+    createPolygon(id, x, y, radius, sides) {
+        x = x - radius / 2;
+        y = y - radius / 2;
 
-        element.style.color = "black";
-        element.style.fontFamily = "Arial";
+        let polygon = Graphics.two.makePolygon(x, y, radius, sides);
+        polygon.id = id;
+        polygon.fill = Graphics.defaultFill;
+        polygon.stroke = Graphics.defaultStroke;
 
-        element.textContent = text;
-
-        element.id = id;
-
-        for(let prop in styling){
-            element.style[prop] = styling[prop];
+        /**
+         * @function center
+         * @description Centers the polygon around its x and y position
+         * @returns {Two.Polygon} - The polygon
+         * @example
+         * let polygon = graphics.createPolygon("polygon", 50, 50, 100, 5).center();
+         */
+        polygon.center = () => {
+            polygon.translation.set(x + radius / 2, y + radius / 2);
+            return polygon;
         }
 
-        let object = {
-            HTMLElement: element,
-            type: "text",
-            x: x,
-            y: y,
-            text: text,
-            /**
-             * @function center
-             * @description Centers the text
-             * @returns {object} - The text object
-             * @example
-             * let text = graphics.makeText("text", "Hello World", 10, 10).center();
-             */
-            center(){
-                element.style.left = (x - element.offsetWidth / 2) + "px";
-                element.style.top = (y - element.offsetHeight / 2) + "px";
-                this.x = x - element.offsetWidth / 2;
-                this.y = y - element.offsetHeight / 2;
-
-                return this;
-            },
-            /**
-             * @function animate
-             * @description Animates the text
-             * @param {object} options - The options for the animation
-             * @returns {object} - The text object
-             * @example
-             * let text = graphics.makeText("text", "Hello World", 10, 10).animate({
-             *  left: 100
-             * });
-             */
-            animate(options){
-                if(options.targets != undefined) throw new Error("Do not specify the targets");
-                options.targets = element;
-                anime(options)
-                return this;
-            }
-        }
-
-        Graphics.HTMLElement.appendChild(element);
-        return object;
+        return polygon;
     }
 }

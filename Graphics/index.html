@@ -3,29 +3,16 @@
 </style>
 <head>
     <script src="main.js" type="module"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 </head>
 <body>
 </body>
 <script type="module" defer>
     import { Graphics } from "./main.js"
-    import anime from "./anime.es.js"
 
     let gr = new Graphics({
         fullscreen: true,
     }).appendTo(document.body)
 
-    let circ = gr.makeCircle("circle", 100, 100, 100, {
-        backgroundColor: "blue",
-        borderColor: "blue"
-    })
-    let circ2 = gr.makeCircle("circle2", 100, 100, 100).center()
-
-    let text = gr.makeText("hi","Hello World", 300, 150).center()
-
-
-    circ.animate({
-        left: 250,
-    })
-
+    let rect = gr.createRect("rect", 100, 100, 50, 50)
+    rect.fill = "red"
 </script>
