@@ -108,13 +108,6 @@ export class Graphics {
             return rect;
         }
 
-        rect.animate = (options) => {
-            let keyframes = []
-            let animOptions = {}
-
-            let objectKeys = Object.keys(options);
-        }
-
         return rect;
     }
 
@@ -150,6 +143,8 @@ export class Graphics {
             circle.translation.set(x + radius / 2, y + radius / 2);
             return circle;
         }
+
+        console.log(circle)
 
         return circle;
     }

@@ -13,11 +13,5 @@
         fullscreen: true,
     }).appendTo(document.body)
 
-    let rect = gr.createRect("rect", 100, 100, 50, 50)
-    
-    rect.animate({
-        duration: 2000,
-        transform: 'translateX(300px)',
-        iterations: 1
-    })
+    let circ = gr.createCircle("circ", 100, 100, 50).center()
 </script>
