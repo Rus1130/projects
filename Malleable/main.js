@@ -1,4 +1,30 @@
 import { SVG, extend as SVGextend, Element as SVGElement } from 'https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.1.2/svg.esm.js';
+/**
+ * @todo
+ * - [ ] do the line type
+ */
+
+/**
+ * @typedef {Object} Rect - An SVG rectangle
+ * @property {number} x - X position of the rectangle
+ * @property {number} y - Y position of the rectangle
+ * @property {number} width - Width of the rectangle
+ * @property {number} height - Height of the rectangle
+ * @property {string} fill - Fill color of the rectangle
+ * @property {string} stroke - Stroke color of the rectangle
+ * @property {function} move - Moves the rectangle to a new position
+ * 
+ * @typedef {Object} Circle - An SVG circle
+ * @property {number} cx - X position of the circle
+ * @property {number} cy - Y position of the circle
+ * @property {number} radius - Radius of the circle
+ * @property {string} fill - Fill color of the circle
+ * @property {string} stroke - Stroke color of the circle
+ * @property {function} move - Moves the circle to a new position
+ * 
+ * @typedef {Object} Text - A Text Object
+ */
+
 
 /**
  * @class Malleable
@@ -25,12 +51,14 @@ export class Malleable {
     static QuickDefineProperties(object, properties){
         for(let i = 0; i < properties.length; i++){
             let property = properties[i]
+            let dashedProperty = property.split(/(?=[A-Z])/).join('-').toLowerCase()
+
             Object.defineProperty(object, property, {
                 set: function(value){
-                    this.attr({[property]: value})
+                    this.attr({[dashedProperty]: value})
                 },
                 get: function(){
-                    return this.attr(property)
+                    return this.attr(dashedProperty)
                 }
             })
         }
@@ -81,8 +109,8 @@ export class Malleable {
      * @param {number} y - Y position of the rectangle
      * @param {number} width - Width of the rectangle
      * @param {number} height - Height of the rectangle
-     * @returns {SVGElement} Returns the SVG rectangle element
-     * @description Creates a rectangle. To change specific properties, use the the setter of the same name.
+     * @returns {Rect} Returns the SVG rectangle element
+     * @description Creates a rectangle.
      * @example
      * let ml = new Malleable().appendTo(document.body)
      * let rect = ml.rect(0, 0, 100, 100)
@@ -105,8 +133,8 @@ export class Malleable {
      * @param {number} x - X position of the circle
      * @param {number} y - Y position of the circle
      * @param {number} radius - Radius of the circle
-     * @returns {SVGElement} Returns the SVG circle element
-     * @description Creates a circle. To change specific properties, use the the setter of the same name.
+     * @returns {Circle} Returns the SVG circle element
+     * @description Creates a circle.
      * @example
      * let ml = new Malleable().appendTo(document.body)
      * let circle = ml.circle(0, 0, 100)
@@ -129,7 +157,7 @@ export class Malleable {
      * @param {Object} textObject - the text object
      * @param {number} x - X position of the text
      * @param {number} y - Y position of the text
-     * @returns {SVGElement} Returns the SVG text element
+     * @returns {Text} Returns the SVG text element
      * @description Creates a text element.
      * @example
      * let ml = new Malleable().appendTo(document.body)
@@ -169,6 +197,27 @@ export class Malleable {
         text.move(x, y)
         return text
     }
+
+    /**
+     * @method line
+     * @memberof Malleable
+     * @param {number} x1 - X position of the first point
+     * @param {number} y1 - Y position of the first point
+     * @param {number} x2 - X position of the second point
+     * @param {number} y2 - Y position of the second point
+     * @returns {SVGElement} Returns the SVG line element
+     * @description Creates a line. To change specific properties, use the the setter of the same name.
+     * @example
+     * let ml = new Malleable().appendTo(document.body)
+     * let line = ml.line(0, 0, 100, 100)
+     */
+    line(x1, y1, x2, y2){
+        let line = Malleable.draw.line(x1, y1, x2, y2)
+        Malleable.QuickDefineProperties(line, ['x1', 'y1', 'x2', 'y2', 'stroke', 'strokeWidth', 'strokeLinecap'])
+
+        line.stroke = 'black';
+        return line
+    }
 }
 
 let ml = new Malleable().appendTo(document.body)
@@ -177,13 +226,17 @@ let rect = ml.rect(10, 10, 100, 100)
 let circle = ml.circle(10, 120, 100)
 
 let textObject = [
-    {text: 'Pink! ', fill: '#f06', 'font-style': 'italic'},
-    {text: 'Very nice... ', fill: '#606', 'font-weight': 'bold', newLine: true},
-    {text: 'Boring ', newLine: true},
-    {text: "Bold! ", 'font-weight': 'bold'},
-    {text: 'Boring.'},
- ]
- let text = ml.text(textObject, 10, 230)
+    {text: 'Pink... ', fill: '#f06', 'font-style': 'italic'},
+    {text: 'is ', newLine: true},
+    {text: 'cool.', fill: '#606', 'font-weight': 'bold'},
+]
+
+let text = ml.text(textObject, 10, 230)
+
+let line = ml.line(10, 300, 100, 400)
+line.strokeWidth = 10
+line.strokeLinecap = 'round'
+line.stroke = 'red'
 
 // https://svgjs.dev/docs/3.0/manipulating/#resizing
 
