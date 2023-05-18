@@ -28,11 +28,6 @@
         <article>
             <pre class="prettyprint source linenums"><code>import { SVG, extend as SVGextend, Element as SVGElement } from 'https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.1.2/svg.esm.js';
 /**
- * @todo
- * - [ ] do the line type
- */
-
-/**
  * @typedef {Object} Rect - An SVG rectangle
  * @property {number} x - X position of the rectangle
  * @property {number} y - Y position of the rectangle
@@ -40,6 +35,9 @@
  * @property {number} height - Height of the rectangle
  * @property {string} fill - Fill color of the rectangle
  * @property {string} stroke - Stroke color of the rectangle
+ * @property {number} strokeWidth - Stroke width of the rectangle
+ * @property {string} strokeLinecap - Stroke linecap of the rectangle
+ * @property {number} radius - Radius of the rectangle
  * @property {function} move - Moves the rectangle to a new position
  * @example
  * let ml = new Malleable().appendTo(document.body)
@@ -48,8 +46,8 @@
 
 /**
  * @typedef {Object} Circle - An SVG circle
- * @property {number} cx - X position of the circle
- * @property {number} cy - Y position of the circle
+ * @property {number} x - X position of the circle
+ * @property {number} y - Y position of the circle
  * @property {number} radius - Radius of the circle
  * @property {string} fill - Fill color of the circle
  * @property {string} stroke - Stroke color of the circle
@@ -111,25 +109,30 @@ export class Malleable {
      * @inner
      * @param {SVGElement} object - SVG element to define properties for
      * @param {string[]} properties - Array of properties to define
-     * @description Defines properties for an SVG element
+     * @description Defines properties for an SVG element. To add make the method to change the property different from the SVG attribute, use an array instead of a string in the array. Have the first index be the SVG attribute name and the second be the method name. This is shown in the example.
      * @example
      * let ml = new Malleable().appendTo(document.body)
      * let rect = ml.rect(0, 0, 50, 100)
-     * Malleable.quickDefineProperties(rect, ['x', 'y', 'width', 'height'])
+     * Malleable.quickDefineProperties(rect, ['x', 'y', 'width', 'height', ['rx', 'radius']])
      * rect.x = 100
      * console.log(rect.x) // 100
      */
     static QuickDefineProperties(object, properties){
         for(let i = 0; i &lt; properties.length; i++){
-            let property = properties[i]
-            let dashedProperty = property.split(/(?=[A-Z])/).join('-').toLowerCase()
 
-            Object.defineProperty(object, property, {
+            let property = properties[i]
+
+            if(typeof property !== 'object') property = [property]
+
+            let internalName = property[0]
+            let methodName = property[1] || internalName
+
+            Object.defineProperty(object, methodName, {
                 set: function(value){
-                    this.attr({[dashedProperty]: value})
+                    object.attr({[internalName]: value})
                 },
                 get: function(){
-                    return this.attr(dashedProperty)
+                    return object.attr(internalName)
                 }
             })
         }
@@ -188,7 +191,7 @@ export class Malleable {
      */
     rect(x, y, width, height){
         let rect = Malleable.draw.rect(width, height).move(x, y)
-        Malleable.QuickDefineProperties(rect, ['x', "y", "width", "height", 'fill', 'stroke'])
+        Malleable.QuickDefineProperties(rect, ['x', "y", "width", "height", 'fill', 'stroke', ['rx', 'radius']])
 
         rect.move = (x, y) => {
             rect.attr({x: x, y: y})
@@ -213,7 +216,7 @@ export class Malleable {
     circle(x, y, radius){
         let circle = Malleable.draw.circle(radius).move(x, y)
 
-        Malleable.QuickDefineProperties(circle, ['cx', "cy", 'fill', 'stroke', 'radius'])
+        Malleable.QuickDefineProperties(circle, [['cx', 'x'], ["cy", 'y'], 'fill', 'stroke', 'radius'])
 
         circle.move = (x, y) => {
             circle.attr({cx: x-radius/2, cy: y-radius/2})
@@ -281,7 +284,7 @@ export class Malleable {
      */
     line(points){
         let line = Malleable.draw.line(points[0][0], points[0][1], points[1][0], points[1][1])
-        Malleable.QuickDefineProperties(line, ['x1', 'y1', 'x2', 'y2', 'stroke', 'strokeWidth', 'strokeLinecap'])
+        Malleable.QuickDefineProperties(line, ['x1', 'y1', 'x2', 'y2', 'stroke', ['stroke-width', 'strokeWidth'], ['stroke-linecap', 'strokeLinecap']])
         line.stroke = 'black';
         return line
     }
@@ -298,7 +301,7 @@ export class Malleable {
      */
     polyline(points){
         let polyline = Malleable.draw.polyline(points)
-        Malleable.QuickDefineProperties(polyline, ['stroke', 'strokeWidth', 'strokeLinecap', 'fill'])
+        Malleable.QuickDefineProperties(polyline, ['stroke', ['stroke-width', 'strokeWidth'], ['stroke-linecap', 'strokeLinecap'], 'fill'])
 
         polyline.points = points
 
@@ -361,7 +364,10 @@ polyline.fill = 'none'
 polyline.stroke = '#f06'
 polyline.strokeWidth = 4
 polyline.strokeLinecap = 'round'
-polyline.points[0].x = 10 
+polyline.points[0].x = 10
+
+
+
 
 // https://svgjs.dev/docs/3.0/manipulating/#resizing
 
@@ -381,7 +387,7 @@ polyline.points[0].x = 10
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu May 18 2023 18:21:17 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu May 18 2023 19:49:20 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>
