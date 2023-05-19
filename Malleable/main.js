@@ -463,7 +463,7 @@ let line = ml.line([[10, 300], [100, 400]]).strokeWidth(5).strokeLinecap('round'
 let polyline = ml.polyline([[60, 430], [70, 470], [110, 480], [70, 490], [60, 530], [50, 490], [10, 480], [50, 470]])
 .fill('none').stroke('#f06').strokeWidth(4).strokeLinecap('round').points[0].x(10)
 
-let polygon = ml.polygon([[10, 550], [100, 600], [50, 650]]).move(10, 10).fill('#f06').stroke('none')
+let polygon = ml.polygon([[10, 550], [100, 600], [50, 650]]).points[0].x(50).fill('#f06').stroke('none')
 
 
 
