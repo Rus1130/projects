@@ -28,37 +28,42 @@
         <article>
             <pre class="prettyprint source linenums"><code>import { SVG, extend as SVGextend, Element as SVGElement } from 'https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.1.2/svg.esm.js';
 /**
- * @typedef {Object} Rect - An SVG rectangle
- * @property {number} x - X position of the rectangle
- * @property {number} y - Y position of the rectangle
- * @property {number} width - Width of the rectangle
- * @property {number} height - Height of the rectangle
- * @property {string} fill - Fill color of the rectangle
- * @property {string} stroke - Stroke color of the rectangle
- * @property {number} strokeWidth - Stroke width of the rectangle
- * @property {string} strokeLinecap - Stroke linecap of the rectangle
- * @property {number} radius - Radius of the rectangle
- * @property {function} move - Moves the rectangle to a new position
+ * @typedef  {Object}   Rect   A rect element created by SVG.js
+ * @property {number}   x      get/set X position
+ * @property {number}   y      get/set Y position
+ * @property {number}   dx     set X offset
+ * @property {number}   dy     set Y offset
+ * @property {number}   width  get/set width
+ * @property {number}   height get/set height
+ * @property {string}   fill   get/set fill color
+ * @property {string}   stroke get/set stroke color&lt;br>
+ * @property {number}   radius get/set set radius
+ * @property {function} move   (set) macro for &lt;code>rect.x(val).y(val)&lt;/code>
  * @example
  * let ml = new Malleable().appendTo(document.body)
  * let rect = ml.rect(0, 0, 100, 100)
  */
 
 /**
- * @typedef {Object} Circle - An SVG circle
- * @property {number} x - X position of the circle
- * @property {number} y - Y position of the circle
- * @property {number} radius - Radius of the circle
- * @property {string} fill - Fill color of the circle
- * @property {string} stroke - Stroke color of the circle
- * @property {function} move - Moves the circle to a new position
+ * @typedef  {Object}   Circle A circle element created by SVG.js
+ * @property {number}   x      get/set X position
+ * @property {number}   y      get/set Y position
+ * @property {number}   dx     set X offset
+ * @property {number}   dy     set Y offset
+ * @property {number}   radius get/set radius
+ * @property {string}   fill   get/set fill color
+ * @property {string}   stroke get/set stroke color
+ * @property {function} move   (set) macro for &lt;code>circle.x(val).y(val)&lt;/code>&lt;br>
  * @example
  * let ml = new Malleable().appendTo(document.body)
  * let circle = ml.circle(0, 0, 50)
  */
 
 /**
- * @typedef {Object} Text - A Text Object
+ * @typedef  {Object}   Text A text element created by SVG.js
+ * @property {number}   x    get/set x position
+ * @property {number}   y    get/set y position
+ * @property {function} move (set) macro for &lt;code>text.x(val).y(val)&lt;/code>&lt;br>
  * @example
  * let ml = new Malleable().appendTo(document.body)
  * let textSettings = [
@@ -74,28 +79,55 @@
 */
 
 /** 
- * @typedef {Object} Line - A Line Object
- * @property {Number[]} points - Array of points
- * @property {string} stroke - Stroke color of the line
- * @property {number} strokeWidth - Stroke width of the line
- * @property {string} strokeLinecap - Stroke linecap of the line
+ * @typedef  {Object}   Line          A line element created by SVG.js
+ * @property {Number[]} points        get/set array of points
+ * @property {number}   dx            set X offset
+ * @property {number}   dy            set Y offset
+ * @property {string}   stroke        get/set stroke color
+ * @property {number}   strokeWidth   get/set stroke width
+ * @property {string}   strokeLinecap get/set stroke linecap
  * @example
  * let ml = new Malleable().appendTo(document.body)
  * let line = ml.line([[0, 0], [100, 100], [200, 0]])
  */
  
 /**
- * @typedef {Object} Polyline - A Polyline Object
- * @property {Number[]} points - Array of points 
+ * @typedef {Object}    Polyline      A polygon element created by SVG.js
+ * @property {Number[]} points        array of points&lt;br>
+ *                                    to move a specific point, call &lt;code>polyline.points[index].x/y(val)&lt;/code>
+ * @property {number}   dx            set X offset
+ * @property {number}   dy            set Y offset
+ * @property {string}   fill          get/set fill color
+ * @property {string}   stroke        get/set stroke color
+ * @property {number}   strokeWidth   get/set stroke width
+ * @property {string}   strokeLinecap get/set stroke linecap
  * @example
  * let ml = new Malleable().appendTo(document.body)
  * let polyline = ml.polyline([[0, 0], [100, 100], [200, 0], [300, 100], [400, 0]])
+ */
+
+/**
+ * @typedef  {Object}   Polygon A Polygon Object.
+ * @property {Number[]} points  array of points
+ * @property {number}   x       get/set X position
+ * @property {number}   y       get/set Y position
+ * @property {number}   dx      set X offset
+ * @property {number}   dy      set Y offset
+ * @property {string}   fill    get/set fill color
+ * @property {string}   stroke  get/set stroke color&lt;br>
+ * @property {function} move    (set)&lt;br>
+ *                              move a specific point with &lt;code>polygon.points[index].move(x, y)&lt;/code>&lt;br>
+ *                              move the entire polygon with &lt;code>polygon.move(x, y)&lt;/code>
+ * @example
+ * let ml = new Malleable().appendTo(document.body)
+ * let polygon = ml.polygon([[10, 550], [100, 600], [50, 650]])
  */
 
 
 /**
  * @class Malleable
  * @param {Object} options - Options object
+ * @description Creates a new Malleable object. NOTE: highly recommend using the online documentation instead of relying on popup documentation.
  */
 export class Malleable {
     static width = 500
@@ -109,7 +141,7 @@ export class Malleable {
      * @inner
      * @param {SVGElement} object - SVG element to define properties for
      * @param {string[]} properties - Array of properties to define
-     * @description Defines properties for an SVG element. To add make the method to change the property different from the SVG attribute, use an array instead of a string in the array. Have the first index be the SVG attribute name and the second be the method name. This is shown in the example.
+     * @description Defines properties for an SVG element. To add make the method to change the property different from the SVG attribute, use an array instead of a string in the array. Have the first index be the SVG attribute name and the second be the method name. This is shown in the example. If the property requires extra work, such as the polyline.plot() method, use Malleable.specialDefineProperty().
      * @example
      * let ml = new Malleable().appendTo(document.body)
      * let rect = ml.rect(0, 0, 50, 100)
@@ -117,9 +149,8 @@ export class Malleable {
      * rect.x = 100
      * console.log(rect.x) // 100
      */
-    static QuickDefineProperties(object, properties){
+    static quickDefineProperties(object, properties){
         for(let i = 0; i &lt; properties.length; i++){
-
             let property = properties[i]
 
             if(typeof property !== 'object') property = [property]
@@ -127,14 +158,11 @@ export class Malleable {
             let internalName = property[0]
             let methodName = property[1] || internalName
 
-            Object.defineProperty(object, methodName, {
-                set: function(value){
-                    object.attr({[internalName]: value})
-                },
-                get: function(){
-                    return object.attr(internalName)
-                }
-            })
+            object[methodName] = function(val){
+                if(val === undefined) return object.attr(internalName)
+                object.attr({[internalName]: val})
+                return object
+            }
         }
     }
 
@@ -187,17 +215,29 @@ export class Malleable {
      * @example
      * let ml = new Malleable().appendTo(document.body)
      * let rect = ml.rect(0, 0, 100, 100)
-     * @returns {Rect} Returns the SVG rectangle element
+     * @return {Rect} Returns the SVG rectangle element
      */
     rect(x, y, width, height){
         let rect = Malleable.draw.rect(width, height).move(x, y)
-        Malleable.QuickDefineProperties(rect, ['x', "y", "width", "height", 'fill', 'stroke', ['rx', 'radius']])
+
+        Malleable.quickDefineProperties(rect, ['x', 'y', 'width', 'height', ['rx', 'radius'], 'fill', 'stroke'])
 
         rect.move = (x, y) => {
             rect.attr({x: x, y: y})
             return rect
         }
 
+        rect.dx = (val) => {
+            if(val === undefined) return rect.x()
+            rect.move(rect.x()+val, rect.y())
+            return rect
+        }
+
+        rect.dy = (val) => {
+            if(val === undefined) return rect.y()
+            rect.move(rect.x(), rect.y()+val)
+            return rect
+        }
         return rect
     }
 
@@ -216,7 +256,7 @@ export class Malleable {
     circle(x, y, radius){
         let circle = Malleable.draw.circle(radius).move(x, y)
 
-        Malleable.QuickDefineProperties(circle, [['cx', 'x'], ["cy", 'y'], 'fill', 'stroke', 'radius'])
+        Malleable.quickDefineProperties(circle, [['cx', 'x'], ["cy", 'y'], 'fill', 'stroke', 'radius'])
 
         circle.move = (x, y) => {
             circle.attr({cx: x-radius/2, cy: y-radius/2})
@@ -228,7 +268,7 @@ export class Malleable {
     /**
      * @method text
      * @memberof Malleable
-     * @param {Object} textObject - the text object
+     * @param {Object} textObject - the text settings
      * @param {number} x - X position of the text
      * @param {number} y - Y position of the text
      * @description Creates a text element.
@@ -268,7 +308,16 @@ export class Malleable {
 
         // remove the first element of text
         text.node.firstChild.remove()
+
+        text.build(false)
         text.move(x, y)
+
+        Malleable.quickDefineProperties(text, ['x', 'y'])
+
+        text.move = (x, y) => {
+            text.attr({x: x, y: y})
+        }
+
         return text
     }
 
@@ -284,8 +333,19 @@ export class Malleable {
      */
     line(points){
         let line = Malleable.draw.line(points[0][0], points[0][1], points[1][0], points[1][1])
-        Malleable.QuickDefineProperties(line, ['x1', 'y1', 'x2', 'y2', 'stroke', ['stroke-width', 'strokeWidth'], ['stroke-linecap', 'strokeLinecap']])
-        line.stroke = 'black';
+        Malleable.quickDefineProperties(line, ['x1', 'y1', 'x2', 'y2', 'stroke', ['stroke-width', 'strokeWidth'], ['stroke-linecap', 'strokeLinecap']])
+
+        line.stroke('black');
+
+        line.dx = (val) => {
+            line.attr({x1: line.x1()+val, x2: line.x2()+val})
+            return line
+        }
+
+        line.dy = (val) => {
+            line.attr({y1: line.y1()+val, y2: line.y2()+val})
+            return line
+        }
         return line
     }
 
@@ -301,7 +361,7 @@ export class Malleable {
      */
     polyline(points){
         let polyline = Malleable.draw.polyline(points)
-        Malleable.QuickDefineProperties(polyline, ['stroke', ['stroke-width', 'strokeWidth'], ['stroke-linecap', 'strokeLinecap'], 'fill'])
+        Malleable.quickDefineProperties(polyline, ['stroke', ['stroke-width', 'strokeWidth'], ['stroke-linecap', 'strokeLinecap'], 'fill'])
 
         polyline.points = points
 
@@ -310,33 +370,100 @@ export class Malleable {
             let x = points[i][0]
             let y = points[i][1]
 
-            Object.defineProperty(polyline.points[i], 'x', {
-                get: () => {
-                    return x
-                },
-                set: (value) => {
-                    x = value
-                    polyline.points[i][0] = value
-                    polyline.plot(polyline.points)
-                }
-            })
 
-            Object.defineProperty(polyline.points[i], 'y', {
-                get: () => {
-                    return y
-                },
-                set: (value) => {
-                    y = value
-                    polyline.points[i][1] = value
-                    polyline.plot(polyline.points)
-                }
-            })
+            polyline.points[i].x = (val) => {
+                if(val === undefined) return x
+                x = val
+                polyline.points[i][0] = val
+                polyline.plot(polyline.points)
+                return polyline
+            }
+
+            polyline.points[i].y = (val) => {
+                if(val === undefined) return y
+                y = val
+                polyline.points[i][1] = val
+                polyline.plot(polyline.points)
+                return polyline
+            }
+        }
+        
+        polyline.dx = (val) => {
+            for(let i = 0; i &lt; polyline.points.length; i++){
+                polyline.points[i].x(polyline.points[i].x()+val)
+            }
+            return polyline
         }
 
-       
+        polyline.dy = (val) => {
+            for(let i = 0; i &lt; polyline.points.length; i++){
+                polyline.points[i].y(polyline.points[i].y()+val)
+            }
+            return polyline
+        }
 
-        polyline.stroke = 'black';
+        polyline.stroke('black');
         return polyline
+    }
+
+    /**
+     * @method polygon
+     * @memberof Malleable
+     * @param {number[]} points - Array of points
+     * @description Creates a polygon. To change specific properties, use the the setter of the same name.
+     * @example
+     * let ml = new Malleable().appendTo(document.body)
+     * let polygon = ml.polygon([[0, 0], [100, 100], [200, 0]])
+     * @returns {Polygon} Returns the SVG polygon element
+     */
+    polygon(points){
+        let polygon = Malleable.draw.polygon(points)
+        Malleable.quickDefineProperties(polygon, ['stroke', ['stroke-width', 'strokeWidth'], ['stroke-linecap', 'strokeLinecap'], 'fill'])
+
+        polygon.points = points
+
+        for(let i = 0; i &lt; points.length; i++){
+            let x = points[i][0]
+            let y = points[i][1]
+
+            polygon.points[i].x = (val) => {
+                if(val === undefined) return x
+                x = val
+                polygon.points[i][0] = val
+                polygon.plot(polygon.points)
+                return polygon
+            }
+
+            polygon.points[i].y = (val) => {
+                if(val === undefined) return y
+                y = val
+                polygon.points[i][1] = val
+                polygon.plot(polygon.points)
+                return polygon
+            }
+
+            polygon.points[i].move = (x, y) => {
+                polygon.points[i].x(x)
+                polygon.points[i].y(y)
+                polygon.plot(polygon.points)
+                return polygon
+            }
+        }
+
+        polygon.dx = (val) => {
+            for(let i = 0; i &lt; polygon.points.length; i++){
+                polygon.points[i].x(polygon.points[i].x()+val)
+            }
+        }
+
+        polygon.dy = (val) => {
+            for(let i = 0; i &lt; polygon.points.length; i++){
+                polygon.points[i].y(polygon.points[i].y()+val)
+            }
+        }
+
+        polygon.stroke('black');
+        return polygon
     }
 }
 
@@ -344,6 +471,7 @@ let ml = new Malleable({fullscreen: true}).appendTo(document.body)
 
 let rect = ml.rect(10, 10, 100, 100)
 let circle = ml.circle(10, 120, 100)
+
 
 let textObject = [
     {text: 'Pink... ', fill: '#f06', 'font-style': 'italic'},
@@ -353,20 +481,12 @@ let textObject = [
 
 let text = ml.text(textObject, 10, 230)
 
-let line = ml.line([[10, 300], [100, 400]])
-line.strokeWidth = 10
-line.strokeLinecap = 'round'
-line.stroke = 'red'
+let line = ml.line([[10, 300], [100, 400]]).strokeWidth(5).strokeLinecap('round').stroke('red')
 
-// + 420
 let polyline = ml.polyline([[60, 430], [70, 470], [110, 480], [70, 490], [60, 530], [50, 490], [10, 480], [50, 470]])
-polyline.fill = 'none'
-polyline.stroke = '#f06'
-polyline.strokeWidth = 4
-polyline.strokeLinecap = 'round'
-polyline.points[0].x = 10
+.fill('none').stroke('#f06').strokeWidth(4).strokeLinecap('round').points[0].x(10)
 
-
+let polygon = ml.polygon([[10, 550], [100, 600], [50, 650]]).points[0].x(50).fill('#f06').stroke('none')
 
 
 // https://svgjs.dev/docs/3.0/manipulating/#resizing
@@ -387,7 +507,7 @@ polyline.points[0].x = 10
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu May 18 2023 19:49:20 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Fri May 19 2023 18:19:41 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

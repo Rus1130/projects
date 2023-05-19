@@ -1,47 +1,41 @@
 import { SVG, extend as SVGextend, Element as SVGElement } from 'https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.1.2/svg.esm.js';
 /**
- * @typedef  {Object}   Rect   - An SVG rectangle. All properties can act as a getter and setter unless otherwise specified. To act as a getter, pass undefined.
- * @property {number}   x      - sets the X position of the rectangle.
- * @property {number}   y      - sets the Y position of the rectangle.
- * @property {number}   width  - sets the width of the rectangle.
- * @property {number}   height - sets the height of the rectangle.
- * @property {string}   fill   - sets the fill color of the rectangle.
- * @property {string}   stroke - sets the stroke color of the rectangle.
- * @property {number}   radius - sets the radius of the rectangle.
- * @property {function} move   - moves the rectangle to a new position. Note: This is not a getter.
- *                             - cannot act as a getter.
- * @property {number}   dx     - sets the X offset of the rectangle relative to its current position.
- *                             - cannot act as a getter.
- * @property {number}   dy     - sets the Y offset of the rectangle relative to its current position.
- *                             - cannot act as a getter.
+ * @typedef  {Object}   Rect   A rect element created by SVG.js
+ * @property {number}   x      get/set X position
+ * @property {number}   y      get/set Y position
+ * @property {number}   dx     set X offset
+ * @property {number}   dy     set Y offset
+ * @property {number}   width  get/set width
+ * @property {number}   height get/set height
+ * @property {string}   fill   get/set fill color
+ * @property {string}   stroke get/set stroke color<br>
+ * @property {number}   radius get/set set radius
+ * @property {function} move   (set) macro for <code>rect.x(val).y(val)</code>
  * @example
  * let ml = new Malleable().appendTo(document.body)
  * let rect = ml.rect(0, 0, 100, 100)
  */
 
 /**
- * @typedef  {Object}   Circle - An SVG circle
- * @property {number}   x      - x position of the circle.
- * @property {number}   y      - y position of the circle.
- * @property {number}   dx     - sets the X offset of the circle relative to its current position.
- *                             - cannot act as a getter.
- * @property {number}   dy     - sets the Y offset of the circle relative to its current position.
- *                             - cannot act as a getter.
- * @property {number}   radius - radius of the circle.
- * @property {string}   fill   - fill color of the circle.
- * @property {string}   stroke - stroke color of the circle.
- * @property {function} move   - move the circle to a new position.
- *                             - cannot act as a getter.
+ * @typedef  {Object}   Circle A circle element created by SVG.js
+ * @property {number}   x      get/set X position
+ * @property {number}   y      get/set Y position
+ * @property {number}   dx     set X offset
+ * @property {number}   dy     set Y offset
+ * @property {number}   radius get/set radius
+ * @property {string}   fill   get/set fill color
+ * @property {string}   stroke get/set stroke color
+ * @property {function} move   (set) macro for <code>circle.x(val).y(val)</code><br>
  * @example
  * let ml = new Malleable().appendTo(document.body)
  * let circle = ml.circle(0, 0, 50)
  */
 
 /**
- * @typedef  {Object}   Text - a Text Object.
- * @property {number}   x    - x position of the text.
- * @property {number}   y    - y position of the text.
- * @property {function} move - move the text to a new position.
+ * @typedef  {Object}   Text A text element created by SVG.js
+ * @property {number}   x    get/set x position
+ * @property {number}   y    get/set y position
+ * @property {function} move (set) macro for <code>text.x(val).y(val)</code><br>
  * @example
  * let ml = new Malleable().appendTo(document.body)
  * let textSettings = [
@@ -57,51 +51,45 @@ import { SVG, extend as SVGextend, Element as SVGElement } from 'https://cdnjs.c
 */
 
 /** 
- * @typedef  {Object}   Line - A Line Object
- * @property {Number[]} points - Array of points
- * @property {number}   dx            - x offset of the line.
- *                                    - cannot act as a getter.
- * @property {number}   dy            - y offset of the line.
- *                                    - cannot act as a getter.
- * @property {string}   stroke        - stroke color of the line.
- * @property {number}   strokeWidth   - stroke width of the line.
- * @property {string}   strokeLinecap - stroke linecap of the line.
+ * @typedef  {Object}   Line          A line element created by SVG.js
+ * @property {Number[]} points        get/set array of points
+ * @property {number}   dx            set X offset
+ * @property {number}   dy            set Y offset
+ * @property {string}   stroke        get/set stroke color
+ * @property {number}   strokeWidth   get/set stroke width
+ * @property {string}   strokeLinecap get/set stroke linecap
  * @example
  * let ml = new Malleable().appendTo(document.body)
  * let line = ml.line([[0, 0], [100, 100], [200, 0]])
  */
  
 /**
- * @typedef {Object} Polyline - a Polyline Object
- * @property {Number[]} points - array of points 
- * - to move a specific point, call polyline.points[index].x/y(val)
- * @property {number} dx - x offset of the polyline.
- * - cannot act as a getter.
- * @property {number} dy - y offset of the polyline.
- * - cannot act as a getter.
- * @property {string} fill - fill color of the polyline.
- * @property {string} stroke - stroke color of the polyline.
- * @property {number} strokeWidth - stroke width of the polyline.
- * @property {string} strokeLinecap - stroke linecap of the polyline.
+ * @typedef {Object}    Polyline      A polygon element created by SVG.js
+ * @property {Number[]} points        array of points<br>
+ *                                    to move a specific point, call <code>polyline.points[index].x/y(val)</code>
+ * @property {number}   dx            set X offset
+ * @property {number}   dy            set Y offset
+ * @property {string}   fill          get/set fill color
+ * @property {string}   stroke        get/set stroke color
+ * @property {number}   strokeWidth   get/set stroke width
+ * @property {string}   strokeLinecap get/set stroke linecap
  * @example
  * let ml = new Malleable().appendTo(document.body)
  * let polyline = ml.polyline([[0, 0], [100, 100], [200, 0], [300, 100], [400, 0]])
  */
 
 /**
- * @typedef  {Object}   Polygon - a Polygon Object.
- * @property {Number[]} points  - array of points.
- * @property {number}   x       - x position of the polygon.
- * @property {number}   y       - y position of the polygon.
- * @property {number}   dx      - x offset of the polygon.
- *                              - Cannot act as a getter.
- * @property {number}   dy      - x offset of the polygon.
- *                              - Cannot act as a getter.
- * @property {string}   fill    - fill color of the polygon.
- * @property {string}   stroke  - stroke color of the polygon.
- * @property {function} move    - move a specific point with polygon.points[index].move(x, y)
- *                              - can also move the entire polygon with polygon.move(x, y)
- *                              - Cannot act as a getter.
+ * @typedef  {Object}   Polygon A Polygon Object.
+ * @property {Number[]} points  array of points
+ * @property {number}   x       get/set X position
+ * @property {number}   y       get/set Y position
+ * @property {number}   dx      set X offset
+ * @property {number}   dy      set Y offset
+ * @property {string}   fill    get/set fill color
+ * @property {string}   stroke  get/set stroke color<br>
+ * @property {function} move    (set)<br>
+ *                              move a specific point with <code>polygon.points[index].move(x, y)</code><br>
+ *                              move the entire polygon with <code>polygon.move(x, y)</code>
  * @example
  * let ml = new Malleable().appendTo(document.body)
  * let polygon = ml.polygon([[10, 550], [100, 600], [50, 650]])
@@ -111,6 +99,7 @@ import { SVG, extend as SVGextend, Element as SVGElement } from 'https://cdnjs.c
 /**
  * @class Malleable
  * @param {Object} options - Options object
+ * @description Creates a new Malleable object. NOTE: highly recommend using the online documentation instead of relying on popup documentation.
  */
 export class Malleable {
     static width = 500
@@ -322,10 +311,12 @@ export class Malleable {
 
         line.dx = (val) => {
             line.attr({x1: line.x1()+val, x2: line.x2()+val})
+            return line
         }
 
         line.dy = (val) => {
             line.attr({y1: line.y1()+val, y2: line.y2()+val})
+            return line
         }
         return line
     }
@@ -357,6 +348,7 @@ export class Malleable {
                 x = val
                 polyline.points[i][0] = val
                 polyline.plot(polyline.points)
+                return polyline
             }
 
             polyline.points[i].y = (val) => {
@@ -364,6 +356,7 @@ export class Malleable {
                 y = val
                 polyline.points[i][1] = val
                 polyline.plot(polyline.points)
+                return polyline
             }
         }
         
@@ -371,12 +364,14 @@ export class Malleable {
             for(let i = 0; i < polyline.points.length; i++){
                 polyline.points[i].x(polyline.points[i].x()+val)
             }
+            return polyline
         }
 
         polyline.dy = (val) => {
             for(let i = 0; i < polyline.points.length; i++){
                 polyline.points[i].y(polyline.points[i].y()+val)
             }
+            return polyline
         }
 
         polyline.stroke('black');
@@ -464,7 +459,6 @@ let polyline = ml.polyline([[60, 430], [70, 470], [110, 480], [70, 490], [60, 53
 .fill('none').stroke('#f06').strokeWidth(4).strokeLinecap('round').points[0].x(10)
 
 let polygon = ml.polygon([[10, 550], [100, 600], [50, 650]]).points[0].x(50).fill('#f06').stroke('none')
-
 
 
 // https://svgjs.dev/docs/3.0/manipulating/#resizing
