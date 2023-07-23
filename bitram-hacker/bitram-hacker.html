@@ -415,7 +415,6 @@
             if(saftey.guiHidden || saftey.hacking || saftey.locked){
                 gui.setAttribute('style', 'display: none;');
                 inventoryHandler.setAttribute('class', 'hidden');
-                inventoryHandler.innerHTML = ''
                 if(!saftey.hacking){
                     saftey.paused = false;
                     saftey.truePaused = false;
