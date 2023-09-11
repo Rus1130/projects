@@ -2,11 +2,33 @@
 
 </style>
 <head>
-    <script src="main.js"></script>
 </head>
 <body>
-    <span id="heat-counter">Heat: 0/100</span>
+    <span id="heat-counter"></span>
 </body>
 <script>
-
+    (() => {
+        const gameData = {
+            heat: 0,
+            tick: 0,
+            paused: false,
+            increaseHeat(amnt){
+                this.heat += amnt;
+            },
+            decraseHeat(amnt){
+                if(this.heat > 0) this.heat -= amnt;
+            },
+            updateHeat(){
+                document.getElementById("heat-counter").textContent = `Heat: ${this.heat}/100`
+            }
+        }
+        setInterval(() => {
+            if(gameData.paused == true) return;
+            gameData.tick++;
+            gameData.updateHeat();
+            if(gameData.tick % 600 == 0){
+                gameData.decraseHeat(1);
+            }
+        }, 1);
+    })();
 </script>
