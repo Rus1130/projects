@@ -1152,10 +1152,10 @@
             let random = Math.floor(Math.random() * 200);
             if(random <= 60){
                 if(playerData.cannonWear < 400){
-                    if(gameData.keys[gameData.shootKey2]){
-                        math.round(playerData.cannonWear = playerData.cannonWear + 2);
-                    } else {
+                    if(gameData.keys[gameData.shootKey1]){
                         math.round(playerData.cannonWear = playerData.cannonWear + 20);
+                    } else {
+                        math.round(playerData.cannonWear = playerData.cannonWear + 2);
                     }
                     
 
@@ -1165,6 +1165,17 @@
             playerData.cannonWear = Math.round(playerData.cannonWear)
             playerData.bulletCount++;
             spawnPlayerBullet()
+        }
+
+        document.onmousedown = e => {
+            gameData.keys[e.button] = true;
+            if(e.button == 0){
+                shoot();
+            }
+        }
+
+        document.onmouseup = e => {
+            gameData.keys[e.button] = false;
         }
         
 
@@ -1186,7 +1197,7 @@
                 gameData.playing = !gameData.playing;
             }
             if(gameData.keys[gameData.helpKey]){
-                confirm('wasd to move\nq to shoot\ne to rapid fire\nspace to pause')
+                confirm('wasd to move\nq or left click to shoot\ne to rapid fire\nspace to pause')
                 gameData.keys[gameData.helpKey] = false;
             }
         };
