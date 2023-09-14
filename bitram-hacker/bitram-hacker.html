@@ -1,16 +1,42 @@
 <style>
-
+    #menu {
+        display: flex;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width:  500px;
+        height: 650px;
+        border: solid 1px black;
+    }
 </style>
 <head>
 </head>
 <body>
-    <span id="heat-counter"></span>
+    <span id="heat-counter"></span><br>
+    <span id="money-counter"></span>
+    <div id="menu">
+        <div id="inventory-menu"></div>
+        <div id="buy-menu"></div>
+    </div>
 </body>
 <script>
     (() => {
+        const heatCounter = document.getElementById("heat-counter");
+        const moneyCounter = document.getElementById("money-counter");
+
+        const partitions = {
+            "unsecured": {
+                price: "1",
+                sell: "2",
+                heatIncrease: 5,
+            }
+        }
         const gameData = {
+            inventory: [],
             heat: 0,
             tick: 0,
+            money: 0,
             paused: false,
             increaseHeat(amnt){
                 this.heat += amnt;
@@ -19,10 +45,11 @@
                 if(this.heat > 0) this.heat -= amnt;
             },
             updateHeat(){
-                document.getElementById("heat-counter").textContent = `Heat: ${this.heat}/100`
+                heatCounter.textContent = `Heat: ${this.heat}/100`
             }
         }
         setInterval(() => {
+            moneyCounter.textContent = `Money: ${gameData.money}`
             if(gameData.paused == true) return;
             gameData.tick++;
             gameData.updateHeat();
