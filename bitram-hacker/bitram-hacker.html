@@ -1,11 +1,30 @@
 <style>
+    .nodisplay {
+        display: none;
+    }
+
     #menu {
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width:  500px;
+        width:  600px;
+        height: 650px;
+        border: solid 1px black;
+    }
+
+    #inventory-menu {
+        border-right: 1px solid black;
+    }
+
+    #hack-menu {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width:  650px;
         height: 650px;
         border: solid 1px black;
     }
@@ -14,47 +33,127 @@
 </head>
 <body>
     <span id="heat-counter"></span><br>
-    <span id="money-counter"></span>
-    <div id="menu">
-        <div id="inventory-menu"></div>
-        <div id="buy-menu"></div>
+    <span id="money-counter"></span><br>
+    <span id="hacktime-left" class="nodisplay">TIME</span>
+    <div id="menu-wrapper">
+        <div id="menu">
+            <div id="inventory-menu"></div>
+            <div id="buy-menu"></div>
+        </div>
+    </div>
+    <div id="hack-menu" class="nodisplay">
+        <div id="hack-menu-grid">
+        </div>
     </div>
 </body>
 <script>
     (() => {
         const heatCounter = document.getElementById("heat-counter");
         const moneyCounter = document.getElementById("money-counter");
+        const menuWrapper = document.getElementById("menu-wrapper");
+        const inventoryMenu = document.getElementById("inventory-menu");
+        const hacktimeCounter = document.getElementById("hacktime-left");
+        const hackMenu = document.getElementById("hack-menu");
 
-        const partitions = {
+        const partitionData = {
             "unsecured": {
                 price: "1",
                 sell: "2",
                 heatIncrease: 5,
+                hackTime: 10 * 1000,
+                grid: [2, 2],
+                steps: 3,
             }
         }
-        const gameData = {
-            inventory: [],
-            heat: 0,
-            tick: 0,
-            money: 0,
-            paused: false,
+        const functions = {
             increaseHeat(amnt){
                 this.heat += amnt;
             },
             decraseHeat(amnt){
-                if(this.heat > 0) this.heat -= amnt;
+                if(gameData.heat > 0) gameData.heat -= amnt;
             },
-            updateHeat(){
-                heatCounter.textContent = `Heat: ${this.heat}/100`
+            update(){
+                heatCounter.textContent = `Heat: ${gameData.heat}/100`
+                moneyCounter.textContent = `Money: $${gameData.money}`
+            },
+            addToInventory(name){
+                let div = document.createElement("div");
+                div.classList.add("item");
+                div.style.display = 'flex';
+                div.style.justifyContent = 'center';
+                div.style.alignItems = 'center';
+                div.style.backgroundColor = "white";
+                div.style.borderBottom = '1px solid black';
+
+                // div hover, toggle background between white and grey
+                div.addEventListener("mouseover", () => {
+                    div.style.backgroundColor = "lightgrey";
+                })
+                div.addEventListener("mouseout", () => {
+                    div.style.backgroundColor = "white";
+                })
+
+                div.addEventListener("click", () => {
+                    functions.hack(name, div);
+                })
+
+                div.id = name;
+                div.textContent = name + " partition";
+                inventoryMenu.appendChild(div);
+                
+            },
+            hack(name, element){
+                element.remove();
+                gameData.inventory[name]--;
+                hacktimeCounter.classList.remove("nodisplay");
+                menuWrapper.classList.add("nodisplay");
+                hackMenu.classList.remove("nodisplay");
+
+                let timeLeft = partitionData[name].hackTime;
+                hacktimeCounter.textContent = `TIME: ${timeLeft}`;
+                let hackTimeInterval = setInterval(() => {
+                    hacktimeCounter.textContent = `TIME: ${timeLeft}`;
+                    timeLeft -= 1000;
+                    hacktimeCounter.textContent = `TIME: ${timeLeft}`;
+
+                    if(timeLeft == 0){
+                        clearInterval(hackTimeInterval);
+                        hacktimeCounter.classList.add("nodisplay");
+                        menuWrapper.classList.remove("nodisplay");
+                        hackMenu.classList.add("nodisplay");
+                        functions.increaseHeat(partitionData[name].heatIncrease * 2);
+                    }
+                }, 1000);  
             }
         }
+        const gameData = {
+            inventory: {
+                "unsecured": 3,
+            },
+            heat: 0,
+            tick: 0,
+            money: 0,
+            paused: false,
+            setup: false,
+        }
+
         setInterval(() => {
-            moneyCounter.textContent = `Money: ${gameData.money}`
+            if(gameData.setup == false){
+                for(i = 0; i < Object.keys(gameData.inventory).length; i++){
+                    let key = Object.keys(gameData.inventory)[i];
+                    let amount = gameData.inventory[key];
+                    for(j = 0; j < amount; j++){
+                        functions.addToInventory(key);
+                    }
+                }
+
+                gameData.setup = true;
+            }
             if(gameData.paused == true) return;
             gameData.tick++;
-            gameData.updateHeat();
+            functions.update();
             if(gameData.tick % 600 == 0){
-                gameData.decraseHeat(1);
+                functions.decraseHeat(1);
             }
         }, 1);
     })();
