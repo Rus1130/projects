@@ -59,7 +59,7 @@
             "unsecured": {
                 price: "1",
                 sell: "2",
-                heatIncrease: 5,
+                heatIncrease: 2,
                 hackTime: 10 * 1000,
                 grid: [2, 2],
                 steps: 3,
@@ -67,7 +67,7 @@
         }
         const functions = {
             increaseHeat(amnt){
-                this.heat += amnt;
+                gameData.heat += amnt;
             },
             decraseHeat(amnt){
                 if(gameData.heat > 0) gameData.heat -= amnt;
@@ -110,20 +110,38 @@
                 hackMenu.classList.remove("nodisplay");
 
                 let timeLeft = partitionData[name].hackTime;
-                hacktimeCounter.textContent = `TIME: ${timeLeft}`;
+                hacktimeCounter.textContent = `TIME: ${timeLeft/1000} sec`;
+
+                hackMenu.style.display = 'grid'
+                hackMenu.style.gridTemplateColumns = `repeat(${partitionData[name].grid[0]}, 1fr)`;
+                hackMenu.style.gridTemplateRows = `repeat(${partitionData[name].grid[1]}, 1fr)`;
+
+                for(i = 0; i < partitionData[name].grid[0]+partitionData[name].grid[1]; i++){
+
+                    let div = document.createElement("div");
+                    div.classList.add("hack-grid-item");
+                    div.id = `hack-grid-item-${i}`;
+                    div.style.outline = "1px solid black";
+                    hackMenu.appendChild(div);
+                }
+
+
                 let hackTimeInterval = setInterval(() => {
-                    hacktimeCounter.textContent = `TIME: ${timeLeft}`;
-                    timeLeft -= 1000;
-                    hacktimeCounter.textContent = `TIME: ${timeLeft}`;
+                    hacktimeCounter.textContent = `TIME: ${timeLeft/1000} sec`;
+                    timeLeft -= 100;
+                    hacktimeCounter.textContent = `TIME: ${timeLeft/1000} sec`;
 
                     if(timeLeft == 0){
+                        functions.increaseHeat(partitionData[name].heatIncrease * 2);
                         clearInterval(hackTimeInterval);
                         hacktimeCounter.classList.add("nodisplay");
                         menuWrapper.classList.remove("nodisplay");
                         hackMenu.classList.add("nodisplay");
-                        functions.increaseHeat(partitionData[name].heatIncrease * 2);
+                        hackMenu.innerHTML = "";
+                        hackMenu.style = '';
+                        
                     }
-                }, 1000);  
+                }, 100);  
             }
         }
         const gameData = {
