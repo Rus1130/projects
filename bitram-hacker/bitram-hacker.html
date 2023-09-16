@@ -28,6 +28,26 @@
         height: 650px;
         border: solid 1px black;
     }
+
+    #buy-menu-item {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: white;
+        border-bottom: 1px solid black;
+    }
+
+    #buy-menu-item:hover {
+        background-color: lightgrey;
+    }
+
+    .hack-grid-item {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: white;
+        border: 1px solid black;
+    }
 </style>
 <head>
 </head>
@@ -38,13 +58,17 @@
     <div id="menu-wrapper">
         <div id="menu">
             <div id="inventory-menu"></div>
-            <div id="buy-menu"></div>
+            <div id="buy-menu">
+                <div id="buy-menu-item">unsecuredpartition ($4)</div>
+                <div id="buy-menu-item">weak partition ($10)</div>
+                <div id="buy-menu-item">protected partition ($20)</div>
+                <div id="buy-menu-item">secured partition ($50)</div>
+                <div id="buy-menu-item">encrypted partition ($100)</div>
+                <div id="buy-menu-item">monitored partition ($150)</div>
+            </div>
         </div>
     </div>
-    <div id="hack-menu" class="nodisplay">
-        <div id="hack-menu-grid">
-        </div>
-    </div>
+    <div id="hack-menu" class="nodisplay"></div>
 </body>
 <script>
     (() => {
@@ -57,13 +81,53 @@
 
         const partitionData = {
             "unsecured": {
-                price: "1",
-                sell: "2",
-                heatIncrease: 2,
+                price: 1,
+                sell: 3,
+                heatIncrease: 4,
                 hackTime: 10 * 1000,
                 grid: [2, 2],
                 steps: 3,
-            }
+            },
+            "weak": {
+                price: 5,
+                sell: 8,
+                heatIncrease: 8,
+                hackTime: 10 * 1000,
+                grid: [3, 3],
+                steps: 5,
+            },
+            "protected": {
+                price: 10,
+                sell: 15,
+                heatIncrease: 10,
+                hackTime: 10 * 1000,
+                grid: [3, 3],
+                steps: 6,
+            },
+            "secured": {
+                price: 20,
+                sell: 30,
+                heatIncrease: 12,
+                hackTime: 10 * 1000,
+                grid: [4, 4],
+                steps: 7,
+            },
+            "encrypted": {
+                price: 50,
+                sell: 75,
+                heatIncrease: 18,
+                hackTime: 10 * 1000,
+                grid: [4, 4],
+                steps: 5,
+            },
+            "monitored": {
+                price: 100,
+                sell: 150,
+                heatIncrease: 30,
+                hackTime: 10 * 1000,
+                grid: [4, 4],
+                steps: 8,
+            },
         }
         const functions = {
             increaseHeat(amnt){
@@ -116,37 +180,118 @@
                 hackMenu.style.gridTemplateColumns = `repeat(${partitionData[name].grid[0]}, 1fr)`;
                 hackMenu.style.gridTemplateRows = `repeat(${partitionData[name].grid[1]}, 1fr)`;
 
-                for(i = 0; i < partitionData[name].grid[0]+partitionData[name].grid[1]; i++){
+                let order = []
+
+                for(i = 0; i < partitionData[name].steps; i++){
+                    let random = Math.floor(Math.random() * (partitionData[name].grid[0] * partitionData[name].grid[1]));
+                    while(order.includes(random)){
+                        random = Math.floor(Math.random() * (partitionData[name].grid[0] * partitionData[name].grid[1]));
+                    }
+                    order.push(random)
+                }
+
+                let clickOrder = []
+
+                for(i = 0; i < partitionData[name].grid[0] * partitionData[name].grid[1]; i++){
 
                     let div = document.createElement("div");
                     div.classList.add("hack-grid-item");
                     div.id = `hack-grid-item-${i}`;
                     div.style.outline = "1px solid black";
+
                     hackMenu.appendChild(div);
                 }
 
+                for(i = 0; i < order.length; i++){
+                    let div = document.getElementById(`hack-grid-item-${order[i]}`);
+                    div.textContent = i+1;
 
-                let hackTimeInterval = setInterval(() => {
-                    hacktimeCounter.textContent = `TIME: ${timeLeft/1000} sec`;
-                    timeLeft -= 100;
-                    hacktimeCounter.textContent = `TIME: ${timeLeft/1000} sec`;
+                    div.addEventListener("click", (f) => {
+                        clickOrder.push(+f.target.id.split("-")[3]);
+                    })
+                }
 
-                    if(timeLeft == 0){
-                        functions.increaseHeat(partitionData[name].heatIncrease * 2);
-                        clearInterval(hackTimeInterval);
-                        hacktimeCounter.classList.add("nodisplay");
-                        menuWrapper.classList.remove("nodisplay");
-                        hackMenu.classList.add("nodisplay");
-                        hackMenu.innerHTML = "";
-                        hackMenu.style = '';
+                for(i = 0; i < partitionData[name].grid[0] * partitionData[name].grid[1]; i++){
+                    let div = document.getElementById(`hack-grid-item-${i}`);
+                    div.addEventListener("click", (f) => {
+                        if(+f.target.id.split("-")[3] != order[clickOrder.length-1]){
+                            clickOrder.push(-1);
+                        }
+                    })
+                }
+
+                
+                let started = false;
+                hackMenu.addEventListener("click", (e) => {
+                    if(started == false){
+                        // get the order they are clicked in
                         
+                        for(i = 0; i < order.length; i++){
+                            let div = document.getElementById(`hack-grid-item-${order[i]}`);
+                            div.textContent = "";
+                        }
+
+                        function failedHack(interval){
+                            functions.increaseHeat(partitionData[name].heatIncrease * 2);
+                            clearInterval(interval);
+                            hacktimeCounter.classList.add("nodisplay");
+                            menuWrapper.classList.remove("nodisplay");
+                            hackMenu.classList.add("nodisplay");
+                            hackMenu.innerHTML = "";
+                            hackMenu.style = '';
+                        }
+                        
+                        let hackTimeInterval = setInterval(() => {
+
+                            let failed = false;
+
+                            hacktimeCounter.textContent = `TIME: ${timeLeft/1000} sec`;
+                            timeLeft -= 100;
+                            hacktimeCounter.textContent = `TIME: ${timeLeft/1000} sec`;
+
+                            for(i = 0; i < clickOrder.length; i++){
+                                if(clickOrder[i] != order[i]){
+                                    failed = true;
+                                }
+                            }
+
+                            if(clickOrder.length == order.length){
+                                functions.increaseHeat(partitionData[name].heatIncrease);
+                                clearInterval(hackTimeInterval);
+                                hacktimeCounter.classList.add("nodisplay");
+                                menuWrapper.classList.remove("nodisplay");
+                                hackMenu.classList.add("nodisplay");
+                                hackMenu.innerHTML = "";
+                                hackMenu.style = '';
+
+                                gameData.money += partitionData[name].sell;
+                            }
+
+                            if(timeLeft == 0){
+                                failed = true;
+                            }
+
+                            if(failed){
+                                failedHack(hackTimeInterval);
+                            }
+                        }, 100);  
+                        started = true;
                     }
-                }, 100);  
+                })
+
+  
+                
+
             }
         }
         const gameData = {
             inventory: {
                 "unsecured": 3,
+                "weak": 3,
+                "protected": 3,
+                "secured": 3,
+                "encrypted": 3,
+                "monitored": 3  ,
             },
             heat: 0,
             tick: 0,
