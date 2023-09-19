@@ -51,7 +51,7 @@
         return [res[0] + Cx, res[1] + Cy]
     }
 
-    const bounceAmount = 1;
+    const bounceAmount = 10;
 
     let lines = []
 
@@ -155,6 +155,19 @@
 
             line.vertices[0].x = prevLine.vertices[1].x;
             line.vertices[0].y = prevLine.vertices[1].y;
+
+            let angle = Math.atan2(prevLine.vertices[1].y - prevLine.vertices[0].y, prevLine.vertices[1].x - prevLine.vertices[0].x);
+
+            console.log(angle * 180 / Math.PI);
+
+            line.vertices[1].x = prevLine.vertices[1].x + Math.cos(angle) * 1000;
+            line.vertices[1].y = prevLine.vertices[1].y - Math.sin(angle) * 1000;
+
+            let intersect = getRectIntersect(center.translation.x, center.translation.y, two.width, two.height, line.vertices[1].x, line.vertices[1].y);
+            
+            line.vertices[1].x = intersect[0];
+            line.vertices[1].y = intersect[1];
+
         }
     });
 
