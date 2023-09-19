@@ -15,7 +15,41 @@
         autostart: true
     }).appendTo(document.body);
 
-    let hide = true;
+    let hide = false;
+
+    function getRectIntersect(Cx, Cy, w, h, Ax, Ay){
+        let Px = Math.abs(Ax - Cx)
+        let Py = Math.abs(Ay - Cy)
+
+        // Slope of line from Point P to Center
+        let Pm = Py / Px
+
+        // Slope of rectangle Diagonal
+        let Rm = h / w
+
+        // If the point is inside the rectangle, return the center
+        let res= [0, 0]
+
+        // Check if the point is inside and if so do not calculate
+        if (!(Px < w / 2 && Py < h / 2)) {
+
+        // Calculate point in first quarter: Px >= 0 && Py >= 0
+        if (Pm <= Rm) {
+            res[0] = w / 2
+            res[1] = (w * Pm) / 2
+        } else {
+            res[0] = h / (Pm * 2)
+            res[1] = h / 2
+        }
+
+        // Set original sign 
+        if (Ax - Cx < 0) res[0] *= -1
+        if (Ay - Cy < 0) res[1] *= -1
+        }
+
+        // Translate back
+        return [res[0] + Cx, res[1] + Cy]
+    }
 
     const bounceAmount = 1;
 
@@ -49,6 +83,8 @@
     borderSphere.fill = '#000000';
     borderSphere.noStroke();
 
+    lines.push(maxHypoLine)
+
     if(hide){
         yLine.opacity = 0;
         xLine.opacity = 0;
@@ -61,6 +97,23 @@
         let line = two.makeLine(0, 0, 0, 0);
         line.stroke = '#000000';
         lines.push(line);
+    }
+
+
+    for(i = 0; i < lines.length; i++){
+        if(i == 0) continue;
+
+        let prevLine = lines[i - 1];
+        let line = lines[i];
+
+        line.vertices[0].x = prevLine.vertices[1].x;
+        line.vertices[0].y = prevLine.vertices[1].y;
+
+        // rotate line so it is perpendicular to hypoLine
+        let angle = Math.atan2(prevLine.vertices[1].y - prevLine.vertices[0].y, prevLine.vertices[1].x - prevLine.vertices[0].x);
+
+        line.vertices[1].x = prevLine.vertices[1].x + Math.cos(angle) * 1000;
+        line.vertices[1].y = prevLine.vertices[1].y - Math.sin(angle) * 1000;
     }
 
     document.body.addEventListener('mousemove', function (e) {
@@ -87,22 +140,22 @@
         // get the distance from the center to the edge of the screen at the angle of hypoLine
         let distance = Math.sqrt(Math.pow(center.translation.x - two.width, 2) + Math.pow(center.translation.y - two.height, 2));
 
-        maxHypoLine.vertices[1].x = center.translation.x + Math.cos(angle) * distance/2;
-        maxHypoLine.vertices[1].y = center.translation.y - Math.sin(angle) * distance/2;
+        maxHypoLine.vertices[1].x = center.translation.x + Math.cos(angle) * 1000;
+        maxHypoLine.vertices[1].y = center.translation.y - Math.sin(angle) * 1000;
 
-        // have borderSphere always be on the edge of the screen where maxHypoLine exits the screen
-        borderSphere.translation.x = maxHypoLine.vertices[1].x;
+        let intersect = getRectIntersect(center.translation.x, center.translation.y, two.width, two.height, maxHypoLine.vertices[1].x, maxHypoLine.vertices[1].y);
 
+        maxHypoLine.vertices[1].x = intersect[0];
+        maxHypoLine.vertices[1].y = intersect[1];
 
-        // get the angle of maxHypoLineContinuation
-        // let angle2 = Math.atan2(maxHypoLineContinuation.vertices[1].y - maxHypoLineContinuation.vertices[0].y, maxHypoLineContinuation.vertices[1].x - maxHypoLineContinuation.vertices[0].x);
-        // // convert to degrees
-        // angle2 = angle2 * (180 / Math.PI);
-        // console.log(angle2);
+        for(i = 0; i < lines.length; i++){
+            if(i == 0) continue;
+            let line = lines[i];
+            let prevLine = lines[i - 1];
 
-        // for(i = 1; i <= lines.length; i++){
-        //     lines[i].vertices[0].x = lines[i - 1].vertices[1].x;
-        // }
+            line.vertices[0].x = prevLine.vertices[1].x;
+            line.vertices[0].y = prevLine.vertices[1].y;
+        }
     });
 
 </script>
