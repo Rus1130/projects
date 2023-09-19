@@ -1,87 +1,4 @@
 <style>
-container {
-    border: 1px solid black;
-    height: 500px;
-    width: 500px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-center {
-    width: 20px;
-    height: 20px;
-    background-color: black;
-    border-radius: 50%;
-
-    z-index: 1;
-}
-
-xRect {
-    position: absolute;
-    top: calc(50% - 4px);
-    left: 50%;
-    width: 100px;
-    height: 10px;
-    background-color: red;
-}
-
-yRect {
-    position: absolute;
-    top: 50%;
-    left: calc(50% - 4px);
-    width: 10px;
-    height: 100px;
-    background-color: blue;
-}
-
-hypoRect {
-    position: absolute;
-    top: 50%;
-    left: calc(50% - 4px);
-    width: 10px;
-    height: 100px;
-    background-color: green;
-}
-
-xMid {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 1px;
-    height: 500px;
-    background-color: red;
-}
-
-yMid, yEnd {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 500px;
-    height: 1px;
-    background-color: blue;
-}
-
-xEnd {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 1px;
-    height: 500px;
-    background-color: red;
-}
-
-#stats {
-    position: absolute;
-    top: 0;
-    left: 0;
-}
 </style>
 <head>
 
@@ -90,115 +7,93 @@ xEnd {
     <script src="./two.js"></script>
     <div id="stats">
     </div>
-    <container>
-        <center></center>
-        <xRect></xRect>
-        <yRect></yRect>
-        <hypoRect></hypoRect>
-        <xMid></xMid>
-        <yMid></yMid>
-        <xEnd></xEnd>
-        <yEnd></yEnd>
-    </container>
 </body>
 <script>
-    let container = document.querySelector("container");
-    let center = document.querySelector("center");
-    let xRect = document.querySelector("xRect");
-    let yRect = document.querySelector("yRect");
-    let hypoRect = document.querySelector("hypoRect");
 
-    let xMid = document.querySelector("xMid");
-    let yMid = document.querySelector("yMid");
+    let two = new Two({
+        fullscreen: true,
+        autostart: true
+    }).appendTo(document.body);
 
-    let xEnd = document.querySelector("xEnd");
-    let yEnd = document.querySelector("yEnd");
+    let hide = false;
 
-    let stats = document.querySelector("#stats");
+    const bounceAmount = 1;
 
-    let mouseX = 0;
-    let mouseY = 0;
+    let lines = []
 
+    let yLine = two.makeLine(two.width / 2, 0, two.width / 2, two.height / 2);
+    yLine.stroke = '#00ff00';
+    yLine.linewidth = 3;
 
-    xMid.style.top = container.offsetTop + "px";
-    yMid.style.left = container.offsetLeft + "px";
+    let xLine = two.makeLine(0, two.height / 2, two.width / 2, two.height / 2);
+    xLine.stroke = '#ff0000';
+    xLine.linewidth = 3;
 
-    xEnd.style.top = container.offsetTop + "px";
-    yEnd.style.left = container.offsetLeft + "px";
+    let hypoLine = two.makeLine(xLine.vertices[0].x, xLine.vertices[0].y, yLine.vertices[0].x, yLine.vertices[0].y);
+    hypoLine.stroke = '#0000ff';
+    hypoLine.linewidth = 3;
 
-    function toggleDevVisibility(){
-        xRect.style.backgroundColor = xRect.style.backgroundColor == "transparent" ? "red" : "transparent";
-        yRect.style.backgroundColor = yRect.style.backgroundColor == "transparent" ? "blue" : "transparent";
-        hypoRect.style.backgroundColor = hypoRect.style.backgroundColor == "transparent" ? "green" : "transparent";
+    let maxXLine = two.makeLine(0, 0, 0, two.height);
+    maxXLine.stroke = '#ff0000';
 
-        xMid.style.backgroundColor = xMid.style.backgroundColor == "transparent" ? "red" : "transparent";
-        yMid.style.backgroundColor = yMid.style.backgroundColor == "transparent" ? "blue" : "transparent";
+    let maxYLine = two.makeLine(0, 0, two.width, 0);
+    maxYLine.stroke = '#00ff00';
 
-        xEnd.style.backgroundColor = xEnd.style.backgroundColor == "transparent" ? "red" : "transparent";
-        yEnd.style.backgroundColor = yEnd.style.backgroundColor == "transparent" ? "blue" : "transparent";
+    let maxHypoLine = two.makeLine(0, 0, two.width, two.height);
+    maxHypoLine.stroke = '#0000ff';
+
+    let center = two.makeCircle(two.width / 2, two.height / 2, 5);
+    center.fill = '#000000';
+
+    if(hide){
+        yLine.opacity = 0;
+        xLine.opacity = 0;
+        hypoLine.opacity = 0;
+        maxXLine.opacity = 0;
+        maxYLine.opacity = 0;
+        maxHypoLine.opacity = 0;
+        center.opacity = 0;
     }
 
-    document.body.addEventListener("keyup", e => {
-        if(e.key == " "){
-            toggleDevVisibility();
-        }
-    })
+    for(i = 0; i < bounceAmount; i++){
+        let line = two.makeLine(0, 0, 0, 0);
+        line.stroke = '#000000';
+        lines.push(line);
+    }
 
-    container.addEventListener("mousemove", e => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
+    document.body.addEventListener('mousemove', function (e) {
+        yLine.vertices[0].y = e.clientY;
+        xLine.vertices[0].x = e.clientX;
 
-        let xLength = mouseX - container.offsetLeft - 250;
-        let yLength = mouseY - container.offsetTop - 250;
+        hypoLine.vertices[0].x = yLine.vertices[0].x;
+        hypoLine.vertices[0].y = yLine.vertices[0].y;
+        hypoLine.vertices[1].x = xLine.vertices[0].x;
+        hypoLine.vertices[1].y = xLine.vertices[0].y;
+
+        maxXLine.vertices[0].x = xLine.vertices[0].x;
+        maxXLine.vertices[1].x = xLine.vertices[0].x;
+
+        maxYLine.vertices[0].y = yLine.vertices[0].y;
+        maxYLine.vertices[1].y = yLine.vertices[0].y;
+
+        maxHypoLine.vertices[0].x = center.translation.x;
+        maxHypoLine.vertices[0].y = center.translation.y;
+
+        // rotate maxHypoLine.vertices[1] so it is perpendicular to hypoLine
+        let angle = Math.atan2(hypoLine.vertices[1].y - hypoLine.vertices[0].y, hypoLine.vertices[1].x - hypoLine.vertices[0].x);
+        maxHypoLine.vertices[1].x = center.translation.x + Math.cos(angle) * 1000;
+        maxHypoLine.vertices[1].y = center.translation.y - Math.sin(angle) * 1000;
 
 
-        yMid.style.top = container.offsetTop + 255 + yLength / 2 + "px";
-        xMid.style.left = container.offsetLeft + 255 + xLength / 2 + "px";
+        // get the angle of maxHypoLineContinuation
+        // let angle2 = Math.atan2(maxHypoLineContinuation.vertices[1].y - maxHypoLineContinuation.vertices[0].y, maxHypoLineContinuation.vertices[1].x - maxHypoLineContinuation.vertices[0].x);
+        // // convert to degrees
+        // angle2 = angle2 * (180 / Math.PI);
+        // console.log(angle2);
 
-        let hypoLength = Math.sqrt(Math.pow(xLength, 2) + Math.pow(yLength, 2));
-
-        
-        let angle = Math.atan(xLength / yLength) * 180 / Math.PI;
-        hypoRect.style.transform = `rotate(${angle}deg)`;
-        hypoRect.style.height = hypoLength + "px";
-
-        if(yLength > 0){
-            yRect.style.height = yLength + "px";
-            yRect.style.top = "50%";
-
-            yEnd.style.top = container.offsetTop + 250 + yLength + 'px';
-
-            hypoRect.style.top = (yMid.offsetTop - hypoRect.clientHeight / 2) - 5 + "px";
-        } else {
-            yRect.style.height = Math.abs(yLength) + "px";
-            yRect.style.top = mouseY + "px";
-
-            yEnd.style.top = container.offsetTop + 250 + yLength + 'px';
-
-            hypoRect.style.top = (yMid.offsetTop - hypoRect.clientHeight / 2) - 5 + "px";
-        }
-
-        if(xLength > 0){
-            xRect.style.width = xLength + "px";
-            xRect.style.left = "50%";
-
-            hypoRect.style.left = container.offsetLeft + 250 + xLength / 2 + 'px';
-
-            xEnd.style.left = container.offsetLeft + 250 + xLength + 'px';
-
-        } else {
-            xRect.style.width = Math.abs(xLength) + "px";
-            xRect.style.left = mouseX + "px";
-
-            hypoRect.style.left = container.offsetLeft + 250 + xLength / 2 + 'px';
-
-            xEnd.style.left = container.offsetLeft + 250 + xLength + 'px';
-        }
-
-        
-        stats.innerHTML = `X Length: ${Math.abs(xLength)}<br>`+
-        `Y Length: ${Math.abs(yLength)}`+
-        `<br>Hypo Length: ${Math.abs(hypoLength)}`;
+        // for(i = 1; i <= lines.length; i++){
+        //     lines[i].vertices[0].x = lines[i - 1].vertices[1].x;
+        // }
     });
 
 </script>
