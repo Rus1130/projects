@@ -15,7 +15,7 @@
         autostart: true
     }).appendTo(document.body);
 
-    let hide = false;
+    let hide = true;
 
     const bounceAmount = 1;
 
@@ -45,14 +45,16 @@
     let center = two.makeCircle(two.width / 2, two.height / 2, 5);
     center.fill = '#000000';
 
+    let borderSphere = two.makeCircle(0, 0, 2);
+    borderSphere.fill = '#000000';
+    borderSphere.noStroke();
+
     if(hide){
         yLine.opacity = 0;
         xLine.opacity = 0;
         hypoLine.opacity = 0;
         maxXLine.opacity = 0;
         maxYLine.opacity = 0;
-        maxHypoLine.opacity = 0;
-        center.opacity = 0;
     }
 
     for(i = 0; i < bounceAmount; i++){
@@ -81,8 +83,15 @@
 
         // rotate maxHypoLine.vertices[1] so it is perpendicular to hypoLine
         let angle = Math.atan2(hypoLine.vertices[1].y - hypoLine.vertices[0].y, hypoLine.vertices[1].x - hypoLine.vertices[0].x);
-        maxHypoLine.vertices[1].x = center.translation.x + Math.cos(angle) * 1000;
-        maxHypoLine.vertices[1].y = center.translation.y - Math.sin(angle) * 1000;
+
+        // get the distance from the center to the edge of the screen at the angle of hypoLine
+        let distance = Math.sqrt(Math.pow(center.translation.x - two.width, 2) + Math.pow(center.translation.y - two.height, 2));
+
+        maxHypoLine.vertices[1].x = center.translation.x + Math.cos(angle) * distance/2;
+        maxHypoLine.vertices[1].y = center.translation.y - Math.sin(angle) * distance/2;
+
+        // have borderSphere always be on the edge of the screen where maxHypoLine exits the screen
+        borderSphere.translation.x = maxHypoLine.vertices[1].x;
 
 
         // get the angle of maxHypoLineContinuation
