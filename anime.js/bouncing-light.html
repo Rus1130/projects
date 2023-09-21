@@ -30,28 +30,28 @@
         // If the point is inside the rectangle, return the center
         let res= [0, 0]
 
-        // Check if the point is inside and if so do not calculate
-        if (!(Px < w / 2 && Py < h / 2)) {
+        // // Check if the point is inside and if so do not calculate
+        // if (!(Px < w / 2 && Py < h / 2)) {
 
         // Calculate point in first quarter: Px >= 0 && Py >= 0
-        if (Pm <= Rm) {
-            res[0] = w / 2
-            res[1] = (w * Pm) / 2
-        } else {
-            res[0] = h / (Pm * 2)
-            res[1] = h / 2
-        }
+            if (Pm <= Rm) {
+                res[0] = w / 2
+                res[1] = (w * Pm) / 2
+            } else {
+                res[0] = h / (Pm * 2)
+                res[1] = h / 2
+            }
 
-        // Set original sign 
-        if (Ax - Cx < 0) res[0] *= -1
-        if (Ay - Cy < 0) res[1] *= -1
-        }
+            // Set original sign 
+            if (Ax - Cx < 0) res[0] *= -1
+            if (Ay - Cy < 0) res[1] *= -1
+        // }
 
         // Translate back
         return [res[0] + Cx, res[1] + Cy]
     }
 
-    const bounceAmount = 10;
+    const bounceAmount = 4;
 
     let lines = []
 
@@ -152,21 +152,29 @@
             if(i == 0) continue;
             let line = lines[i];
             let prevLine = lines[i - 1];
+            let nextLine = lines[i + 1];
 
             line.vertices[0].x = prevLine.vertices[1].x;
             line.vertices[0].y = prevLine.vertices[1].y;
 
             let angle = Math.atan2(prevLine.vertices[1].y - prevLine.vertices[0].y, prevLine.vertices[1].x - prevLine.vertices[0].x);
 
-            console.log(angle * 180 / Math.PI);
-
             line.vertices[1].x = prevLine.vertices[1].x + Math.cos(angle) * 1000;
             line.vertices[1].y = prevLine.vertices[1].y - Math.sin(angle) * 1000;
 
             let intersect = getRectIntersect(center.translation.x, center.translation.y, two.width, two.height, line.vertices[1].x, line.vertices[1].y);
-            
+            let degAngle = angle * 180 / Math.PI;
             line.vertices[1].x = intersect[0];
             line.vertices[1].y = intersect[1];
+
+            if(i == lines.length) continue
+            else if(degAngle == 90 || degAngle == -90){
+                let line = lines[i];
+                let prevLine = lines[i - 1];
+
+                prevLine.vertices[1].x = line.vertices[1].x;
+                prevLine.vertices[1].y = line.vertices[1].y;
+            }
 
         }
     });
