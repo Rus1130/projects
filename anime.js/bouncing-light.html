@@ -51,7 +51,7 @@
         return [res[0] + Cx, res[1] + Cy]
     }
 
-    const bounceAmount = 4;
+    const bounceAmount = 2;
 
     let lines = []
 
@@ -99,23 +99,6 @@
         lines.push(line);
     }
 
-
-    for(i = 0; i < lines.length; i++){
-        if(i == 0) continue;
-
-        let prevLine = lines[i - 1];
-        let line = lines[i];
-
-        line.vertices[0].x = prevLine.vertices[1].x;
-        line.vertices[0].y = prevLine.vertices[1].y;
-
-        // rotate line so it is perpendicular to hypoLine
-        let angle = Math.atan2(prevLine.vertices[1].y - prevLine.vertices[0].y, prevLine.vertices[1].x - prevLine.vertices[0].x);
-
-        line.vertices[1].x = prevLine.vertices[1].x + Math.cos(angle) * 1000;
-        line.vertices[1].y = prevLine.vertices[1].y - Math.sin(angle) * 1000;
-    }
-
     document.body.addEventListener('mousemove', function (e) {
         yLine.vertices[0].y = e.clientY;
         xLine.vertices[0].x = e.clientX;
@@ -148,34 +131,23 @@
         maxHypoLine.vertices[1].x = intersect[0];
         maxHypoLine.vertices[1].y = intersect[1];
 
-        for(i = 0; i < lines.length; i++){
-            if(i == 0) continue;
+        for(i = 1; i < lines.length; i++){
             let line = lines[i];
             let prevLine = lines[i - 1];
-            let nextLine = lines[i + 1];
 
             line.vertices[0].x = prevLine.vertices[1].x;
             line.vertices[0].y = prevLine.vertices[1].y;
 
-            let angle = Math.atan2(prevLine.vertices[1].y - prevLine.vertices[0].y, prevLine.vertices[1].x - prevLine.vertices[0].x);
+            let angle = Math.atan2(line.vertices[0].y - center.translation.y, line.vertices[0].x - center.translation.x);
+            let degAngle = angle * 180 / Math.PI;
 
-            line.vertices[1].x = prevLine.vertices[1].x + Math.cos(angle) * 1000;
-            line.vertices[1].y = prevLine.vertices[1].y - Math.sin(angle) * 1000;
+            line.vertices[1].x = line.vertices[0].x + Math.cos(angle) * 1000;
+            line.vertices[1].y = line.vertices[0].y - Math.sin(angle) * 1000;
 
             let intersect = getRectIntersect(center.translation.x, center.translation.y, two.width, two.height, line.vertices[1].x, line.vertices[1].y);
-            let degAngle = angle * 180 / Math.PI;
+
             line.vertices[1].x = intersect[0];
             line.vertices[1].y = intersect[1];
-
-            if(i == lines.length) continue
-            else if(degAngle == 90 || degAngle == -90){
-                let line = lines[i];
-                let prevLine = lines[i - 1];
-
-                prevLine.vertices[1].x = line.vertices[1].x;
-                prevLine.vertices[1].y = line.vertices[1].y;
-            }
-
         }
     });
 
