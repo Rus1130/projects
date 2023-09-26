@@ -44,25 +44,22 @@
     }
 </style>
 <head>
-    <script src="two.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.2.0/svg.min.js"></script>
+    <script type='module' src="svg.draggable.js"></script>
 </head>
 <body>
     <div class="button" id="calculate">Calculate STP</div><br>
     <div class="button" onclick="window.open('stp-calc-2-docs.txt','_blank')">Open Docs</div>
     <div id="display"></div>
     <textarea id="input">device sw1 32769 a.a.a.a
-port sw1 g0/0
+device sw2 16384 b.b.b.b
     </textarea>
 </body>
 <script>
 
     let calculateButton = document.getElementById("calculate");
 
-    let two = new Two({
-        height: 600,
-        width: 600,
-        autostart: true
-    }).appendTo(document.getElementById("display"));
+    var draw = SVG().addTo('#display').size(600, 600)
 
     class Device {
         constructor(name, mac, priority) {
@@ -226,38 +223,32 @@ port sw1 g0/0
             }
         }
 
-        let lowestPriority = Infinity;
-        let lowestPriorityBridges = [];
-
-        for(let i = 0; i < Object.keys(Device.devices).length; i++){
-            let device = Device.devices[Object.keys(Device.devices)[i]];
-            if(device.priority < lowestPriority){
-                lowestPriority = device.priority;
-                lowestPriorityBridges.push(device);
-            } else if(device.priority == lowestPriority){
-                lowestPriorityBridges.push(device);
-            }
-        }
-
-        console.log(lowestPriorityBridges);
-
         return parseError;
     }
 
     let deviceGraphics = []
+
+    let mouseX = 0;
+    let mouseY = 0;
+
+    document.addEventListener("mousemove", function(e){
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    })
 
     calculateButton.addEventListener("click", function(e){
         parse()
         let devices = Object.keys(Device.devices);
         for(let i = 0; i < devices.length; i++){
             let device = Device.devices[devices[i]];
-            let circle = two.makeCircle(300, 300, 50);
-            circle.linewidth = 1;
 
-            let text = two.makeText(device.name, 300, 300);
+            let rect = draw.rect(70, 70).attr({ fill: '#fff' }).center(300, 300).radius(5).stroke({ width: 2, color: '#000' })
+            let text = draw.text(device.name).move(270, 270).font({ size: 15, family: 'monospace' }).center(300, 300)
 
+            let group = draw.group();
+            group.add(rect);
+            group.add(text);
         }
-
         Device.devices = {};
     })
 </script>
