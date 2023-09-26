@@ -14,13 +14,13 @@
         font-family: monospace;
     }
 
-    .display {
+    #display {
         height: 600px;
         width: 600px;
-        outline: 1px black solid;
         position: absolute;
         top: 10px;
         right: 10px;
+        outline: 1px black solid;
     }
 
     #input {
@@ -44,15 +44,26 @@
     }
 </style>
 <head>
-
+    <script src="two.js"></script>
 </head>
 <body>
-    <div class="button" onclick="calculate()">Calculate STP</div><br>
+    <div class="button" id="calculate">Calculate STP</div><br>
     <div class="button" onclick="window.open('stp-calc-2-docs.txt','_blank')">Open Docs</div>
-    <div class="display"></div>
-    <textarea id="input">device sw1 32769 a.a.a.a</textarea>
+    <div id="display"></div>
+    <textarea id="input">device sw1 32769 a.a.a.a
+port sw1 g0/0
+    </textarea>
 </body>
 <script>
+
+    let calculateButton = document.getElementById("calculate");
+
+    let two = new Two({
+        height: 600,
+        width: 600,
+        autostart: true
+    }).appendTo(document.getElementById("display"));
+
     class Device {
         constructor(name, mac, priority) {
             this.name = name;
@@ -87,9 +98,11 @@
             this.ports[port] = {
                 name: port,
                 rootPort: false,
+                type: undefined,
+                svg: null,
                 connected: {
-                    device: null,
-                    port: null
+                    device: undefined,
+                    port: undefined
                 }
             }
         }
@@ -115,7 +128,7 @@
 
         let parseError = false;
 
-        for(i = 0; i < input.length; i++){
+        for(let i = 0; i < input.length; i++){
             let line = input[i].split(" ");
             let command = line[0];
 
@@ -183,15 +196,68 @@
 
                 Device.devices[device2].ports[port2].connected.device = device1;
                 Device.devices[device2].ports[port2].connected.port = port1;
+            }
 
+            if(command == 'port'){
+                if(line.length != 3){
+                    alert(`Invalid port command on line ${i + 1}`);
+                    parseError = true;
+                    return;
+                }
 
+                let device = line[1];
+                let port = line[2];
+
+                if(!Object.keys(Device.devices).includes(device)){
+                    alert(`Device ${device} does not exist`);
+                    parseError = true;
+                    return;
+                }
+
+                if(Object.keys(Device.devices[device].ports).includes(port)){
+                    alert(`Port ${port} on device ${device} already exists`);
+                    parseError = true;
+                    return;
+                }
+
+                if(!Object.keys(Device.devices[device].ports).includes(port)){
+                    Device.devices[device].addPort(port);
+                }
             }
         }
+
+        let lowestPriority = Infinity;
+        let lowestPriorityBridges = [];
+
+        for(let i = 0; i < Object.keys(Device.devices).length; i++){
+            let device = Device.devices[Object.keys(Device.devices)[i]];
+            if(device.priority < lowestPriority){
+                lowestPriority = device.priority;
+                lowestPriorityBridges.push(device);
+            } else if(device.priority == lowestPriority){
+                lowestPriorityBridges.push(device);
+            }
+        }
+
+        console.log(lowestPriorityBridges);
 
         return parseError;
     }
 
-    function calculate(){
+    let deviceGraphics = []
+
+    calculateButton.addEventListener("click", function(e){
         parse()
-    }
+        let devices = Object.keys(Device.devices);
+        for(let i = 0; i < devices.length; i++){
+            let device = Device.devices[devices[i]];
+            let circle = two.makeCircle(300, 300, 50);
+            circle.linewidth = 1;
+
+            let text = two.makeText(device.name, 300, 300);
+
+        }
+
+        Device.devices = {};
+    })
 </script>
