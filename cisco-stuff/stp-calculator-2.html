@@ -1,0 +1,197 @@
+<style>
+    .button {
+        outline: 1px black solid;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        height: 50px;
+        width: 130px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-family: monospace;
+    }
+
+    .display {
+        height: 600px;
+        width: 600px;
+        outline: 1px black solid;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+
+    #input {
+        border-radius: 0%;
+        position: absolute;
+        right: 10px;
+        top: 625px;
+        width: 601px;
+        height: 150px;
+        font-family: monospace;
+        font-size: 12px;
+        resize: none;
+        caret-color: black;
+    }
+
+    textarea {
+        resize: none;
+    }
+    textarea:focus {
+        outline: none;
+    }
+</style>
+<head>
+
+</head>
+<body>
+    <div class="button" onclick="calculate()">Calculate STP</div><br>
+    <div class="button" onclick="window.open('stp-calc-2-docs.txt','_blank')">Open Docs</div>
+    <div class="display"></div>
+    <textarea id="input">device sw1 32769 a.a.a.a</textarea>
+</body>
+<script>
+    class Device {
+        constructor(name, mac, priority) {
+            this.name = name;
+            this.mac = mac;
+            this.priority = priority;
+            this.rootBridge = false;
+            this.ports = {};
+
+            Device.devices[this.name] = this;
+        }
+
+        static abbreviations = {
+            "e": ["Ethernet", 100],
+            "f": ["FastEthernet", 19],
+            "g": ["GigabitEthernet", 4],
+            "t": ["TenGigabitEthernet", 2]
+        }
+
+        static devices = {}
+
+        collapseMacAddress(){
+            let mac = this.mac.split(".");
+            let collapsedMac = 0;
+            for(let i = 0; i < mac.length; i++){
+                collapsedMac += parseInt(mac[i], 16) * Math.pow(2, (mac.length - i - 1) * 8);
+            }
+            return collapsedMac;
+        }
+
+        addPort(port) {
+            if(Object.keys(this.ports).includes(port)) throw new Error("Port already exists");
+            this.ports[port] = {
+                name: port,
+                rootPort: false,
+                connected: {
+                    device: null,
+                    port: null
+                }
+            }
+        }
+
+        static connect(thisDevice, thisPort, connectedDevice, connectedPort){
+            if(!Object.keys(Device.devices).includes(thisDevice)) throw new Error(`thisDevice ${thisDevice} does not exist`);
+            if(!Object.keys(Device.devices).includes(connectedDevice)) throw new Error(`connectedDevice ${connectedDevice} does not exist`);
+
+            if(!Object.keys(Device.devices[connectedDevice].ports).includes(connectedPort)) throw new Error(`connectedPort ${connectedPort} does not exist`);
+            if(!Object.keys(Device.devices[thisDevice].ports).includes(thisPort)) throw new Error(`thisPort ${thisPort} does not exist`);
+
+
+            Device.devices[thisDevice].ports[thisPort].connected.device = connectedDevice;
+            Device.devices[thisDevice].ports[thisPort].connected.port = connectedPort;
+
+            Device.devices[connectedDevice].ports[connectedPort].connected.device = thisDevice;
+            Device.devices[connectedDevice].ports[connectedPort].connected.port = thisPort;
+        }
+    }
+
+    function parse(){
+        let input = document.getElementById("input").value.split("\n");
+
+        let parseError = false;
+
+        for(i = 0; i < input.length; i++){
+            let line = input[i].split(" ");
+            let command = line[0];
+
+            if(command == 'device'){
+                if(line.length != 4){
+                    alert(`Invalid device command on line ${i + 1}`);
+                    parseError = true;
+                    return;
+                }
+                 
+                if(Object.keys(Device.devices).includes(line[1])){
+                    alert(`Device ${line[1]} already exists`);
+                    parseError = true;
+                    return;
+                }
+
+                new Device(line[1], line[2], line[3]);
+            }
+
+            if(command == 'connect'){
+
+                let device1 = line[1];
+                let port1 = line[2];
+                let device2 = line[3];
+                let port2 = line[4];
+
+                if(line.length != 5){
+                    alert(`Invalid port command on line ${i + 1}`);
+                    parseError = true;
+                    return;
+                }
+                if(!Object.keys(Device.devices).includes(line[1])){
+                    alert(`Device ${device1} does not exist`);
+                    parseError = true;
+                    return;
+                }
+                if(!Object.keys(Device.devices).includes(line[3])){
+                    alert(`Device ${device2} does not exist`);
+                    parseError = true;
+                    return;
+                }
+
+                // check if the ports exist. if they dont, create them
+                if(!Object.keys(Device.devices[device1].ports).includes(port1)){
+                    Device.devices[device1].addPort(port1);
+                }
+                if(!Object.keys(Device.devices[device2].ports).includes(port2)){
+                    Device.devices[device2].addPort(port2);
+                }
+
+                if(Device.devices[device1].ports[port1].connected.device != null){
+                    alert(`Port ${port1} on device ${device1} is already connected`);
+                    parseError = true;
+                    return;
+                }
+
+                if(Device.devices[device2].ports[port2].connected.device != null){
+                    alert(`Port ${port2} on device ${device2} is already connected`);
+                    parseError = true;
+                    return;
+                }
+
+                Device.devices[device1].ports[port1].connected.device = device2;
+                Device.devices[device1].ports[port1].connected.port = port2;
+
+                Device.devices[device2].ports[port2].connected.device = device1;
+                Device.devices[device2].ports[port2].connected.port = port1;
+
+
+            }
+        }
+
+        return parseError;
+    }
+
+    function calculate(){
+        parse()
+    }
+</script>
