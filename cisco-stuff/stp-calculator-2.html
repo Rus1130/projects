@@ -45,7 +45,7 @@
 </style>
 <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.2.0/svg.min.js"></script>
-    <script type='module' src="svg.draggable.js"></script>
+    <script src="../node_modules/@svgdotjs/svg.draggable.js/dist/svg.draggable.min.js"></script>
 </head>
 <body>
     <div class="button" id="calculate">Calculate STP</div><br>
@@ -53,10 +53,14 @@
     <div id="display"></div>
     <textarea id="input">device sw1 32769 a.a.a.a
 device sw2 16384 b.b.b.b
+device sw3 4096 c.c.c.c
+connect sw1 g0/1 sw2 g0/0
+connect sw1 g0/2 sw2 g0/2
+connect sw2 g0/1 sw3 g0/0
+connect sw3 g0/1 sw1 g0/0
     </textarea>
 </body>
-<script>
-
+<script type="module">
     let calculateButton = document.getElementById("calculate");
 
     var draw = SVG().addTo('#display').size(600, 600)
@@ -66,6 +70,7 @@ device sw2 16384 b.b.b.b
             this.name = name;
             this.mac = mac;
             this.priority = priority;
+            this.svg = null;
             this.rootBridge = false;
             this.ports = {};
 
@@ -80,6 +85,12 @@ device sw2 16384 b.b.b.b
         }
 
         static devices = {}
+        static connections = []
+        static lines = []
+
+        setSVG(svg){
+            this.svg = svg;
+        }
 
         collapseMacAddress(){
             let mac = this.mac.split(".");
@@ -117,6 +128,8 @@ device sw2 16384 b.b.b.b
 
             Device.devices[connectedDevice].ports[connectedPort].connected.device = thisDevice;
             Device.devices[connectedDevice].ports[connectedPort].connected.port = thisPort;
+
+            Device.connections.push([thisDevice, thisPort, connectedDevice, connectedPort]);
         }
     }
 
@@ -186,13 +199,25 @@ device sw2 16384 b.b.b.b
                     alert(`Port ${port2} on device ${device2} is already connected`);
                     parseError = true;
                     return;
-                }
+                }   
 
                 Device.devices[device1].ports[port1].connected.device = device2;
                 Device.devices[device1].ports[port1].connected.port = port2;
 
                 Device.devices[device2].ports[port2].connected.device = device1;
                 Device.devices[device2].ports[port2].connected.port = port1;
+
+                let offset = 0;
+
+                // check if there is already a connection between device1 and device2. for each previous connection, increase offset
+                for(let i = 0; i < Device.connections.length; i++){
+                    let connection = Device.connections[i];
+                    if(connection[0] == device1 && connection[2] == device2 || connection[0] == device2 && connection[2] == device1){
+                        offset++;
+                    }
+                }
+
+                Device.connections.push([device1, port1, device2, port2, offset]);
             }
 
             if(command == 'port'){
@@ -237,6 +262,8 @@ device sw2 16384 b.b.b.b
     })
 
     calculateButton.addEventListener("click", function(e){
+        // delete all svgs
+        draw.clear();
         parse()
         let devices = Object.keys(Device.devices);
         for(let i = 0; i < devices.length; i++){
@@ -248,7 +275,37 @@ device sw2 16384 b.b.b.b
             let group = draw.group();
             group.add(rect);
             group.add(text);
+
+            device.setSVG(group);
+
+            group.draggable();
+            //console.log(Device.connections)
+        }
+        for(let i = 0; i < Device.connections.length; i++){
+            let connection = Device.connections[i];
+            let device1 = Device.devices[connection[0]];
+            let device2 = Device.devices[connection[2]];
+
+            let port1 = device1.ports[connection[1]];
+            let port2 = device2.ports[connection[3]];
+
+            let offset = connection[4];
+
+            let line = draw.line(0, 0, 0, 0).stroke({ width: 2, color: '#000' });
+            line.back()
+            Device.lines.push(line);
+
+            device1.svg.on("dragmove", function(){
+                // get all lines connected between device1 and device2
+                line.plot(device1.svg.cx(), device1.svg.cy() + offset * 20, device2.svg.cx(), device2.svg.cy() + offset * 20);
+            })
+
+            device2.svg.on("dragmove", function(){
+                line.plot(device2.svg.cx(), device2.svg.cy() + offset * 20, device1.svg.cx(), device1.svg.cy() + offset * 20);
+            })
         }
         Device.devices = {};
+        Device.lines = [];
+        Device.connections = [];
     })
 </script>
