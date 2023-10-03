@@ -51,13 +51,10 @@
     <div class="button" id="calculate">Calculate STP</div><br>
     <div class="button" onclick="window.open('stp-calc-2-docs.txt','_blank')">Open Docs</div>
     <div id="display"></div>
-    <textarea id="input">device sw1 32769 a.a.a.a
-device sw2 16384 b.b.b.b
-device sw3 4096 c.c.c.c
-connect sw1 g0/1 sw2 g0/0
-connect sw1 g0/2 sw2 g0/2
-connect sw2 g0/1 sw3 g0/0
-connect sw3 g0/1 sw1 g0/0
+    <textarea id="input">device sw1 32769 014a.38f1.ba81
+device sw2 32769 193d.72de.36e1
+device sw3 32769 014a.3821.2981
+device sw4 32769 83f1.2846.392f
     </textarea>
 </body>
 <script type="module">
@@ -66,11 +63,12 @@ connect sw3 g0/1 sw1 g0/0
     var draw = SVG().addTo('#display').size(600, 600)
 
     class Device {
-        constructor(name, mac, priority) {
+        constructor(name, priority, mac) {
             this.name = name;
             this.mac = mac;
-            this.priority = priority;
+            this.priority = +priority;
             this.svg = null;
+            this.rect = null;
             this.rootBridge = false;
             this.ports = {};
 
@@ -87,6 +85,13 @@ connect sw3 g0/1 sw1 g0/0
         static devices = {}
         static connections = []
         static lines = []
+
+        static color = {
+            ROOT: '#FFD700',
+            DESIGNATED: '#6495ED',
+            BLOCKED: '#FF0000',
+            UNKNOWN: '#000000'
+        }
 
         setSVG(svg){
             this.svg = svg;
@@ -105,7 +110,6 @@ connect sw3 g0/1 sw1 g0/0
             if(Object.keys(this.ports).includes(port)) throw new Error("Port already exists");
             this.ports[port] = {
                 name: port,
-                rootPort: false,
                 type: undefined,
                 svg: null,
                 connected: {
@@ -251,25 +255,12 @@ connect sw3 g0/1 sw1 g0/0
         return parseError;
     }
 
-    let deviceGraphics = []
-
-    let mouseX = 0;
-    let mouseY = 0;
-
-    document.addEventListener("mousemove", function(e){
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-    })
-
-    calculateButton.addEventListener("click", function(e){
-        // delete all svgs
-        draw.clear();
-        parse()
+    function display(){
         let devices = Object.keys(Device.devices);
         for(let i = 0; i < devices.length; i++){
             let device = Device.devices[devices[i]];
 
-            let rect = draw.rect(70, 70).attr({ fill: '#fff' }).center(300, 300).radius(5).stroke({ width: 2, color: '#000' })
+            let rect = draw.rect(50, 50).attr({ fill: '#fff' }).center(300, 300).radius(5).stroke({ width: 2, color: '#000' })
             let text = draw.text(device.name).move(270, 270).font({ size: 15, family: 'monospace' }).center(300, 300)
 
             let group = draw.group();
@@ -277,9 +268,12 @@ connect sw3 g0/1 sw1 g0/0
             group.add(text);
 
             device.setSVG(group);
+            device.rect = rect;
 
             group.draggable();
             //console.log(Device.connections)
+
+            
         }
         for(let i = 0; i < Device.connections.length; i++){
             let connection = Device.connections[i];
@@ -295,15 +289,115 @@ connect sw3 g0/1 sw1 g0/0
             line.back()
             Device.lines.push(line);
 
+            let angle = Math.atan2(device2.svg.cy() - device1.svg.cy(), device2.svg.cx() - device1.svg.cx()) * 180 / Math.PI;
+
+            let port1Display = draw.circle(20).fill("#fff").stroke({ width: 2, color: '#000' }).center(
+                device1.svg.cx() + 60 * Math.cos(angle * Math.PI / 180),
+                device1.svg.cy() + 60 * Math.sin(angle * Math.PI / 180) + offset * 20
+            );
+            let port2Display = draw.circle(20).fill("#fff").stroke({ width: 2, color: '#000' }).center(
+                device2.svg.cx() + 60 * Math.cos(angle * Math.PI / 180 + 180),
+                device2.svg.cy() + 60 * Math.sin(angle * Math.PI / 180 + 180) + offset * 20
+            );
+
+            let port1DisplayInnerText = draw.text(port1.name).font({ size: 7, family: 'monospace' }).center(port1Display.cx(), port1Display.cy());
+            let port2DisplayInnerText = draw.text(port2.name).font({ size: 7, family: 'monospace' }).center(port2Display.cx(), port2Display.cy());
+
+
+            Device.devices[device1.name].ports[port1.name].svg = port1Display;
+            Device.devices[device2.name].ports[port2.name].svg = port2Display;
+        
             device1.svg.on("dragmove", function(){
                 // get all lines connected between device1 and device2
                 line.plot(device1.svg.cx(), device1.svg.cy() + offset * 20, device2.svg.cx(), device2.svg.cy() + offset * 20);
+                port1Display.center(
+                    device1.svg.cx() + 60 * Math.cos(angle * Math.PI / 180),
+                    device1.svg.cy() + 60 * Math.sin(angle * Math.PI / 180) + offset * 20
+                );
+                port2Display.center(
+                    device2.svg.cx() - 60 * Math.cos(angle * Math.PI / 180),
+                    device2.svg.cy() - 60 * Math.sin(angle * Math.PI / 180) + offset * 20
+                );
+                angle = Math.atan2(device2.svg.cy() - device1.svg.cy(), device2.svg.cx() - device1.svg.cx()) * 180 / Math.PI;
+                port1DisplayInnerText.center(port1Display.cx(), port1Display.cy());
+                port2DisplayInnerText.center(port2Display.cx(), port2Display.cy());
             })
 
             device2.svg.on("dragmove", function(){
                 line.plot(device2.svg.cx(), device2.svg.cy() + offset * 20, device1.svg.cx(), device1.svg.cy() + offset * 20);
+                port1Display.center(
+                    device1.svg.cx() + 60 * Math.cos(angle * Math.PI / 180),
+                    device1.svg.cy() + 60 * Math.sin(angle * Math.PI / 180) + offset * 20
+                );
+                port2Display.center(
+                    device2.svg.cx() - 60 * Math.cos(angle * Math.PI / 180),
+                    device2.svg.cy() - 60 * Math.sin(angle * Math.PI / 180) + offset * 20
+                );
+                angle = Math.atan2(device2.svg.cy() - device1.svg.cy(), device2.svg.cx() - device1.svg.cx()) * 180 / Math.PI;
+                port1DisplayInnerText.center(port1Display.cx(), port1Display.cy());
+                port2DisplayInnerText.center(port2Display.cx(), port2Display.cy());
             })
         }
+    }
+
+    function calculate(){
+        let devices = Device.devices;
+
+        // find the device with the lowest priority, if there is a tie, use the lowest mac address
+        let lowestPriorityDevice = null;
+        let lowestPriority = Infinity;
+        let lowestMac = Infinity;
+
+        for(let i = 0; i < Object.keys(devices).length; i++){
+            let device = devices[Object.keys(devices)[i]];
+            if(device.priority < lowestPriority){
+                lowestPriorityDevice = device;
+                lowestPriority = device.priority;
+                lowestMac = device.collapseMacAddress();
+            } else if(device.priority == lowestPriority){
+                if(device.collapseMacAddress() < lowestMac){
+                    lowestPriorityDevice = device;
+                    lowestPriority = device.priority;
+                    lowestMac = device.collapseMacAddress();
+                }
+            }
+        }
+
+        lowestPriorityDevice.rootBridge = true;
+        lowestPriorityDevice.rect.stroke(Device.color.ROOT);
+
+        for(let i = 0; i < Object.keys(lowestPriorityDevice.ports).length; i++){
+            let port = Object.keys(lowestPriorityDevice.ports)[i];
+            lowestPriorityDevice.ports[port].svg.stroke(Device.color.DESIGNATED)
+            lowestPriorityDevice.ports[port].type = "root";
+            devices[lowestPriorityDevice.ports[port].connected.device].ports[lowestPriorityDevice.ports[port].connected.port].type = "root";
+            devices[lowestPriorityDevice.ports[port].connected.device].ports[lowestPriorityDevice.ports[port].connected.port].svg.stroke(Device.color.ROOT)
+        }
+
+        // to find rest of ports:
+        // 1st. find devices directly connected to root bridge
+        // 2nd. the ports on the directly connected device will be DESIGNATED
+        // 3rd. for single connection: opposite will be BLOCKED
+        // 4th. for multiple connections: opposite with lowest id BLOCKED, otherwise ROOT
+    }
+
+    let deviceGraphics = []
+
+    let mouseX = 0;
+    let mouseY = 0;
+
+    document.addEventListener("mousemove", function(e){
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    })
+
+    calculateButton.addEventListener("click", function(e){
+        // delete all svgs
+        draw.clear();
+        parse()
+        display()
+        calculate()
+
         Device.devices = {};
         Device.lines = [];
         Device.connections = [];
