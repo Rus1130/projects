@@ -42,15 +42,21 @@
     textarea:focus {
         outline: none;
     }
+
+    #description {
+        font-family: monospace;
+    }
 </style>
 <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.2.0/svg.min.js"></script>
     <script src="../node_modules/@svgdotjs/svg.draggable.js/dist/svg.draggable.min.js"></script>
 </head>
 <body>
+    <h2>you can drag the devices around</h2>
     <div class="button" id="calculate">Calculate STP</div><br>
     <div class="button" onclick="window.open('stp-calc-2-docs.txt','_blank')">Open Docs</div>
     <div id="display"></div>
+    <div id="description"><br></div>
     <textarea id="input">device sw1 32769 014a.38f1.ba81
 device sw2 32769 193d.72de.36e1
 device sw3 32769 014a.3821.2981
@@ -66,6 +72,8 @@ connect sw3 g0/1 sw4 g0/0
     let calculateButton = document.getElementById("calculate");
 
     var draw = SVG().addTo('#display').size(600, 600)
+
+    const description = document.getElementById("description");
 
     class Device {
         constructor(name, priority, mac) {
@@ -94,7 +102,7 @@ connect sw3 g0/1 sw4 g0/0
         static color = {
             ROOT: '#FFD700',
             DESIGNATED: '#6495ED',
-            BLOCKED: '#FF0000',
+            NON_DESIGNATED: '#FF0000',
             UNKNOWN: '#000000'
         }
 
@@ -262,6 +270,12 @@ connect sw3 g0/1 sw4 g0/0
 
     function display(){
         let devices = Object.keys(Device.devices);
+
+        // check if there is at least one connection
+        if(Device.connections.length == 0){
+            alert("There must be at least one connection");
+            return;
+        }
         for(let i = 0; i < devices.length; i++){
             let device = Device.devices[devices[i]];
 
@@ -353,6 +367,8 @@ connect sw3 g0/1 sw4 g0/0
         let lowestPriority = Infinity;
         let lowestMac = Infinity;
 
+        let tiedByPriority = false;
+
         for(let i = 0; i < Object.keys(devices).length; i++){
             let device = devices[Object.keys(devices)[i]];
             if(device.priority < lowestPriority){
@@ -360,6 +376,7 @@ connect sw3 g0/1 sw4 g0/0
                 lowestPriority = device.priority;
                 lowestMac = device.collapseMacAddress();
             } else if(device.priority == lowestPriority){
+                tiedByPriority = true;
                 if(device.collapseMacAddress() < lowestMac){
                     lowestPriorityDevice = device;
                     lowestPriority = device.priority;
@@ -370,6 +387,11 @@ connect sw3 g0/1 sw4 g0/0
 
         lowestPriorityDevice.rootBridge = true;
         lowestPriorityDevice.rect.stroke(Device.color.ROOT);
+
+        description.innerHTML += `The root bridge is <b>${lowestPriorityDevice.name}</b>.${tiedByPriority ? " There was a tie by priority, so the lowest mac address was used to break the tie." : ""}<br>`;
+
+        // find the ports on the root bridge
+        description.innerHTML += `<br>Port${Object.keys(lowestPriorityDevice.ports).length == 1 ? "" : "s" } ${Object.keys(lowestPriorityDevice.ports).join(", ")} are both type <b>DESIGNATED</b> as they are directly connected to the root bridge.<br>`;
 
         for(let i = 0; i < Object.keys(lowestPriorityDevice.ports).length; i++){
             let port = Object.keys(lowestPriorityDevice.ports)[i];
@@ -382,8 +404,8 @@ connect sw3 g0/1 sw4 g0/0
         // to find rest of ports:
         // 1st. find devices directly connected to root bridge
         // 2nd. the ports on the directly connected device will be DESIGNATED
-        // 3rd. for single connection: opposite will be BLOCKED
-        // 4th. for multiple connections: opposite with lowest id BLOCKED, otherwise ROOT
+        // 3rd. for single connection: opposite will be NON_DESIGNATED
+        // 4th. for multiple connections: opposite with lowest id NON_DESIGNATED, otherwise ROOT
     }
 
     let deviceGraphics = []
@@ -398,6 +420,7 @@ connect sw3 g0/1 sw4 g0/0
 
     calculateButton.addEventListener("click", function(e){
         // delete all svgs
+        description.innerHTML = "<br>";
         draw.clear();
         parse()
         display()

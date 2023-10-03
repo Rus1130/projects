@@ -9,10 +9,15 @@ to make a fast ethernet connection: f0/0
 to make a gigabit ethernet connection: g0/0
 to make a 10 gigabit ethernet connection: t0/0
 
-device sw1 32769 014a.38f1.ba81
-device sw2 32769 193d.72de.36e1
-device sw3 32769 014a.3821.2981
-device sw4 32769 83f1.2846.392f
+device SW1 32768 014A.38F1.BA81
+device SW2 32768 193D.72DE.36E1
+device SW3 32768 014A.3821.2981
+device SW4 32768 83F1.2846.392F
+SW1 g0/2 SW2 g0/1
+SW1 g0/0 SW2 g0/2
+SW1 g0/1 SW3 g0/0
+SW2 g0/0 SW4 g0/1
+SW3 g0/1 SW4 g0/0
 
 https://loyolablakefield-my.sharepoint.com/:p:/r/personal/aarogozin2026_loyolablakefield_org/_layouts/15/Doc.aspx?sourcedoc=%7BB0805DAD-4030-4078-833E-2E975702A8D6%7D&file=STP%20(Spanning%20Tree%20Protocol)%20(1)%20(2)%20(1).pptx&action=edit&mobileredirect=true&DefaultItemOpen=1&login_hint=aarogozin2026%40loyolablakefield.org&ct=1695736721240&wdOrigin=OFFICECOM-WEB.START.EDGEWORTH&cid=2503952a-f02d-4727-a975-4cb0de6b7dba&wdPreviousSessionSrc=HarmonyWeb&wdPreviousSession=5eca312f-939f-4bea-bacd-7f14484028d8
 
