@@ -55,6 +55,11 @@
 device sw2 32769 193d.72de.36e1
 device sw3 32769 014a.3821.2981
 device sw4 32769 83f1.2846.392f
+connect sw1 g0/2 sw2 g0/1
+connect sw1 g0/0 sw2 g0/2
+connect sw1 g0/1 sw3 g0/0
+connect sw2 g0/0 sw4 g0/1
+connect sw3 g0/1 sw4 g0/0
     </textarea>
 </body>
 <script type="module">
