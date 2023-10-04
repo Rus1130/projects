@@ -46,6 +46,22 @@
     #description {
         font-family: monospace;
     }
+
+    root, des, nond {
+        font-weight: bold;
+    }
+
+    root {
+        color: gold;
+    }
+
+    des {
+        color: cornflowerblue;
+    }
+
+    nond {
+        color: red;
+    }
 </style>
 <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.2.0/svg.min.js"></script>
@@ -123,12 +139,13 @@ connect sw3 g0/1 sw4 g0/0
             if(Object.keys(this.ports).includes(port)) throw new Error("Port already exists");
             this.ports[port] = {
                 name: port,
-                type: undefined,
+                type: "unknown",
                 svg: null,
                 connected: {
                     device: undefined,
                     port: undefined
-                }
+                },
+
             }
         }
 
@@ -388,24 +405,95 @@ connect sw3 g0/1 sw4 g0/0
         lowestPriorityDevice.rootBridge = true;
         lowestPriorityDevice.rect.stroke(Device.color.ROOT);
 
-        description.innerHTML += `The root bridge is <b>${lowestPriorityDevice.name}</b>.${tiedByPriority ? " There was a tie by priority, so the lowest mac address was used to break the tie." : ""}<br>`;
+        description.innerHTML += `The <root>root bridge</root> is <b>${lowestPriorityDevice.name}</b>.${tiedByPriority ? " There was a tie by priority, so the lowest mac address was used to break the tie." : ""}<br>`;
 
         // find the ports on the root bridge
-        description.innerHTML += `<br>Port${Object.keys(lowestPriorityDevice.ports).length == 1 ? "" : "s" } ${Object.keys(lowestPriorityDevice.ports).join(", ")} are both type <b>DESIGNATED</b> as they are directly connected to the root bridge.<br>`;
+        description.innerHTML += `<br>Port${Object.keys(lowestPriorityDevice.ports).length == 1 ? "" : "s" } <b>${Object.keys(lowestPriorityDevice.ports).map((x) => {return lowestPriorityDevice.name+"-"+x}).join(", ")}</b> are both type <des>DESIGNATED</des> as they are directly connected to the <root>root bridge</root>.<br>`;
 
         for(let i = 0; i < Object.keys(lowestPriorityDevice.ports).length; i++){
             let port = Object.keys(lowestPriorityDevice.ports)[i];
             lowestPriorityDevice.ports[port].svg.stroke(Device.color.DESIGNATED)
-            lowestPriorityDevice.ports[port].type = "root";
+            lowestPriorityDevice.ports[port].type = "designated";
+
             devices[lowestPriorityDevice.ports[port].connected.device].ports[lowestPriorityDevice.ports[port].connected.port].type = "root";
             devices[lowestPriorityDevice.ports[port].connected.device].ports[lowestPriorityDevice.ports[port].connected.port].svg.stroke(Device.color.ROOT)
         }
 
-        // to find rest of ports:
         // 1st. find devices directly connected to root bridge
+        let directlyConnectedDevices = [];
+        for(let i = 0; i < Object.keys(lowestPriorityDevice.ports).length; i++){
+            let port = Object.keys(lowestPriorityDevice.ports)[i];
+            directlyConnectedDevices.push(lowestPriorityDevice.ports[port].connected.device);
+        }
+
+        directlyConnectedDevices = directlyConnectedDevices.map(device => devices[device])
+
         // 2nd. the ports on the directly connected device will be DESIGNATED
-        // 3rd. for single connection: opposite will be NON_DESIGNATED
-        // 4th. for multiple connections: opposite with lowest id NON_DESIGNATED, otherwise ROOT
+        for(let i = 0; i < directlyConnectedDevices.length; i++){
+            let device = directlyConnectedDevices[i];
+            let ports = Object.keys(device.ports);
+
+            for(let j = 0; j < ports.length; j++){
+                let port = ports[j];
+                if(device.ports[port].type == "unknown"){
+                    device.ports[port].type = "designated";
+                    device.ports[port].svg.stroke(Device.color.DESIGNATED);
+                }
+            }
+        }
+
+        // get all the connections of the directly connected devices
+        let directlyConnectedDevicesConnections = [];
+        for(let i = 0; i < directlyConnectedDevices.length; i++){
+            let device = directlyConnectedDevices[i];
+            let ports = Object.keys(device.ports);
+            
+            let previousDevice = directlyConnectedDevices[i];
+
+            for(let j = 0; j < ports.length; j++){
+                let port = ports[j];
+                if(device.ports[port].type == "designated"){
+                    directlyConnectedDevicesConnections.push([device.name, port, device.ports[port].connected.device, device.ports[port].connected.port]);
+                }
+            }
+        }
+
+        let directConnections = []
+
+        for(let i = 0; i < directlyConnectedDevicesConnections.length; i++){
+            // group the connections by device
+            let connection = directlyConnectedDevicesConnections[i];
+            let device1 = connection[0];
+            let port1 = connection[1];
+            let device2 = connection[2];
+            let port2 = connection[3];
+
+            let found = false;
+            for(let j = 0; j < directConnections.length; j++){
+                let connection = directConnections[j];
+                if(connection[0] == device1){
+                    connection.push([device1, port1, device2, port2]);
+                    found = true;
+                }
+            }
+
+            if(!found){
+                directConnections.push([device1, [device1, port1, device2, port2]]);
+            }
+        }
+
+        for(let i = 0; i < directConnections.length; i++){
+            let group = directConnections[i]
+
+            // 3rd. for single connection: opposite will be NON_DESIGNATED
+            if(group.length <= 2){
+                
+                //Device.devices[group[0]].ports[group[1][1]].svg.stroke(Device.color.NON_DESIGNATED);
+                // 4th. for multiple connections: opposite with lowest id NON_DESIGNATED, otherwise ROOT
+            } else {
+
+            }
+        }
     }
 
     let deviceGraphics = []
