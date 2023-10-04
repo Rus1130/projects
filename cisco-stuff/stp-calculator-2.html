@@ -126,9 +126,9 @@ connect sw3 g0/1 sw4 g0/0
             this.svg = svg;
         }
 
-        static setPortType(device, port, type){
-            Device.devices[device].ports[port].type = type
-            Device.devices[device].ports[port].svg.stroke(Device.color[type.replaceAll("-", "_").toUpperCase()]);
+        setPortType(port, type){
+            Device.devices[this.name].ports[port].type = type
+            Device.devices[this.name].ports[port].svg.stroke(Device.color[type.replaceAll("-", "_").toUpperCase()]);
         }
 
         collapseMacAddress(){
@@ -417,10 +417,10 @@ connect sw3 g0/1 sw4 g0/0
 
         for(let i = 0; i < Object.keys(lowestPriorityDevice.ports).length; i++){
             let port = Object.keys(lowestPriorityDevice.ports)[i];
-            lowestPriorityDevice.ports[port].svg.stroke(Device.color.DESIGNATED)
-            lowestPriorityDevice.ports[port].type = "designated";
 
-            Device.setPortType(lowestPriorityDevice.ports[port].connected.device, lowestPriorityDevice.ports[port].connected.port, "root");
+            lowestPriorityDevice.setPortType(port, "designated")
+
+            devices[lowestPriorityDevice.ports[port].connected.device].setPortType(lowestPriorityDevice.ports[port].connected.port, "root");
         }
 
         // 1st. find devices directly connected to root bridge
@@ -440,8 +440,7 @@ connect sw3 g0/1 sw4 g0/0
             for(let j = 0; j < ports.length; j++){
                 let port = ports[j];
                 if(device.ports[port].type == "unknown"){
-                    
-                    Device.setPortType(device.name, port, "designated");
+                    device.setPortType(port, "designated");
                 }
             }
         }
@@ -491,14 +490,12 @@ connect sw3 g0/1 sw4 g0/0
 
             // 3rd. for single connection: opposite will be NON_DESIGNATED
             if(group.length <= 2){
-                console.log(group)
-                Device.devices[group[1][2]].ports[group[1][3]].type = "non-designated"
-                Device.devices[group[1][2]].ports[group[1][3]].svg.stroke(Device.color.NON_DESIGNATED);
+                Device.devices[group[1][2]].setPortType(group[1][3], "non-designated");
 
                 description.innerHTML += `<br>Port <b>${group[1][2]}-${group[1][3]}</b> is type <nond>NON_DESIGNATED</nond> as it has a lower bridge ID than its connected port.<br>`;
                 // 4th. for multiple connections: opposite with lowest id NON_DESIGNATED, otherwise ROOT
             } else {
-
+                console.log(group)
             }
         }
     }
