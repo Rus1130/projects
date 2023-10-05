@@ -43,22 +43,19 @@
         outline: none;
     }
 
-    #description {
+    #description, #explanation {
         font-family: monospace;
     }
 
     root, des, nond {
         font-weight: bold;
     }
-
     root {
         color: gold;
     }
-
     des {
         color: cornflowerblue;
     }
-
     nond {
         color: red;
     }
@@ -73,6 +70,7 @@
     <div class="button" onclick="window.open('stp-calc-2-docs.txt','_blank')">Open Docs</div>
     <div id="display"></div>
     <div id="description"><br></div>
+    <div id="explanation"><br></div>
     <textarea id="input">device sw1 32769 014a.38f1.ba81
 device sw2 32769 193d.72de.36e1
 device sw3 32769 014a.3821.2981
@@ -82,7 +80,6 @@ connect sw1 g0/0 sw2 g0/2
 connect sw1 g0/1 sw3 g0/0
 connect sw2 g0/0 sw4 g0/1
 connect sw3 g0/1 sw4 g0/0
-connect sw1 g0/3 sw4 g0/2
 </textarea>
 </body>
 <script type="module">
@@ -91,6 +88,7 @@ connect sw1 g0/3 sw4 g0/2
     var draw = SVG().addTo('#display').size(600, 600)
 
     const description = document.getElementById("description");
+    const explanation = document.getElementById("explanation");
 
     class Device {
         constructor(name, priority, mac) {
@@ -517,12 +515,12 @@ connect sw1 g0/3 sw4 g0/2
             }
 
         }
-        console.log(multipleConnections)
-
-
     }
-
-    let deviceGraphics = []
+    function explain(){
+        for(let i = 0; i < Object.keys(Device.devices); i++){
+            let commands = '';
+        }
+    }
 
     let mouseX = 0;
     let mouseY = 0;
@@ -535,11 +533,13 @@ connect sw1 g0/3 sw4 g0/2
     calculateButton.addEventListener("click", function(e){
         // delete all svgs
         description.innerHTML = "<br>";
+        explanation.innerHTML = "<br>";
         draw.clear();
 
         parse()
         display()
         calculate()
+        explain()
 
         Device.devices = {};
         Device.lines = [];
