@@ -151,6 +151,7 @@ connect sw1 g0/3 sw4 g0/2
                     device: undefined,
                     port: undefined
                 },
+                siblingConnections: []
 
             }
         }
@@ -476,45 +477,49 @@ connect sw1 g0/3 sw4 g0/2
             }
         }
 
-        // get all the connections of the directly connected devices
-        let directlyConnectedDevicesConnections = [];
-        for(let i = 0; i < directlyConnectedDevices.length; i++){
-            let device = directlyConnectedDevices[i];
-            let ports = Object.keys(device.ports);
-            
-            let previousDevice = directlyConnectedDevices[i];
-
-            for(let j = 0; j < ports.length; j++){
-                let port = ports[j];
-                if(device.ports[port].type == "designated"){
-                    directlyConnectedDevicesConnections.push([device.name, port, device.ports[port].connected.device, device.ports[port].connected.port]);
-                }
-            }
-        }
-
-        let directConnections = []
-
-        for(let i = 0; i < directlyConnectedDevicesConnections.length; i++){
-            // group the connections by device
-            let connection = directlyConnectedDevicesConnections[i];
+        // find all instances of multiple connections between the same two routers
+        let multipleConnections = [];
+        for(let i = 0; i < Device.connections.length; i++){
+            let connection = Device.connections[i];
             let device1 = connection[0];
-            let port1 = connection[1];
             let device2 = connection[2];
+
+            let port1 = connection[1];
             let port2 = connection[3];
 
             let found = false;
-            for(let j = 0; j < directConnections.length; j++){
-                let connection = directConnections[j];
-                if(connection[0] == device1){
-                    connection.push([device1, port1, device2, port2]);
+            for(let j = 0; j < multipleConnections.length; j++){
+                let multipleConnection = multipleConnections[j];
+                if(multipleConnection[0] == device1 && multipleConnection[1] == device2 || multipleConnection[0] == device2 && multipleConnection[1] == device1){
                     found = true;
+                    multipleConnection.push([port1, port2]);
                 }
             }
-
             if(!found){
-                directConnections.push([device1, [device1, port1, device2, port2]]);
+                multipleConnections.push([device1, device2, [port1, port2]]);
             }
         }
+
+        multipleConnections = multipleConnections.filter(connection => connection.length >= 4);
+
+        for(let i = 0; i < multipleConnections.length; i++){
+            let connection = multipleConnections[i];
+
+            let portID1 = connection[2][1];
+            let portID2 = connection[3][1];
+
+            if(+portID1.charAt(portID1.length-1) > +portID2.charAt(portID1.length-1)){
+                // portID1 is the higher port id
+                // set the port type of portID2 to root
+                devices[connection[1]].setPortType(portID2, "root");
+            } else {
+                devices[connection[1]].setPortType(portID2, "root");
+            }
+
+        }
+        console.log(multipleConnections)
+
+
     }
 
     let deviceGraphics = []
