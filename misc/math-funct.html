@@ -1,0 +1,15 @@
+<body>
+
+</body>
+<script>
+    function mathFunct(min, max, callback){
+        let i = min;
+        let result = [];
+        while(i <= max){
+            result.push(callback(i));
+            i++;
+        }
+
+        return result;
+    }
+</script>
