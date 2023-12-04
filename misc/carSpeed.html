@@ -1,0 +1,34 @@
+<body>
+
+</body>
+<script>
+    const values = [
+        [58, 55, false, false],
+        [51, 55, false, false],
+        [42, 35, false, true],
+        [30, 35, false, true],
+        [45, 30, true, true],
+        [49, 40, true, false],
+        [22, 30, true, false],
+        [102, 15, false, true],
+        [100, 98, true, true],
+    ]
+
+
+    function speedingTicket(carSpeed, currentSpeedLimit, eatenDonut){
+        if(carSpeed >=100) return true; 
+        if(eatenDonut){ 
+            return carSpeed >= currentSpeedLimit + 10;
+        }else{
+            return carSpeed >= currentSpeedLimit + 5 || carSpeed <= currentSpeedLimit - 5;
+        }
+    }
+
+
+    for(i = 0; i < values.length; i++){
+
+        let ticket = speedingTicket(values[i][0], values[i][1], values[i][2])
+
+        console.log(`test ${i} expected: ${values[i][3]}, computed ${ticket}`)
+    }
+</script>
