@@ -70,7 +70,7 @@
             this.point.noStroke();
 
 
-            this.influence = two.makeCircle(this.position.x, this.position.y, radius * 5);
+            this.influence = two.makeCircle(this.position.x, this.position.y, radius * 6);
             this.influence.fill = 'transparent';
             this.influence.stroke = color;
 
@@ -86,7 +86,7 @@
         }
     }
 
-    for(i = 0; i < 20; i++){
+    for(i = 0; i < 200; i++){
         let width = Math.random() * two.width;
         let height = Math.random() * two.height;
         let point = new Point(width, height, Point.RED, 5);
