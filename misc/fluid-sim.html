@@ -14,8 +14,6 @@
     let bkgd = two.makeRectangle(two.width / 2, two.height / 2, two.width, two.height);
     bkgd.fill = '#000000';
 
-    let points = [];
-
     class Point {
 
         static GREEN = '#008000';
@@ -30,15 +28,20 @@
 
         static DAMPENING = 0.7;
 
+        static points = [];
+
         updatePosition(){
             this.position.y += this.velocity.y * two.timeDelta / 1000;
             this.position.x += this.velocity.x * two.timeDelta / 1000;
+
+            this.position.x = Math.round(this.position.x);
+            this.position.y = Math.round(this.position.y);
 
             this.influence.translation.set(this.position.x, this.position.y);
         }
 
         static resolveBorderCollisions(point){
-            if(point.position.y > two.height){
+            if(point.position.y > two.height - point.point.radius){
                 point.position.y = two.height - point.point.radius;
                 point.velocity.y *= -1 * Point.DAMPENING;
             }
@@ -72,8 +75,8 @@
             this.influence.stroke = color;
 
             two.bind("update", () => {
-                this.velocity.y += Point.DOWN_FORCE * two.timeDelta / 1000;
-                this.velocity.x += -1 * two.timeDelta / 1000;
+                this.velocity.y += 1 * Point.DOWN_FORCE * two.timeDelta / 1000;
+                this.velocity.x += 0 * two.timeDelta / 1000;
 
                 Point.resolveBorderCollisions(this);
                 this.updatePosition();  
@@ -87,6 +90,7 @@
         let width = Math.random() * two.width;
         let height = Math.random() * two.height;
         let point = new Point(width, height, Point.RED, 5);
+        Point.points.push(point);
     }
 
 </script>
