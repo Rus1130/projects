@@ -1,0 +1,110 @@
+<style>
+    #player {
+        width: 50px;
+        height: 50px;
+        background-color: red;
+        position: absolute;
+        border-radius: 50%;
+        top: 0;
+        left: 0;
+    }
+
+    body {
+        overflow: hidden;
+    }
+
+    #key-display {
+        /*center */
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: fit-content;
+        height: fit-content;
+        border: 1px solid black;
+        padding: 10px;
+        display: none;
+        background-color: white;
+    }
+
+    #copy-key {
+        cursor: pointer;
+        margin-top: 10px;
+        text-align: center;
+        background-color: #f0f0f0;
+        padding: 5px;
+        border: 1px solid black;
+    }
+</style>
+<script src="../shooter/math.js"></script>
+<body>
+    <div id="field">
+        <div id="player"></div>
+    </div>
+    <div id="key-display">Your key:<br>#####<br><div id="copy-key">Copy Key</div></div>
+    </div>
+</body>
+<script>
+
+    let data = {
+        x: 0,
+        y: 0,
+        vx: 0,
+        vy: 0,
+        inventory: {},
+        xp: 0,
+        keys: {}
+    }
+
+    const player = document.getElementById('player');
+    const keyDisplay = document.getElementById('key-display');
+
+    function move(){
+        if(data.keys["w"]){ data.vy -= 1; }
+        if(data.keys["s"]){ data.vy += 1; }
+        if(data.keys["a"]){ data.vx -= 1; }
+        if(data.keys["d"]){ data.vx += 1; }
+
+
+        data.vx = math.round(data.vx * 0.9, 4);
+        data.vy = math.round(data.vy * 0.9, 4);
+
+        data.x += data.vx;
+        data.y += data.vy;
+
+        data.x = math.round(data.x);
+        data.y = math.round(data.y);
+
+        player.style.left = data.x + "px";
+        player.style.top = data.y + "px";
+
+        if(data.x < 0){ data.x = 0; }
+        if(data.y < 0){ data.y = 0; }
+        if(data.x > window.innerWidth - 50){ data.x = window.innerWidth - 50; }
+        if(data.y > window.innerHeight - 50){ data.y = window.innerHeight - 50; }
+
+
+
+        createKey()
+    }
+
+    function createKey(){
+        let dataX = data.x.toString(16).replace("-", "").padStart(5, "0");
+        let dataY = data.y.toString(16).replace("-", "").padStart(5, "0");
+
+        console.log(dataX, dataY)
+    }
+
+    setInterval(move, 20);
+    // create a movement script
+    document.addEventListener('keydown', function(event) {
+        data.keys[event.key] = true;
+        if(data.keys["p"]){
+            keyDisplay.style.display = keyDisplay.style.display == "block" ? "none" : "block";
+        }
+    });
+
+    document.addEventListener('keyup', function(event) {
+        data.keys[event.key] = false;
+    });
+</script>

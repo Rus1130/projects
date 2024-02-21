@@ -24,9 +24,9 @@
         static LAVENDER = '#e6e6fa';
         static TEAL = '#008080';
 
-        static DOWN_FORCE = 1000;
+        static DOWN_FORCE = 800;
 
-        static DAMPENING = 0.7;
+        static DAMPENING = 0.4;
 
         static points = [];
 
@@ -43,19 +43,19 @@
         static resolveBorderCollisions(point){
             if(point.position.y > two.height - point.point.radius){
                 point.position.y = two.height - point.point.radius;
-                point.velocity.y *= -1 * Point.DAMPENING;
+                point.velocity.y *= -Point.DAMPENING;
             }
             if(point.position.y < 0){
                 point.position.y = point.point.radius;
-                point.velocity.y *= -1 * Point.DAMPENING;
+                point.velocity.y *= -Point.DAMPENING;
             }
             if(point.position.x > two.width){
                 point.position.x = two.width - point.point.radius;
-                point.velocity.x *= -1 * Point.DAMPENING;
+                point.velocity.x *= -Point.DAMPENING;
             }
             if(point.position.x < 0){
                 point.position.x = point.point.radius;
-                point.velocity.x *= -1 * Point.DAMPENING;
+                point.velocity.x *= -Point.DAMPENING;
             }
         }
 
@@ -70,7 +70,7 @@
             this.point.noStroke();
 
 
-            this.influence = two.makeCircle(this.position.x, this.position.y, radius * 6);
+            this.influence = two.makeCircle(this.position.x, this.position.y, radius * 10);
             this.influence.fill = 'transparent';
             this.influence.stroke = color;
 
@@ -86,11 +86,10 @@
         }
     }
 
-    for(i = 0; i < 200; i++){
+    for(i = 0; i < 100; i++){
         let width = Math.random() * two.width;
         let height = Math.random() * two.height;
         let point = new Point(width, height, Point.RED, 5);
         Point.points.push(point);
     }
-
 </script>
