@@ -13,8 +13,7 @@
         overflow: hidden;
     }
 
-    #key-display {
-        /*center */
+    #key-wrapper, #key-input-wrapper {
         position: absolute;
         top: 50%;
         left: 50%;
@@ -27,24 +26,51 @@
         background-color: white;
     }
 
-    #copy-key {
+    #copy-key-button, #set-key-button {
         cursor: pointer;
-        margin-top: 10px;
+        margin-top: -10px;
         text-align: center;
         background-color: #f0f0f0;
         padding: 5px;
         border: 1px solid black;
+        user-select: none;
     }
+
+    #key-input {
+        border: 1px solid black;
+        padding: 5px;
+    }
+
+    #key-input:focus {
+        outline: none;
+    }
+
+
 </style>
-<script src="../shooter/math.js"></script>
+<head>
+    <script src="../shooter/math.js"></script>
+    <script src="../computers/encryption.js"></script>
+</head>
 <body>
     <div id="field">
         <div id="player"></div>
     </div>
-    <div id="key-display">Your key:<br>#####<br><div id="copy-key">Copy Key</div></div>
+    <div id="key-wrapper">
+        Your key:<br>
+        <div id="key">#####</div>
+        <br>
+        <div id="copy-key-button" onclick="copyKeyToClipboard()">Copy Key</div>
+    </div>
+    <div id="key-input-wrapper">
+        Input key here: <div id="key-input" contenteditable="true"></div>
+        <br>
+        <div id="set-key-button" onclick="setKey(keyInput.innerText)">submit</div>
+    </div>
     </div>
 </body>
 <script>
+
+    let e = new Encryption();
 
     let data = {
         x: 0,
@@ -55,15 +81,18 @@
         xp: 0,
         keys: {}
     }
-
     const player = document.getElementById('player');
-    const keyDisplay = document.getElementById('key-display');
+
+    const keyDisplay = document.getElementById('key-wrapper');
+    const inputDisplay = document.getElementById('key-input-wrapper');
+    const keyInput = document.getElementById('key-input');
+    const rawKey = document.getElementById('key');
 
     function move(){
-        if(data.keys["w"]){ data.vy -= 1; }
-        if(data.keys["s"]){ data.vy += 1; }
-        if(data.keys["a"]){ data.vx -= 1; }
-        if(data.keys["d"]){ data.vx += 1; }
+        if(data.keys["w"]) data.vy -= 1;
+        if(data.keys["s"]) data.vy += 1;
+        if(data.keys["a"]) data.vx -= 1;
+        if(data.keys["d"]) data.vx += 1;
 
 
         data.vx = math.round(data.vx * 0.9, 4);
@@ -78,30 +107,48 @@
         player.style.left = data.x + "px";
         player.style.top = data.y + "px";
 
-        if(data.x < 0){ data.x = 0; }
-        if(data.y < 0){ data.y = 0; }
-        if(data.x > window.innerWidth - 50){ data.x = window.innerWidth - 50; }
-        if(data.y > window.innerHeight - 50){ data.y = window.innerHeight - 50; }
+        if(data.x < 0) data.x = 0;
+        if(data.y < 0) data.y = 0;
+        if(data.x > window.innerWidth - 50) data.x = window.innerWidth - 50;
+        if(data.y > window.innerHeight - 50) data.y = window.innerHeight - 50;
+
+        // key creation
+        let dataX = data.x.toString(26).replace("-", "").padStart(3, "0");
+        let dataY = data.y.toString(26).replace("-", "").padStart(3, "0");
 
 
+        let encrypted = e.encrypt(dataX + dataY);
+        rawKey.innerText = encrypted.body + ":" + encrypted.key;
 
-        createKey()
     }
 
-    function createKey(){
-        let dataX = data.x.toString(16).replace("-", "").padStart(5, "0");
-        let dataY = data.y.toString(16).replace("-", "").padStart(5, "0");
-
-        console.log(dataX, dataY)
+    function copyKeyToClipboard(){
+        let key = rawKey.innerText;
+        navigator.clipboard.writeText(key);
     }
 
-    setInterval(move, 20);
+    function setKey(_key){
+        let key = e.decrypt(_key.split(":")[0], _key.split(":")[1]);
+        console.log(key)
+        let x = parseInt(key.slice(0, 3), 26);
+        let y = parseInt(key.slice(3, 6), 26);
+
+        data.x = x;
+        data.y = y;
+
+        player.style.left = data.x + "px";
+        player.style.top = data.y + "px";
+    }
+
+
+
+    setInterval(move, 15); //15
     // create a movement script
     document.addEventListener('keydown', function(event) {
         data.keys[event.key] = true;
-        if(data.keys["p"]){
-            keyDisplay.style.display = keyDisplay.style.display == "block" ? "none" : "block";
-        }
+        if(data.keys["p"]) keyDisplay.style.display = keyDisplay.style.display == "block" ? "none" : "block";
+        if(data.keys["o"]) inputDisplay.style.display = inputDisplay.style.display == "block" ? "none" : "block";
+    
     });
 
     document.addEventListener('keyup', function(event) {
