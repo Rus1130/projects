@@ -7,6 +7,7 @@
         border-radius: 50%;
         top: 0;
         left: 0;
+        z-index: 10;
     }
 
     body {
@@ -45,6 +46,13 @@
         outline: none;
     }
 
+    #inventory {
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding: 10px;
+        border: 1px solid black;
+    }
 
 </style>
 <head>
@@ -54,6 +62,12 @@
 <body>
     <div id="field">
         <div id="player"></div>
+    </div>
+    <div id="inventory">
+        <div id="coin-counter">Coins: 0</div>
+        <div id="red-circle-counter">Red Circles: 0</div>
+        <div id="blue-circle-counter">Blue Circles: 0</div>
+        <div id="green-circle-counter">Green Circles: 0</div>
     </div>
     <div id="key-wrapper">
         Your key:<br>
@@ -73,11 +87,16 @@
     let e = new Encryption();
 
     let data = {
-        x: 0,
-        y: 0,
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
         vx: 0,
         vy: 0,
-        inventory: {},
+        inventory: {
+            coins: 0,
+            redCircle: 0,
+            blueCircle: 0,
+            greenCircle: 0,
+        },
         xp: 0,
         keys: {}
     }
@@ -88,7 +107,22 @@
     const keyInput = document.getElementById('key-input');
     const rawKey = document.getElementById('key');
 
-    function move(){
+    // create random circles on the field
+    for(let i = 0; i < 30; i++){
+        let circle = document.createElement('circle');
+        circle.style.width = "25px";
+        circle.style.height = "25px";
+        circle.style.backgroundColor = i < 10 ? "blue" : i < 20 ? "green" : "red";
+        circle.style.position = "absolute";
+        circle.style.borderRadius = "50%";
+        circle.style.top = math.random(0, window.innerHeight - 25) + "px";
+        circle.style.left = math.random(0, window.innerWidth - 25) + "px";
+        circle.id = "circle" + i;
+        document.getElementById('field').appendChild(circle);
+    }
+
+    function update(){
+        // movement
         if(data.keys["w"]) data.vy -= 1;
         if(data.keys["s"]) data.vy += 1;
         if(data.keys["a"]) data.vx -= 1;
@@ -112,13 +146,45 @@
         if(data.x > window.innerWidth - 50) data.x = window.innerWidth - 50;
         if(data.y > window.innerHeight - 50) data.y = window.innerHeight - 50;
 
+
+        // inventory
+        document.getElementById('coin-counter').innerText = "Coins: " + data.inventory.coins;
+        document.getElementById('red-circle-counter').innerText = "Red Circles: " + data.inventory.redCircle;
+        document.getElementById('blue-circle-counter').innerText = "Blue Circles: " + data.inventory.blueCircle;
+        document.getElementById('green-circle-counter').innerText = "Green Circles: " + data.inventory.greenCircle;
+
+        // collision detection
+        for(let i = 0; i < document.getElementsByTagName("circle").length; i++){
+            let circle = document.getElementsByTagName("circle")[i];
+            let circleX = circle.style.left.slice(0, -2);
+            let circleY = circle.style.top.slice(0, -2);
+            let circleWidth = circle.style.width.slice(0, -2);
+            let circleHeight = circle.style.height.slice(0, -2);
+
+
+            // check if player is touching a circle via getBoundingClientRect
+            let playerRect = player.getBoundingClientRect();
+            let circleRect = circle.getBoundingClientRect();
+            if(playerRect.x - 5 < circleRect.x + circleRect.width && playerRect.x - 5 + playerRect.width > circleRect.x && playerRect.y < circleRect.y + circleRect.height && playerRect.y - 5 + playerRect.height - 5 > circleRect.y){
+                circle.remove();
+                data.inventory[circle.style.backgroundColor + "Circle"]++;
+                data.inventory.coins += 10;
+                if(data.inventory.coins > 475255) data.inventory.coins = 475255;
+            }
+        }
+        
+
         // key creation
         let dataX = data.x.toString(26).replace("-", "").padStart(3, "0");
         let dataY = data.y.toString(26).replace("-", "").padStart(3, "0");
+        let coinData = data.inventory.coins.toString(26).replace("-", "").padStart(5, "0");
 
+        rawKey.innerText = dataX + dataY + coinData;
 
+        /*
         let encrypted = e.encrypt(dataX + dataY);
         rawKey.innerText = encrypted.body + ":" + encrypted.key;
+        */
 
     }
 
@@ -128,13 +194,15 @@
     }
 
     function setKey(_key){
-        let key = e.decrypt(_key.split(":")[0], _key.split(":")[1]);
-        console.log(key)
+        // let key = e.decrypt(_key.split(":")[0], _key.split(":")[1]);
+        let key = _key;
         let x = parseInt(key.slice(0, 3), 26);
         let y = parseInt(key.slice(3, 6), 26);
+        let coins = parseInt(key.slice(6, 11), 26);
 
         data.x = x;
         data.y = y;
+        data.inventory.coins = coins;
 
         player.style.left = data.x + "px";
         player.style.top = data.y + "px";
@@ -142,8 +210,8 @@
 
 
 
-    setInterval(move, 15); //15
-    // create a movement script
+    setInterval(update, 15); //15
+
     document.addEventListener('keydown', function(event) {
         data.keys[event.key] = true;
         if(data.keys["p"]) keyDisplay.style.display = keyDisplay.style.display == "block" ? "none" : "block";
