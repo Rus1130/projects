@@ -61,13 +61,14 @@
 </head>
 <body>
     <div id="field">
-        <div id="player"></div>
+        <div id="player" style="background-color: red;"></div>
     </div>
     <div id="inventory">
         <div id="coin-counter">Coins: 0</div>
         <div id="red-circle-counter">Red Circles: 0</div>
         <div id="blue-circle-counter">Blue Circles: 0</div>
-        <div id="green-circle-counter">Green Circles: 0</div>
+        <div id="green-circle-counter">Green Circles: 0</div><br>
+        P and O to show/hide key and input
     </div>
     <div id="key-wrapper">
         Your key:<br>
@@ -91,6 +92,7 @@
         y: window.innerHeight / 2,
         vx: 0,
         vy: 0,
+        color: "red",
         inventory: {
             coins: 0,
             redCircle: 0,
@@ -107,18 +109,47 @@
     const keyInput = document.getElementById('key-input');
     const rawKey = document.getElementById('key');
 
+    const inventory = document.getElementById('inventory');
+
     // create random circles on the field
-    for(let i = 0; i < 30; i++){
+
+    const circleAmount = 1000;
+    for(let i = 0; i < circleAmount; i++){
         let circle = document.createElement('circle');
         circle.style.width = "25px";
         circle.style.height = "25px";
-        circle.style.backgroundColor = i < 10 ? "blue" : i < 20 ? "green" : "red";
+        circle.style.backgroundColor = i < circleAmount / 3 ? "blue" : i < (circleAmount / 3) * 2 ? "green" : "red";
         circle.style.position = "absolute";
         circle.style.borderRadius = "50%";
-        circle.style.top = math.random(0, window.innerHeight - 25) + "px";
-        circle.style.left = math.random(0, window.innerWidth - 25) + "px";
+
+        let randomX = math.random(0, window.innerHeight - 25);
+        let randomY = math.random(0, window.innerWidth - 25);
+
+        while(randomX < inventory.clientHeight && randomY < inventory.clientWidth){
+            randomX = math.random(0, window.innerHeight - 25);
+            randomY = math.random(0, window.innerWidth - 25);
+        }
+
+
+        circle.style.top =  randomX + "px";
+        circle.style.left = randomY + "px"; 	
         circle.id = "circle" + i;
         document.getElementById('field').appendChild(circle);
+    }
+
+    function colorUpdate(){
+        if(data.color == "red"){
+            data.color = "green";
+            player.style.backgroundColor = "green";
+        }
+        else if(data.color == "green") {
+            data.color = "blue";
+            player.style.backgroundColor = "blue";
+        }
+        else if(data.color == "blue") {
+            data.color = "red";
+            player.style.backgroundColor = "red";
+        }
     }
 
     function update(){
@@ -165,11 +196,14 @@
             // check if player is touching a circle via getBoundingClientRect
             let playerRect = player.getBoundingClientRect();
             let circleRect = circle.getBoundingClientRect();
-            if(playerRect.x - 5 < circleRect.x + circleRect.width && playerRect.x - 5 + playerRect.width > circleRect.x && playerRect.y < circleRect.y + circleRect.height && playerRect.y - 5 + playerRect.height - 5 > circleRect.y){
-                circle.remove();
-                data.inventory[circle.style.backgroundColor + "Circle"]++;
-                data.inventory.coins += 10;
-                if(data.inventory.coins > 475255) data.inventory.coins = 475255;
+
+            if(circle.style.backgroundColor == player.style.backgroundColor){
+                if(playerRect.x - 5 < circleRect.x + circleRect.width && playerRect.x - 5 + playerRect.width > circleRect.x && playerRect.y < circleRect.y + circleRect.height && playerRect.y - 5 + playerRect.height - 5 > circleRect.y){
+                    circle.remove();
+                    data.inventory[circle.style.backgroundColor + "Circle"]++;
+                    data.inventory.coins += 10;
+                    if(data.inventory.coins > 18279) data.inventory.coins = 18279;
+                }
             }
         }
         
@@ -177,15 +211,13 @@
         // key creation
         let dataX = data.x.toString(26).replace("-", "").padStart(3, "0");
         let dataY = data.y.toString(26).replace("-", "").padStart(3, "0");
-        let coinData = data.inventory.coins.toString(26).replace("-", "").padStart(5, "0");
+        let colorData = data.color == "red" ? "1" : data.color == "blue" ? "2" : "3";
+        let coinData = data.inventory.coins.toString(26).replace("-", "").padStart(3, "0");
+        let redData = data.inventory.redCircle.toString(26).replace("-", "").padStart(3, "0");
+        let blueData = data.inventory.blueCircle.toString(26).replace("-", "").padStart(3, "0");
+        let greenData = data.inventory.greenCircle.toString(26).replace("-", "").padStart(3, "0");
 
-        rawKey.innerText = dataX + dataY + coinData;
-
-        /*
-        let encrypted = e.encrypt(dataX + dataY);
-        rawKey.innerText = encrypted.body + ":" + encrypted.key;
-        */
-
+        rawKey.innerText = dataX + dataY + coinData + colorData + redData + blueData + greenData;
     }
 
     function copyKeyToClipboard(){
@@ -193,16 +225,23 @@
         navigator.clipboard.writeText(key);
     }
 
-    function setKey(_key){
-        // let key = e.decrypt(_key.split(":")[0], _key.split(":")[1]);
-        let key = _key;
+    function setKey(key){
         let x = parseInt(key.slice(0, 3), 26);
         let y = parseInt(key.slice(3, 6), 26);
-        let coins = parseInt(key.slice(6, 11), 26);
+        let color = parseInt(key.slice(6, 7));
+        let coins = parseInt(key.slice(7, 10), 26);
+        let red = parseInt(key.slice(10, 13), 26);
+        let blue = parseInt(key.slice(13, 16), 26);
+        let green = parseInt(key.slice(16, 19), 26);
 
         data.x = x;
         data.y = y;
+        data.color = color == 1 ? "red" : color == 2 ? "blue" : "green";
+        player.style.backgroundColor = data.color;
         data.inventory.coins = coins;
+        data.inventory.redCircle = red;
+        data.inventory.blueCircle = blue;
+        data.inventory.greenCircle = green;
 
         player.style.left = data.x + "px";
         player.style.top = data.y + "px";
@@ -211,6 +250,7 @@
 
 
     setInterval(update, 15); //15
+    setInterval(colorUpdate, 10000); //15000
 
     document.addEventListener('keydown', function(event) {
         data.keys[event.key] = true;
