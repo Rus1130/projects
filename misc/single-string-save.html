@@ -202,20 +202,24 @@
                     circle.remove();
                     data.inventory[circle.style.backgroundColor + "Circle"]++;
                     data.inventory.coins += 10;
-                    if(data.inventory.coins > 18279) data.inventory.coins = 18279;
                 }
             }
         }
+
+        if(data.inventory.coins > 1679615) data.inventory.coins = 1679615;
+        if(data.inventory.redCircle > 1679615) data.inventory.redCircle = 1679615;
+        if(data.inventory.blueCircle > 1679615) data.inventory.blueCircle = 1679615;
+        if(data.inventory.greenCircle > 1679615) data.inventory.greenCircle = 1679615;
         
 
         // key creation
-        let dataX = data.x.toString(26).replace("-", "").padStart(3, "0");
-        let dataY = data.y.toString(26).replace("-", "").padStart(3, "0");
+        let dataX = data.x.toString(36).replace("-", "").padStart(3, "0");
+        let dataY = data.y.toString(36).replace("-", "").padStart(3, "0");
         let colorData = data.color == "red" ? "1" : data.color == "blue" ? "2" : "3";
-        let coinData = data.inventory.coins.toString(26).replace("-", "").padStart(3, "0");
-        let redData = data.inventory.redCircle.toString(26).replace("-", "").padStart(3, "0");
-        let blueData = data.inventory.blueCircle.toString(26).replace("-", "").padStart(3, "0");
-        let greenData = data.inventory.greenCircle.toString(26).replace("-", "").padStart(3, "0");
+        let coinData = data.inventory.coins.toString(36).replace("-", "").padStart(4, "0");
+        let redData = data.inventory.redCircle.toString(36).replace("-", "").padStart(4, "0");
+        let blueData = data.inventory.blueCircle.toString(36).replace("-", "").padStart(4, "0");
+        let greenData = data.inventory.greenCircle.toString(36).replace("-", "").padStart(4, "0");
 
         rawKey.innerText = dataX + dataY + coinData + colorData + redData + blueData + greenData;
     }
@@ -226,13 +230,13 @@
     }
 
     function setKey(key){
-        let x = parseInt(key.slice(0, 3), 26);
-        let y = parseInt(key.slice(3, 6), 26);
+        let x = parseInt(key.slice(0, 3), 36);
+        let y = parseInt(key.slice(3, 6), 36);
         let color = parseInt(key.slice(6, 7));
-        let coins = parseInt(key.slice(7, 10), 26);
-        let red = parseInt(key.slice(10, 13), 26);
-        let blue = parseInt(key.slice(13, 16), 26);
-        let green = parseInt(key.slice(16, 19), 26);
+        let coins = parseInt(key.slice(7, 11), 36);
+        let red = parseInt(key.slice(11, 15), 36);
+        let blue = parseInt(key.slice(15, 19), 36);
+        let green = parseInt(key.slice(19, 23), 36);
 
         data.x = x;
         data.y = y;
