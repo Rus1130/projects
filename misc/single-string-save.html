@@ -56,8 +56,9 @@
 
 </style>
 <head>
-    <script src="../shooter/math.js"></script>
+    <script src="../.global/math.js"></script>
     <script src="../computers/encryption.js"></script>
+    <script src="../.global/player.js"></script>
 </head>
 <body>
     <div id="field">
@@ -85,13 +86,7 @@
 </body>
 <script>
 
-    let e = new Encryption();
-
     let data = {
-        x: window.innerWidth / 2,
-        y: window.innerHeight / 2,
-        vx: 0,
-        vy: 0,
         color: "red",
         inventory: {
             coins: 0,
@@ -102,7 +97,8 @@
         xp: 0,
         keys: {}
     }
-    const player = document.getElementById('player');
+
+    let player = new Player(document.getElementById('player'), window.innerWidth / 2, window.innerHeight / 2)
 
     const keyDisplay = document.getElementById('key-wrapper');
     const inputDisplay = document.getElementById('key-input-wrapper');
@@ -140,42 +136,22 @@
     function colorUpdate(){
         if(data.color == "red"){
             data.color = "green";
-            player.style.backgroundColor = "green";
+            player.element.style.backgroundColor = "green";
         }
         else if(data.color == "green") {
             data.color = "blue";
-            player.style.backgroundColor = "blue";
+            player.element.style.backgroundColor = "blue";
         }
         else if(data.color == "blue") {
             data.color = "red";
-            player.style.backgroundColor = "red";
+            player.element.style.backgroundColor = "red";
         }
     }
 
     function update(){
         // movement
-        if(data.keys["w"]) data.vy -= 1;
-        if(data.keys["s"]) data.vy += 1;
-        if(data.keys["a"]) data.vx -= 1;
-        if(data.keys["d"]) data.vx += 1;
 
-
-        data.vx = math.round(data.vx * 0.9, 4);
-        data.vy = math.round(data.vy * 0.9, 4);
-
-        data.x += data.vx;
-        data.y += data.vy;
-
-        data.x = math.round(data.x);
-        data.y = math.round(data.y);
-
-        player.style.left = data.x + "px";
-        player.style.top = data.y + "px";
-
-        if(data.x < 0) data.x = 0;
-        if(data.y < 0) data.y = 0;
-        if(data.x > window.innerWidth - 50) data.x = window.innerWidth - 50;
-        if(data.y > window.innerHeight - 50) data.y = window.innerHeight - 50;
+        player.move();
 
 
         // inventory
@@ -194,10 +170,10 @@
 
 
             // check if player is touching a circle via getBoundingClientRect
-            let playerRect = player.getBoundingClientRect();
+            let playerRect = player.element.getBoundingClientRect();
             let circleRect = circle.getBoundingClientRect();
 
-            if(circle.style.backgroundColor == player.style.backgroundColor){
+            if(circle.style.backgroundColor == player.element.style.backgroundColor){
                 if(playerRect.x - 5 < circleRect.x + circleRect.width && playerRect.x - 5 + playerRect.width > circleRect.x && playerRect.y < circleRect.y + circleRect.height && playerRect.y - 5 + playerRect.height - 5 > circleRect.y){
                     circle.remove();
                     data.inventory[circle.style.backgroundColor + "Circle"]++;
@@ -213,8 +189,8 @@
         
 
         // key creation
-        let dataX = data.x.toString(36).replace("-", "").padStart(3, "0");
-        let dataY = data.y.toString(36).replace("-", "").padStart(3, "0");
+        let dataX = player.x.toString(36).replace("-", "").padStart(3, "0");
+        let dataY = player.y.toString(36).replace("-", "").padStart(3, "0");
         let colorData = data.color == "red" ? "1" : data.color == "blue" ? "2" : "3";
         let coinData = data.inventory.coins.toString(36).replace("-", "").padStart(4, "0");
         let redData = data.inventory.redCircle.toString(36).replace("-", "").padStart(4, "0");
@@ -238,17 +214,17 @@
         let blue = parseInt(key.slice(15, 19), 36);
         let green = parseInt(key.slice(19, 23), 36);
 
-        data.x = x;
-        data.y = y;
+        player.x = x;
+        player.y = y;
         data.color = color == 1 ? "red" : color == 2 ? "blue" : "green";
-        player.style.backgroundColor = data.color;
+        player.element.style.backgroundColor = data.color;
         data.inventory.coins = coins;
         data.inventory.redCircle = red;
         data.inventory.blueCircle = blue;
         data.inventory.greenCircle = green;
 
-        player.style.left = data.x + "px";
-        player.style.top = data.y + "px";
+        player.element.style.left = data.x + "px";
+        player.element.style.top = data.y + "px";
     }
 
 
@@ -257,13 +233,8 @@
     setInterval(colorUpdate, 9000); //15000
 
     document.addEventListener('keydown', function(event) {
-        data.keys[event.key] = true;
-        if(data.keys["p"]) keyDisplay.style.display = keyDisplay.style.display == "block" ? "none" : "block";
-        if(data.keys["o"]) inputDisplay.style.display = inputDisplay.style.display == "block" ? "none" : "block";
+        if(Player.keys["p"]) keyDisplay.style.display = keyDisplay.style.display == "block" ? "none" : "block";
+        if(Player.keys["o"]) inputDisplay.style.display = inputDisplay.style.display == "block" ? "none" : "block";
     
-    });
-
-    document.addEventListener('keyup', function(event) {
-        data.keys[event.key] = false;
     });
 </script>
