@@ -1,0 +1,55 @@
+<style>
+    center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        flex-direction: column;
+    }
+
+    circle {
+        height: 0px;
+        width: 0px;
+        border-radius: 50%;
+        background-color: black;
+    }
+    
+    inner {
+        position: absolute;
+        height: 0px;
+        width: 0px;
+        border-radius: 50%;
+        background-color: white;
+    }
+</style>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+</head>
+<body>
+    <center>
+        <circle></circle>
+        <inner></inner>
+    </center>
+</body>
+<script>
+    let tl = anime.timeline({
+        easing: 'spring(1, 80, 10, 0)',
+    })
+    
+    tl.add({
+        targets: 'circle',
+        height: '200px',
+        width: '200px',
+        background: "linear-gradient(90deg, hsla(197, 100%, 63%, 1) 0%, hsla(294, 100%, 55%, 1) 100%)",
+        duration: 750,
+        delay: 1000
+    });
+
+    tl.add({
+        targets: 'inner',
+        height: '150px',
+        width: '150px',
+        background: 'white',
+        duration: 750,
+    });
+</script>
