@@ -88,17 +88,12 @@
 
     let data = {
         color: "red",
-        inventory: {
-            coins: 0,
-            redCircle: 0,
-            blueCircle: 0,
-            greenCircle: 0,
-        },
         xp: 0,
         keys: {}
     }
 
     let player = new Player(document.getElementById('player'), window.innerWidth / 2, window.innerHeight / 2)
+    player.initializeInventory(["coins", "redCircle", "blueCircle", "greenCircle"]);
 
     const keyDisplay = document.getElementById('key-wrapper');
     const inputDisplay = document.getElementById('key-input-wrapper');
@@ -155,10 +150,10 @@
 
 
         // inventory
-        document.getElementById('coin-counter').innerText = "Coins: " + data.inventory.coins;
-        document.getElementById('red-circle-counter').innerText = "Red Circles: " + data.inventory.redCircle;
-        document.getElementById('blue-circle-counter').innerText = "Blue Circles: " + data.inventory.blueCircle;
-        document.getElementById('green-circle-counter').innerText = "Green Circles: " + data.inventory.greenCircle;
+        document.getElementById('coin-counter').innerText = "Coins: " + player.inventory.coins;
+        document.getElementById('red-circle-counter').innerText = "Red Circles: " + player.inventory.redCircle;
+        document.getElementById('blue-circle-counter').innerText = "Blue Circles: " + player.inventory.blueCircle;
+        document.getElementById('green-circle-counter').innerText = "Green Circles: " + player.inventory.greenCircle;
 
         // collision detection
         for(let i = 0; i < document.getElementsByTagName("circle").length; i++){
@@ -176,26 +171,26 @@
             if(circle.style.backgroundColor == player.element.style.backgroundColor){
                 if(playerRect.x - 5 < circleRect.x + circleRect.width && playerRect.x - 5 + playerRect.width > circleRect.x && playerRect.y < circleRect.y + circleRect.height && playerRect.y - 5 + playerRect.height - 5 > circleRect.y){
                     circle.remove();
-                    data.inventory[circle.style.backgroundColor + "Circle"]++;
-                    data.inventory.coins += 10;
+                    player.inventoryAdd(circle.style.backgroundColor + "Circle", 1);
+                    player.inventoryAdd("coins", 10);
                 }
             }
         }
 
-        if(data.inventory.coins > 1679615) data.inventory.coins = 1679615;
-        if(data.inventory.redCircle > 1679615) data.inventory.redCircle = 1679615;
-        if(data.inventory.blueCircle > 1679615) data.inventory.blueCircle = 1679615;
-        if(data.inventory.greenCircle > 1679615) data.inventory.greenCircle = 1679615;
+        if(player.inventory.coins > 1679615) player.inventory.coins = 1679615;
+        if(player.inventory.redCircle > 1679615) player.inventory.redCircle = 1679615;
+        if(player.inventory.blueCircle > 1679615) player.inventory.blueCircle = 1679615;
+        if(player.inventory.greenCircle > 1679615) player.inventory.greenCircle = 1679615;
         
 
         // key creation
         let dataX = player.x.toString(36).replace("-", "").padStart(3, "0");
         let dataY = player.y.toString(36).replace("-", "").padStart(3, "0");
         let colorData = data.color == "red" ? "1" : data.color == "blue" ? "2" : "3";
-        let coinData = data.inventory.coins.toString(36).replace("-", "").padStart(4, "0");
-        let redData = data.inventory.redCircle.toString(36).replace("-", "").padStart(4, "0");
-        let blueData = data.inventory.blueCircle.toString(36).replace("-", "").padStart(4, "0");
-        let greenData = data.inventory.greenCircle.toString(36).replace("-", "").padStart(4, "0");
+        let coinData = player.inventory.coins.toString(36).replace("-", "").padStart(4, "0");
+        let redData = player.inventory.redCircle.toString(36).replace("-", "").padStart(4, "0");
+        let blueData = player.inventory.blueCircle.toString(36).replace("-", "").padStart(4, "0");
+        let greenData = player.inventory.greenCircle.toString(36).replace("-", "").padStart(4, "0");
 
         rawKey.innerText = dataX + dataY + coinData + colorData + redData + blueData + greenData;
     }
@@ -218,10 +213,10 @@
         player.y = y;
         data.color = color == 1 ? "red" : color == 2 ? "blue" : "green";
         player.element.style.backgroundColor = data.color;
-        data.inventory.coins = coins;
-        data.inventory.redCircle = red;
-        data.inventory.blueCircle = blue;
-        data.inventory.greenCircle = green;
+        player.inventory.coins = coins;
+        player.inventory.redCircle = red;
+        player.inventory.blueCircle = blue;
+        player.inventory.greenCircle = green;
 
         player.element.style.left = data.x + "px";
         player.element.style.top = data.y + "px";
