@@ -1,6 +1,5 @@
 class Player {
     static keys = [];
-    static timeMultiplier = 0.9;
     constructor(element, x, y, overflowType) {
         this.element = element;
         this.x = x;
@@ -30,10 +29,10 @@ class Player {
     }
 
     move() {
-        if(Player.keys["w"]) this.vy -= 1 * Player.timeMultiplier;
-        if(Player.keys["s"]) this.vy += 1 * Player.timeMultiplier;
-        if(Player.keys["a"]) this.vx -= 1 * Player.timeMultiplier;
-        if(Player.keys["d"]) this.vx += 1 * Player.timeMultiplier;
+        if(Player.keys["w"]) this.vy -= 1;
+        if(Player.keys["s"]) this.vy += 1;
+        if(Player.keys["a"]) this.vx -= 1;
+        if(Player.keys["d"]) this.vx += 1;
 
 
         this.vx = math.round(this.vx * 0.9, 4);
