@@ -1,31 +1,39 @@
 class Player {
     static keys = [];
+    static components = [];
+    static componentOffsets = {};
     constructor(element, x, y, overflowType) {
         this.element = element;
+        Player.components.push(this.element);
         this.x = x;
         this.y = y;
         this.vx = 0;
         this.vy = 0;
-        this.inventory = {};
         this.overflowType = overflowType || 'restrict';
         document.addEventListener('keydown', function(event) { Player.keys[event.key] = true; });
         document.addEventListener('keyup', function(event) { Player.keys[event.key] = false; });
     }
 
-    inventoryAdd(item, amount) {
-        if(this.inventory[item]) this.inventory[item] += amount;
-        else this.inventory[item] = amount;
-    }
-
-    inventoryRemove(item, amount) {
-        if(this.inventory[item]) this.inventory[item] -= amount;
-        else this.inventory[item] = 0;
-    }
-
-    initializeInventory(arr){
-        for(let i = 0; i < arr.length; i++){
-            this.inventoryAdd(arr[i], 0);
+    collidesWith(element, reducer) {
+        reducer = reducer || 0;
+        for(let i = 0; i < Player.components.length; i++){
+            let rect1 = Player.components[i].getBoundingClientRect();
+            let rect2 = element.getBoundingClientRect();
+            return !(
+                rect1.top + reducer > rect2.bottom ||
+                rect1.right - reducer < rect2.left ||
+                rect1.bottom - reducer < rect2.top ||
+                rect1.left + reducer > rect2.right
+            );
         }
+    }
+
+    addComponent(element, offsetX, offsetY) {
+        element.style.position = 'absolute';
+        element.style.left = offsetX + 'px';
+        element.style.top = offsetY + 'px';
+        this.element.appendChild(element);
+        Player.components.push(element);
     }
 
     move() {
