@@ -34,7 +34,10 @@ class Player {
         return collides;
     }
 
-    addComponent(element, offsetX, offsetY) {
+    addComponent(id, offsetX, offsetY) {
+        let element = document.createElement('div');
+        element.id = id;
+
         element.style.position = 'absolute';
         element.style.left = offsetX + 'px';
         element.style.top = offsetY + 'px';
@@ -43,6 +46,7 @@ class Player {
         if(offsetY < Player.lowestComponentYOffset) Player.lowestComponentYOffset = offsetY;
 
         Player.components.push(element);
+        this.element.appendChild(element);
     }
 
     move() {

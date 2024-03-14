@@ -58,7 +58,7 @@
         top: 0;
         left: 0;
         width: 200px;
-        height: 25px;
+        height: 15px;
         border: 1px solid orange;
         background-color: orange;
     }
@@ -82,10 +82,7 @@
 </head>
 <body>
     <div id="field">
-        <div id="player" style="background-color: red;">
-            <div id="component1"></div>
-            <div id="component2"></div>
-        </div>
+        <div id="player" style="background-color: red;"></div>
     </div>
     <div id="inventory">
         <div id="coin-counter">Coins: 0</div>
@@ -112,6 +109,8 @@
     let data = {
         color: "red",
         xp: 0,
+        mouseX: 0,
+        mouseY: 0,
         inventory: {
             coins: 0,
             redCircle: 0,
@@ -119,6 +118,11 @@
             greenCircle: 0
         }
     }
+
+    document.addEventListener('mousemove', function(event){
+        data.mouseX = event.clientX;
+        data.mouseY = event.clientY;
+    });
 
     let player = new Player(document.getElementById('player'), window.innerWidth / 2, window.innerHeight / 2)
 
@@ -129,8 +133,8 @@
 
     const inventory = document.getElementById('inventory');
 
-    player.addComponent(document.getElementById('component1'), 0, 0);
-    player.addComponent(document.getElementById('component2'), 0, 0);
+    player.addComponent("component1", -75, 15);
+    //player.addComponent("component2", 0, 0);
 
     // create random circles on the field
 
