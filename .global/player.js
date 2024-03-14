@@ -1,10 +1,11 @@
 class Player {
     static keys = [];
     static components = [];
-    static componentOffsets = {};
+    static lowestComponentXOffset = 0;
+    static lowestComponentYOffset = 0;
+
     constructor(element, x, y, overflowType) {
         this.element = element;
-        Player.components.push(this.element);
         this.x = x;
         this.y = y;
         this.vx = 0;
@@ -15,24 +16,32 @@ class Player {
     }
 
     collidesWith(element, reducer) {
+        let collides = false;
+        // restricts the hitbox by pixels
         reducer = reducer || 0;
-        for(let i = 0; i < Player.components.length; i++){
-            let rect1 = Player.components[i].getBoundingClientRect();
-            let rect2 = element.getBoundingClientRect();
-            return !(
-                rect1.top + reducer > rect2.bottom ||
-                rect1.right - reducer < rect2.left ||
-                rect1.bottom - reducer < rect2.top ||
-                rect1.left + reducer > rect2.right
+
+        Player.components.forEach((component) => {
+            let compRect = component.getBoundingClientRect();
+            let objectRect = element.getBoundingClientRect();
+            collides = collides || !(
+                compRect.top + reducer > objectRect.bottom ||
+                compRect.right - reducer < objectRect.left ||
+                compRect.bottom - reducer < objectRect.top ||
+                compRect.left + reducer > objectRect.right
             );
-        }
+        });
+
+        return collides;
     }
 
     addComponent(element, offsetX, offsetY) {
         element.style.position = 'absolute';
         element.style.left = offsetX + 'px';
         element.style.top = offsetY + 'px';
-        this.element.appendChild(element);
+
+        if(offsetX < Player.lowestComponentXOffset) Player.lowestComponentXOffset = offsetX;
+        if(offsetY < Player.lowestComponentYOffset) Player.lowestComponentYOffset = offsetY;
+
         Player.components.push(element);
     }
 
@@ -55,16 +64,25 @@ class Player {
         this.element.style.left = this.x + "px";
         this.element.style.top = this.y + "px";
 
+        
+        let playerWidth = 50;
+        let playerHeight = 50;
+
+        for(let i = 0; i < Player.components.length; i++){
+            if(Player.components[i].offsetWidth > playerWidth) playerWidth = Player.components[i].offsetWidth;
+            if(Player.components[i].offsetHeight > playerHeight) playerHeight = Player.components[i].offsetHeight;
+        }
+
         if(this.overflowType == 'restrict'){
-            if(this.x < 0) this.x = 0;
-            if(this.y < 0) this.y = 0;
-            if(this.x > window.innerWidth - 50) this.x = window.innerWidth - 50;
-            if(this.y > window.innerHeight - 50) this.y = window.innerHeight - 50;
+            if(this.x < -Player.lowestComponentXOffset) this.x = -Player.lowestComponentXOffset;
+            if(this.y < -Player.lowestComponentYOffset) this.y = -Player.lowestComponentYOffset;
+            if(this.x > window.innerWidth - playerWidth - Player.lowestComponentXOffset) this.x = window.innerWidth - playerWidth - Player.lowestComponentXOffset;
+            if(this.y > window.innerHeight - playerHeight - Player.lowestComponentYOffset) this.y = window.innerHeight - playerHeight - Player.lowestComponentYOffset;
         } else if(this.overflowType == 'wrap'){
-            if(this.x < -50) this.x = window.innerWidth + 50;
-            if(this.y < -50) this.y = window.innerHeight + 50;
-            if(this.x > window.innerWidth + 50) this.x = -50;
-            if(this.y > window.innerHeight + 50) this.y = -50;
+            if(this.x < -playerWidth) this.x = window.innerWidth + playerWidth;
+            if(this.y < -playerHeight) this.y = window.innerHeight + playerHeight;
+            if(this.x > window.innerWidth + playerWidth) this.x = -playerWidth;
+            if(this.y > window.innerHeight + playerHeight) this.y = -playerHeight;
         }
     }
 }

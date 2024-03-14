@@ -53,6 +53,26 @@
         padding: 10px;
         border: 1px solid black;
     }
+    #component1 {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 200px;
+        height: 25px;
+        border: 1px solid orange;
+        background-color: orange;
+    }
+
+    #component2 {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 25px;
+        height: 200px;
+        border: 1px solid purple;
+        background-color: purple;
+    
+    }
 
 </style>
 <head>
@@ -62,7 +82,10 @@
 </head>
 <body>
     <div id="field">
-        <div id="player" style="background-color: red;"></div>
+        <div id="player" style="background-color: red;">
+            <div id="component1"></div>
+            <div id="component2"></div>
+        </div>
     </div>
     <div id="inventory">
         <div id="coin-counter">Coins: 0</div>
@@ -105,6 +128,9 @@
     const rawKey = document.getElementById('key');
 
     const inventory = document.getElementById('inventory');
+
+    player.addComponent(document.getElementById('component1'), 0, 0);
+    player.addComponent(document.getElementById('component2'), 0, 0);
 
     // create random circles on the field
 
