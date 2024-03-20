@@ -11,6 +11,8 @@ class Player {
         this.vx = 0;
         this.vy = 0;
         this.overflowType = overflowType || 'restrict';
+
+        Player.components.push(this.element);
         document.addEventListener('keydown', function(event) { Player.keys[event.key] = true; });
         document.addEventListener('keyup', function(event) { Player.keys[event.key] = false; });
     }
