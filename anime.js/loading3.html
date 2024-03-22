@@ -34,7 +34,7 @@
 <script>
     let tl = anime.timeline({
         easing: 'spring(1, 80, 10, 0)',
-        duration: 1000,
+        duration: 7500,
         loop: true
     })
     
@@ -43,7 +43,7 @@
         height: '200px',
         width: '200px',
         background: "linear-gradient(90deg, hsla(197, 100%, 63%, 1) 0%, hsla(294, 100%, 55%, 1) 100%)",
-        duration: 750,
+        duration: 500,
         delay: 1000
     });
 
@@ -52,22 +52,15 @@
         height: '150px',
         width: '150px',
         background: 'white',
-        duration: 750,
     });
 
     tl.add({
         targets: 'circle',
-        borderRadius: '0%',
+        borderRadius: '5%',
         width: '250px',
         height: '250px',
-        rotate: '45deg',
-    })
-
-    tl.add({
-        targets: 'inner',
-        borderRadius: '0%',
-        width: '300px',
-        height: '300px',
-        rotate: '45deg',
+        rotate: '1.125turn',
+        easing: 'easeInOutQuad',
+        duration: 1000,
     })
 </script>
