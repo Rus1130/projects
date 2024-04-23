@@ -44,6 +44,11 @@
             justify-content: center;
             height: 100%;
         }
+
+        counter {
+            text-align: center;
+            font-size: 20px;
+        }
     </style>
     
     
@@ -57,7 +62,8 @@
         <button style="height: 100px; width: 100px; background-color: transparent; position: absolute; top: 0px; right: 0px; border: none;" onclick="unhide()"></button>
         <div class="container">
             <div class='grid'>
-                <div><h1>Rus1130/projects/index.html</h1></div>
+                <div style="text-align: center;"><h1>Rus1130/projects/index.html</h1></div>
+                <counter id="counter"></counter>
                 <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/roulette-game/roulette'">Roulette</button>
                 <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/shooter/index'">Shooter (New and Improved)</button>
                 <button class="button" onclick="location.href = 'https://rus1130.github.io/projects/Lemon_Squeeze+/index'">Lemon Squeeze+</button>
@@ -78,4 +84,30 @@
     function unhide(){
         document.getElementById("conlangs").removeAttribute("style", 'display: none;');
     }
+
+    setInterval(() => {
+        // get the years, months, days, hours, minutes, and seconds until 1780408800
+        let timeUntil = 1780408800 - Math.floor(Date.now() / 1000);
+        let years = Math.floor(timeUntil / 31536000);
+        timeUntil -= years * 31536000;
+        let months = Math.floor(timeUntil / 2592000);
+        timeUntil -= months * 2592000;
+        let days = Math.floor(timeUntil / 86400);
+        timeUntil -= days * 86400;
+        let hours = Math.floor(timeUntil / 3600);
+        timeUntil -= hours * 3600;
+        let minutes = Math.floor(timeUntil / 60);
+        timeUntil -= minutes * 60;
+        let seconds = timeUntil;
+        // display the time until 1780408800
+        let display = 
+        `${years} year${years === 1 ? "" : "s"},
+        ${months} month${months === 1 ? "" : "s"},
+        ${days} day${days === 1 ? "" : "s"},
+        ${hours} hour${hours === 1 ? "" : "s"},
+        ${minutes} minute${minutes === 1 ? "" : "s"},
+        ${seconds} second${seconds === 1 ? "" : "s"}
+        `;
+        document.getElementById("counter").innerHTML = display.replaceAll("\n", "");
+    }, 1)
 </script>
