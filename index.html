@@ -85,6 +85,8 @@
         document.getElementById("conlangs").removeAttribute("style", 'display: none;');
     }
 
+
+    console.log()
     setInterval(() => {
         // get the years, months, days, hours, minutes, and seconds until 1780408800
         let timeUntil = 1780408800 - Math.floor(Date.now() / 1000);
@@ -108,6 +110,10 @@
         ${minutes} minute${minutes === 1 ? "" : "s"},
         ${seconds} second${seconds === 1 ? "" : "s"}
         `;
+
+        if(1780408800 - Math.floor(Date.now() / 1000) <= 0){
+            display = "The time has passed.";
+        }
         document.getElementById("counter").innerHTML = display.replaceAll("\n", "");
     }, 1)
 </script>
