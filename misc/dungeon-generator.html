@@ -173,7 +173,7 @@
             roomString[i] = roomString[i].join('');
         }
 
-        document.getElementById('export-string').innerText = roomString.join("")+roomCount;
+        document.getElementById('export-string').innerText = roomString.join("")+(roomCount.padStart(2, '0'));
     }
 
     function generateRoom(roomCount){
