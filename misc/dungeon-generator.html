@@ -1,0 +1,192 @@
+<style>
+    #dungeon-board {
+        display: grid;
+        grid-template-columns: repeat(60, 1fr);
+        grid-template-rows: repeat(60, 1fr);
+        width: 600px;
+        height: 600px;
+        outline: 1px solid black;
+    }
+
+    #dungeon-board > div {
+        width: 8px;
+        height: 8px;
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .background {
+        background-color: white;
+        border: 1px solid white;
+    }
+
+    .room {
+        background-color: red;
+        border: 1px solid red;
+    }
+
+    .wall {
+        background-color: black;
+        border: 1px solid black;
+    }
+
+    .door {
+        background-color: turquoise;
+        border: 1px solid turquoise;
+    }
+
+    .debug {
+        background-color: springgreen;
+        border: 1px solid springgreen;
+    }
+
+    #export-string {
+        width: 600px;
+        height: 100px;
+        resize: none;
+    }
+
+    #import-area {
+        width: 50px;
+        height: 50px;
+        border: 1px solid black;
+    }
+
+    #import-button {
+        width: 50px;
+        height: 50px;
+        border: 1px solid black;
+    }
+</style>
+<head>
+
+</head>
+<body>
+    <div id="dungeon-board"></div>
+    <textarea id="export-string"></textarea>
+</body>
+<script>
+
+    let rooms = [];
+
+    const createRoomOutlines = (x) => { for(i = 0; i < x; i++){createRoomOutline()} }
+
+    function setClass(x, y, className){
+        document.getElementById(`cell-${x}-${y}`).classList.forEach(classname => {
+            document.getElementById(`cell-${x}-${y}`).classList.remove(classname);
+        });
+        document.getElementById(`cell-${x}-${y}`).classList.add(className);
+    }
+
+    function getRandom(min, max) {
+        const minCeiled = Math.ceil(min);
+        const maxFloored = Math.floor(max);
+        return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled);
+    }
+
+    for(i = 0; i < 60; i++){
+        for(j = 0; j < 60; j++){
+            let div = document.createElement('div');
+            div.classList.add('background');
+            div.id = `cell-${j}-${i}`;
+            document.getElementById('dungeon-board').appendChild(div);
+        }
+    }
+
+    function createRoomOutline(x1, y1, x2, y2){
+        // create a room of random size at a random position
+        x1 = x1 ?? getRandom(1, 40);
+        y1 = y1 ?? getRandom(1, 40)
+
+        x2 = x2 ?? getRandom(x1+2, x1+18);
+        y2 = y2 ?? getRandom(y1+2, y1+18);
+
+        // make sure rooms dont overlap
+        for(let i = 0; i < rooms.length; i++){
+            if(x1 <= rooms[i][2] && x2 >= rooms[i][0] && y1 <= rooms[i][3] && y2 >= rooms[i][1]){
+                console.log('rooms overlap');
+                return createRoomOutline();
+            }
+        }
+
+        console.log(`x1 :${x1}\ny1 :${y1}\nx2 :${x2}\ny2 :${y2}`);
+        console.log(`x2 greater than x1: ${x2 > x1}\ny2 greater than y1: ${y2 > y1}`);
+
+        rooms.push([x1, y1, x2, y2]);
+    }
+    
+    // fill in the rooms
+    function fillRooms(){
+        rooms.forEach(room => {
+            for(let i = room[0]; i <= room[2]; i++){
+                for(let j = room[1]; j <= room[3]; j++){
+                    setClass(i, j, 'room');
+                }
+            }
+        });
+    }
+
+    // set the walls
+    function setWalls(){
+        document.querySelectorAll('.room').forEach(room => {
+            let x = parseInt(room.id.split('-')[1]);
+            let y = parseInt(room.id.split('-')[2]);
+
+            // for every room cell, if there is a background cell adjacent to it, set it to a wall
+            if(document.getElementById(`cell-${x-1}-${y}`).classList.contains('background') ||
+            document.getElementById(`cell-${x+1}-${y}`).classList.contains('background') ||
+            document.getElementById(`cell-${x}-${y-1}`).classList.contains('background') || 
+            document.getElementById(`cell-${x}-${y+1}`).classList.contains('background')){
+                setClass(x, y, 'wall');
+            }
+        });
+    }
+
+    function fixWalls(){
+        document.querySelectorAll('.room').forEach(room => {
+            let x = parseInt(room.id.split('-')[1]);
+            let y = parseInt(room.id.split('-')[2]);
+
+            let wallCount = 0;
+
+            if(document.getElementById(`cell-${x-1}-${y}`).classList.contains('wall')) wallCount++;
+            if(document.getElementById(`cell-${x+1}-${y}`).classList.contains('wall')) wallCount++;
+            if(document.getElementById(`cell-${x}-${y-1}`).classList.contains('wall')) wallCount++;
+            if(document.getElementById(`cell-${x}-${y+1}`).classList.contains('wall')) wallCount++;
+
+            if(document.getElementById(`cell-${x-2}-${y}`).classList.contains('background')) wallCount--;
+            if(document.getElementById(`cell-${x+2}-${y}`).classList.contains('background')) wallCount--;
+            if(document.getElementById(`cell-${x}-${y-2}`).classList.contains('background')) wallCount--;
+            if(document.getElementById(`cell-${x}-${y+2}`).classList.contains('background')) wallCount--;
+
+
+            if(wallCount >= 2) setClass(x, y, 'wall');
+        });
+    }
+
+    function exportRooms(roomCount){
+        let roomString = [...rooms];
+        for(i = 0; i < roomString.length; i++){
+            for(j = 0; j < roomString[i].length; j++){
+                roomString[i][j] = roomString[i][j].toString().padStart(2, '0');
+            }
+            roomString[i] = roomString[i].join('');
+        }
+
+        document.getElementById('export-string').innerText = roomString.join("")+roomCount;
+    }
+
+    function generateRoom(roomCount){
+        createRoomOutlines(roomCount);
+        fillRooms();
+        setWalls();
+        fixWalls();
+        exportRooms(roomCount);
+    }
+
+    generateRoom(30);
+
+    function importRoom(roomString){
+
+    }
+</script>
