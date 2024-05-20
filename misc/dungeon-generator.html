@@ -97,6 +97,10 @@
         return document.querySelectorAll(`.${className}`).length > 0;
     }
 
+    function classListContains(x, y, className){
+        return document.getElementById(`cell-${x}-${y}`).classList.contains(className);
+    }
+
     function getRandom(min, max) {
         const minCeiled = Math.ceil(min);
         const maxFloored = Math.floor(max);
@@ -152,10 +156,12 @@
             let y = parseInt(room.id.split('-')[2]);
 
             // for every room cell, if there is a background cell adjacent to it, set it to a wall
-            if(document.getElementById(`cell-${x-1}-${y}`).classList.contains('background') ||
-            document.getElementById(`cell-${x+1}-${y}`).classList.contains('background') ||
-            document.getElementById(`cell-${x}-${y-1}`).classList.contains('background') || 
-            document.getElementById(`cell-${x}-${y+1}`).classList.contains('background')){
+
+            
+            if(classListContains(x-1, y, 'background')||
+            classListContains(x+1, y, 'background') ||
+            classListContains(x, y-1, 'background') ||
+            classListContains(x, y+1, 'background')){
                 setClass(x, y, 'wall');
             }
         });
@@ -168,16 +174,15 @@
 
             let wallCount = 0;
 
-            if(document.getElementById(`cell-${x-1}-${y}`).classList.contains('wall')) wallCount++;
-            if(document.getElementById(`cell-${x+1}-${y}`).classList.contains('wall')) wallCount++;
-            if(document.getElementById(`cell-${x}-${y-1}`).classList.contains('wall')) wallCount++;
-            if(document.getElementById(`cell-${x}-${y+1}`).classList.contains('wall')) wallCount++;
+            if(classListContains(x-1, y, 'wall')) wallCount++;
+            if(classListContains(x+1, y, 'wall')) wallCount++;
+            if(classListContains(x, y-1, 'wall')) wallCount++;
+            if(classListContains(x, y+1, 'wall')) wallCount++;
 
-            if(document.getElementById(`cell-${x-2}-${y}`).classList.contains('background')) wallCount--;
-            if(document.getElementById(`cell-${x+2}-${y}`).classList.contains('background')) wallCount--;
-            if(document.getElementById(`cell-${x}-${y-2}`).classList.contains('background')) wallCount--;
-            if(document.getElementById(`cell-${x}-${y+2}`).classList.contains('background')) wallCount--;
-
+            if(classListContains(x-2, y, 'background')) wallCount--;
+            if(classListContains(x+2, y, 'background')) wallCount--;
+            if(classListContains(x, y-2, 'background')) wallCount--;
+            if(classListContains(x, y+2, 'background')) wallCount--;
 
             if(wallCount >= 2) setClass(x, y, 'wall');
         });
