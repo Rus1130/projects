@@ -20,6 +20,8 @@
         l: rand(30, 70)
     }
 
+    const colorCopy = JSON.parse(JSON.stringify(color));
+
     while(color.h - (10 * depth) <= 0){
         color.h = rand(0, 360);
     }
@@ -36,7 +38,7 @@
 
     const flowerExportObject = {
         depth: depth,
-        color: color,
+        color: colorCopy,
         petalCount: null
     }
 
