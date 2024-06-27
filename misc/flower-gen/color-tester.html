@@ -1,0 +1,50 @@
+<style>
+</style>
+<head>
+
+</head>
+<body>
+    <squareparent></squareparent>
+</body>
+<script>
+
+    function rand(min, max){
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    const depth = rand(3, 7);
+
+    const color = {
+        h: rand(0, 360),
+        s: rand(30, 100),
+        l: rand(30, 70)
+    }
+
+    while(color.h - (10 * depth) <= 0){
+        color.h = rand(0, 360);
+    }
+    
+    function returnColor() {
+        return `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
+    }
+
+    function varyColor(depth) {
+        color.h -= 10;
+        color.s -= 15;
+        color.l += 4;
+    }
+
+
+    for(let i = 0; i < depth; i++) {
+        let div = document.createElement('div');
+        div.style.position = 'absolute';
+        div.style.width = 300 - (i * (300/depth)) + 'px';
+        div.style.height = 300 - (i * (300/depth)) + 'px';
+        div.style.left = 50 + (i * ((300/depth)/2)) + 'px';
+        div.style.top = 50 + (i * ((300/depth)/2)) + 'px';
+        div.style.borderBottom = '3px solid black';
+        div.style.backgroundColor = returnColor();
+        document.body.appendChild(div);
+        varyColor();
+    }
+</script>
