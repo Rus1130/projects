@@ -34,6 +34,12 @@
         color.l += 4;
     }
 
+    const flowerExportObject = {
+        depth: depth,
+        color: color,
+        petalCount: null
+    }
+
 
     for(let i = 0; i < depth; i++) {
         let div = document.createElement('div');
@@ -47,4 +53,6 @@
         document.body.appendChild(div);
         varyColor();
     }
+
+    console.log(flowerExportObject)
 </script>
