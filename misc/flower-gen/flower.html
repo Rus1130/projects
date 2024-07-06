@@ -44,8 +44,8 @@
     const colorCopy = JSON.parse(JSON.stringify(color));
 
     const flowerExportObject = {
-        depth: depth,
         color: colorCopy,
+        depth: depth,
         petalCount: petalCount,
     }
 
@@ -103,7 +103,32 @@
     centerDot.stroke = 'none';
     centerDot.fill = `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
 
-    console.log(flowerExportObject)
+    function encodeFlower(){
+        let result = '';
+        // base 10 to base 36
+        result += flowerExportObject.color.h.toString(36).padStart(2, '0');
+        result += flowerExportObject.color.l.toString(36).padStart(2, '0');
+        result += flowerExportObject.depth.toString(36);
+        result += flowerExportObject.petalCount.toString(36);
+
+        return result;
+    }
+
+    function decodeFlower(key){
+        let object = {
+            color: {
+                h: parseInt(key.substring(0, 2), 36),
+                s: 100,
+                l: parseInt(key.substring(2, 4), 36)
+            },
+            depth: parseInt(key.substring(4, 5), 36),
+            petalCount: parseInt(key.substring(5, 6), 36)
+        };
+
+        return object;
+    }
+
+    console.log(encodeFlower())
 </script>
 
 
