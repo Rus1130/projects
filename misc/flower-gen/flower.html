@@ -25,6 +25,7 @@
     }
 
     const depth = rand(3, 7);
+    const petalCount = rand(3, 10);
 
     const color = {
         h: rand(0, 360),
@@ -32,11 +33,22 @@
         l: rand(30, 70)
     }
 
-    const colorCopy = JSON.parse(JSON.stringify(color));
-
     while(color.h - (10 * depth) <= 0){
         color.h = rand(0, 360);
     }
+
+    while(color.l + (4 * depth) >= 70){
+        color.l = rand(30, 70);
+    }
+
+    const colorCopy = JSON.parse(JSON.stringify(color));
+
+    const flowerExportObject = {
+        depth: depth,
+        color: colorCopy,
+        petalCount: petalCount,
+    }
+
     
     function returnColor() {
         return `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
@@ -48,68 +60,52 @@
         color.l += 4;
     }
 
-    const petalCount = rand(3, 10);
+    let petals = [];
 
-    const flowerExportObject = {
-        depth: depth,
-        color: colorCopy,
-        petalCount: petalCount,
-        fullSaturationWhere: Math.random() > 0.5 ? 'inside' : 'outside'
-    }
-    
-    
-    let colorArray = [];
+    function createPetal(x, y, color, size, theta){
+        let ellipse = two.makeEllipse(two.width / 2, (two.height / 2) - 200, 100 - (size * (100/depth)), 200 - (size * (200/depth)));
 
+        ellipse.fill = color;
+        ellipse.stroke = 'none';
 
-    for(let i = 0; i < depth; i++) {
-        colorArray.push(returnColor());
-        varyColor();
-    }
+        ellipse.position._x = Math.cos((theta / petalCount) * Math.PI * 2) * 200 + two.width / 2;
+        ellipse.position._y = Math.sin((theta / petalCount) * Math.PI * 2) * 200 + two.height / 2;
+        
+        let pointPosX = Math.cos((theta / petalCount) * Math.PI * 2) * 200 + two.width / 2;
+        let pointPosY = Math.sin((theta / petalCount) * Math.PI * 2) * 200 + two.height / 2;
 
-    if(flowerExportObject.fullSaturationWhere == "outside") colorArray.reverse();
-
-
-    let outerPetalBottomY;
-
-    for(i = 0; i < petalCount; i++){
-        let petal = [];
-        colorArray.forEach((color, index) => {
-            // the 100 is width;
-            let ellipse = two.makeEllipse(two.width / 2, (two.height / 2) - 200, 100 - (index * (100/depth)), 200 - (index * (200/depth)));
-            ellipse.fill = color;
-            ellipse.stroke = 'none';
-
-            if(index == 0){
-                outerPetalBottomY = ellipse.position._y + ellipse.height / 2;
-            }
-            if(index !== 0){
-                ellipse.position._y = outerPetalBottomY - ellipse.height / 2;
-            }
-            petal.push(ellipse);
-        })
-
-        let group = two.makeGroup(petal);
-
-        group.center();
-
-        group.position._x = Math.cos((i / petalCount) * Math.PI * 2) * 200 + two.width / 2;
-        group.position._y = Math.sin((i / petalCount) * Math.PI * 2) * 200 + two.height / 2;
-
-        // get the angle between the point and the centerPoint
-
-        let pointPosX = Math.cos((i / petalCount) * Math.PI * 2) * 200 + two.width / 2;
-        let pointPosY = Math.sin((i / petalCount) * Math.PI * 2) * 200 + two.height / 2;
+        //let point = two.makeCircle(pointPosX, pointPosY, 5);
 
         let centerPointX = two.width / 2;
         let centerPointY = two.height / 2;
 
         let angle = Math.atan2(pointPosY - centerPointY, pointPosX - centerPointX);
-        
-        // rotate the group by that angle
-        group.rotation = angle + Math.PI / 2;
+
+        ellipse.rotation = angle + Math.PI / 2;
+
+        petals.push(ellipse);
+
+        if(size > 0){
+            ellipse.position._x = Math.cos((theta / petalCount) * Math.PI * 2) * (200 - (size * (200/depth))) + two.width / 2;
+            ellipse.position._y = Math.sin((theta / petalCount) * Math.PI * 2) * (200 - (size * (200/depth))) + two.height / 2;
+        }
     }
 
-    console.log(groupArrays)
 
-    console.log(flowerExportObject)
+    for(i = 0; i < depth; i++){
+        for(j = 0; j < petalCount; j++){
+            createPetal(two.width / 2, (two.height / 2) - 200, returnColor(), i, j);
+        }
+        varyColor();
+    }
+
+    let centerDot = two.makeCircle(two.width / 2, two.height / 2, petals[petals.length-1].height / 4);
+    centerDot.stroke = 'none';
+    centerDot.fill = `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
+
 </script>
+
+
+
+
+

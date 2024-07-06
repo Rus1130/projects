@@ -1,0 +1,115 @@
+<style>
+    #render-div {
+        position: aboslute;
+        top: 50%;
+        left: 50%;
+
+    }
+</style>
+<head>
+    <script src="../../Global/two.js"></script>
+</head>
+<body>
+    <svg id="render-div"></svg>
+</body>
+<script>
+
+    let two = new Two({
+        autostart: true,
+        fullscreen: true,
+        domElement: document.getElementById('render-div')
+    })
+
+    function rand(min, max){
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    const depth = rand(3, 7);
+
+    const color = {
+        h: rand(0, 360),
+        s: 100,
+        l: rand(30, 70)
+    }
+
+    const colorCopy = JSON.parse(JSON.stringify(color));
+
+    while(color.h - (10 * depth) <= 0){
+        color.h = rand(0, 360);
+    }
+    
+    function returnColor() {
+        return `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
+    }
+
+    function varyColor(depth) {
+        color.h -= 10;
+        color.s -= 7;
+        color.l += 4;
+    }
+
+    const petalCount = rand(3, 10);
+
+    const flowerExportObject = {
+        depth: depth,
+        color: colorCopy,
+        petalCount: petalCount,
+        fullSaturationWhere: Math.random() > 0.5 ? 'inside' : 'outside'
+    }
+    
+    
+    let colorArray = [];
+
+
+    for(let i = 0; i < depth; i++) {
+        colorArray.push(returnColor());
+        varyColor();
+    }
+
+    if(flowerExportObject.fullSaturationWhere == "outside") colorArray.reverse();
+
+
+    let outerPetalBottomY;
+
+    for(i = 0; i < petalCount; i++){
+        let petal = [];
+        colorArray.forEach((color, index) => {
+            // the 100 is width;
+            let ellipse = two.makeEllipse(two.width / 2, (two.height / 2) - 200, 100 - (index * (100/depth)), 200 - (index * (200/depth)));
+            ellipse.fill = color;
+            ellipse.stroke = 'none';
+
+            if(index == 0){
+                outerPetalBottomY = ellipse.position._y + ellipse.height / 2;
+            }
+            if(index !== 0){
+                ellipse.position._y = outerPetalBottomY - ellipse.height / 2;
+            }
+            petal.push(ellipse);
+        })
+
+        let group = two.makeGroup(petal);
+
+        group.center();
+
+        group.position._x = Math.cos((i / petalCount) * Math.PI * 2) * 200 + two.width / 2;
+        group.position._y = Math.sin((i / petalCount) * Math.PI * 2) * 200 + two.height / 2;
+
+        // get the angle between the point and the centerPoint
+
+        let pointPosX = Math.cos((i / petalCount) * Math.PI * 2) * 200 + two.width / 2;
+        let pointPosY = Math.sin((i / petalCount) * Math.PI * 2) * 200 + two.height / 2;
+
+        let centerPointX = two.width / 2;
+        let centerPointY = two.height / 2;
+
+        let angle = Math.atan2(pointPosY - centerPointY, pointPosX - centerPointX);
+        
+        // rotate the group by that angle
+        group.rotation = angle + Math.PI / 2;
+    }
+
+    console.log(groupArrays)
+
+    console.log(flowerExportObject)
+</script>
