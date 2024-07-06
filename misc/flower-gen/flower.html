@@ -3,17 +3,22 @@
         position: aboslute;
         top: 50%;
         left: 50%;
+    }
 
+    #key {
+        position: absolute;
     }
 </style>
 <head>
     <script src="../../Global/two.js"></script>
 </head>
 <body>
+    <code id="key">gleep</code>
     <svg id="render-div"></svg>
 </body>
 <script>
 
+    const keyDisplay = document.getElementById('key');
     let two = new Two({
         autostart: true,
         fullscreen: true,
@@ -128,7 +133,7 @@
         return object;
     }
 
-    console.log(encodeFlower())
+    keyDisplay.textContent = encodeFlower();
 </script>
 
 
