@@ -17,19 +17,19 @@ class Player {
         document.addEventListener('keyup', function(event) { Player.keys[event.key] = false; });
     }
 
-    collidesWith(element, reducer) {
+    collidesWith(element, offset) {
         let collides = false;
         // restricts the hitbox by pixels
-        reducer = reducer || 0;
+        offset = offset || 0;
 
         Player.components.forEach((component) => {
             let compRect = component.getBoundingClientRect();
             let objectRect = element.getBoundingClientRect();
             collides = collides || !(
-                compRect.top + reducer > objectRect.bottom ||
-                compRect.right - reducer < objectRect.left ||
-                compRect.bottom - reducer < objectRect.top ||
-                compRect.left + reducer > objectRect.right
+                compRect.top + offset > objectRect.bottom ||
+                compRect.right - offset < objectRect.left ||
+                compRect.bottom - offset < objectRect.top ||
+                compRect.left + offset > objectRect.right
             );
         });
 

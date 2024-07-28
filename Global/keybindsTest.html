@@ -1,0 +1,33 @@
+<head>
+    <script src="./keybinds.js"></script>
+</head>
+<body>
+
+</body>
+<script>
+    let kb = new Keybinds();
+
+    kb.createSingle("a", "up", function(){
+        console.log("A was pressed on key up");
+    });
+
+    kb.createSingle("b", "down", function(){
+        console.log("B was pressed on key down");
+    });
+
+    kb.createCombo("s+d+f", false, function(){
+        console.log("S, D, and F were pressed");
+    });
+
+    kb.createCombo("w+e+r", true, function(){
+        console.log("W, E, and R were pressed with full release");
+    });
+
+    kb.createDouble("x", 500, function(){
+        console.log("X was double pressed within 500ms");
+    });
+
+    kb.createDouble("y", 1000, function(){
+        console.log("Y was double pressed within 1000ms");
+    });
+</script>
