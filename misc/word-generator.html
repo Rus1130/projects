@@ -2,6 +2,7 @@
     textarea:focus {
         outline: none;
     }
+
     div:focus {
         outline: none;
     }
@@ -11,12 +12,12 @@
 </head>
 <body>
     <div id="container">
-        <div id="group-ui">
-            <div id="group">
-                <div>
-                    <div contenteditable="true" style="width: 100px; outline: 1px black solid; font-family: monospace;"></div>
-                </div>
-            </div>
+        <div id="rule-ui">
+            <!-- <div id="rule">
+                <textarea title="1 letter identification goes here" maxlength="1" style="resize: none; width: 33px; height: 40px; font-family: monospace; padding: 10px;"></textarea>
+                <textarea style="resize: none; height: 40px; padding-top: 10px; padding-left: 10px;" placeholder="ex. a, e, i, o, u"></textarea>
+            </div> -->
+            <button onclick="addRule()">Add New Rule</button>
         </div>
         <div id="outputs">
 
@@ -24,5 +25,24 @@
     </div>
 </body>
 <script>
+    let ruleUI = document.getElementById("rule-ui");
+    function addRule(){
+        let identificationTextarea = document.createElement("textarea");
+        identificationTextarea.setAttribute("title", "1 letter identification goes here");
+        identificationTextarea.setAttribute("maxlength", "1");
+        identificationTextarea.style = "resize: none; width: 33px; height: 40px; font-family: monospace; padding: 10px;";
+
+        let ruleTextarea = document.createElement("textarea");
+        ruleTextarea.style = "resize: none; height: 40px; padding-top: 10px; padding-left: 10px;";
+        ruleTextarea.setAttribute("placeholder", "ex. a, e, i, o, u");
+
+        let div = document.createElement("div");
+        div.id = "rule" + ruleUI.children.length;
+        div.appendChild(identificationTextarea);
+        div.appendChild(ruleTextarea);
+
+        ruleUI.insertBefore(div, ruleUI.children[ruleUI.children.length - 1]);
+
+    }
 
 </script>
