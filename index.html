@@ -18,15 +18,10 @@
 
     div {
         cursor: default;
-        margin-left: 8px;
     }
 
     #esolangs, #cisco {
         display: none;
-    }
-
-    #first-div {
-        margin-top: 8px;
     }
 </style>
 <head>
@@ -36,36 +31,38 @@
     <meta property="og:description" content="Rus' random projects">
     <script src="https://unpkg.com/cursor-effects@latest/dist/browser.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
-    <script src="Global/two.js"></script>
     <title>|</title>
 </head>
 <body>
-    <div id="first-div">rus1130/projects/index.html</div>
-    <div id="counter"></div>
-    <div>--------------</div>
-    <div id="main">
-        <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/roulette-game/roulette'">▌Roulette</buttondiv>
-        <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/shooter/index'">▌Shooter (New and Improved)</buttondiv>
-        <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/Lemon_Squeeze+/index'">▌Lemon Squeeze+</buttondiv>
-        <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/bitram-hacker/bitram-hacker'">▌Bitram Hacker</buttondiv>
-        <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/misc/orbs'">▌Orbs</buttondiv>
-        <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/computers/calculator'">▌Calculator</buttondiv>
-        <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/computers/scrambler'">▌Scrambler</buttondiv>
-        <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/computers/HDD'">▌HDD</buttondiv>
-        <buttondiv onclick="showCisco()">▌Cisco Stuff ></buttondiv>
-        <buttondiv onclick="showEsolangs()">▌Esolangs (Esoteric Programming Laguages) ></buttondiv>
+    <div id="wrapper" style="display: none">
+        <div>rus1130/projects/index.html</div>
+        <div id="counter"><br></div>
+        <div id="-">--------------</div>
+        <div id="main">
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/roulette-game/roulette'">▌Roulette</buttondiv>
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/shooter/index'">▌Shooter (New and Improved)</buttondiv>
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/Lemon_Squeeze+/index'">▌Lemon Squeeze+</buttondiv>
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/bitram-hacker/bitram-hacker'">▌Bitram Hacker</buttondiv>
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/misc/orbs'">▌Orbs</buttondiv>
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/computers/calculator'">▌Calculator</buttondiv>
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/computers/scrambler'">▌Scrambler</buttondiv>
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/computers/HDD'">▌HDD</buttondiv>
+            <buttondiv onclick="showCisco()">▌Cisco Stuff ></buttondiv>
+            <buttondiv onclick="showEsolangs()">▌Esolangs (Esoteric Programming Laguages) ></buttondiv>
+        </div>
+        <div id="esolangs">
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/esolangs/bl/bull'">▌bull</buttondiv>
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/esolangs/ms/metastacks'">▌Metastacks</buttondiv>
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/esolangs/lc/LogoCraft'">▌LogoCraft</buttondiv>    
+            <buttondiv onclick="showMain()">▌< Return</buttondiv>
+        </div>
+        <div id="cisco">
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/cisco-stuff/stp-calculator'">▌STP Calculator</buttondiv>
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/cisco-stuff/subnet-calculator'">▌Subnet Calculator</buttondiv>
+            <buttondiv onclick="showMain()">▌< Return</buttondiv>
+        </div>
     </div>
-    <div id="esolangs">
-        <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/esolangs/bl/bull'">▌bull</buttondiv>
-        <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/esolangs/ms/metastacks'">▌Metastacks</buttondiv>
-        <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/esolangs/lc/LogoCraft'">▌LogoCraft</buttondiv>    
-        <buttondiv onclick="showMain()">▌< Return</buttondiv>
-    </div>
-    <div id="cisco">
-        <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/cisco-stuff/stp-calculator'">▌STP Calculator</buttondiv>
-        <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/cisco-stuff/subnet-calculator'">▌Subnet Calculator</buttondiv>
-        <buttondiv onclick="showMain()">▌< Return</buttondiv>
-    </div>
+    <div id="animation">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</div>
 </body>
     
     
@@ -128,29 +125,20 @@
         }
     }, 80)
 
+    let animation = document.getElementById("animation");
 
-    // let blackoutDiv = document.createElement("div");
-    // blackoutDiv.style.position = "absolute";
-    // blackoutDiv.style.top = "0";
-    // blackoutDiv.style.left = "-10px";
-    // blackoutDiv.style.width = "calc(100% +  10px)";
-    // blackoutDiv.style.height = "100%";
-    // blackoutDiv.style.backgroundColor = "black";
-    // document.body.appendChild(blackoutDiv);
+    let animationIndex = 0;
+    let anim = setInterval(() => {
+        animationIndex++;
+        animation.textContent = "▓" + animation.textContent;
+        // remove the last character in animation.textContent
+        animation.textContent = animation.textContent.slice(0, -1);
 
-    // two = new Two({
-    //     fullscreen: true,
-    //     autostart: true
-    // }).appendTo(blackoutDiv);
-
-    // let outlineRect = two.makeRectangle(two.width / 2, two.height / 2, 600, 225);
-    // outlineRect.stroke = "white";
-    // outlineRect.linewidth = 5;
-    // outlineRect.fill = "black"
-
-    // let inlineRect = two.makeRectangle(two.width / 2, two.height / 2, 590, 215);
-
-
+        if(animationIndex >= 30){
+            clearInterval(anim);
+            document.getElementById("wrapper").style.display = "block";
+        }
+    }, 200)
 
 
     // todo: loading screen effect, cursor
