@@ -1,27 +1,34 @@
 <style>
+    body {
+        background-color: black;
+        color: white;
+        font-family: monospace;
+    }
 
-buttondiv {
-    cursor: pointer;
-    margin-bottom: 1px;
-    display: block;
-}
-body {
-    background-color: black;
-    color: white;
-    font-family: monospace;
-}
+    buttondiv {
+        margin-bottom: 1px;
+        display: block;
+        cursor: pointer;
+    }
 
-buttondiv:hover {
-    background-color: white;
-    color: black;
-}
+    buttondiv:hover {
+        background-color: white;
+        color: black;
+    }
 
-#esolangs, #cisco {
-    display: none;
-}
+    div {
+        cursor: default;
+        margin-left: 8px;
+    }
+
+    #esolangs, #cisco {
+        display: none;
+    }
+
+    #first-div {
+        margin-top: 8px;
+    }
 </style>
-
-
 <head>
     <meta content="Rus1130/projects" property="og:title" />
     <meta content="https://www.rus1130.github.io/projects" property="og:url" />
@@ -29,12 +36,13 @@ buttondiv:hover {
     <meta property="og:description" content="Rus' random projects">
     <script src="https://unpkg.com/cursor-effects@latest/dist/browser.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+    <script src="Global/two.js"></script>
     <title>|</title>
 </head>
 <body>
-    <div>rus1130/projects/index.html</div>
+    <div id="first-div">rus1130/projects/index.html</div>
     <div id="counter"></div>
-    --------------
+    <div>--------------</div>
     <div id="main">
         <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/roulette-game/roulette'">▌Roulette</buttondiv>
         <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/shooter/index'">▌Shooter (New and Improved)</buttondiv>
@@ -119,6 +127,31 @@ buttondiv:hover {
             titleAnimIndex = 0;
         }
     }, 80)
+
+
+    // let blackoutDiv = document.createElement("div");
+    // blackoutDiv.style.position = "absolute";
+    // blackoutDiv.style.top = "0";
+    // blackoutDiv.style.left = "-10px";
+    // blackoutDiv.style.width = "calc(100% +  10px)";
+    // blackoutDiv.style.height = "100%";
+    // blackoutDiv.style.backgroundColor = "black";
+    // document.body.appendChild(blackoutDiv);
+
+    // two = new Two({
+    //     fullscreen: true,
+    //     autostart: true
+    // }).appendTo(blackoutDiv);
+
+    // let outlineRect = two.makeRectangle(two.width / 2, two.height / 2, 600, 225);
+    // outlineRect.stroke = "white";
+    // outlineRect.linewidth = 5;
+    // outlineRect.fill = "black"
+
+    // let inlineRect = two.makeRectangle(two.width / 2, two.height / 2, 590, 215);
+
+
+
 
     // todo: loading screen effect, cursor
 </script>
