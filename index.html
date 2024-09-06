@@ -1,8 +1,16 @@
 <style>
+    @keyframes example {
+        50%   { content: "."; }
+        75%  { content: ".."; }
+    }
+
     body {
         background-color: black;
         color: white;
         font-family: monospace;
+    }
+    div {
+        cursor: default;
     }
 
     buttondiv {
@@ -10,36 +18,30 @@
         display: block;
         cursor: pointer;
     }
-
     buttondiv:hover {
         background-color: white;
         color: black;
     }
 
-    div {
-        cursor: default;
-    }
-
-    #esolangs, #cisco {
+    #esolangs, #cisco, #about-me {
         display: none;
     }
-
-    @keyframes example {
-        50%   { content: "."; }
-        75%  { content: ".."; }
-    }
-
     #dot-dot-dot:before {
         content: "";
         animation: example 1s infinite;
     }
 
+    .orange {
+        color: orange;
+        font-weight: bold;
+    }
+
 </style>
 <head>
     <meta content="Rus1130/projects" property="og:title" />
-    <meta content="https://www.rus1130.github.io/projects" property="og:url" />
-    <meta content="#43B581" data-react-helmet="true" name="theme-color" />
-    <meta property="og:description" content="Rus' random projects">
+    <meta content="https://rus1130.github.io/projects/index" property="og:url" />
+    <meta content="#FFA500" data-react-helmet="true" name="theme-color" />
+    <meta property="og:description" content="I make stuff">
     <script src="https://unpkg.com/cursor-effects@latest/dist/browser.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
     <title>|</title>
@@ -58,6 +60,7 @@
             <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/computers/calculator'">▌Calculator</buttondiv>
             <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/computers/scrambler'">▌Scrambler</buttondiv>
             <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/computers/HDD'">▌HDD</buttondiv>
+            <buttondiv onclick="showAboutMe()"><span class="orange">▌About Me ></span></buttondiv>
             <buttondiv onclick="showCisco()">▌Cisco Stuff ></buttondiv>
             <buttondiv onclick="showEsolangs()">▌Esolangs (Esoteric Programming Laguages) ></buttondiv>
         </div>
@@ -72,6 +75,13 @@
             <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/cisco-stuff/subnet-calculator'">▌Subnet Calculator</buttondiv>
             <buttondiv onclick="showMain()">▌< Return</buttondiv>
         </div>
+        <div id="about-me">
+            <div>Hi, I'm Rus</div>
+            <div>I make a lot of random shit, half of it isn't very good</div>
+            <div>My favorite color is orange</div>
+            <div>Don't worry about the counter, iykyk :)</div>
+            <buttondiv onclick="showMain()">▌< Return</buttondiv>
+        </div>
     </div>
     <div id="loadingAnimation" style="display: none;">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</div>
     <div id="start">press any key to start<span id="dot-dot-dot">.</span></div>
@@ -79,8 +89,6 @@
     
     
 <script>
-    let emojiArray = ["🥚", "✨"]
-
     function start(){
         let titleAnim = ["/", "-", "\\", "|"];
         let titleAnimIndex = 0;
@@ -147,18 +155,28 @@
         document.getElementById("main").style.display = "block";
         document.getElementById("esolangs").style.display = "none";
         document.getElementById("cisco").style.display = "none";
+        document.getElementById("about-me").style.display = "none";
     }
 
     function showCisco(){
         document.getElementById("main").style.display = "none";
         document.getElementById("esolangs").style.display = "none";
         document.getElementById("cisco").style.display = "block";
+        document.getElementById("about-me").style.display = "none";
     }
 
     function showEsolangs(){
         document.getElementById("main").style.display = "none";
         document.getElementById("esolangs").style.display = "block";
         document.getElementById("cisco").style.display = "none";
+        document.getElementById("about-me").style.display = "none";
+    }
+
+    function showAboutMe(){
+        document.getElementById("main").style.display = "none";
+        document.getElementById("esolangs").style.display = "none";
+        document.getElementById("cisco").style.display = "none";
+        document.getElementById("about-me").style.display = "block";
     }
 
 
