@@ -181,7 +181,7 @@
 
 
     let firstKeyPress = false;
-    document.addEventListener("keyup", () => {
+    document.addEventListener("keydown", () => {
         if(firstKeyPress) return;
         firstKeyPress = true;
         loadingAnimation();
