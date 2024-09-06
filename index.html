@@ -23,6 +23,17 @@
     #esolangs, #cisco {
         display: none;
     }
+
+    @keyframes example {
+        50%   { content: "."; }
+        75%  { content: ".."; }
+    }
+
+    #dot-dot-dot:before {
+        content: "";
+        animation: example 1s infinite;
+    }
+
 </style>
 <head>
     <meta content="Rus1130/projects" property="og:title" />
@@ -62,11 +73,46 @@
             <buttondiv onclick="showMain()">▌< Return</buttondiv>
         </div>
     </div>
-    <div id="animation">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</div>
+    <div id="loadingAnimation" style="display: none;">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</div>
+    <div id="start">press any key to start<span id="dot-dot-dot">.</span></div>
 </body>
     
     
 <script>
+    let emojiArray = ["🥚", "✨"]
+
+    function start(){
+        let titleAnim = ["/", "-", "\\", "|"];
+        let titleAnimIndex = 0;
+        setInterval(() => {
+            document.title = titleAnim[titleAnimIndex];
+            titleAnimIndex++;
+            if(titleAnimIndex >= titleAnim.length){
+                titleAnimIndex = 0;
+            }
+        }, 80)
+    }
+
+    function loadingAnimation(){
+        let animation = document.getElementById("loadingAnimation");
+        animation.style.display = "block";
+        let animationIndex = 0;
+        let anim = setInterval(() => {
+            animationIndex++;
+            animation.textContent = "▓" + animation.textContent;
+            // remove the last character in animation.textContent
+            animation.textContent = animation.textContent.slice(0, -1);
+
+            if(animationIndex >= 40){
+                clearInterval(anim);
+                document.getElementById("wrapper").style.display = "block";
+                animation.style.display = "none";
+            }
+        }, 200)
+    }
+
+    start();
+
     setInterval(() => {
         // get the years, months, days, hours, minutes, and seconds until 1780408800
         let timeUntil = 1780408800 - Math.floor(Date.now() / 1000);
@@ -115,30 +161,14 @@
         document.getElementById("cisco").style.display = "none";
     }
 
-    let titleAnim = ["/", "-", "\\", "|"];
-    let titleAnimIndex = 0;
-    setInterval(() => {
-        document.title = titleAnim[titleAnimIndex];
-        titleAnimIndex++;
-        if(titleAnimIndex >= titleAnim.length){
-            titleAnimIndex = 0;
-        }
-    }, 80)
 
-    let animation = document.getElementById("animation");
-
-    let animationIndex = 0;
-    let anim = setInterval(() => {
-        animationIndex++;
-        animation.textContent = "▓" + animation.textContent;
-        // remove the last character in animation.textContent
-        animation.textContent = animation.textContent.slice(0, -1);
-
-        if(animationIndex >= 30){
-            clearInterval(anim);
-            document.getElementById("wrapper").style.display = "block";
-        }
-    }, 200)
+    let firstKeyPress = false;
+    document.addEventListener("keyup", () => {
+        if(firstKeyPress) return;
+        firstKeyPress = true;
+        loadingAnimation();
+        document.getElementById("start").style.display = "none";
+    })
 
 
     // todo: loading screen effect, cursor
