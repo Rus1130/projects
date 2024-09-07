@@ -44,7 +44,7 @@
     <meta property="og:description" content="I make stuff">
     <script src="https://unpkg.com/cursor-effects@latest/dist/browser.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
-    <title>|</title>
+    <title>idle...</title>
 </head>
 <body>
     <div id="wrapper" style="display: none">
@@ -89,14 +89,19 @@
     
     
 <script>
+    let animationFinished = false;
     function start(){
         let titleAnim = ["/", "-", "\\", "|"];
         let titleAnimIndex = 0;
-        setInterval(() => {
+        let anim = setInterval(() => {
             document.title = titleAnim[titleAnimIndex];
             titleAnimIndex++;
             if(titleAnimIndex >= titleAnim.length){
                 titleAnimIndex = 0;
+            }
+            if(animationFinished){
+                clearInterval(anim);
+                document.title = "Welcome!";
             }
         }, 80)
     }
@@ -115,11 +120,10 @@
                 clearInterval(anim);
                 document.getElementById("wrapper").style.display = "block";
                 animation.style.display = "none";
+                animationFinished = true;
             }
         }, 200)
     }
-
-    start();
 
     setInterval(() => {
         // get the years, months, days, hours, minutes, and seconds until 1780408800
@@ -185,6 +189,7 @@
         if(firstKeyPress) return;
         firstKeyPress = true;
         loadingAnimation();
+        start();
         document.getElementById("start").style.display = "none";
     })
 
