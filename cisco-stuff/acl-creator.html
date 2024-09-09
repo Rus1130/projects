@@ -1,0 +1,58 @@
+<style>
+    div {
+        display: none;
+    }
+</style>
+<head>
+
+</head>
+<body>
+    <div id="named-or-numbered" oninput="reveal('standard-or-extended');" style="display: block;">
+        Is the ACL named or numbered?
+        <input type="radio" name="named-or-numbered" value="named" id="named-type" oninput="reveal('name-input')"> Named
+        <input type="radio" name="named-or-numbered" value="numbered" id="numbered-type" oninput="reveal('number-input')"> Numbered
+    </div>
+    <div id="name-input">
+        <input type="text" id="acl-name" placeholder="Enter the name">
+    </div>
+    <div id="number-input">
+        <input type="number" id="acl-number" placeholder="Enter the number">
+    </div>
+    <div id="standard-or-extended">
+        Is the ACL standard or extended?
+        <input type="radio" name="standard-or-extended" value="standard" id="standard-acl" oninput="reveal('standard-path')"> Standard
+        <input type="radio" name="standard-or-extended" value="extended" id="extended-acl"> Extended
+    </div>
+    <div id="standard-path">
+        Permit or deny incoming traffic?
+        <input type="radio" name="standard-permit-or-deny" value="permit" id="standard-permit" oninput="reveal('standard-source')"> Permit
+        <input type="radio" name="standard-permit-or-deny" value="deny" id="standard-deny" oninput="reveal('standard-source')"> Deny
+        <div id="standard-source">
+            IP address of the incoming traffic:
+            <input type="text" id="standard-source-ip" placeholder="Enter the source IP address">
+        </div>
+    </div>
+</body>
+<script>
+    function reveal(id){
+        document.getElementById(id).style.display = "block";
+    }
+
+    // for each unique name tag, once it has been selected, disable so it cannot be edited
+    let inputs = document.getElementsByTagName('input');
+    for (let i = 0; i < inputs.length; i++){
+        if (inputs[i].type === 'radio'){
+            inputs[i].addEventListener('click', function(){
+                let name = this.name;
+                let value = this.value;
+                let allInputs = document.getElementsByName(name);
+                for (let j = 0; j < allInputs.length; j++){
+                    if (allInputs[j].value !== value){
+                        allInputs[j].disabled = true;
+                    }
+                }
+            });
+        }
+    }
+
+</script>
