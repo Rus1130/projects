@@ -24,12 +24,12 @@
         <input type="radio" name="standard-or-extended" value="extended" id="extended-acl"> Extended
     </div>
     <div id="standard-path">
-        Permit or deny incoming traffic?
+        Permit or deny traffic?
         <input type="radio" name="standard-permit-or-deny" value="permit" id="standard-permit" oninput="reveal('standard-source')"> Permit
         <input type="radio" name="standard-permit-or-deny" value="deny" id="standard-deny" oninput="reveal('standard-source')"> Deny
         <div id="standard-source">
             IP address of the traffic:
-            <input type="text" id="standard-source-ip" placeholder="Enter the source IP address">
+            <input type="text" id="standard-ip" placeholder="Enter the source IP address">
         </div>
     </div>
 </body>
