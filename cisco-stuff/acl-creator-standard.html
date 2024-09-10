@@ -51,9 +51,9 @@
         <input type="text" id="interface" placeholder="interface" onsubmit="reveal('direction')">
     </div>
     <div id="direction">
-        Is the interface taking traffic from the network or putting traffic out to the network?
-        <input type="radio" name="direction" value="in" id="in" oninput="reveal('done')"> In
-        <input type="radio" name="direction" value="out" id="out" oninput="reveal('done')"> Out
+        Is traffic going <b>into the interface</b> or <b>out of the interface</b>?
+        <input type="radio" name="direction" value="in" id="in" oninput="reveal('done')"> Into
+        <input type="radio" name="direction" value="out" id="out" oninput="reveal('done')"> Out of
     </div>
     <div id="done">
         done! no output yet because i havent implemented it yet
