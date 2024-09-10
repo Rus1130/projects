@@ -48,12 +48,15 @@
     </div>
     <div id="interface">
         Interface to apply the ACL to:
-        <input type="text" id="interface" placeholder="interface">
+        <input type="text" id="interface" placeholder="interface" onsubmit="reveal('direction')">
     </div>
     <div id="direction">
         Is the interface taking traffic from the network or putting traffic out to the network?
         <input type="radio" name="direction" value="in" id="in" oninput="reveal('done')"> In
         <input type="radio" name="direction" value="out" id="out" oninput="reveal('done')"> Out
+    </div>
+    <div id="done">
+        done! no output yet because i havent implemented it yet
     </div>
 </body>
 <script>
