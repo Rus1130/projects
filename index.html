@@ -87,7 +87,7 @@
         </div>
     </div>
     <div id="loadingAnimation" style="display: none;">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</div>
-    <div id="start">press any key to start<span id="dot-dot-dot">.</span></div>
+    <div id="start"><span id="press-key-start">press any key to start</span><span id="dot-dot-dot">.</span></div>
 </body>
     
     
@@ -188,6 +188,10 @@
 
 
     let firstKeyPress = false;
+    document.addEventListener("click", () => {
+        if(firstKeyPress) return;
+        document.getElementById("press-key-start").textContent = "thats... not a key... thats the mouse button"
+    })
     document.addEventListener("keydown", () => {
         if(firstKeyPress) return;
         firstKeyPress = true;
