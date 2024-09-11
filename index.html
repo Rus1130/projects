@@ -3,7 +3,7 @@
         50%   { content: "."; }
         75%  { content: ".."; }
     }
-    
+
     * {
         user-select: none;
     }
@@ -191,7 +191,7 @@
     let firstKeyPress = false;
     document.addEventListener("click", () => {
         if(firstKeyPress) return;
-        document.getElementById("press-key-start").textContent = "thats... not a key... thats the mouse button"
+        document.getElementById("press-key-start").textContent = "thats... not a key... thats the mouse"
     })
     document.addEventListener("keydown", () => {
         if(firstKeyPress) return;
