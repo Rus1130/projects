@@ -1,0 +1,142 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+<!ATTLIST tag onsubmit CDATA #IMPLIED>
+
+<style>
+    div {
+        display: none;
+    }
+
+    input:focus {
+        outline: none;
+    }
+
+    textarea:focus {
+        outline: none;
+    }
+</style>
+<head>
+
+</head>
+<body>
+    standard ACL creator<br>
+    To confirm text input, press enter while focused in the input<br>
+    you cannot edit inputs after they've been confirmed
+    <hr>
+    <div id="named-or-numbered" style="display: block;">
+        Is the ACL named or numbered?
+        <input type="radio" name="named-or-numbered" value="named" id="named-type" oninput="reveal('name-input-div')"> Named
+        <input type="radio" name="named-or-numbered" value="numbered" id="numbered-type" oninput="reveal('number-input-div')"> Numbered
+    </div>
+    <div id="name-input-div">
+        Name of ACL:
+        <input type="text" id="acl-name" placeholder="name" onsubmit="reveal('permit-or-deny-div')" pattern="[a-zA-Z]+">
+    </div>
+    <div id="number-input-div">
+        Number of ACL:
+        <input type="text" id="acl-number" placeholder="number" onsubmit="reveal('permit-or-deny-div')" pattern="[\d]+">
+    </div>
+    <div id="permit-or-deny-div">
+        Permit or deny traffic?
+        <input type="radio" name="permit-or-deny" value="permit" id="traffic-permit" oninput="reveal('ip-div')"> Permit
+        <input type="radio" name="permit-or-deny" value="deny" id="traffic-deny" oninput="reveal('ip-div')"> Deny
+    </div>
+    <div id="ip-div">
+        IP address of the traffic:
+        <input type="text" id="ip" placeholder="IP address" onsubmit="reveal('wildcard-div')" pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+    </div>
+    <div id="wildcard-div">
+        Wildcard mask of the IP address:
+        <input type="text" id="wildcard" placeholder="wildcard mask" onsubmit="reveal('interface-div')" pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+    </div>
+    <div id="interface-div">
+        Interface to apply the ACL to:
+        <input type="text" id="interface" placeholder="interface" onsubmit="reveal('direction-div')">
+    </div>
+    <div id="direction-div">
+        Is traffic going <b>into the interface</b> or <b>out of the interface</b>?
+        <input type="radio" name="direction" value="in" id="direction-in" oninput="reveal('generate-div')"> Into
+        <input type="radio" name="direction" value="out" id="direction-out" oninput="reveal('generate-div')"> Out of
+    </div>
+    <div id="generate-div">
+        <button onclick="generate(); reveal('output-div')">Generate Standard ACL</button>
+    </div>
+    <div id="output-div">
+        click on text to copy to clipboard<br>
+        <textarea readonly id="output" style="resize: none; width: 500px; height: 53px" onclick="copyToClipboard()"></textarea>
+    </div>
+</body>
+<script>
+    function reveal(id){
+        if(typeof id === "string") document.getElementById(id).style.display = "block";
+        else if (typeof id === "object") {
+            for (let i = 0; i < id.length; i++){
+                document.getElementById(id[i]).style.display = "block";
+            }
+        }
+    }
+
+    function generate(){
+        let namedOrNumbered = document.querySelector('input[name="named-or-numbered"]:checked').value;
+        let identifier = namedOrNumbered === "named" ? document.getElementById('acl-name').value : document.getElementById('acl-number').value;
+        let permitOrDeny = document.querySelector('input[name="permit-or-deny"]:checked').value;
+        let ip = document.getElementById('ip').value;
+        let wildcard = document.getElementById('wildcard').value;
+        let interface = document.getElementById('interface').value;
+        let direction = document.querySelector('input[name="direction"]:checked').value;
+
+        let result = `access-list ${identifier} ${permitOrDeny} ${ip} ${wildcard}\nint ${interface}\nip access-group ${identifier} ${direction}`;
+
+        document.getElementById('output').value = result;
+    }
+
+    function copyToClipboard(){
+        let output = document.getElementById('output');
+        output.select();
+        document.execCommand('copy');
+        alert('Copied to clipboard');
+    }
+
+    let inputs = document.getElementsByTagName('input');
+    for (let i = 0; i < inputs.length; i++){
+        inputs[i].setAttribute('autocomplete', 'off');
+        if (inputs[i].type === 'radio'){
+            inputs[i].addEventListener('click', function(){
+                let name = this.name;
+                let value = this.value;
+                let allInputs = document.getElementsByName(name);
+                for (let j = 0; j < allInputs.length; j++){
+                    if (allInputs[j].value !== value){
+                        allInputs[j].disabled = true;
+                    }
+                }
+            });
+        }
+
+        if (inputs[i].type === 'text'){
+            inputs[i].addEventListener('keydown', function(e){
+                if(e.key == "Enter"){
+                    if(this.hasAttribute('pattern')){
+                        let regex = new RegExp(this.getAttribute('pattern'));
+                        if(regex.test(this.value)){
+                            this.disabled = true;
+                            if(this.hasAttribute('onsubmit')){
+                                this.onsubmit();
+                            }
+                        } else {
+                            alert(`Invalid input`);
+                        }
+                    } else {
+                        this.disabled = true;
+                        if(this.hasAttribute('onsubmit')){
+                            this.onsubmit();
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+
+</script>
