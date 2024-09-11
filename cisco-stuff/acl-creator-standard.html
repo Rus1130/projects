@@ -2,7 +2,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
 <!ATTLIST tag onsubmit CDATA #IMPLIED>
-
 <style>
     div {
         display: none;
@@ -20,6 +19,7 @@
 
 </head>
 <body>
+    <h3>Yes I know autocomplete is there, yes it's annoying, ill have to change a bunch of stuff, ill do it later. I tried 'autocomplete=off' already but not work</h3>
     standard ACL creator<br>
     To confirm text input, press enter while focused in the input<br>
     you cannot edit inputs after they've been confirmed
@@ -100,7 +100,6 @@
 
     let inputs = document.getElementsByTagName('input');
     for (let i = 0; i < inputs.length; i++){
-        inputs[i].setAttribute('autocomplete', 'off');
         if (inputs[i].type === 'radio'){
             inputs[i].addEventListener('click', function(){
                 let name = this.name;
