@@ -46,12 +46,12 @@
     </div>
     <div id="protocol-div">
         Protocol of the traffic:
-        <!--ICMP (HTTP(S)), IP, OSPF, TCP, UDP-->
+        <!--ICMP, IP, OSPF, TCP, UDP-->
         <input type="radio" name="protocol" value="icmp" id="protocol-icmp" oninput="reveal('source-div')"> ICMP
         <input type="radio" name="protocol" value="ip" id="protocol-ip" oninput="reveal('source-div')"> IP
         <input type="radio" name="protocol" value="ospf" id="protocol-ospf" oninput="reveal('source-div')"> OSPF
-        <input type="radio" name="protocol" value="tcp" id="protocol-tcp" oninput="reveal('source-div')"> TCP
-        <input type="radio" name="protocol" value="udp" id="protocol-udp" oninput="reveal('source-div')"> UDP
+        <input type="radio" name="protocol" value="tcp-udp" id="protocol-tcp" oninput="reveal('source-div')"> TCP
+        <input type="radio" name="protocol" value="tcp-udp" id="protocol-udp" oninput="reveal('source-div')"> UDP
     </div>
     <div id="source-div">
         Is the source a specific IP address, the host, or any IP address?
@@ -95,37 +95,72 @@
     </organizer>
     <organizer>
         <div id="icmp-div">
-            options (most likely will not need to worry about these):<br>
-            <input type="checkbox" name="icmp-options" value="echo" id="icmp-echo">echo<br>
-            <input type="checkbox" name="icmp-options" value="echo-reply" id="icmp-echo-reply">echo-reply<br>
-            <input type="checkbox" name="icmp-options" value="host-unreachable" id="icmp-host-unreachable">host unreachable<br>
-            <input type="checkbox" name="icmp-options" value="net-unreachable" id="icmp-network-unreachable">network unreachable<br>
-            <input type="checkbox" name="icmp-options" value="port-unreachable" id="icmp-port-unreachable">port unreachable<br>
-            <input type="checkbox" name="icmp-options" value="protocol-unreachable" id="icmp-protocol-unreachable">protocol unreachable<br>
-            <input type="checkbox" name="icmp-options" value="ttl-exceeded" id="icmp-time-exceeded">time exceeded<br>
-            <input type="checkbox" name="icmp-options" value="unreachable" id="icmp-unreachable">ALL unreachable<br>
-            <input type="checkbox" name="icmp-options" value="icmp-confirm" id="icmp-confirm" lockonsubmit>  Confirm (Will lock these inputs)
+            options:<br>
+            <input type="radio" name="icmp-options" oninput="reveal('new-rule-or-generate-div')" value="icmp-confirm" id="icmp-confirm">none<br>
+            <input type="radio" name="icmp-options" oninput="reveal('new-rule-or-generate-div')" value="echo" id="icmp-echo">echo<br>
+            <input type="radio" name="icmp-options" oninput="reveal('new-rule-or-generate-div')" value="echo-reply" id="icmp-echo-reply">echo-reply<br>
+            <input type="radio" name="icmp-options" oninput="reveal('new-rule-or-generate-div')" value="host-unreachable" id="icmp-host-unreachable">host unreachable<br>
+            <input type="radio" name="icmp-options" oninput="reveal('new-rule-or-generate-div')" value="net-unreachable" id="icmp-network-unreachable">network unreachable<br>
+            <input type="radio" name="icmp-options" oninput="reveal('new-rule-or-generate-div')" value="port-unreachable" id="icmp-port-unreachable">port unreachable<br>
+            <input type="radio" name="icmp-options" oninput="reveal('new-rule-or-generate-div')" value="protocol-unreachable" id="icmp-protocol-unreachable">protocol unreachable<br>
+            <input type="radio" name="icmp-options" oninput="reveal('new-rule-or-generate-div')" value="ttl-exceeded" id="icmp-time-exceeded">time exceeded<br>
+            <input type="radio" name="icmp-options" oninput="reveal('new-rule-or-generate-div')" value="unreachable" id="icmp-unreachable">ALL unreachable
         </div>
-        <div id="ip-div">
-            ip selected
+        <div id="tcp-udp-div">
+            options:<br>
+            <input type="radio" name="tcp-udp-options" oninput="reveal('new-rule-or-generate-div')" value="tcp-udp-confirm" id="tcp-udp-confirm">none<br>
+            <input type="radio" name="tcp-udp-options" oninput="reveal(['tcp-udp-match-div','tcp-udp-ports-shortcuts'])" value="eq" id="tcp-udp-eq">match only to specified port number<br>
+            <input type="radio" name="tcp-udp-options" oninput="reveal(['tcp-udp-match-div','tcp-udp-ports-shortcuts'])" value="gt" id="tcp-udp-gt">match ports with a port number greater than<br>
+            <input type="radio" name="tcp-udp-options" oninput="reveal(['tcp-udp-match-div','tcp-udp-ports-shortcuts'])" value="lt" id="tcp-udp-lt">match ports with a port number less than<br>
+            <input type="radio" name="tcp-udp-options" oninput="reveal(['tcp-udp-match-div','tcp-udp-ports-shortcuts'])" value="neq" id="tcp-udp-neq">match ports with a port number not equal to<br>
+            <input type="radio" name="tcp-udp-options" oninput="reveal(['tcp-udp-range-div','tcp-udp-ports-shortcuts'])" value="range" id="tcp-udp-range">match to a range of port numbers
         </div>
-        <div id="ospf-div">
-            ospf selected
-        </div> 
-        <div id="tcp-div">
-            tcp selected
-        </div>
-        <div id="udp-div">
-            udp selected
+        <organizer>
+            <div id="tcp-udp-ports-shortcuts">
+                common ports:<br>
+                port 21 is FTP<br>
+                port 110 is POP3<br>
+                port 25 is SMTP<br>
+                port 23 is telnet<br>
+                port 80 is HTTP<br>
+            </div>
+            <div id="tcp-udp-match-div">
+                The port to match to:
+                <input type="text" id="tcp-udp-port" placeholder="port number" onsubmit="reveal('new-rule-or-generate-div')" pattern="[\d]+">
+            </div>
+            <div id="tcp-udp-range-div">
+                starting port of range:
+                <input type="text" id="tcp-udp-range-start" placeholder="start of range" onsubmit="reveal('tcp-udp-range-end-div')" pattern="[\d]+">
+                <div id="tcp-udp-range-end-div">
+                    ending port of range:
+                    <input type="text" id="tcp-udp-range-end" placeholder="end of range" onsubmit="reveal('new-rule-or-generate-div');" pattern="[\d]+">
+                </div>
+            </div>
+        </organizer>
+    </organizer>
+    <organizer>
+        <div id="new-rule-or-generate-div">
+            Add another rule or generate ACL?
+            <input type="radio" name="add-or-generate" value="add" id="add-rule" oninput="resetForNewRule()"> Add another rule
+            <input type="radio" name="add-or-generate" value="generate" id="generate-acl" oninput="reveal('generate-acl-div')"> generate ACL
         </div>
     </organizer>
+    
 </body>
 <script>
+    const protocolNoOptions = ['ip', 'ospf']
+    function resetForNewRule(){
+
+    }
 
     function revealProtocolDiv(){
         // get the value of the selected protocol
         let protocol = document.querySelector('input[name="protocol"]:checked').value;
-        reveal(`${protocol}-div`);
+        if(protocolNoOptions.includes(protocol)){
+            reveal('new-rule-or-submit-div');
+        } else {
+            reveal(`${protocol}-div`);
+        }
     }
 
     function reveal(id){
