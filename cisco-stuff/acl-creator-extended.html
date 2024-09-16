@@ -96,7 +96,7 @@
     <organizer>
         <div id="icmp-div">
             options:<br>
-            <input type="radio" name="icmp-options" oninput="reveal('new-rule-or-generate-div')" value="icmp-confirm" id="icmp-confirm">none<br>
+            <input type="radio" name="icmp-options" oninput="reveal('new-rule-or-generate-div')" value="icmp-none" id="icmp-none">none<br>
             <input type="radio" name="icmp-options" oninput="reveal('new-rule-or-generate-div')" value="echo" id="icmp-echo">echo<br>
             <input type="radio" name="icmp-options" oninput="reveal('new-rule-or-generate-div')" value="echo-reply" id="icmp-echo-reply">echo-reply<br>
             <input type="radio" name="icmp-options" oninput="reveal('new-rule-or-generate-div')" value="host-unreachable" id="icmp-host-unreachable">host unreachable<br>
@@ -108,7 +108,7 @@
         </div>
         <div id="tcp-udp-div">
             options:<br>
-            <input type="radio" name="tcp-udp-options" oninput="reveal('new-rule-or-generate-div')" value="tcp-udp-confirm" id="tcp-udp-confirm">none<br>
+            <input type="radio" name="tcp-udp-options" oninput="reveal('new-rule-or-generate-div')" value="tcp-udp-none" id="tcp-udp-none">none<br>
             <input type="radio" name="tcp-udp-options" oninput="reveal(['tcp-udp-match-div','tcp-udp-ports-shortcuts'])" value="eq" id="tcp-udp-eq">match only to specified port number<br>
             <input type="radio" name="tcp-udp-options" oninput="reveal(['tcp-udp-match-div','tcp-udp-ports-shortcuts'])" value="gt" id="tcp-udp-gt">match ports with a port number greater than<br>
             <input type="radio" name="tcp-udp-options" oninput="reveal(['tcp-udp-match-div','tcp-udp-ports-shortcuts'])" value="lt" id="tcp-udp-lt">match ports with a port number less than<br>
@@ -145,19 +145,67 @@
             <input type="radio" name="add-or-generate" value="generate" id="generate-acl" oninput="reveal('generate-acl-div')"> generate ACL
         </div>
     </organizer>
+    <div id="generate-acl-div">
+        click on text to copy to clipboard<br>
+        <textarea readonly id="output" style="resize: none; width: 500px; height: 300px" onclick="copyToClipboard()"></textarea>
+    </div>
     
 </body>
 <script>
     const protocolNoOptions = ['ip', 'ospf']
-    function resetForNewRule(){
 
+    let rules = [];
+
+    function resetForNewRule(){
+        let object = {};
+        let aclType = document.querySelector('input[name="named-or-numbered"]:checked').value;
+        let aclIdentifier = aclType === "named" ? document.getElementById('acl-name').value : document.getElementById('acl-number').value;
+        let trafficAllowance = document.querySelector('input[name="permit-or-deny"]:checked').value;
+        let protocol = document.querySelector('input[name="protocol"]:checked').value;
+
+        if(protocol == "tcp-udp"){
+            // get the innerHTML of the checked radio button
+            document.getElementById('protocol-tcp').checked ? protocol = "tcp" : protocol = "udp";
+        }
+
+        object.type = document.querySelector('input[name="named-or-numbered"]:checked').value;
+        object.identifier = aclIdentifier;
+        object.trafficAllowance = trafficAllowance;
+        object.protocol = protocol;
+        if(object.protocol == "icmp"){
+            let icmpOption = document.querySelector('input[name="icmp-options"]:checked').value;
+            object.protocolSpecific = {icmpOption: icmpOption}
+        }
+        if(['tcp', 'udp'].includes(object.protocol)){
+            let tcpUdpOption = document.querySelector('input[name="tcp-udp-options"]:checked').value;
+
+            let port;
+
+            if(tcpUdpOption == "range"){
+                let start = document.getElementById('tcp-udp-range-start').value;
+                let end = document.getElementById('tcp-udp-range-end').value;
+                port = {start: start, end: end}
+            } else {
+                port = document.getElementById('tcp-udp-port').value;
+            }
+            
+            object.protocolSpecific = {
+                comparisonType: tcpUdpOption,
+                port: port
+            }
+        }
+
+        object.sourceIP = {};
+        object.destinationIP = {};
+
+        console.log(object);
     }
 
     function revealProtocolDiv(){
         // get the value of the selected protocol
         let protocol = document.querySelector('input[name="protocol"]:checked').value;
         if(protocolNoOptions.includes(protocol)){
-            reveal('new-rule-or-submit-div');
+            reveal('new-rule-or-generate-div');
         } else {
             reveal(`${protocol}-div`);
         }
