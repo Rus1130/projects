@@ -47,11 +47,10 @@
     </div>
     <div id="protocol-div">
         Protocol of the traffic:
-        <!--ICMP, IP, OSPF, TCP, UDP-->
+        <input type="radio" name="protocol" value="tcp-udp" id="protocol-tcp" oninput="reveal('source-div')"> TCP (Includes HTTP, FTP, telnet, SMTP, etc)
         <input type="radio" name="protocol" value="icmp" id="protocol-icmp" oninput="reveal('source-div')"> ICMP
         <input type="radio" name="protocol" value="ip" id="protocol-ip" oninput="reveal('source-div')"> IP
         <input type="radio" name="protocol" value="ospf" id="protocol-ospf" oninput="reveal('source-div')"> OSPF
-        <input type="radio" name="protocol" value="tcp-udp" id="protocol-tcp" oninput="reveal('source-div')"> TCP
         <input type="radio" name="protocol" value="tcp-udp" id="protocol-udp" oninput="reveal('source-div')"> UDP
     </div>
     <div id="source-div">
