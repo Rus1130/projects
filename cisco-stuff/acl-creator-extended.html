@@ -142,7 +142,7 @@
         <div id="new-rule-or-generate-div">
             Add another rule or generate ACL?
             <input type="radio" name="add-or-generate" value="add" id="add-rule" oninput="generateRule(); resetCreator()"> Add another rule
-            <input type="radio" name="add-or-generate" value="generate" id="generate-acl" oninput="generateRule(); reveal('generate-acl-div')"> generate ACL
+            <input type="radio" name="add-or-generate" value="generate" id="generate-acl" oninput="generateRule(); reveal('generate-acl-div'); generateACL()"> generate ACL
         </div>
     </organizer>
     <div id="generate-acl-div">
@@ -156,8 +156,17 @@
 
     let rules = [];
 
+    function  copyToClipboard(){
+        let output = document.getElementById('output');
+        output.select();
+        document.execCommand('copy');
+        alert('copied to clipboard');
+    }
+
     function generateACL(){
-        console.log('acl generated')
+        function generateRule(object){
+
+        }
     }
 
     function generateRule(){

@@ -26,7 +26,7 @@
         color: black;
     }
 
-    #esolangs, #cisco, #about-me {
+    .cat {
         display: none;
     }
     #dot-dot-dot:before {
@@ -54,7 +54,26 @@
         <div>rus1130/projects/index.html</div>
         <div id="counter"><br></div>
         <div id="-">--------------</div>
-        <div id="main">
+        <div id="cat-main">
+            <buttondiv onclick="show('cat-about-me')"><span class="orange">▌About Me ></span></buttondiv>
+            <buttondiv onclick="show('cat-cisco')">▌Cisco Stuff ></buttondiv>
+            <buttondiv onclick="show('cat-esolangs')">▌Esolangs (Esoteric Programming Laguages) ></buttondiv>
+            <buttondiv onclick="show('cat-misc')">▌Miscellaneous ></buttondiv>
+        </div>
+        <div id="cat-esolangs" class='cat'>
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/esolangs/bl/bull'">▌bull</buttondiv>
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/esolangs/ms/metastacks'">▌Metastacks</buttondiv>
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/esolangs/lc/LogoCraft'">▌LogoCraft</buttondiv>    
+            <buttondiv onclick="show('cat-main')">▌< Return</buttondiv>
+        </div>
+        <div id="cat-cisco" class="cat">
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/cisco-stuff/stp-calculator'">▌STP Calculator</buttondiv>
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/cisco-stuff/subnet-calculator'">▌Subnet Calculator</buttondiv>
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/cisco-stuff/acl-creator-standard'">▌Standard ACL Creator</buttondiv>
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/cisco-stuff/acl-creator-extended'">▌Extended ACL Creator</buttondiv>
+            <buttondiv onclick="show('cat-main')">▌< Return</buttondiv>
+        </div>
+        <div id="cat-misc" class="cat">
             <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/roulette-game/roulette'">▌Roulette</buttondiv>
             <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/shooter/index'">▌Shooter (New and Improved)</buttondiv>
             <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/Lemon_Squeeze+/index'">▌Lemon Squeeze+</buttondiv>
@@ -63,29 +82,14 @@
             <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/computers/calculator'">▌Calculator</buttondiv>
             <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/computers/scrambler'">▌Scrambler</buttondiv>
             <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/computers/HDD'">▌HDD</buttondiv>
-            <buttondiv onclick="showAboutMe()"><span class="orange">▌About Me ></span></buttondiv>
-            <buttondiv onclick="showCisco()">▌Cisco Stuff ></buttondiv>
-            <buttondiv onclick="showEsolangs()">▌Esolangs (Esoteric Programming Laguages) ></buttondiv>
+            <buttondiv onclick="show('cat-main')">▌< Return</buttondiv>
         </div>
-        <div id="esolangs">
-            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/esolangs/bl/bull'">▌bull</buttondiv>
-            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/esolangs/ms/metastacks'">▌Metastacks</buttondiv>
-            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/esolangs/lc/LogoCraft'">▌LogoCraft</buttondiv>    
-            <buttondiv onclick="showMain()">▌< Return</buttondiv>
-        </div>
-        <div id="cisco">
-            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/cisco-stuff/stp-calculator'">▌STP Calculator</buttondiv>
-            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/cisco-stuff/subnet-calculator'">▌Subnet Calculator</buttondiv>
-            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/cisco-stuff/acl-creator-standard'">▌Standard ACL Creator</buttondiv>
-            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/cisco-stuff/acl-creator-extended'">▌Extended ACL Creator</buttondiv>
-            <buttondiv onclick="showMain()">▌< Return</buttondiv>
-        </div>
-        <div id="about-me">
+        <div id="cat-about-me" class="cat">
             <div>Hi, I'm Rus</div>
             <div>I make a lot of random shit, half of it isn't very good</div>
             <div>My favorite color is <span class="orange">orange</span></div>
             <div>Don't worry about the counter, iykyk :)</div>
-            <buttondiv onclick="showMain()">▌< Return</buttondiv>
+            <buttondiv onclick="show('cat-main')">▌< Return</buttondiv>
         </div>
     </div>
     <div id="loadingAnimation" style="display: none;">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</div>
@@ -160,34 +164,20 @@
         document.getElementById("counter").textContent = display.replaceAll("\n", "");
     }, 1)
 
-    function showMain(){
-        document.getElementById("main").style.display = "block";
-        document.getElementById("esolangs").style.display = "none";
-        document.getElementById("cisco").style.display = "none";
-        document.getElementById("about-me").style.display = "none";
-    }
 
-    function showCisco(){
-        document.getElementById("main").style.display = "none";
-        document.getElementById("esolangs").style.display = "none";
-        document.getElementById("cisco").style.display = "block";
-        document.getElementById("about-me").style.display = "none";
-    }
 
-    function showEsolangs(){
-        document.getElementById("main").style.display = "none";
-        document.getElementById("esolangs").style.display = "block";
-        document.getElementById("cisco").style.display = "none";
-        document.getElementById("about-me").style.display = "none";
+    function show(id){
+        // show the element with the id of id, hide all other elements
+        let elements = document.getElementsByTagName("div");
+        for (let i = 0; i < elements.length; i++){
+            if(elements[i].id.split("-")[0] != "cat") continue;
+            if(elements[i].id === id){
+                elements[i].style.display = "block";
+            } else {
+                elements[i].style.display = "none";
+            }
+        }
     }
-
-    function showAboutMe(){
-        document.getElementById("main").style.display = "none";
-        document.getElementById("esolangs").style.display = "none";
-        document.getElementById("cisco").style.display = "none";
-        document.getElementById("about-me").style.display = "block";
-    }
-
 
     let firstKeyPress = false;
     document.addEventListener("click", () => {
