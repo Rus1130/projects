@@ -142,10 +142,22 @@
         <div id="new-rule-or-generate-div">
             Add another rule or generate ACL?
             <input type="radio" name="add-or-generate" value="add" id="add-rule" oninput="generateRule(); resetCreator()"> Add another rule
-            <input type="radio" name="add-or-generate" value="generate" id="generate-acl" oninput="generateRule(); reveal('generate-acl-div'); generateACL()"> generate ACL
+            <input type="radio" name="add-or-generate" value="generate" id="generate-acl" oninput="reveal('interface-div');"> generate ACL
         </div>
     </organizer>
+    <div id="interface-div">
+        Interface to apply the ACL to:
+        <input type="text" id="interface" placeholder="interface" onsubmit="reveal('direction-div')">
+    </div>
+    <div id="direction-div">
+        Is traffic going <b>into the interface</b> or <b>out of the interface</b>?
+        <input type="radio" name="direction" value="in" id="direction-in" oninput="reveal('generate-acl-div')"> Into
+        <input type="radio" name="direction" value="out" id="direction-out" oninput="reveal('generate-acl-div')"> Out of
+    </div>
     <div id="generate-acl-div">
+        <button onclick="generateRule(); generateACL(); reveal('output-div')">Generate Extended ACL</button>
+    </div>
+    <div id="output-div">
         click on text to copy to clipboard<br>
         <textarea readonly id="output" style="resize: none; width: 500px; height: 300px" onclick="copyToClipboard()"></textarea>
     </div>
@@ -164,16 +176,32 @@
     }
 
     function generateACL(){
-        function generateRule(object){
+        let acl = {
+            type: rules[0].type,
+            identifier: rules[0].identifier,
+            interface: document.getElementById('interface').value,
+            direction: document.querySelector('input[name="direction"]:checked').value,
+            rules: []
+        };
+
+        for(let i = 0; i < rules.length; i++){
+            // get all properties except type and identifier
+            let {type, identifier, ...newRule} = rules[i];
+            acl.rules.push(newRule)
+        }
+
+        function genRule(object){
 
         }
+
+        console.log(acl)
     }
 
     function generateRule(){
         let object = {};
         let aclType = document.querySelector('input[name="named-or-numbered"]:checked').value;
         let aclIdentifier = aclType === "named" ? document.getElementById('acl-name').value : document.getElementById('acl-number').value;
-        let trafficAllowance = document.querySelector('input[name="permit-or-deny"]:checked').value;
+        let traffic = document.querySelector('input[name="permit-or-deny"]:checked').value;
         let protocol = document.querySelector('input[name="protocol"]:checked').value;
 
         if(protocol == "tcp-udp"){
@@ -183,7 +211,7 @@
 
         object.type = document.querySelector('input[name="named-or-numbered"]:checked').value;
         object.identifier = aclIdentifier;
-        object.trafficAllowance = trafficAllowance;
+        object.traffic = traffic;
         object.protocol = protocol;
 
         if(object.protocol == "icmp"){
@@ -235,7 +263,6 @@
         }
 
         rules.push(object);
-        console.log(rules)
     }
 
     function resetCreator(){
