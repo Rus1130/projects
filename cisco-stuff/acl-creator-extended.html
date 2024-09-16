@@ -70,7 +70,7 @@
         </div>
         <div id="source-host-div">
             Source host:
-            <input type="text" id="source-host" placeholder="source host" onsubmit="reveal('destination-div')" pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+            <input type="text" id="source-host-ip" placeholder="source host" onsubmit="reveal('destination-div')" pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
         </div>
     </organizer>
     <div id="destination-div">
@@ -118,11 +118,11 @@
         <organizer>
             <div id="tcp-udp-ports-shortcuts">
                 common ports:<br>
-                port 21 is FTP<br>
-                port 110 is POP3<br>
-                port 25 is SMTP<br>
-                port 23 is telnet<br>
-                port 80 is HTTP<br>
+                port 80 is Hypertext Transfer Protocol (HTTP)<br>
+                port 21 is File Transfer Protocol (FTP)<br>
+                port 23 is Telnet<br>
+                port 25 is Simple Mail Transfer Protocol (SMTP)<br>
+                port 110 is Post Office Protocol 3 (POP3)<br>
             </div>
             <div id="tcp-udp-match-div">
                 The port to match to:
@@ -141,8 +141,8 @@
     <organizer>
         <div id="new-rule-or-generate-div">
             Add another rule or generate ACL?
-            <input type="radio" name="add-or-generate" value="add" id="add-rule" oninput="resetForNewRule()"> Add another rule
-            <input type="radio" name="add-or-generate" value="generate" id="generate-acl" oninput="reveal('generate-acl-div')"> generate ACL
+            <input type="radio" name="add-or-generate" value="add" id="add-rule" oninput="generateRule(); resetCreator()"> Add another rule
+            <input type="radio" name="add-or-generate" value="generate" id="generate-acl" oninput="generateRule(); reveal('generate-acl-div')"> generate ACL
         </div>
     </organizer>
     <div id="generate-acl-div">
@@ -156,7 +156,11 @@
 
     let rules = [];
 
-    function resetForNewRule(){
+    function generateACL(){
+        console.log('acl generated')
+    }
+
+    function generateRule(){
         let object = {};
         let aclType = document.querySelector('input[name="named-or-numbered"]:checked').value;
         let aclIdentifier = aclType === "named" ? document.getElementById('acl-name').value : document.getElementById('acl-number').value;
@@ -172,33 +176,77 @@
         object.identifier = aclIdentifier;
         object.trafficAllowance = trafficAllowance;
         object.protocol = protocol;
+
         if(object.protocol == "icmp"){
             let icmpOption = document.querySelector('input[name="icmp-options"]:checked').value;
             object.protocolSpecific = {icmpOption: icmpOption}
         }
         if(['tcp', 'udp'].includes(object.protocol)){
             let tcpUdpOption = document.querySelector('input[name="tcp-udp-options"]:checked').value;
-
-            let port;
-
-            if(tcpUdpOption == "range"){
-                let start = document.getElementById('tcp-udp-range-start').value;
-                let end = document.getElementById('tcp-udp-range-end').value;
-                port = {start: start, end: end}
+            if(tcpUdpOption == "tcp-udp-none"){
+                object.protocolSpecific = {
+                    comparisonType: "none"
+                }
             } else {
-                port = document.getElementById('tcp-udp-port').value;
-            }
-            
-            object.protocolSpecific = {
-                comparisonType: tcpUdpOption,
-                port: port
+                let port;
+
+                if(tcpUdpOption == "range"){
+                    let start = document.getElementById('tcp-udp-range-start').value;
+                    let end = document.getElementById('tcp-udp-range-end').value;
+                    port = {start: start, end: end}
+                } else {
+                    port = document.getElementById('tcp-udp-port').value;
+                }
+                
+                object.protocolSpecific = {
+                    comparisonType: tcpUdpOption,
+                    port: port
+                }
             }
         }
 
         object.sourceIP = {};
         object.destinationIP = {};
 
-        console.log(object);
+        object.sourceIP.type = document.querySelector('input[name="source"]:checked').value;
+        object.destinationIP.type = document.querySelector('input[name="destination"]:checked').value;
+
+        if(object.sourceIP.type == "specific"){
+            object.sourceIP.address = document.getElementById('source-ip').value;
+            object.sourceIP.wildcard = document.getElementById('source-wildcard').value;
+        } else if(object.sourceIP.type == "host"){
+            object.sourceIP.address = document.getElementById('source-host-ip').value;
+        }
+
+        if(object.destinationIP.type == "specific"){
+            object.destinationIP.address = document.getElementById('destination-ip').value;
+            object.destinationIP.wildcard = document.getElementById('destination-wildcard').value;
+        } else if(object.destinationIP.type == "host"){
+            object.destinationIP.address = document.getElementById('destination-host').value;
+        }
+
+        rules.push(object);
+        console.log(rules)
+    }
+
+    function resetCreator(){
+        let inputs = document.getElementsByTagName('input');
+        let divs = document.getElementsByTagName('div');
+
+        for (let i = 4; i < inputs.length; i++){
+            if (inputs[i].type === 'radio'){
+                inputs[i].disabled = false;
+                inputs[i].checked = false;
+            }
+            if (inputs[i].type === 'text'){
+                inputs[i].disabled = false;
+                inputs[i].value = "";
+            }
+        }
+
+        for(let i = 4; i < divs.length; i++){
+            divs[i].style.display = "none";
+        }
     }
 
     function revealProtocolDiv(){
