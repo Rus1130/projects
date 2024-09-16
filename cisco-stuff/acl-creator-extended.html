@@ -1,6 +1,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
-<!ATTLIST tag onsubmit CDATA #IMPLIED>
+<!
+    ATTLIST tag onsubmit CDATA #IMPLIED
+    ATTLIST tag lockonsubmit CDATA #IMPLIED
+>
+
 <style>
     div {
         display: none;
@@ -35,8 +39,95 @@
         Number of ACL:
         <input type="text" id="acl-number" placeholder="number" onsubmit="reveal('permit-or-deny-div')" pattern="[\d]+">
     </div>
+    <div id="permit-or-deny-div">
+        Permit or deny traffic?
+        <input type="radio" name="permit-or-deny" value="permit" id="traffic-permit" oninput="reveal('protocol-div')"> Permit
+        <input type="radio" name="permit-or-deny" value="deny" id="traffic-deny" oninput="reveal('protocol-div')"> Deny
+    </div>
+    <div id="protocol-div">
+        Protocol of the traffic:
+        <!--ICMP (HTTP(S)), IP, OSPF, TCP, UDP-->
+        <input type="radio" name="protocol" value="icmp" id="protocol-icmp" oninput="reveal('source-div')"> ICMP
+        <input type="radio" name="protocol" value="ip" id="protocol-ip" oninput="reveal('source-div')"> IP
+        <input type="radio" name="protocol" value="ospf" id="protocol-ospf" oninput="reveal('source-div')"> OSPF
+        <input type="radio" name="protocol" value="tcp" id="protocol-tcp" oninput="reveal('source-div')"> TCP
+        <input type="radio" name="protocol" value="udp" id="protocol-udp" oninput="reveal('source-div')"> UDP
+    </div>
+    <div id="source-div">
+        Is the source a specific IP address, the host, or any IP address?
+        <input type="radio" name="source" value="specific" id="source-specific" oninput="reveal('source-ip-div')"> Specific
+        <input type="radio" name="source" value="host" id="source-host" oninput="reveal('source-host-div')"> Host
+        <input type="radio" name="source" value="any" id="source-any" oninput="reveal('destination-div')"> Any
+    </div>
+    <organizer>
+        <div id="source-ip-div">
+            Source IP address:
+            <input type="text" id="source-ip" placeholder="source IP address" onsubmit="reveal('source-wildcard-div')" pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+        </div>
+        <div id="source-wildcard-div">
+            Source wildcard mask:
+            <input type="text" id="source-wildcard" placeholder="source wildcard mask" onsubmit="reveal('destination-div')" pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+        </div>
+        <div id="source-host-div">
+            Source host:
+            <input type="text" id="source-host" placeholder="source host" onsubmit="reveal('destination-div')" pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+        </div>
+    </organizer>
+    <div id="destination-div">
+        Is the destination a specific IP address, the host, or any IP address?
+        <input type="radio" name="destination" value="specific" id="destination-specific" oninput="reveal('destination-ip-div')"> Specific
+        <input type="radio" name="destination" value="host" id="destination-host" oninput="reveal('destination-host-div')"> Host
+        <input type="radio" name="destination" value="any" id="destination-any" oninput="revealProtocolDiv()"> Any
+    </div>
+    <organizer>
+        <div id="destination-ip-div">
+            Destination IP address:
+            <input type="text" id="destination-ip" placeholder="destination IP address" onsubmit="reveal('destination-wildcard-div')" pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+        </div>
+        <div id="destination-wildcard-div">
+            Destination wildcard mask:
+            <input type="text" id="destination-wildcard" placeholder="destination wildcard mask" onsubmit="revealProtocolDiv()" pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+        </div>
+        <div id="destination-host-div">
+            Destination host:
+            <input type="text" id="destination-host" placeholder="destination host" onsubmit="revealProtocolDiv()" pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+        </div>
+    </organizer>
+    <organizer>
+        <div id="icmp-div">
+            options (most likely will not need to worry about these):<br>
+            <input type="checkbox" name="icmp-options" value="echo" id="icmp-echo">echo<br>
+            <input type="checkbox" name="icmp-options" value="echo-reply" id="icmp-echo-reply">echo-reply<br>
+            <input type="checkbox" name="icmp-options" value="host-unreachable" id="icmp-host-unreachable">host unreachable<br>
+            <input type="checkbox" name="icmp-options" value="net-unreachable" id="icmp-network-unreachable">network unreachable<br>
+            <input type="checkbox" name="icmp-options" value="port-unreachable" id="icmp-port-unreachable">port unreachable<br>
+            <input type="checkbox" name="icmp-options" value="protocol-unreachable" id="icmp-protocol-unreachable">protocol unreachable<br>
+            <input type="checkbox" name="icmp-options" value="ttl-exceeded" id="icmp-time-exceeded">time exceeded<br>
+            <input type="checkbox" name="icmp-options" value="unreachable" id="icmp-unreachable">ALL unreachable<br>
+            <input type="checkbox" name="icmp-options" value="icmp-confirm" id="icmp-confirm" lockonsubmit>  Confirm (Will lock these inputs)
+        </div>
+        <div id="ip-div">
+            ip selected
+        </div>
+        <div id="ospf-div">
+            ospf selected
+        </div> 
+        <div id="tcp-div">
+            tcp selected
+        </div>
+        <div id="udp-div">
+            udp selected
+        </div>
+    </organizer>
 </body>
 <script>
+
+    function revealProtocolDiv(){
+        // get the value of the selected protocol
+        let protocol = document.querySelector('input[name="protocol"]:checked').value;
+        reveal(`${protocol}-div`);
+    }
+
     function reveal(id){
         if(typeof id === "string") document.getElementById(id).style.display = "block";
         else if (typeof id === "object") {
@@ -48,6 +139,19 @@
 
     let inputs = document.getElementsByTagName('input');
     for (let i = 0; i < inputs.length; i++){
+        if (inputs[i].type === 'checkbox'){
+            if (inputs[i].hasAttribute('lockonsubmit')){
+                inputs[i].addEventListener('click', function(){
+                    let name = this.name;
+                    let allInputs = document.getElementsByName(name);
+                    for (let j = 0; j < allInputs.length; j++){
+                        if (allInputs[j].value !== this.value){
+                            allInputs[j].disabled = true;
+                        }
+                    }
+                });
+            }
+        }
         if (inputs[i].type === 'radio'){
             inputs[i].addEventListener('click', function(){
                 let name = this.name;
