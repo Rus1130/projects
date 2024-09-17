@@ -23,49 +23,30 @@
     
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-    Pair-Based Replacement Encoding
-
-    PBRE.compress("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-    PBRE.compress("Hello, World!")
-    PBRE.compress("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
-    PBRE.compress("1XH^l[`5PvT^;f0@lk$yqz~+_]4O`aa>")
-    PBRE.compress("EZk1Xsd-;DRz\d9;6TR$81QXaDc6/0k(")
-
-
     */
 
-    const PBRE = {
-        compress(str, debug){
-            if(debug == undefined) debug = false
-            let processorArray = str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, "0").match(/.{1,4}/g))
-            let comparison = str.split("").map(x => x.charCodeAt(0).toString(2).padStart(8, '0')).join("").match(/.{1,4}/g).join(" ")
+    function compress(str){
+        let charCodes = str.split('').map(char => char.charCodeAt(0));
 
+        let charCodesCopy = JSON.parse(JSON.stringify(charCodes));
 
-            if(debug) console.log(comparison)
-            return processorArray
-
-        },
-
-
-        decompress(str){
-
-        }
-    }
-
-    function repeat(){
-        const alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
-        let repeatAmount = 1
-        let result = ''
-        for(i = 0; i < alphabet.length; i++){
-            for(j = 0; j < repeatAmount; j++){
-                result += alphabet[i]
-                console.log(result)
+        for(i = 0; i < charCodes.length; i++){
+            if(i % 2 == 1){
+                charCodes[i] = charCodes[i - 1] ^ charCodes[i];
             }
-            repeatAmount *= 2
         }
-        return result
+
+        for(i = 0; i < charCodes.length; i++){
+            if(i % 2 == 0){
+                charCodes[i] = charCodes[i + 1] ^ charCodes[i];
+            }
+        }
+
+        console.log(charCodes);
+        console.log(charCodesCopy);
     }
 
+    compress("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
 
 
 
