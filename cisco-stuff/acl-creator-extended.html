@@ -191,11 +191,38 @@
             acl.rules.push(newRule)
         }
 
-        function genRule(object){
+        let lines = [];
+        acl.rules.forEach((r) => {
+            let rule = [];
 
-        }
+            rule.push(`access-list ${acl.identifier}`)
+            rule.push(r.traffic);
+            rule.push(r.protocol);
+
+
+            if(r.sourceIP.type === "any"){
+                rule.push("any");
+            } else if(r.sourceIP.type === "host"){
+                rule.push(r.sourceIP.address);
+            } else {
+                rule.push(r.sourceIP.address);
+                rule.push(r.sourceIP.wildcard);
+            }
+
+            if(r.destinationIP.type === "any"){
+                rule.push("any");
+            } else if(r.destinationIP.type === "host"){
+                rule.push(r.destinationIP.address);
+            } else {
+                rule.push(r.destinationIP.address);
+                rule.push(r.destinationIP.wildcard);
+            }
+
+            lines.push(rule.join(" "));
+        })
 
         console.log(acl)
+        console.log(lines)
     }
 
     function generateRule(){
