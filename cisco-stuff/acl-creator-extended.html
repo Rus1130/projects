@@ -160,7 +160,7 @@
     </div>
     <div id="output-div">
         click on text to copy to clipboard<br>
-        <textarea readonly id="output" style="resize: none; width: 500px; height: 300px" onclick="copyToClipboard()">supposed to be empty. havent actually implemented the generation code yet</textarea>
+        <textarea readonly id="output" style="resize: none; width: 500px; height: 300px" onclick="copyToClipboard()"></textarea>
     </div>
     
 </body>
@@ -191,11 +191,60 @@
             acl.rules.push(newRule)
         }
 
-        function genRule(object){
+        let lines = [];
+        acl.rules.forEach((r) => {
+            let rule = [];
 
-        }
+            rule.push(`access-list ${acl.identifier}`)
+            rule.push(r.traffic);
+            rule.push(r.protocol);
 
-        console.log(acl)
+
+            if(r.sourceIP.type === "any"){
+                rule.push("any");
+            } else if(r.sourceIP.type === "host"){
+                rule.push(`host ${r.sourceIP.address}`);
+            } else {
+                rule.push(r.sourceIP.address);
+                rule.push(r.sourceIP.wildcard);
+            }
+
+            if(r.destinationIP.type === "any"){
+                rule.push("any");
+            } else if(r.destinationIP.type === "host"){
+                rule.push(`host ${r.destinationIP.address}`);
+            } else {
+                rule.push(r.destinationIP.address);
+                rule.push(r.destinationIP.wildcard);
+            }
+
+            // check if protocolSpecific exists
+            if(r.protocol == "icmp"){
+                if(r.protocolSpecific.icmpOption != "icmp-none"){
+                    rule.push(r.protocolSpecific.icmpOption);
+                }
+            }
+            
+            if(["tcp", "udp"].includes(r.protocol)){
+                if(r.protocolSpecific.comparisonType != "none"){
+                    rule.push(r.protocolSpecific.comparisonType);
+                    if(r.protocolSpecific.comparisonType == "range"){
+                        rule.push(r.protocolSpecific.port.start);
+                        rule.push(r.protocolSpecific.port.end);
+                    } else {
+                        rule.push(r.protocolSpecific.port);
+                    }
+                }
+                
+            }
+
+            lines.push(rule.join(" "));
+        })
+
+        lines.push(`int ${acl.interface}`);
+        lines.push(`ip access-group ${acl.identifier} ${acl.direction}`);
+
+        document.getElementById('output').value = lines.join("\n");
     }
 
     function generateRule(){
