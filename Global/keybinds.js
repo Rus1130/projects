@@ -22,23 +22,19 @@ class Keybinds {
      * @description creates a key combo event listener
      */
     createCombo(keys, fullRelease, callback) {
-        let keyDown = [];
+        keys = keys.split("+")
+        let keysDown = {};
         document.addEventListener("keydown", function(e){
-            if(keys.includes(e.key)){
-                keyDown.push(e.key);
-                if(keyDown.length == keys.length){
-                    callback();
+            if(!keysDown[e.key]) keysDown[e.key] = true;
+            if(keys.every(key => keysDown[key])){
+                callback();
+                if(fullRelease){
+                    keysDown = {};
                 }
             }
         });
         document.addEventListener("keyup", function(e){
-            if(fullRelease){
-                keyDown = [];
-            } else if(keys.includes(e.key)){
-                keyDown = keyDown.filter(function(value, index, arr){
-                    return value != e.key;
-                });
-            }
+            if(keysDown[e.key]) keysDown[e.key] = false;
         });
     }
 

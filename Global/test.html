@@ -1,6 +1,8 @@
 <head>
     <script src="./keybinds.js"></script>
     <script src="./crypt.js"></script>
+    <script src="./player.js"></script>
+    <script src="./math.js"></script>
 </head>
 <body>
 
@@ -31,4 +33,18 @@
     kb.createDouble("y", 1000, function(){
         console.log("Y was double pressed within 1000ms");
     });
+
+    let element = document.createElement("div");
+    element.style.width = "100px";
+    element.style.height = "100px";
+    element.style.backgroundColor = "red";
+    element.style.position = "absolute";
+    document.body.appendChild(element);
+
+    let player = new Player(element, 10, 10);
+    
+    setInterval(function(){
+        player.move();
+    }, 1000/60);
+
 </script>

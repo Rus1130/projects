@@ -6,12 +6,11 @@ class Player {
 
     constructor(element, x, y, overflowType) {
         this.element = element;
-        this.x = x;
-        this.y = y;
+        this.x = x || 0;
+        this.y = y || 0;
         this.vx = 0;
         this.vy = 0;
         this.overflowType = overflowType || 'restrict';
-
         Player.components.push(this.element);
         document.addEventListener('keydown', function(event) { Player.keys[event.key] = true; });
         document.addEventListener('keyup', function(event) { Player.keys[event.key] = false; });
