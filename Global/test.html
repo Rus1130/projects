@@ -1,7 +1,7 @@
 <head>
     <script src="./keybinds.js"></script>
     <script src="./crypt.js"></script>
-    <script src="./player.js"></script>
+    <script src="./game-components.js"></script>
     <script src="./math.js"></script>
 </head>
 <body>
@@ -34,17 +34,37 @@
         console.log("Y was double pressed within 1000ms");
     });
 
-    let element = document.createElement("div");
-    element.style.width = "100px";
-    element.style.height = "100px";
-    element.style.backgroundColor = "red";
-    element.style.position = "absolute";
-    document.body.appendChild(element);
+    let playerElement = document.createElement("div");
+    playerElement.style.width = "100px";
+    playerElement.style.height = "100px";
+    playerElement.style.backgroundColor = "red";
+    playerElement.style.position = "absolute";
+    document.body.appendChild(playerElement);
 
-    let player = new Player(element, 10, 10);
-    
+    let playerComponentElement = document.createElement("div");
+    playerComponentElement.style.width = "25px";
+    playerComponentElement.style.height = "100px";
+    playerComponentElement.style.backgroundColor = "blue";
+
+    let player = new Player(playerElement, 10, 10);
+    let playerComponent = new GameObject(playerComponentElement, 50-25+(25/2), 50)
+
+
+    player.addComponent(playerComponent);
+    playerComponent.rotate(45, "top");
+    //player.removeComponent(playerComponent);
+
+    let bulletElement = document.createElement("div");
+    bulletElement.style.width = "10px";
+    bulletElement.style.height = "10px";
+    bulletElement.style.backgroundColor = "green";
+    bulletElement.style.borderRadius = "50%";
+
+
+    let bullet = new GameObject(bulletElement, 50, 50);
+
     setInterval(function(){
-        player.move();
+        player.updatePosition();
     }, 1000/60);
 
 </script>
