@@ -37,16 +37,13 @@
     let playerElement = Player.CreatePlayerElement(50, 50, 100, 100, "red");
     let playerComponentElement = Player.CreateComponentElement(25, 100, "blue");
 
-    let player = new Player(playerElement, 10, 10);
+    let player = new Player(playerElement, 10, 10, "restrict");
     let playerComponent = new GameObject(playerComponentElement, 37.5, 50)
-
 
     player.addComponent(playerComponent);
 
     let bulletElement = GameObject.CreateGameObjectElement(10, 10, "green")
     bulletElement.style.borderRadius = "50%";
-
-
     let bullet = new GameObject(bulletElement, 50, 50);
 
     let game = new Game();
@@ -54,10 +51,9 @@
         player.updatePosition();
     })
 
-    // FIXANGLE THING   
     game.bind("componentUpdate", () => {
         // get the angle between playerComponent and mouseX, mouseY
-        let angle = Math.atan2(Keybinds.mouseY - player.y, Keybinds.mouseX - player.x)
+        let angle = (Math.atan2(Keybinds.mouseY - player.getPlayerCenter().y, Keybinds.mouseX - player.getPlayerCenter().x)) * 180 / Math.PI - 90;
         playerComponent.rotate(angle, "top center");
     })
 

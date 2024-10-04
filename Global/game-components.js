@@ -2,13 +2,15 @@
  * @typedef {Object} HTMLElement
 */
 /**
- * @typedef {Object} GameObject
+ * @typedef {Object} GameObject_
  * @property {HTMLElement} element the element of the game object
  * @property {number} x the x position of the game object
  * @property {number} y the y position of the game object
  */
 
-
+/**
+ * @description a class to create a player object
+ */
 class Player {
     static keys = [];
 
@@ -18,6 +20,7 @@ class Player {
      * @param {number} width 
      * @param {number} height 
      * @param {string} color 
+     * @description macro to help with the creation of a player element
      * @returns {HTMLElement}
      */
     static CreatePlayerElement(x, y, width, height, color) {
@@ -36,6 +39,7 @@ class Player {
      * @param {number} width
      * @param {number} height
      * @param {string} color
+     * @description macro to help with the creation of a player element
      * @returns {HTMLElement}
      */
     static CreateComponentElement(width, height, color) {
@@ -53,6 +57,7 @@ class Player {
      * @param {number} x the x position of the player
      * @param {number} y the y position of the player
      * @param {String} [overflowType="restrict"] restrict will keep the player within the window, wrap will wrap the player around the window; 'restrict' or 'wrap'
+     * @description creates a player object
      */
     constructor(element, x, y, overflowType) {
         this.element = element;
@@ -60,6 +65,8 @@ class Player {
         this.y = y || 0;
         this.vx = 0;
         this.vy = 0;
+        this.width = this.element.offsetWidth;
+        this.height = this.element.offsetHeight;
         this.overflowType = overflowType || 'restrict';
         this.components = [];
         this.lowestComponentXOffset = 0;
@@ -71,6 +78,7 @@ class Player {
     }
 
     /**
+     * @description checks if the player collides with an element
      * @param {HTMLElement} element the element to check for collision
      * @param {number} [offset=0] the number of pixels to restrict the hitbox by
      * @returns {boolean} true if the player collides with the element
@@ -95,7 +103,7 @@ class Player {
     }
 
     /**
-     * @param {GameObject} component the component to add to the player
+     * @param {GameObject_} component the component to add to the player
      */
     addComponent(component) {
         component.element.style.left = component.x + 'px';
@@ -109,12 +117,22 @@ class Player {
     }
 
     /**
-     * @param {GameObject} component the component to remove from the player
+     * @param {GameObject_} component the component to remove from the player
      */
     removeComponent(component) {
         let index = this.components.indexOf(component.element);
         if(index > -1) this.components.splice(index, 1);
         component.element.remove();
+    }
+
+    /**
+     * @returns {Object} the center of the player
+     */
+    getPlayerCenter() {
+        return {
+            x: this.x + this.width / 2,
+            y: this.y + this.height / 2
+        };
     }
 
     /**
@@ -154,6 +172,7 @@ class Player {
             if(this.x > window.innerWidth - playerWidth - this.lowestComponentXOffset) this.x = window.innerWidth - playerWidth - this.lowestComponentXOffset;
             if(this.y > window.innerHeight - playerHeight - this.lowestComponentYOffset) this.y = window.innerHeight - playerHeight - this.lowestComponentYOffset;
         } else if(this.overflowType == 'wrap'){
+            // ISSUE: not accounting for the additional height and/or width of the components
             if(this.x < -playerWidth) this.x = window.innerWidth + playerWidth;
             if(this.y < -playerHeight) this.y = window.innerHeight + playerHeight;
             if(this.x > window.innerWidth + playerWidth) this.x = -playerWidth;
@@ -162,6 +181,9 @@ class Player {
     }
 }
 
+/**
+ * @description a class to create a game object
+ */
 class GameObject {
     /**
      * @param {number} width 
@@ -225,23 +247,27 @@ class GameObject {
     }
 }
 
+/**
+ * @description a class to create a game
+ */
 class Game {
     static boundFunctions = {};
 
     /**
-     * @param {number} updateInterval the interval in ms to update the game
+     * @param {number} updateInterval the interval in <code>ms</code> to update the game
      */
     constructor(updateInterval){
         updateInterval = updateInterval || 1000/60;
         setInterval(() => {
+            if(this.paused) return;
             for(let key in Game.boundFunctions){
                 Game.boundFunctions[key]();
             }
         }, updateInterval);
+        this.paused = false;
     }
 
     /**
-     * 
      * @param {string} identifier the identifier of the function to bind
      * @param {function} func the function to bind
      */
@@ -250,10 +276,23 @@ class Game {
     }
 
     /**
-     * 
      * @param {string} identifier the identifier of the function to unbind
      */
     unbind(identifier) {
         delete Game.boundFunctions[identifier];
+    }
+
+    /**
+     * @description pauses the game
+     */
+    pause() {
+        this.paused = true;
+    }
+
+    /**
+     * @description unpauses the game
+     */
+    unpause() {
+        this.paused = false;
     }
 }
