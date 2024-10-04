@@ -13,6 +13,41 @@ class Player {
     static keys = [];
 
     /**
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} width 
+     * @param {number} height 
+     * @param {string} color 
+     * @returns {HTMLElement}
+     */
+    static CreatePlayerElement(x, y, width, height, color) {
+        let element = document.createElement("div");
+        element.style.left = x + "px";
+        element.style.top = y + "px";
+        element.style.width = width + "px";
+        element.style.height = height + "px";
+        element.style.backgroundColor = color;
+        element.style.position = "absolute";
+        document.body.appendChild(element);
+        return element;
+    }
+
+    /**
+     * @param {number} width
+     * @param {number} height
+     * @param {string} color
+     * @returns {HTMLElement}
+     */
+    static CreateComponentElement(width, height, color) {
+        let element = document.createElement("div");
+        element.style.width = width + "px";
+        element.style.height = height + "px";
+        element.style.backgroundColor = color;
+        element.style.position = "absolute";
+        return element;
+    }
+
+    /**
      * @constructor 
      * @param {HTMLElement} element the element the player will control
      * @param {number} x the x position of the player
@@ -129,6 +164,22 @@ class Player {
 
 class GameObject {
     /**
+     * @param {number} width 
+     * @param {number} height 
+     * @param {string} color 
+     * @return {HTMLElement}
+     */
+    static CreateGameObjectElement(width, height, color) {
+        let element = document.createElement("div");
+        element.style.width = width + "px";
+        element.style.height = height + "px";
+        element.style.backgroundColor = color;
+        element.style.position = "absolute";
+        element.style.zIndex = "-1";
+
+        return element;
+    }
+    /**
      * @constructor
      * @param {HTMLElement} element the element of the game object
      * @param {number} x the x position of the game object
@@ -138,6 +189,8 @@ class GameObject {
         this.element = element;
         this.x = x || 0;
         this.y = y || 0;
+        this.vx = 0;
+        this.vy = 0;
         this.element.style.position = 'absolute';
         this.element.style.left = this.x + 'px';
         this.element.style.top = this.y + 'px';
@@ -169,5 +222,38 @@ class GameObject {
      */
     destroy() {
         this.element.remove();
+    }
+}
+
+class Game {
+    static boundFunctions = {};
+
+    /**
+     * @param {number} updateInterval the interval in ms to update the game
+     */
+    constructor(updateInterval){
+        updateInterval = updateInterval || 1000/60;
+        setInterval(() => {
+            for(let key in Game.boundFunctions){
+                Game.boundFunctions[key]();
+            }
+        }, updateInterval);
+    }
+
+    /**
+     * 
+     * @param {string} identifier the identifier of the function to bind
+     * @param {function} func the function to bind
+     */
+    bind(identifier, func) {
+        Game.boundFunctions[identifier] = func;
+    }
+
+    /**
+     * 
+     * @param {string} identifier the identifier of the function to unbind
+     */
+    unbind(identifier) {
+        delete Game.boundFunctions[identifier];
     }
 }

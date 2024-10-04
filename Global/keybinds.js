@@ -1,4 +1,10 @@
 class Keybinds {
+    constructor() {
+        document.addEventListener('mousemove', function(event){
+            Keybinds.mouseX = event.clientX;
+            Keybinds.mouseY = event.clientY;
+        });
+    }
     /**
      * @param {string} key what single key to listen for
      * @param {string} eventType string that can be "down", "up", or "press"

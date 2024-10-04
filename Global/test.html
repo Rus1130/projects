@@ -34,37 +34,31 @@
         console.log("Y was double pressed within 1000ms");
     });
 
-    let playerElement = document.createElement("div");
-    playerElement.style.width = "100px";
-    playerElement.style.height = "100px";
-    playerElement.style.backgroundColor = "red";
-    playerElement.style.position = "absolute";
-    document.body.appendChild(playerElement);
-
-    let playerComponentElement = document.createElement("div");
-    playerComponentElement.style.width = "25px";
-    playerComponentElement.style.height = "100px";
-    playerComponentElement.style.backgroundColor = "blue";
+    let playerElement = Player.CreatePlayerElement(50, 50, 100, 100, "red");
+    let playerComponentElement = Player.CreateComponentElement(25, 100, "blue");
 
     let player = new Player(playerElement, 10, 10);
-    let playerComponent = new GameObject(playerComponentElement, 50-25+(25/2), 50)
+    let playerComponent = new GameObject(playerComponentElement, 37.5, 50)
 
 
     player.addComponent(playerComponent);
-    playerComponent.rotate(45, "top");
-    //player.removeComponent(playerComponent);
 
-    let bulletElement = document.createElement("div");
-    bulletElement.style.width = "10px";
-    bulletElement.style.height = "10px";
-    bulletElement.style.backgroundColor = "green";
+    let bulletElement = GameObject.CreateGameObjectElement(10, 10, "green")
     bulletElement.style.borderRadius = "50%";
 
 
     let bullet = new GameObject(bulletElement, 50, 50);
 
-    setInterval(function(){
+    let game = new Game();
+    game.bind("playerUpdate", () => {
         player.updatePosition();
-    }, 1000/60);
+    })
+
+    // FIXANGLE THING   
+    game.bind("componentUpdate", () => {
+        // get the angle between playerComponent and mouseX, mouseY
+        let angle = Math.atan2(Keybinds.mouseY - player.y, Keybinds.mouseX - player.x)
+        playerComponent.rotate(angle, "top center");
+    })
 
 </script>
