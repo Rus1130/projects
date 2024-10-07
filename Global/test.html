@@ -34,27 +34,40 @@
         console.log("Y was double pressed within 1000ms");
     });
 
+    // create the element the player will control
     let playerElement = Player.CreatePlayerElement(50, 50, 100, 100, "red");
-    let playerComponentElement = Player.CreateComponentElement(25, 100, "blue");
 
+    // create the cannon component
+    let cannonElement = Player.CreateComponentElement(25, 100, "blue");
+
+    // create the player object
     let player = new Player(playerElement, 10, 10, "restrict");
-    let playerComponent = new GameObject(playerComponentElement, 37.5, 50)
 
-    player.addComponent(playerComponent);
+    // create the cannon object
+    let playerCannon = new GameObject(cannonElement, 37.5, 50)
 
+    // add the cannon component to the player object
+    player.addComponent(playerCannon);
+
+    // create the bullet object
     let bulletElement = GameObject.CreateGameObjectElement(10, 10, "green")
     bulletElement.style.borderRadius = "50%";
-    let bullet = new GameObject(bulletElement, 50, 50);
 
+    // add the bullet to the screen
+    let bullet = new GameObject(bulletElement, 50, 50);
+    
+    // create the game object
     let game = new Game();
+    // every game frame, update the player's position
     game.bind("playerUpdate", () => {
         player.updatePosition();
     })
 
+    // every game frame, update the cannon's rotation to follow the mouse
     game.bind("componentUpdate", () => {
         // get the angle between playerComponent and mouseX, mouseY
-        let angle = (Math.atan2(Keybinds.mouseY - player.getPlayerCenter().y, Keybinds.mouseX - player.getPlayerCenter().x)) * 180 / Math.PI - 90;
-        playerComponent.rotate(angle, "top center");
+        let angle = (Math.atan2(kb.mousePos.y - player.getPlayerCenter().y, kb.mousePos.x - player.getPlayerCenter().x)) * 180 / Math.PI - 90;
+        playerCannon.rotate(angle, "top center", { y: -10 });
     })
 
 </script>

@@ -233,12 +233,19 @@ class GameObject {
     /**
      * @param {number} deg the number of degrees to rotate the element
      * @param {String} [origin="center"] the origin of the rotation - default 'center'; use CSS transform origin syntax
-     * @param {Object} [offset={x: 0, y: 0}] the offset to apply to the element after rotation
+     * @param {Object.<string, number>} [offset={x: 0, y: 0}] the  x or y offset to apply to the element after rotation
      */
     rotate(deg, origin, offset) {
-        this.element.style.transformOrigin = origin || 'center';
-        this.element.style.transform = 'rotate(' + deg + 'deg)';
-        this.element.style.left = this.x + (offset ? offset.x : 0) + 'px';
+        let org = typeof origin == "string" ? (origin || 'center center') : 'center center';
+        let offsetObject = {x: 0, y: 0}
+
+        if(offset != undefined){
+            if(offset.x != undefined) offsetObject.x = offset.x;
+            if(offset.y != undefined) offsetObject.y = offset.y;
+        }
+
+        this.element.style.transformOrigin = org
+        this.element.style.transform = `rotate(${deg}deg) translateX(${offsetObject.x}px) translateY(${offsetObject.y}px)`;
     }
 
     /**

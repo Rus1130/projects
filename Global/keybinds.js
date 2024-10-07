@@ -22,6 +22,13 @@ class Keybinds {
     }
 
     /**
+     * @returns {Object.<string, number>} the current mouse position
+     */
+    get mousePos() {
+        return {x: Keybinds.mouseX, y: Keybinds.mouseY};
+    }
+
+    /**
      * @param {string[]} key array of keys to listen for
      * @param {Boolean} fullRelease if true, all keys must be released before the combo can be triggered again
      * @param {function} callback the callback function
@@ -106,6 +113,3 @@ class Keybinds {
         });
     }
 }
-
-
-let k = new Keybinds();
