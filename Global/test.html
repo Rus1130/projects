@@ -55,6 +55,8 @@
 
     // add the bullet to the screen
     let bullet = new GameObject(bulletElement, 50, 50);
+
+    bullet.setVelocity(0, 5)
     
     // create the game object
     let game = new Game();
@@ -64,10 +66,12 @@
     })
 
     // every game frame, update the cannon's rotation to follow the mouse
-    game.bind("componentUpdate", () => {
+    game.bind("update", () => {
         // get the angle between playerComponent and mouseX, mouseY
         let angle = (Math.atan2(kb.mousePos.y - player.getPlayerCenter().y, kb.mousePos.x - player.getPlayerCenter().x)) * 180 / Math.PI - 90;
         playerCannon.rotate(angle, "top center", { y: -10 });
+
+        bullet.updatePosition();
     })
 
 </script>

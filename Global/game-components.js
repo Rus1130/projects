@@ -231,9 +231,37 @@ class GameObject {
     }
 
     /**
+     * @param {{x: number, y: number}} position the position to move the game object to
+     */
+    set velocity(position){
+        this.vx = position.x;
+        this.vy = position.y
+    }
+
+    /**
+     * @param {number} degree the degree to set the velocity to
+     * @param {number} speed the speed to set the velocity to
+     */
+    setVelocity(degree, speed){
+        // convert radian to degrees
+        this.vx = Math.cos(degree * (180 / Math.PI)) * speed;
+        this.vy = Math.sin(degree * (180 / Math.PI)) * speed;
+    }
+
+    /**
+     * @description updates the position in relation to the velocity of the game object
+     */
+    updatePosition() {
+        this.x += this.vx / Game.updateInterval;
+        this.y += this.vy / Game.updateInterval;
+        this.element.style.left = this.x + 'px';
+        this.element.style.top = this.y + 'px';
+    }
+
+    /**
      * @param {number} deg the number of degrees to rotate the element
      * @param {String} [origin="center"] the origin of the rotation - default 'center'; use CSS transform origin syntax
-     * @param {Object.<string, number>} [offset={x: 0, y: 0}] the  x or y offset to apply to the element after rotation
+     * @param {{x: number, y: number}} [offset={x: 0, y: 0}] the  x or y offset to apply to the element after rotation
      */
     rotate(deg, origin, offset) {
         let org = typeof origin == "string" ? (origin || 'center center') : 'center center';
@@ -254,6 +282,20 @@ class GameObject {
     destroy() {
         this.element.remove();
     }
+
+    /**
+     * @description hides the element
+     */
+    hide() {
+        this.element.style.display = 'none';
+    }
+
+    /**
+     * @description shows the element
+     */
+    show() {
+        this.element.style.display = 'block';
+    }
 }
 
 /**
@@ -261,19 +303,21 @@ class GameObject {
  */
 class Game {
     static boundFunctions = {};
+    static updateInterval;
 
     /**
      * @param {number} updateInterval the interval in <code>ms</code> to update the game
      */
     constructor(updateInterval){
-        updateInterval = updateInterval || 1000/60;
+        this.updateInterval = updateInterval || 1000/60;
         setInterval(() => {
             if(this.paused) return;
             for(let key in Game.boundFunctions){
                 Game.boundFunctions[key]();
             }
-        }, updateInterval);
+        }, this.updateInterval);
         this.paused = false;
+        Game.updateInterval = this.updateInterval;
     }
 
     /**
