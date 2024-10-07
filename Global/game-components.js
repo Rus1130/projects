@@ -213,6 +213,7 @@ class GameObject {
         this.y = y || 0;
         this.vx = 0;
         this.vy = 0;
+        this._rotation = 0;
         this.element.style.position = 'absolute';
         this.element.style.left = this.x + 'px';
         this.element.style.top = this.y + 'px';
@@ -228,14 +229,6 @@ class GameObject {
         this.y += y;
         this.element.style.left = this.x + 'px';
         this.element.style.top = this.y + 'px';
-    }
-
-    /**
-     * @param {{x: number, y: number}} position the position to move the game object to
-     */
-    set velocity(position){
-        this.vx = position.x;
-        this.vy = position.y
     }
 
     /**
@@ -272,9 +265,25 @@ class GameObject {
             if(offset.y != undefined) offsetObject.y = offset.y;
         }
 
+        this._rotation = deg;
         this.element.style.transformOrigin = org
         this.element.style.transform = `rotate(${deg}deg) translateX(${offsetObject.x}px) translateY(${offsetObject.y}px)`;
     }
+
+    /**
+     * @returns {number} the rotation of the game object
+     */
+    get rotation(){
+        return this._rotation;
+    }
+
+    /**
+     * @param {{x: number, y: number}} position the position to move the game object to
+     */
+        set velocity(position){
+            this.vx = position.x;
+            this.vy = position.y
+        }
 
     /**
      * @description removes the element from the DOM
