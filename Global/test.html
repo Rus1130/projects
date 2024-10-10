@@ -3,11 +3,25 @@
     <script src="./crypt.js"></script>
     <script src="./game-components.js"></script>
     <script src="./math.js"></script>
+    <script src="./decisions.js"></script>
 </head>
 <body>
 
 </body>
 <script>
+
+    let d = new DecisionTree(document.body);
+
+    let d1 = new DecisionTreeObject("text")
+    d1.addText("hello")
+
+    let d2 = new DecisionTreeObject("text")
+    d2.addText("world")
+
+    d.addDecision(d1)
+    d.addDecision(d2);
+
+    /**
     let kb = new Keybinds();
 
     kb.createSingle("a", "up", function(){
@@ -73,5 +87,6 @@
 
         bullet.updatePosition();
     })
+    **/
 
 </script>
