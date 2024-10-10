@@ -3,25 +3,11 @@
     <script src="./crypt.js"></script>
     <script src="./game-components.js"></script>
     <script src="./math.js"></script>
-    <script src="./decisions.js"></script>
 </head>
 <body>
 
 </body>
 <script>
-
-    let d = new DecisionTree(document.body);
-
-    let d1 = new DecisionTreeObject("text")
-    d1.addText("hello")
-
-    let d2 = new DecisionTreeObject("text")
-    d2.addText("world")
-
-    d.addDecision(d1)
-    d.addDecision(d2);
-
-    /**
     let kb = new Keybinds();
 
     kb.createSingle("a", "up", function(){
@@ -64,13 +50,18 @@
     player.addComponent(playerCannon);
 
     // create the bullet object
-    let bulletElement = GameObject.CreateGameObjectElement(10, 10, "green")
-    bulletElement.style.borderRadius = "50%";
 
-    // add the bullet to the screen
-    let bullet = new GameObject(bulletElement, 50, 50);
+    kb.createMouse("left", "down", function(){
+        let bulletElement = GameObject.CreateGameObjectElement(10, 10, "green")
+        bulletElement.style.borderRadius = "50%";
 
-    bullet.setVelocity(0, 5)
+        // add the bullet to the screen
+        let bullet = new GameObject(bulletElement, 50, 50);
+
+        // FIX ===================
+        bullet.setVelocity(playerCannon.rotation, 10);
+        bullet.setPosition(player.getCenter().x, player.getCenter().y)
+    });
     
     // create the game object
     let game = new Game();
@@ -82,11 +73,10 @@
     // every game frame, update the cannon's rotation to follow the mouse
     game.bind("update", () => {
         // get the angle between playerComponent and mouseX, mouseY
-        let angle = (Math.atan2(kb.mousePos.y - player.getPlayerCenter().y, kb.mousePos.x - player.getPlayerCenter().x)) * 180 / Math.PI - 90;
+        let angle = (Math.atan2(kb.mousePos.y - player.getCenter().y, kb.mousePos.x - player.getCenter().x)) * (180/Math.PI) - 90;
+        console.log(angle)
         playerCannon.rotate(angle, "top center", { y: -10 });
 
-        bullet.updatePosition();
+        GameObject.UpdateAll();
     })
-    **/
-
 </script>

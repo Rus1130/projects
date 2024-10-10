@@ -128,7 +128,7 @@ class Player {
     /**
      * @returns {Object} the center of the player
      */
-    getPlayerCenter() {
+    getCenter() {
         return {
             x: this.x + this.width / 2,
             y: this.y + this.height / 2
@@ -185,6 +185,13 @@ class Player {
  * @description a class to create a game object
  */
 class GameObject {
+    static gameObjects = [];
+    static UpdateAll(){
+        GameObject.gameObjects.forEach((gameObject) => {
+            gameObject.updatePosition();
+        })
+    }
+
     /**
      * @param {number} width 
      * @param {number} height 
@@ -217,6 +224,7 @@ class GameObject {
         this.element.style.position = 'absolute';
         this.element.style.left = this.x + 'px';
         this.element.style.top = this.y + 'px';
+        GameObject.gameObjects.push(this);
         document.body.appendChild(this.element);
     }
 
@@ -231,14 +239,20 @@ class GameObject {
         this.element.style.top = this.y + 'px';
     }
 
+    setPosition(x, y) {
+        this.x = x;
+        this.y = y;
+        this.element.style.left = this.x + 'px';
+        this.element.style.top = this.y + 'px';
+    }
+
     /**
      * @param {number} degree the degree to set the velocity to
      * @param {number} speed the speed to set the velocity to
      */
     setVelocity(degree, speed){
-        // convert radian to degrees
-        this.vx = Math.cos(degree * (180 / Math.PI)) * speed;
-        this.vy = Math.sin(degree * (180 / Math.PI)) * speed;
+        this.vx = speed * Math.cos(degree * (Math.PI / 180) - 90);
+        this.vy = speed * Math.sin(degree * (Math.PI / 180) - 90);
     }
 
     /**
@@ -249,6 +263,13 @@ class GameObject {
         this.y += this.vy / Game.updateInterval;
         this.element.style.left = this.x + 'px';
         this.element.style.top = this.y + 'px';
+    }
+
+    getCenter() {
+        return {
+            x: this.x + this.element.offsetWidth / 2,
+            y: this.y + this.element.offsetHeight / 2
+        };
     }
 
     /**
@@ -334,6 +355,7 @@ class Game {
      * @param {function} func the function to bind
      */
     bind(identifier, func) {
+        if(Game.boundFunctions[identifier]) return console.warn("Function with identifier " + identifier + " already exists");
         Game.boundFunctions[identifier] = func;
     }
 
