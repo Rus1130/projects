@@ -3,11 +3,16 @@
     <script src="./crypt.js"></script>
     <script src="./game-components.js"></script>
     <script src="./math.js"></script>
+    <script src="./step-creator.js"></script>
 </head>
 <body>
 
 </body>
 <script>
+    let sc = new StepCreator(document.body);
+    sc.addStep(new StepNode("radio").id("step1").text("radio"))
+    .addStep(new StepNode("radio").id("step2").text("radio 2"));
+    /*
     let kb = new Keybinds();
 
     kb.createSingle("a", "up", function(){
@@ -79,4 +84,5 @@
 
         GameObject.UpdateAll();
     })
+    */
 </script>
