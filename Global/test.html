@@ -10,8 +10,12 @@
 </body>
 <script>
     let sc = new StepCreator(document.body);
-    sc.addStep(new StepNode("radio").id("step1").text("radio"))
-    .addStep(new StepNode("radio").id("step2").text("radio 2"));
+    sc.addStep(
+        new StepNode("radio").id("step1").text("radio")
+            .addRadio("radio1",["1", "2", "3", "4"],["step2", "step2", "step2", "step2"] ,["one", "two", "three", "four"])
+    ).addStep(
+        new StepNode("radio").id("step2").text("radio 2")
+    );
     /*
     let kb = new Keybinds();
 
