@@ -156,7 +156,7 @@ class Player {
     /**
      * @returns {Object} the center of the player
      */
-    getPlayerCenter() {
+    getCenter() {
         return {
             x: this.x + this.width / 2,
             y: this.y + this.height / 2
@@ -213,6 +213,13 @@ class Player {
  * @description a class to create a game object
  */
 class GameObject {
+    static gameObjects = [];
+    static UpdateAll(){
+        GameObject.gameObjects.forEach((gameObject) => {
+            gameObject.updatePosition();
+        })
+    }
+
     /**
      * @param {number} width 
      * @param {number} height 
@@ -241,9 +248,11 @@ class GameObject {
         this.y = y || 0;
         this.vx = 0;
         this.vy = 0;
+        this._rotation = 0;
         this.element.style.position = 'absolute';
         this.element.style.left = this.x + 'px';
         this.element.style.top = this.y + 'px';
+        GameObject.gameObjects.push(this);
         document.body.appendChild(this.element);
     }
 
@@ -258,20 +267,92 @@ class GameObject {
         this.element.style.top = this.y + 'px';
     }
 
+    setPosition(x, y) {
+        this.x = x;
+        this.y = y;
+        this.element.style.left = this.x + 'px';
+        this.element.style.top = this.y + 'px';
+    }
+
+    /**
+     * @param {number} degree the degree to set the velocity to
+     * @param {number} speed the speed to set the velocity to
+     */
+    setVelocity(degree, speed){
+        this.vx = speed * Math.cos(degree * (Math.PI / 180) - 90);
+        this.vy = speed * Math.sin(degree * (Math.PI / 180) - 90);
+    }
+
+    /**
+     * @description updates the position in relation to the velocity of the game object
+     */
+    updatePosition() {
+        this.x += this.vx / Game.updateInterval;
+        this.y += this.vy / Game.updateInterval;
+        this.element.style.left = this.x + 'px';
+        this.element.style.top = this.y + 'px';
+    }
+
+    getCenter() {
+        return {
+            x: this.x + this.element.offsetWidth / 2,
+            y: this.y + this.element.offsetHeight / 2
+        };
+    }
+
     /**
      * @param {number} deg the number of degrees to rotate the element
      * @param {String} [origin="center"] the origin of the rotation - default 'center'; use CSS transform origin syntax
+     * @param {{x: number, y: number}} [offset={x: 0, y: 0}] the  x or y offset to apply to the element after rotation
      */
-    rotate(deg, origin) {
-        this.element.style.transformOrigin = origin || 'center';
-        this.element.style.transform = 'rotate(' + deg + 'deg)';
+    rotate(deg, origin, offset) {
+        let org = typeof origin == "string" ? (origin || 'center center') : 'center center';
+        let offsetObject = {x: 0, y: 0}
+
+        if(offset != undefined){
+            if(offset.x != undefined) offsetObject.x = offset.x;
+            if(offset.y != undefined) offsetObject.y = offset.y;
+        }
+
+        this._rotation = deg;
+        this.element.style.transformOrigin = org
+        this.element.style.transform = `rotate(${deg}deg) translateX(${offsetObject.x}px) translateY(${offsetObject.y}px)`;
     }
+
+    /**
+     * @returns {number} the rotation of the game object
+     */
+    get rotation(){
+        return this._rotation;
+    }
+
+    /**
+     * @param {{x: number, y: number}} position the position to move the game object to
+     */
+        set velocity(position){
+            this.vx = position.x;
+            this.vy = position.y
+        }
 
     /**
      * @description removes the element from the DOM
      */
     destroy() {
         this.element.remove();
+    }
+
+    /**
+     * @description hides the element
+     */
+    hide() {
+        this.element.style.display = 'none';
+    }
+
+    /**
+     * @description shows the element
+     */
+    show() {
+        this.element.style.display = 'block';
     }
 }
 
@@ -280,19 +361,21 @@ class GameObject {
  */
 class Game {
     static boundFunctions = {};
+    static updateInterval;
 
     /**
      * @param {number} updateInterval the interval in &lt;code>ms&lt;/code> to update the game
      */
     constructor(updateInterval){
-        updateInterval = updateInterval || 1000/60;
+        this.updateInterval = updateInterval || 1000/60;
         setInterval(() => {
             if(this.paused) return;
             for(let key in Game.boundFunctions){
                 Game.boundFunctions[key]();
             }
-        }, updateInterval);
+        }, this.updateInterval);
         this.paused = false;
+        Game.updateInterval = this.updateInterval;
     }
 
     /**
@@ -300,6 +383,7 @@ class Game {
      * @param {function} func the function to bind
      */
     bind(identifier, func) {
+        if(Game.boundFunctions[identifier]) return console.warn("Function with identifier " + identifier + " already exists");
         Game.boundFunctions[identifier] = func;
     }
 
@@ -339,7 +423,7 @@ class Game {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Fri Oct 04 2024 18:50:58 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Fri Oct 11 2024 17:23:24 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

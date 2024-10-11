@@ -1,3 +1,6 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+<!ATTLIST tag onsubmit CDATA #IMPLIED>
 <head>
     <script src="./keybinds.js"></script>
     <script src="./crypt.js"></script>
@@ -15,7 +18,10 @@
             .addRadio("radio1",["1", "2", "3", "4"],["step2", "step2", "step2", "step2"] ,["one", "two", "three", "four"])
     ).addStep(
         new StepNode("radio").id("step2").text("radio 2")
-    );
+            .addRadio("radio2",["5", "6", "7", "8"],["step3", "step3", "step3", "step3"] ,["five", "six", "seven", "eight"])
+    ).addStep(
+        new StepNode("button").id("step3").text("this is a button!").addButton(() => {console.log("button pressed")})
+    )
     /*
     let kb = new Keybinds();
 
