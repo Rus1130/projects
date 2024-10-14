@@ -15,10 +15,18 @@
     let sc = new StepCreator(document.body);
     sc.addSteps([
         new StepNode("radio").id("step1").description("radio")
-            .addRadio("radio1",["1", "2", "3", "4"], ["one", "two", "three", "four"], ["step2", "step2", "step2", "step2"])
+            .addRadio("radio1")
+            .radioOption("1", "one", "step2")
+            .radioOption("2", "two", "step2")
+            .radioOption("3", "three", "step2")
+            .radioOption("4", "four", "step2")
         ,  
         new StepNode("radio").id("step2").description("radio 2")
-            .addRadio("radio2",["5", "6", "7", "8"], ["five", "six", "seven", "eight"], [["step3", "step2-note5"], ["step3", "step2-note6"], ["step3", "step2-note7"], ["step3", "step2-note8"]])
+            .addRadio("radio2")
+            .radioOption("5", "five", ["step3", "step2-note5"])
+            .radioOption("6", "six", ["step3", "step2-note6"])
+            .radioOption("7", "seven", ["step3", "step2-note7"])
+            .radioOption("8", "eight", ["step3", "step2-note8"])
         ,
         new StepNode("note").id("step2-note5").description("this is a note for 5!")
         ,
@@ -28,7 +36,7 @@
         ,
         new StepNode("note").id("step2-note8").description("this is a note for 8!")
         ,
-        new StepNode("text").id("step3").placeholder("type something here").onSubmit("step4").pattern("\w+")
+        new StepNode("text").id("step3").placeholder("type something here").revealOnSubmit("step4").pattern(/\w+/)
         ,
         new StepNode("button").id("step4").description("this is a button!").addButton(() => {console.log(sc.getData())})
     ])

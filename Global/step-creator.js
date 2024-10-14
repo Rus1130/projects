@@ -58,9 +58,8 @@ class StepCreator {
             step.setAttribute('autocomplete', 'off');
             step.addEventListener('keydown', function(e){
                 if(e.key == "Enter"){
-                    if(json.pattern !== undefined){
-                        let regex = new RegExp(json.pattern);
-                        if(regex.test(this.value)){
+                    if(json.textPattern !== undefined){ 
+                        if(json.textPattern.test(this.value) === true){
                             this.disabled = true;
                             if(json.onsubmit !== undefined){
                                 document.getElementById(json.onsubmit).style.display = "block";
@@ -134,18 +133,27 @@ class StepNode {
     /**
      * 
      * @param {string} name the name of the radio group
-     * @param {string[]} values the internal values of the radio buttons
-     * @param {string[]} texts the display text of the radio buttons
-     * @param {string[]|string[][]} ids what the radio buttons will reveal when clicked
      */
-    addRadio(name, values, texts, ids){
+    addRadio(name){
         if(this.nodeType !== "radio") return console.error(`${this.nodeType} invalid type`);
 
         this.radioName = name;
-        this.radioValues = values;
-        this.radioIds = ids;
-        this.radioTexts = texts;
+        this.radioValues = []
+        this.radioIds = []
+        this.radioTexts = []
 
+        return this;
+    }
+    /**
+    * @param {string} value the internal values of the radio buttons
+    * @param {string} text the display text of the radio buttons
+    * @param {string|string[]} ids what the radio buttons will reveal when clicked
+    */
+    radioOption(value, text, id){
+        if(this.nodeType !== "radio") return console.error(`${this.nodeType} invalid type`);
+        this.radioValues.push(value);
+        this.radioTexts.push(text);
+        this.radioIds.push(id);
         return this;
     }
     addButton(callback){
@@ -153,14 +161,18 @@ class StepNode {
         this.callback = callback;
         return this;
     }
-    onSubmit(id){
+    revealOnSubmit(id){
         if(this.nodeType !== "text") return console.error(`${this.nodeType} invalid type`);
         this.onsubmit = id;
         return this;
     }
+    /**
+     * 
+     * @param {Regexp} regex 
+     */
     pattern(regex){
         if(this.nodeType !== "text") return console.error(`${this.nodeType} invalid type`);
-        this.pattern = regex;
+        this.textPattern = regex;
         return this;
     }
 }
