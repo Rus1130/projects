@@ -13,15 +13,25 @@
 </body>
 <script>
     let sc = new StepCreator(document.body);
-    sc.addStep(
-        new StepNode("radio").id("step1").text("radio")
-            .addRadio("radio1",["1", "2", "3", "4"],["step2", "step2", "step2", "step2"] ,["one", "two", "three", "four"])
-    ).addStep(
-        new StepNode("radio").id("step2").text("radio 2")
-            .addRadio("radio2",["5", "6", "7", "8"],["step3", "step3", "step3", "step3"] ,["five", "six", "seven", "eight"])
-    ).addStep(
-        new StepNode("button").id("step3").text("this is a button!").addButton(() => {console.log("button pressed")})
-    )
+    sc.addSteps([
+        new StepNode("radio").id("step1").description("radio")
+            .addRadio("radio1",["1", "2", "3", "4"], ["one", "two", "three", "four"], ["step2", "step2", "step2", "step2"])
+        ,  
+        new StepNode("radio").id("step2").description("radio 2")
+            .addRadio("radio2",["5", "6", "7", "8"], ["five", "six", "seven", "eight"], [["step3", "step2-note5"], ["step3", "step2-note6"], ["step3", "step2-note7"], ["step3", "step2-note8"]])
+        ,
+        new StepNode("note").id("step2-note5").description("this is a note for 5!")
+        ,
+        new StepNode("note").id("step2-note6").description("this is a note for 6!")
+        ,
+        new StepNode("note").id("step2-note7").description("this is a note for 7!")
+        ,
+        new StepNode("note").id("step2-note8").description("this is a note for 8!")
+        ,
+        new StepNode("text").id("step3").placeholder("type something here").onSubmit("step4").pattern("\w+")
+        ,
+        new StepNode("button").id("step4").description("this is a button!").addButton(() => {console.log(sc.getData())})
+    ])
     /*
     let kb = new Keybinds();
 
