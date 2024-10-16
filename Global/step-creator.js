@@ -1,5 +1,6 @@
 class StepCreator {
     static StepElements = [];
+    static Data = [];
     
     constructor(parent) {
         this.parent = parent;
@@ -90,7 +91,8 @@ class StepCreator {
         }
     }
 
-    getData(){
+    // FIX ============
+    currentData(){
         let data = {};
         for(let i = 0; i < StepCreator.StepElements.length; i++){
             let step = StepCreator.StepElements[i];
@@ -107,6 +109,20 @@ class StepCreator {
             }
         }
         return data;
+    }
+    
+    // INCOMPLETE ===========
+    resetToId(id, include){
+        if(include === undefined) include = false;
+        StepCreator.Data.push(this.currentData());
+        for(let i = 0; i < StepCreator.StepElements.length; i++){
+            if(StepCreator.StepElements[i].id === id){
+                StepCreator.StepElements[i].style.display = "block";
+            } else {
+                if(include === true) StepCreator.StepElements[i].style.display = "block";
+                else StepCreator.StepElements[i].style.display = "none";
+            }
+        }
     }
 }
 

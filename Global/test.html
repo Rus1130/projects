@@ -38,7 +38,7 @@
         ,
         new StepNode("text").id("step3").placeholder("type something here").revealOnSubmit("step4").pattern(/\w+/)
         ,
-        new StepNode("button").id("step4").description("this is a button!").addButton(() => {console.log(sc.getData())})
+        new StepNode("button").id("step4").description("this is a button!").addButton(() => {console.log(sc.currentData())})
     ])
     /*
     let kb = new Keybinds();
