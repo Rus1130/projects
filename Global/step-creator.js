@@ -91,8 +91,7 @@ class StepCreator {
         }
     }
 
-    // FIX ============
-    currentData(){
+    getCurrentData(){
         let data = {};
         for(let i = 0; i < StepCreator.StepElements.length; i++){
             let step = StepCreator.StepElements[i];
@@ -110,11 +109,14 @@ class StepCreator {
         }
         return data;
     }
+
+    getAllData(){
+        return StepCreator.Data;
+    }
     
-    // INCOMPLETE ===========
     resetToId(id, include){
         if(include === undefined) include = false;
-        StepCreator.Data.push(this.currentData());
+        StepCreator.Data.push(this.getCurrentData());
         for(let i = 0; i < StepCreator.StepElements.length; i++){
             if(StepCreator.StepElements[i].id === id){
                 StepCreator.StepElements[i].style.display = "block";
