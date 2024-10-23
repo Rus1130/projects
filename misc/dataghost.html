@@ -1,19 +1,12 @@
 <body>
-    <div id="typer-in" style="display:none">They had gotten the fishy smell very nearly correct, so he'd have to send his regards to the engineers. Fish, mud, and the stale metallic aftertaste that recycled station air always seemed to leave in his mouth. The grass, too, was just right. Springy. Damp. A little gross. The entire holographic expanse was well done, as close as he could possibly get to home, here on the station. The final test, of course, to  see if he'd wasted his money or not, was waiting just across the gravel road. He didn't want to go in.<br>No, that wasn't right. He did want to go in, and he dreaded it. It was a house, single story propped up on stilts to accommodate floods and old to enough to show the wear and tear of more than a few 
-        tropical storms. The real deal was probably in even worse shape now, with no one around to take care of 
-        it. To repair it when it broke. With a sigh, he lifted himself from patch of dirt that he sat on, crossing the 
-        road in a few confident strides. As a child, he'd run up to the house barefoot, and taken flying leaps over 
-        the ditches instead of trudging up the hot, pebbly driveway. Now, many years and many millions of miles 
-        away from then, he winces at the crunch of his work boots against the ground. The house looms before 
-        him, though he knows it to only be large enough to house three comfortably, and four or five in a pinch. 
-        The storm door opens easily, freshly oiled despite its appearance. He'll have to get that fixed. The wooden 
-        inner door has flaking paint on it, pale green and hand carved. It's old, but it withstands his two short knocks.</div>
-    <div id="typer-out"></div>
+    <div id="typer-in" style="display:none">They had gotten the fishy smell very nearly correct, so he'd have to send his regards to the engineers._Fish, mud, and the stale metallic aftertaste that recycled station air always seemed to leave in his mouth._The grass, too, was just right. Springy. Damp. A little gross. The entire holographic expanse was well done, as close as he could possibly get to home, here on the station._The final test, of course, to see if he'd wasted his money or not, was waiting just across the gravel road. He didn't want to go in.!TYPER-BREAK!No, that wasn't right. He did want to go in, and he dreaded it._It was a house, single story propped up on stilts to accommodate floods and old to enough to show the wear and tear of more than a few _tropical storms. The real deal was probably in even worse shape now, with no one around to take care of it. To repair it when it broke._With a sigh, he lifted himself from patch of dirt that he sat on, crossing the road in a few confident strides. _As a child, he'd run up to the house barefoot, and taken flying leaps over _the ditches instead of trudging up the hot, pebbly driveway. Now, many years and many millions of miles _away from then, he winces at the crunch of his work boots against the ground. The house looms before _him, though he knows it to only be large enough to house three comfortably, and four or five in a pinch. _ The storm door opens easily, freshly oiled despite its appearance. He'll have to get that fixed. The wooden _ inner door has flaking paint on it, pale green and hand carved. It's old, but it withstands his two short knocks.</div>
+    <div id="typer-out" style="word-wrap:normal"></div>
 </body>
 <script>
     class Typer {
         /*
-        options.newlineDelimiter (default: '!TYPER-NEWLINE!')
+        options.newlineDelimiter (default: '_')
+        options.breakDelimiter (default: '!TYPER-BREAK!')
         options.customDelays = {char: delay}
 
 
@@ -21,28 +14,42 @@
         constructor(inputID, outputID, options){
             this.inputEl = document.getElementById(inputID);
             this.outputEl = document.getElementById(outputID);
-            this.text = this.inputEl.innerText.split(options.newlineDelimiter || '\n');
+            this.text = this.inputEl.innerText.split(options.breakDelimiter || '!TYPER-BREAK!');
             this.index = 0;
             this.line = 0;
             this.speed = options.speed || 100;
-            this.newlineDelay = options.newlineDelay || 1000;
+            this.newlineDelimiter = options.newlineDelimiter || '_';
+            this.newlineDelay = options.newlineDelay || 0;
+            this.breakDelay = options.breakDelay || 0;
+            this.customDelays = options.customDelays;
         }
 
         typeNextChar() {
             if (this.index < this.text[this.line].length) {
-                let char = this.text[this.line].charAt(this.index);
+                let char = this.text[this.line][this.index];
 
-                if(char == " ") this.outputEl.innerHTML += "&nbsp;";
-                else this.outputEl.innerHTML += char;
-                this.index++;
-                let delay = this.speed;
-
-                if(this.customDelays != undefined && this.customDelays[char] != undefined) {
-                    delay = this.customDelays[char];
+                if(char == " ") char = "&nbsp;";
+                if(char == this.newlineDelimiter){
+                    this.outputEl.innerHTML += '<br>';
+                    this.index++;
+                    setTimeout(() => this.typeNextChar(), this.newlineDelay);
+                } else {
+                    let delay = this.customDelays[char] || this.speed;
+                    this.outputEl.innerHTML += char;
+                    this.index++;
+                    setTimeout(() => this.typeNextChar(), delay);
                 }
-
-                console.log(delay)
-                setTimeout(() => this.typeNextChar(), delay);
+            } else {
+                this.index = 0;
+                this.line++;
+                if (this.line < this.text.length) {
+                    setTimeout(() => {
+                        this.outputEl.innerHTML += '<br><br>';
+                        setTimeout(() => {
+                            this.typeNextChar();
+                        }, this.newlineDelay);
+                    }, this.breakDelay);
+                }
             }
         }
 
@@ -50,15 +57,20 @@
             this.typeNextChar();
         }
 
+        setSpeed(speed) {
+            this.speed = speed;
+        }
+
     }
 
     const typer = new Typer('typer-in', 'typer-out', {
-        speed: 25,
-        newlineDelay: 1000,
+        speed: 35,
+        breakDelay: 500 ,
         customDelays: {
-            '.': 50,
+            '.': 500,
         }
     });
     typer.start();
+    typer.setSpeed(1)
 
 </script>
