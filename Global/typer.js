@@ -42,6 +42,7 @@ class Typer {
         this.inputEl = document.getElementById(inputID);
         this.outputEl = document.getElementById(outputID);
         this.text = this.inputEl.innerText.split(this.breakDelimiter);
+        this.plaintext = this.inputEl.innerText;
         this.index = 0;
         this.line = 0;
 
@@ -60,7 +61,6 @@ class Typer {
             return;
         }
 
-        window.scrollBy(0, document.body.scrollHeight);
         if (this.index < this.text[this.line].length) {
             let char = this.text[this.line][this.index];
 
@@ -80,20 +80,26 @@ class Typer {
                 this.onFinish();
                 return;
             }
-
+            
             if(this.italic && [" ", "."].includes(char)) this.italic = false;
 
             if(char == " ") char = "&nbsp;";
             if(char == this.newlineDelimiter){
                 this.outputEl.innerHTML += '<br>';
                 this.index++;
-                if(!this.paused) setTimeout(() => this.start(), this.newlineDelay);
+                if(!this.paused) setTimeout(() => {
+                    this.start()
+                    window.scrollTo(window.scrollX, document.body.scrollHeight);
+                } , this.newlineDelay);
             } else {
                 let delay = this.customDelays[char] || this.charDelay;
                 if(this.italic) char = "<i>" + char + "</i>";
                 this.outputEl.innerHTML += char;
                 this.index++;
-                if(!this.paused) setTimeout(() => this.start(), delay);
+                if(!this.paused) setTimeout(() => { 
+                    this.start()
+                    window.scrollTo(window.scrollX, document.body.scrollHeight);
+                }, delay);
             }
         } else {
             this.index = 0;
@@ -102,7 +108,10 @@ class Typer {
                 setTimeout(() => {
                     this.outputEl.innerHTML += '<br><br>';
                     setTimeout(() => {
-                        if(!this.paused) this.start();
+                        if(!this.paused) {
+                            this.start();
+                            window.scrollTo(window.scrollX, document.body.scrollHeight);
+                        }
                     }, this.newlineDelay);
                 }, this.breakDelay);
             }
@@ -115,13 +124,11 @@ class Typer {
      */
     getEstimatedTime(){
         let time = 0;
-        for(let i = 0; i < this.text.length; i++){
-            for(let j = 0; j < this.text[i].length; j++){
-                let char = this.text[i][j];
-                let delay = this.customDelays[char] || this.charDelay;
-                time += delay;
-            }
-            time += this.newlineDelay;
+        for(let i = 0; i < this.plaintext.length; i++){
+            let char = this.plaintext[i];
+            if(char == this.newlineDelimiter) time += this.newlineDelay;
+            else if(char == this.breakDelimiter) time += this.breakDelay;
+            else time += this.customDelays[char] || this.charDelay;
         }
         return time;
     }
