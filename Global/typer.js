@@ -49,8 +49,8 @@ class Typer {
 
         this.index = 0;
         this.line = 0;
-        this.italic = false;
-        this.paused = false;
+        this.isItalic = false;
+        this.isPaused = false;
     }
 
     start() {
@@ -65,7 +65,7 @@ class Typer {
 
             if(char == this.options.italicizeChar) {
                 char = "";
-                this.italic = true;
+                this.isItalic = true;
             }
 
             if(char == this.options.increaseDelayChar) {
@@ -80,22 +80,22 @@ class Typer {
                 return;
             }
             
-            if(this.italic && [" ", "."].includes(char)) this.italic = false;
+            if(this.isItalic && [" ", ".", "?", "!", ":", ";", "(", "[", "{", ")", "]", "}", "'", '"'].includes(char)) this.isItalic = false;
 
             if(char == " ") char = "&nbsp;";
             if(char == this.options.newlineDelimiter){
                 this.outputEl.innerHTML += '<br>';
                 this.index++;
-                if(!this.paused) setTimeout(() => {
+                if(!this.isPaused) setTimeout(() => {
                     this.start()
                     window.scrollTo(window.scrollX, document.body.scrollHeight);
                 } , this.options.newlineDelay);
             } else {
                 let delay = this.options.customDelays[char] || this.options.charDelay;
-                if(this.italic) char = "<i>" + char + "</i>";
+                if(this.isItalic) char = "<i>" + char + "</i>";
                 this.outputEl.innerHTML += char;
                 this.index++;
-                if(!this.paused) setTimeout(() => { 
+                if(!this.isPaused) setTimeout(() => { 
                     this.start()
                     window.scrollTo(window.scrollX, document.body.scrollHeight);
                 }, delay);
@@ -107,7 +107,7 @@ class Typer {
                 setTimeout(() => {
                     this.outputEl.innerHTML += '<br><br>';
                     setTimeout(() => {
-                        if(!this.paused) {
+                        if(!this.isPaused) {
                             this.start();
                             window.scrollTo(window.scrollX, document.body.scrollHeight);
                         }
@@ -139,14 +139,14 @@ class Typer {
      * @description Pauses the typer
      */
     pause() {
-        this.paused = true;
+        this.isPaused = true;
     }
 
     /**
      * @description Resumes the typer
      */
     resume() {
-        this.paused = false;
+        this.isPaused = false;
         this.start();
     }
 }
