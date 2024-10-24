@@ -125,14 +125,14 @@ class Typer {
         let time = 0;
         for(let i = 0; i < this.plaintext.length; i++){
             let char = this.plaintext[i];
-            if(char == this.newlineDelimiter) time += this.newlineDelay;
-            else if(char == this.breakDelimiter) time += this.breakDelay;
-            else time += this.customDelays[char] || this.charDelay;
+            if(char == this.options.newlineDelimiter) time += this.options.newlineDelay;
+            else if(char == this.options.breakDelimiter) time += this.options.breakDelay;
+            else time += this.options.customDelays[char] || this.options.charDelay;
         }
         return time;
     }
     setSpeed(delay) {
-        this.charDelay = delay;
+        this.options.charDelay = delay;
     }
 
     /**
