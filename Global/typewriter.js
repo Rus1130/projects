@@ -1,4 +1,4 @@
-class Typer {
+class Typewriter {
     /*
     options.newlineDelimiter (default: '_')
     options.breakDelimiter (default: '~')
