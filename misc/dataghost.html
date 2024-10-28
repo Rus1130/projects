@@ -32,7 +32,7 @@
 </body>
 <script>
     // 
-    const typer = new Typewriter('in', 'out', {
+    const tw = new Typewriter('in', 'out', {
         charDelay: 32,
         breakDelay: 500,
         newlineDelay: 250,
@@ -64,7 +64,7 @@
         if(window.innerWidth > window.innerHeight) {
             document.getElementById('out').textContent = "";
             clearInterval(isWindowWideEnough);
-            typer.start();
+            tw.start();
         } else {
             document.getElementById('out').textContent = "Rotate ur screen"
         }
