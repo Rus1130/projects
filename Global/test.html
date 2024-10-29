@@ -7,11 +7,16 @@
     <script src="./game-components.js"></script>
     <script src="./math.js"></script>
     <script src="./step-creator.js"></script>
+    <script src="./typewriter.js"></script>
 </head>
 <body>
-
+    <div id="in">the quick brown fox jumps over the lazy dog|new line~line break~/italic/ *bold* _underline_ -strikethrough-¶</div>
+    <div id="out"></div>
 </body>
 <script>
+    let tw = new Typewriter("in", "out")
+    tw.start();
+
     let sc = new StepCreator(document.body);
     sc.addSteps([
         new StepNode("radio").id("step1").description("radio")

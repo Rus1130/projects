@@ -1,58 +1,85 @@
 class Typewriter {
-    /*
-    options.newlineDelimiter (default: '_')
-    options.breakDelimiter (default: '~')
-    options.customDelays = {char: delay}
-    options.onFinish = function(){}
-
-
-    prefix ^ to italicize word
-    « to slow down
-
-    end with ¶
-    */
+    static HTMLEncode(s){
+        let el = document.createElement("div");
+        el.textContent = s;
+        el.innerText = el.textContent;
+        s = el.innerHTML;
+        return s;
+    }
    /**
-    * 
     * @param {String} inputID ID of the element whose textContent will be typed
     * @param {String} outputID ID of the element where the text will be typed in innerHTML
     * 
     * @param {Object} [options] options object
-    * @param {String} [options.newlineDelimiter="_"] delegates where to put a newline (default _)
-    * @param {String} [options.breakDelimiter="~"] delegates where to put a break (default ~)
-    * @param {String} [options.italicizeChar="^"] italicizes the next word (default ^)
+    * @param {String} [options.newlineDelimiter="|"] inserts newline (default |)
+    * @param {String} [options.breakDelimiter="~"] inserts linebreak (default ~)
+    * 
+    * @param {String} [options.styleItalics="/"] surrounded characters become italicized (default /)
+    * @param {String} [options.styleBold="*"] surrounded characters become bolded (default *)
+    * @param {String} [options.styleUnderline="_"] surrounded characters become underlined (default _)
+    * @param {String} [options.styleStrikethrough="-"] surrounded characters become strikethroughed (default -)
+    * 
     * @param {String} [options.increaseDelayChar="«"] increases the delay (default «)
     * @param {String} [options.decreaseDelayChar="»"] decreases the delay (default »)
+    * 
     * @param {String} [options.endChar="¶"] ends the text (default ¶)
-    * @param {Number} [options.newlineDelay=0] delay in ms to wait before resuming typing after a newline (default 0)
-    * @param {Number} [options.breakDelay=0] delay in ms to wait before resuming typing after a line break (default 0)
-    * @param {Number} [options.charDelay=100] delay in ms to wait before typing next character (default 100)
-    * @param {Object<string, number>} options.customDelays custom delays for specific characters
-    * @param {Function} options.onFinish fires after finishing typing
+    * 
+    * @param {Number} [options.newlineDelay=0] delay after newline (ms) (default 0)
+    * @param {Number} [options.breakDelay=0] delay after line break (ms) (default 0)
+    * @param {Number} [options.charDelay=100] delay after character (ms) (default 100)
+    * @param {Object<string, number>} [options.customDelays] custom delays for specific characters
+    * 
+    * @param {Function} [options.onFinish] fires after finishing typing
     */
     constructor(inputID, outputID, options){
+        if(options == undefined) options = {};
         this.options = {};
-        this.options.newlineDelimiter = options.newlineDelimiter || '_';
-        this.options.breakDelimiter = options.breakDelimiter || '~';
-        this.options.italicizeChar = options.italicizeChar || '^';
-        this.options.increaseDelayChar = options.increaseDelayChar || '«';
-        this.options.endChar = options.endChar || '¶';
-        this.options.newlineDelay = options.newlineDelay || 0;
-        this.options.breakDelay = options.breakDelay || 0;
-        this.options.charDelay = options.charDelay || 100;
-        this.options.customDelays = options.customDelays || {};
-        this.onFinish = options.onFinish || function(){};
+        this.control = {};
+        this.format = {};
+        // control
+        options.endChar == undefined ? this.options.endChar = "¶" : this.options.endChar = options.endChar;
+        options.increaseDelayChar == undefined ? this.options.increaseDelayChar = "«" : this.options.increaseDelayChar = options.increaseDelayChar;
+
+        // formatting
+        options.newlineDelimiter == undefined ? this.options.newlineDelimiter = "|" : this.options.newlineDelimiter = options.newlineDelimiter;
+        options.breakDelimiter == undefined ? this.options.breakDelimiter = "~" : this.options.breakDelimiter = options.breakDelimiter;
+        
+        // style
+        options.styleItalics == undefined ? this.options.styleItalics = "/" : this.options.styleItalics = options.styleItalics;
+        options.styleBold == undefined ? this.options.styleBold = "*" : this.options.styleBold = options.styleBold;
+        options.styleUnderline == undefined ? this.options.styleUnderline = "_" : this.options.styleUnderline = options.styleUnderline;
+        options.styleStrikethrough == undefined ? this.options.styleStrikethrough = "-" : this.options.styleStrikethrough = options.styleStrikethrough;
+
+        // delays
+        options.newlineDelay == undefined ? this.options.newlineDelay = 0 : this.options.newlineDelay = options.newlineDelay;
+        options.breakDelay == undefined ? this.options.breakDelay = 0 : this.options.breakDelay = options.breakDelay;
+        options.charDelay == undefined ? this.options.charDelay = 100 : this.options.charDelay = options.charDelay;
+        options.customDelays == undefined ? this.options.customDelays = {} : this.options.customDelays = options.customDelays;
+
+        // functions
+        options.onFinish == undefined ? this.onFinish = function(){} : this.onFinish = options.onFinish;
 
         this.inputEl = document.getElementById(inputID);
         this.outputEl = document.getElementById(outputID);
-        this.text = this.inputEl.textContent.split(this.options.breakDelimiter);
+
+        // todo: add character escaping; use HTMLEncode
+
         this.plaintext = this.inputEl.textContent;
+        this.text = this.plaintext.split(this.options.breakDelimiter);
 
         this.inputEl.style.display = "none";
 
-        this.index = 0;
-        this.line = 0;
-        this.isItalic = false;
-        this.isPaused = false;
+        // control
+        this.control.index = 0;
+        this.control.line = 0;
+        this.control.isPaused = false;
+        this.control.isFinished = false;
+
+        // formatting
+        this.format.isItalic = false;
+        this.format.isBold = false;
+        this.format.isUnderline = false;
+        this.format.isStrikethrough = false;
     }
 
     /**
@@ -66,12 +93,27 @@ class Typewriter {
             return;
         }
 
-        if (this.index < this.text[this.line].length) {
-            let char = this.text[this.line][this.index];
+        if (this.control.index < this.text[this.control.line].length) {
+            let char = this.text[this.control.line][this.control.index];
 
-            if(char == this.options.italicizeChar) {
+            if(char == this.options.styleItalics) {
                 char = "";
-                this.isItalic = true;
+                this.format.isItalic = !this.format.isItalic;
+            }
+
+            if(char == this.options.styleBold) {
+                char = "";
+                this.format.isBold = !this.format.isBold;
+            }
+
+            if(char == this.options.styleUnderline) {
+                char = "";
+                this.format.isUnderline = !this.format.isUnderline;
+            }
+
+            if(char == this.options.styleStrikethrough) {
+                char = "";
+                this.format.isStrikethrough = !this.format.isStrikethrough;
             }
 
             if(char == this.options.increaseDelayChar) {
@@ -81,39 +123,43 @@ class Typewriter {
             }
 
             if(char == this.options.endChar) {
-                this.finished = true;
+                this.control.isFinished = true;
                 this.onFinish();
                 return;
             }
-            
-            if(this.isItalic && [" ", ".", "?", "!", ":", ";", "(", "[", "{", ")", "]", "}", "'", '"'].includes(char)) this.isItalic = false;
 
             if(char == " ") char = "&nbsp;";
             if(char == this.options.newlineDelimiter){
                 this.outputEl.innerHTML += '<br>';
-                this.index++;
+                this.control.index++;
                 if(!this.isPaused) setTimeout(() => {
                     this.start()
                     window.scrollTo(window.scrollX, document.body.scrollHeight);
                 } , this.options.newlineDelay);
             } else {
                 let delay = this.options.customDelays[char] || this.options.charDelay;
-                if(this.isItalic) char = "<i>" + char + "</i>";
+
+                // style
+                if(this.format.isItalic) char = "<i>" + char + "</i>";
+                if(this.format.isBold) char = "<b>" + char + "</b>";
+                if(this.format.isUnderline) char = "<u>" + char + "</u>";
+                if(this.format.isStrikethrough) char = "<s>" + char + "</s>";
+
                 this.outputEl.innerHTML += char;
-                this.index++;
-                if(!this.isPaused) setTimeout(() => { 
+                this.control.index++;
+                if(!this.control.isPaused) setTimeout(() => { 
                     this.start()
                     window.scrollTo(window.scrollX, document.body.scrollHeight);
                 }, delay);
             }
         } else {
-            this.index = 0;
-            this.line++;
-            if (this.line < this.text.length) {
+            this.control.index = 0;
+            this.control.line++;
+            if (this.control.line < this.text.length) {
                 setTimeout(() => {
                     this.outputEl.innerHTML += '<br><br>';
                     setTimeout(() => {
-                        if(!this.isPaused) {
+                        if(!this.control.isPaused) {
                             this.start();
                             window.scrollTo(window.scrollX, document.body.scrollHeight);
                         }
@@ -163,6 +209,8 @@ class Typewriter {
         this.isPaused = false;
         this.start();
     }
+
+    // todo: add end function
 
     /**
      * @description Adds a custom delay for a specific character
