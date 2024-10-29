@@ -30,6 +30,8 @@ class Typewriter {
     * @param {Object<string, number>} [options.customDelays] custom delays for specific characters
     * 
     * @param {Function} [options.onFinish] fires after finishing typing
+    * 
+    * @description Creates a typewriter effect for text<br> note: characters used in options cannot be used in the text
     */
     constructor(inputID, outputID, options){
         if(options == undefined) options = {};
@@ -62,7 +64,7 @@ class Typewriter {
         this.inputEl = document.getElementById(inputID);
         this.outputEl = document.getElementById(outputID);
 
-        // todo: add character escaping; use HTMLEncode
+        // TODO: add character escaping; use HTMLEncode ========================================================================================================
 
         this.plaintext = this.inputEl.textContent;
         this.text = this.plaintext.split(this.options.breakDelimiter);
@@ -170,10 +172,13 @@ class Typewriter {
     }
 
     /**
-     * @description Returns the estimated time to finish typing
+     * @description Returns the total estimating time for the text to complete typing
+     * @param {Boolean} [format=false] whether to format the time
      * @returns {Number} estimated time in ms to finish typing
      */
-    getEstimatedTime(){
+    // TODO: fix, isnt accurate totally ========================================================================================================
+    getEstimatedTime(format){
+        if(format == undefined) format = false;
         let time = 0;
         for(let i = 0; i < this.plaintext.length; i++){
             let char = this.plaintext[i];
@@ -181,7 +186,16 @@ class Typewriter {
             else if(char == this.options.breakDelimiter) time += this.options.breakDelay;
             else time += this.options.customDelays[char] || this.options.charDelay;
         }
-        return time;
+
+        if(format){
+            let hours = Math.floor(time / 3600000);
+            let minutes = Math.floor((time % 3600000) / 60000);
+            let seconds = Math.floor((time % 60000) / 1000);
+            let milliseconds = time % 1000;
+            return `${hours}h ${minutes}m ${seconds}s ${milliseconds}ms`;
+        } else {
+            return time;
+        }
     }
 
     /**
@@ -210,7 +224,7 @@ class Typewriter {
         this.start();
     }
 
-    // todo: add end function
+    // TODO: add end function ========================================================================================================
 
     /**
      * @description Adds a custom delay for a specific character
