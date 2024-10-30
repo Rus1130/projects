@@ -215,12 +215,13 @@ class Typewriter {
     }
 
     /**
-     * @description Sets the speed of the typewriter, overwriting all custom delays
+     * @description Sets the speed of the typewriter
      * @param {Number} delay delay in ms
+     * @param {Boolean} [overrideCustomDelay=false] whether to override custom delays
      */
-    setSpeed(delay) {
+    setSpeed(delay, overrideCustomDelay) {
         this.options.charDelay = delay;
-        for(let key in this.options.customDelays) {
+        if(overrideCustomDelay) for(let key in this.options.customDelays) {
             this.options.customDelays[key] = delay;
         }
     }
