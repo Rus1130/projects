@@ -106,6 +106,7 @@ class Typewriter {
                 char = "";
                 this.format.isEscaped = !this.format.isEscaped;
             } 
+            
             if(char == this.options.styleItalics && !this.format.isEscaped) {
                 char = "";
                 this.format.isItalic = !this.format.isItalic;
