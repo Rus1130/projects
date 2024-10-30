@@ -10,13 +10,12 @@
     <script src="./typewriter.js"></script>
 </head>
 <body>
-    <div id="in">the quick brown fox jumps over the lazy dog|new line~line break|\italic\ *bold* _underline_ -strikethrough-~\|/*_-¶\¶</div>
+    <div id="in">the quick brown fox jumps over the lazy dog|new line~line break|/italic/ *bold* _underline_ -strikethrough-~\|\/\*\_\-\¶¶</div>
     <div id="out"></div>
 </body>
 <script>
     let tw = new Typewriter("in", "out")
     tw.start();
-    tw.setSpeed(1);
 
     let sc = new StepCreator(document.body);
     sc.addSteps([

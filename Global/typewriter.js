@@ -1,11 +1,4 @@
 class Typewriter {
-    static HTMLEncode(s){
-        let el = document.createElement("div");
-        el.textContent = s;
-        el.innerText = el.textContent;
-        s = el.innerHTML;
-        return s;
-    }
    /**
     * @param {String} inputID ID of the element whose textContent will be typed
     * @param {String} outputID ID of the element where the text will be typed in innerHTML
@@ -14,11 +7,11 @@ class Typewriter {
     * @param {String} [options.newlineDelimiter="|"] inserts newline (default |)
     * @param {String} [options.breakDelimiter="~"] inserts linebreak (default ~)
     * 
-    * @param {String} [options.styleItalics="/"] envelop text by a pair to apply italics format (default /)
-    * @param {String} [options.styleBold="*"] envelop text by a pair to apply bold format (default *)
-    * @param {String} [options.styleUnderline="_"] envelop text by a pair to apply underline format (default _)
-    * @param {String} [options.styleStrikethrough="-"] envelop text by a pair to apply strikethrough format (default -)
-    * @param {String} [options.styleEscape="\\"] envelop text by a pair to escape formatting (default \\) Note: the line break character and the character chosen for this setting cannot be escaped
+    * @param {String} [options.styleItalics="/"] surround text with character to italicize (/text/)
+    * @param {String} [options.styleBold="*"] surround text with character to bold (*text*)
+    * @param {String} [options.styleUnderline="_"] envelop text by a pair to apply underline format (_text_)
+    * @param {String} [options.styleStrikethrough="-"] envelop text by a pair to apply strikethrough format (-text-)
+    * @param {String} [options.styleEscape="\\"] prefix character you want to escape (\text) Note: cannot escape the line break character
     * 
     * @param {String} [options.increaseDelayChar="«"] increases the delay (default «)
     * @param {String} [options.decreaseDelayChar="»"] decreases the delay (default »)
@@ -39,6 +32,7 @@ class Typewriter {
         this.options = {};
         this.control = {};
         this.format = {};
+
         // control
         options.endChar == undefined ? this.options.endChar = "¶" : this.options.endChar = options.endChar;
         options.increaseDelayChar == undefined ? this.options.increaseDelayChar = "«" : this.options.increaseDelayChar = options.increaseDelayChar;
@@ -66,8 +60,6 @@ class Typewriter {
         this.inputEl = document.getElementById(inputID);
         this.outputEl = document.getElementById(outputID);
 
-        // TODO: add character escaping; use HTMLEncode ========================================================================================================
-
         this.plaintext = this.inputEl.textContent;
         this.text = this.plaintext.split(this.options.breakDelimiter);
 
@@ -84,7 +76,10 @@ class Typewriter {
         this.format.isBold = false;
         this.format.isUnderline = false;
         this.format.isStrikethrough = false;
+
         this.format.isEscaped = false;
+        this.format.escapedIndex = 0;
+        this.format.escapedLine = 0;
     }
 
     /**
@@ -93,7 +88,7 @@ class Typewriter {
      */
     start() {
         // if last character isnt ¶, return error
-        if(this.text[this.text.length - 1].slice(-1) != this.options.endChar && !this.format.isEscaped) {
+        if(this.text[this.text.length - 1].slice(-1) != this.options.endChar) {
             console.error(`Last character of text must be ${this.options.endChar} (yes i could append it myself im just doing this to troll you)`);
             return;
         }
@@ -101,67 +96,79 @@ class Typewriter {
         if (this.control.index < this.text[this.control.line].length) {
             let char = this.text[this.control.line][this.control.index];
 
-
-            if(char == this.options.styleEscape) {
-                char = "";
-                this.format.isEscaped = !this.format.isEscaped;
-            } 
-            
-            if(char == this.options.styleItalics && !this.format.isEscaped) {
-                char = "";
-                this.format.isItalic = !this.format.isItalic;
-            }
-
-            if(char == this.options.styleBold && !this.format.isEscaped) {
-                char = "";
-                this.format.isBold = !this.format.isBold;
-            }
-
-            if(char == this.options.styleUnderline && !this.format.isEscaped) {
-                char = "";
-                this.format.isUnderline = !this.format.isUnderline;
-            }
-
-            if(char == this.options.styleStrikethrough && !this.format.isEscaped) {
-                char = "";
-                this.format.isStrikethrough = !this.format.isStrikethrough;
-            }
-
-            if(char == this.options.increaseDelayChar && !this.format.isEscaped) {
-                char = "";
-                this.options.charDelay = 110;
-                this.options.customDelays[","] = 750;
-            }
-
-            if(char == this.options.endChar && !this.format.isEscaped) {
-                this.control.isFinished = true;
-                this.onFinish();
-                return;
-            }
-
-            if(char == " ") char = "&nbsp;";
-            if(char == this.options.newlineDelimiter && !this.format.isEscaped) {
-                this.outputEl.innerHTML += '<br>';
-                this.control.index++;
-                if(!this.isPaused) setTimeout(() => {
-                    this.start()
-                    window.scrollTo(window.scrollX, document.body.scrollHeight);
-                } , this.options.newlineDelay);
-            } else {
-                let delay = this.options.customDelays[char] || this.options.charDelay;
-
-                // style
-                if(this.format.isItalic) char = "<i>" + char + "</i>";
-                if(this.format.isBold) char = "<b>" + char + "</b>";
-                if(this.format.isUnderline) char = "<u>" + char + "</u>";
-                if(this.format.isStrikethrough) char = "<s>" + char + "</s>";
-
+            if(this.format.escapedIndex == this.control.index && this.format.escapedLine == this.control.line && this.format.isEscaped) {
                 this.outputEl.innerHTML += char;
                 this.control.index++;
+                this.format.isEscaped = false;
                 if(!this.control.isPaused) setTimeout(() => { 
                     this.start()
                     window.scrollTo(window.scrollX, document.body.scrollHeight);
-                }, delay);
+                }, this.options.customDelays[char] || this.options.charDelay);
+
+            } else {
+                if(char == this.options.styleEscape) {
+                    char = "";
+                    this.format.isEscaped = true;
+                    this.format.escapedIndex = this.control.index + 1;
+                    this.format.escapedLine = this.control.line;
+                }
+
+                if(char == this.options.styleItalics) {
+                    char = "";
+                    this.format.isItalic = !this.format.isItalic;
+                }
+
+                if(char == this.options.styleBold) {
+                    char = "";
+                    this.format.isBold = !this.format.isBold;
+                }
+
+                if(char == this.options.styleUnderline) {
+                    char = "";
+                    this.format.isUnderline = !this.format.isUnderline;
+                }
+
+                if(char == this.options.styleStrikethrough) {
+                    char = "";
+                    this.format.isStrikethrough = !this.format.isStrikethrough;
+                }
+
+                if(char == this.options.increaseDelayChar) {
+                    char = "";
+                    this.options.charDelay = 110;
+                    this.options.customDelays[","] = 750;
+                }
+
+                if(char == this.options.endChar) {
+                    this.control.isFinished = true;
+                    this.onFinish();
+                    return;
+                }
+
+                if(char == " ") char = "&nbsp;";
+                if(char == this.options.newlineDelimiter) {
+                    this.outputEl.innerHTML += '<br>';
+                    this.control.index++;
+                    if(!this.isPaused) setTimeout(() => {
+                        this.start()
+                        window.scrollTo(window.scrollX, document.body.scrollHeight);
+                    } , this.options.newlineDelay);
+                } else {
+                    let delay = this.options.customDelays[char] || this.options.charDelay;
+
+                    // style
+                    if(this.format.isItalic) char = "<i>" + char + "</i>";
+                    if(this.format.isBold) char = "<b>" + char + "</b>";
+                    if(this.format.isUnderline) char = "<u>" + char + "</u>";
+                    if(this.format.isStrikethrough) char = "<s>" + char + "</s>";
+
+                    this.outputEl.innerHTML += char;
+                    this.control.index++;
+                    if(!this.control.isPaused) setTimeout(() => { 
+                        this.start()
+                        window.scrollTo(window.scrollX, document.body.scrollHeight);
+                    }, delay);
+                }
             }
         } else {
             this.control.index = 0;
