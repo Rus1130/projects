@@ -14,10 +14,11 @@ class Typewriter {
     * @param {String} [options.newlineDelimiter="|"] inserts newline (default |)
     * @param {String} [options.breakDelimiter="~"] inserts linebreak (default ~)
     * 
-    * @param {String} [options.styleItalics="/"] surrounded characters become italicized (default /)
-    * @param {String} [options.styleBold="*"] surrounded characters become bolded (default *)
-    * @param {String} [options.styleUnderline="_"] surrounded characters become underlined (default _)
-    * @param {String} [options.styleStrikethrough="-"] surrounded characters become strikethroughed (default -)
+    * @param {String} [options.styleItalics="/"] envelop text by a pair to apply italics format (default /)
+    * @param {String} [options.styleBold="*"] envelop text by a pair to apply bold format (default *)
+    * @param {String} [options.styleUnderline="_"] envelop text by a pair to apply underline format (default _)
+    * @param {String} [options.styleStrikethrough="-"] envelop text by a pair to apply strikethrough format (default -)
+    * @param {String} [options.styleEscape="\\"] envelop text by a pair to escape formatting (default \\) Note: the line break character and the character chosen for this setting cannot be escaped
     * 
     * @param {String} [options.increaseDelayChar="«"] increases the delay (default «)
     * @param {String} [options.decreaseDelayChar="»"] decreases the delay (default »)
@@ -31,7 +32,7 @@ class Typewriter {
     * 
     * @param {Function} [options.onFinish] fires after finishing typing
     * 
-    * @description Creates a typewriter effect for text<br> note: characters used in options cannot be used in the text
+    * @description Creates a typewriter effect for text
     */
     constructor(inputID, outputID, options){
         if(options == undefined) options = {};
@@ -51,6 +52,7 @@ class Typewriter {
         options.styleBold == undefined ? this.options.styleBold = "*" : this.options.styleBold = options.styleBold;
         options.styleUnderline == undefined ? this.options.styleUnderline = "_" : this.options.styleUnderline = options.styleUnderline;
         options.styleStrikethrough == undefined ? this.options.styleStrikethrough = "-" : this.options.styleStrikethrough = options.styleStrikethrough;
+        options.styleEscape == undefined ? this.options.styleEscape = "\\" : this.options.styleEscape = options.styleEscape;
 
         // delays
         options.newlineDelay == undefined ? this.options.newlineDelay = 0 : this.options.newlineDelay = options.newlineDelay;
@@ -82,6 +84,7 @@ class Typewriter {
         this.format.isBold = false;
         this.format.isUnderline = false;
         this.format.isStrikethrough = false;
+        this.format.isEscaped = false;
     }
 
     /**
@@ -90,7 +93,7 @@ class Typewriter {
      */
     start() {
         // if last character isnt ¶, return error
-        if(this.text[this.text.length - 1].slice(-1) != this.options.endChar) {
+        if(this.text[this.text.length - 1].slice(-1) != this.options.endChar && !this.format.isEscaped) {
             console.error(`Last character of text must be ${this.options.endChar} (yes i could append it myself im just doing this to troll you)`);
             return;
         }
@@ -98,40 +101,45 @@ class Typewriter {
         if (this.control.index < this.text[this.control.line].length) {
             let char = this.text[this.control.line][this.control.index];
 
-            if(char == this.options.styleItalics) {
+
+            if(char == this.options.styleEscape) {
+                char = "";
+                this.format.isEscaped = !this.format.isEscaped;
+            } 
+            if(char == this.options.styleItalics && !this.format.isEscaped) {
                 char = "";
                 this.format.isItalic = !this.format.isItalic;
             }
 
-            if(char == this.options.styleBold) {
+            if(char == this.options.styleBold && !this.format.isEscaped) {
                 char = "";
                 this.format.isBold = !this.format.isBold;
             }
 
-            if(char == this.options.styleUnderline) {
+            if(char == this.options.styleUnderline && !this.format.isEscaped) {
                 char = "";
                 this.format.isUnderline = !this.format.isUnderline;
             }
 
-            if(char == this.options.styleStrikethrough) {
+            if(char == this.options.styleStrikethrough && !this.format.isEscaped) {
                 char = "";
                 this.format.isStrikethrough = !this.format.isStrikethrough;
             }
 
-            if(char == this.options.increaseDelayChar) {
+            if(char == this.options.increaseDelayChar && !this.format.isEscaped) {
                 char = "";
                 this.options.charDelay = 110;
                 this.options.customDelays[","] = 750;
             }
 
-            if(char == this.options.endChar) {
+            if(char == this.options.endChar && !this.format.isEscaped) {
                 this.control.isFinished = true;
                 this.onFinish();
                 return;
             }
 
             if(char == " ") char = "&nbsp;";
-            if(char == this.options.newlineDelimiter){
+            if(char == this.options.newlineDelimiter && !this.format.isEscaped) {
                 this.outputEl.innerHTML += '<br>';
                 this.control.index++;
                 if(!this.isPaused) setTimeout(() => {
