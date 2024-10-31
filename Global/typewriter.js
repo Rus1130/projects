@@ -252,3 +252,227 @@ class Typewriter {
         this.options.customDelays[char] = delay;
     }
 }
+
+
+class Typewriter2 {
+    /*
+    bold: *text*
+    italic: /text/
+    underline: _text_
+    strikethrough: -text-
+    escape: \text
+
+    new line: |
+    line break: ~
+
+
+    */
+
+    /**
+     * 
+     * @param {String} inputID ID of the element whose textContent will be typed
+     * @param {String} outputID ID of the element where the text will be typed in innerHTML
+     * @param {Object} options options object
+     * @param {Number} [options.charDelay=100] delay after character (ms) (default 100)
+     * @param {Number} [options.newlineDelay=0] delay after newline (ms) (default 0)
+     * @param {Number} [options.breakDelay=0] delay after line break (ms) (default 0)
+     * @param {Object<string, number>} [options.customDelays] custom delays for specific characters
+     * @param {String} [options.newlineDelimiter="|"] inserts newline (default |)
+     * @param {String} [options.breakDelimiter="~"] inserts linebreak (default ~)
+     * @param {Boolean} [options.hideInput=true] hides the input element (default true)
+     * @param {Function} [options.onFinish] fires after finishing typing
+     */
+    constructor(inputID, outputID, options){
+        if(options == undefined) options = {};
+
+        options.charDelay == undefined ? options.charDelay = 100 : options.charDelay = options.charDelay;
+        options.newlineDelay == undefined ? options.newlineDelay = 0 : options.newlineDelay = options.newlineDelay;
+        options.breakDelay == undefined ? options.breakDelay = 0 : options.breakDelay = options.breakDelay;
+        options.customDelays == undefined ? options.customDelays = {} : options.customDelays = options.customDelays;
+        options.newlineDelimiter == undefined ? options.newlineDelimiter = "|" : options.newlineDelimiter = options.newlineDelimiter;
+        options.breakDelimiter == undefined ? options.breakDelimiter = "~" : options.breakDelimiter = options.breakDelimiter;
+        options.hideInput == undefined ? options.hideInput = true : options.hideInput = options.hideInput;
+        options.onFinish == undefined ? options.onFinish = function(){} : options.onFinish = options.onFinish;
+
+        let tokenBank = {
+            [options.newlineDelimiter]: "newline",
+            [options.breakDelimiter]: "break",
+            "/": "styleItalics",
+            "*": "styleBold",
+            "_": "styleUnderline",
+            "-": "styleStrikethrough",
+            "\\": "escape",
+            "«": "increaseDelay",
+        };
+        this.options = options;
+        this.control = {
+            index: 0,
+            isPaused: false,
+            isFinished: false,
+            globalDelayChange: {}
+        };
+        this.format = {
+            isItalic: false,
+            isBold: false,
+            isUnderline: false,
+            isStrikethrough: false,
+        };
+
+
+        this.inputEl = document.getElementById(inputID);
+        this.outputEl = document.getElementById(outputID);
+
+        if(this.options.hideInput) this.inputEl.style.display = "none";
+
+        this.plaintext = this.inputEl.textContent;
+
+        let charArray = this.plaintext.split("");
+
+        this.tokens = [];
+        charArray.forEach((char, i) => {
+            let token = {
+                content: char,
+                type: tokenBank[char] || "displayCharacter",
+                index: i,
+                styles: [],
+                delay: this.options.charDelay,
+            }
+
+            if(token.type == "newline") token.delay = this.options.newlineDelay;
+            if(token.type == "break") token.delay = this.options.breakDelay;
+            if(this.options.customDelays[char]) token.delay = this.options.customDelays[char];
+
+            this.tokens.push(token);
+        });
+
+        this.tokens.forEach(token => {
+            if(token.type == "escape"){
+                if(this.tokens[token.index + 1] != undefined) this.tokens[token.index + 1].type = "displayCharacter";
+            }
+        });
+
+        this.tokens.forEach(token => {
+            if(token.type == "escape"){
+                this.tokens[token.index] = {
+                    content: "",
+                    type: "noDisplay",
+                    index: token.index,
+                    delay: 0,
+                    styles: [],
+                }
+            }
+
+            if(token.type == "increaseDelay") {
+                this.tokens[token.index] = {
+                    content: "",
+                    type: "increaseDelay",
+                    index: token.index,
+                    styles: []
+                }
+                this.control.globalDelayChange = {
+                    index: token.index,
+                    delays: {
+                        charDelay: 110,
+                        customDelays: {",": 750}
+                    }
+                };
+            }
+        });
+
+        this.tokens.forEach(token => {
+            if(token.type == "styleItalics") this.format.isItalic = !this.format.isItalic;
+            if(token.type == "styleBold") this.format.isBold = !this.format.isBold;
+            if(token.type == "styleUnderline") this.format.isUnderline = !this.format.isUnderline;
+            if(token.type == "styleStrikethrough") this.format.isStrikethrough = !this.format.isStrikethrough;
+
+            if(this.format.isItalic) this.tokens[token.index].styles.push("italic");
+            if(this.format.isBold) this.tokens[token.index].styles.push("bold");
+            if(this.format.isUnderline) this.tokens[token.index].styles.push("underline");
+            if(this.format.isStrikethrough) this.tokens[token.index].styles.push("strikethrough");
+        });
+
+        this.tokens.forEach(token => {
+            if(["styleItalics", "styleBold", "styleUnderline", "styleStrikethrough"].includes(token.type)) this.tokens[token.index] = {
+                content: "",
+                type: "noDisplay",
+                index: token.index,
+                delay: 0,
+                styles: []
+            }
+        });
+
+        this.tokens.push({
+            content: "",
+            type: "end",
+            index: this.tokens.length,
+            styles: [],
+            delay: 0
+        });
+
+        for(let i = this.control.globalDelayChange.index; i < this.tokens.length; i++){
+            this.tokens[i].delay = this.control.globalDelayChange.delays.charDelay;
+            if(this.control.globalDelayChange.delays.customDelays[this.tokens[i].content]) this.tokens[i].delay = this.control.globalDelayChange.delays.customDelays[this.tokens[i].content];
+        }
+    }
+
+    /**
+     * @description sets delay after character, overwriting custom delays
+     * @param {Number} speed delay (ms)
+     */
+    setSpeed(speed){
+        this.options.charDelay = speed;
+        this.options.customDelays = {};
+        this.tokens.forEach(token => {
+            this.tokens[token.index].delay = speed;
+        });
+    }
+
+    /**
+     * @description starts the typewriter
+     */
+    start(){
+        if(this.control.index < this.tokens.length && !this.control.isPaused){
+            let token = this.tokens[this.control.index];
+            if(token.type == "noDisplay"){
+                this.control.index++;
+                this.start();
+            } else {
+                window.scrollTo(window.scrollX, document.body.scrollHeight);
+                let char = token.content;
+                if(token.type == "newline") char = "<br>";
+                if(token.type == "break") char = "<br><br>";
+                if(token.type == "end") {
+                    this.control.isFinished = true;
+                    this.options.onFinish();
+                    return;
+                }
+
+                if(token.styles.includes("italic")) char = `<i>${char}</i>`;
+                if(token.styles.includes("bold")) char = `<b>${char}</b>`;
+                if(token.styles.includes("underline")) char = `<u>${char}</u>`;
+                if(token.styles.includes("strikethrough")) char = `<s>${char}</s>`;
+
+                this.outputEl.innerHTML += char;
+                this.control.index++;
+                setTimeout(() => {
+                    this.start();
+                }, token.delay);
+            }
+        }
+    }
+
+    /**
+     * @description pauses the typewriter
+     */
+    pause(){
+        this.control.isPaused = true;
+    }
+
+    /**
+     * @description resumes the typewriter
+     */
+    resume(){
+        this.control.isPaused = false;
+        this.start();
+    }
+}

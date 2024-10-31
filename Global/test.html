@@ -10,41 +10,53 @@
     <script src="./typewriter.js"></script>
 </head>
 <body>
-    <div id="in">the quick brown fox jumps over the lazy dog|new line~line break|/italic/ *bold* _underline_ -strikethrough-~\|\/\*\_\-\¶¶</div>
+    <div id="in">/Lorem ipsum dolor sit amet/, _consectetur adipiscing elit_, -*sed do eiusmod tempor incididunt ut labore et dolore magna aliqua*-. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.|the quick brown fox jumps over the lazy dog|new line~line break|/italic/ *bold* _underline_ -strikethrough-~escaped characters: \~\|\/\*\_\-</div>
     <div id="out"></div>
 </body>
 <script>
-    let tw = new Typewriter("in", "out")
+    let tw = new Typewriter2("in", "out", {
+        charDelay: 32,
+        breakDelay: 500,
+        newlineDelay: 250,
+        customDelays: {
+            '.': 700,
+            "?": 700,
+            ",": 250,
+        },
+        onFinish: () => {
+            console.log("done");
+        }
+    })
     tw.start();
 
-    let sc = new StepCreator(document.body);
-    sc.addSteps([
-        new StepNode("radio").id("step1").description("radio")
-            .addRadio("radio1")
-            .radioOption("1", "one", "step2")
-            .radioOption("2", "two", "step2")
-            .radioOption("3", "three", "step2")
-            .radioOption("4", "four", "step2")
-        ,  
-        new StepNode("radio").id("step2").description("radio 2")
-            .addRadio("radio2")
-            .radioOption("5", "five", ["step3", "step2-note5"])
-            .radioOption("6", "six", ["step3", "step2-note6"])
-            .radioOption("7", "seven", ["step3", "step2-note7"])
-            .radioOption("8", "eight", ["step3", "step2-note8"])
-        ,
-        new StepNode("note").id("step2-note5").description("this is a note for 5!")
-        ,
-        new StepNode("note").id("step2-note6").description("this is a note for 6!")
-        ,
-        new StepNode("note").id("step2-note7").description("this is a note for 7!")
-        ,
-        new StepNode("note").id("step2-note8").description("this is a note for 8!")
-        ,
-        new StepNode("text").id("step3").placeholder("type something here").revealOnSubmit("step4").pattern(/\w+/)
-        ,
-        new StepNode("button").id("step4").description("this is a button!").addButton(() => {console.log(sc.currentData())})
-    ])
+    // let sc = new StepCreator(document.body);
+    // sc.addSteps([
+    //     new StepNode("radio").id("step1").description("radio")
+    //         .addRadio("radio1")
+    //         .radioOption("1", "one", "step2")
+    //         .radioOption("2", "two", "step2")
+    //         .radioOption("3", "three", "step2")
+    //         .radioOption("4", "four", "step2")
+    //     ,  
+    //     new StepNode("radio").id("step2").description("radio 2")
+    //         .addRadio("radio2")
+    //         .radioOption("5", "five", ["step3", "step2-note5"])
+    //         .radioOption("6", "six", ["step3", "step2-note6"])
+    //         .radioOption("7", "seven", ["step3", "step2-note7"])
+    //         .radioOption("8", "eight", ["step3", "step2-note8"])
+    //     ,
+    //     new StepNode("note").id("step2-note5").description("this is a note for 5!")
+    //     ,
+    //     new StepNode("note").id("step2-note6").description("this is a note for 6!")
+    //     ,
+    //     new StepNode("note").id("step2-note7").description("this is a note for 7!")
+    //     ,
+    //     new StepNode("note").id("step2-note8").description("this is a note for 8!")
+    //     ,
+    //     new StepNode("text").id("step3").placeholder("type something here").revealOnSubmit("step4").pattern(/\w+/)
+    //     ,
+    //     new StepNode("button").id("step4").description("this is a button!").addButton(() => {console.log(sc.currentData())})
+    // ])
     /*
     let kb = new Keybinds();
 

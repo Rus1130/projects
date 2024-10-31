@@ -7,6 +7,7 @@
         font-family: monospace;
         background-color: black;
         color: white;
+        font-size: 12.5px;
     }
     buttondiv {
         margin-bottom: 1px;
@@ -32,7 +33,7 @@
 </body>
 <script>
     // 
-    const tw = new Typewriter('in', 'out', {
+    const tw = new Typewriter2('in', 'out', {
         charDelay: 32,
         breakDelay: 500,
         newlineDelay: 250,
@@ -59,15 +60,5 @@
             }, 5000);
         }
     });
-
-    let isWindowWideEnough = setInterval(() => {
-        if(window.innerWidth > window.innerHeight) {
-            document.getElementById('out').textContent = "";
-            clearInterval(isWindowWideEnough);
-            tw.start();
-        } else {
-            document.getElementById('out').textContent = "Rotate ur screen"
-        }
-    }, 1);
-
+    tw.start();
 </script>
