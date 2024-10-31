@@ -265,6 +265,9 @@ class Typewriter2 {
     new line: |
     line break: ~
 
+    increase delay: «
+
+    !: outputs previous character index to console
 
     */
 
@@ -294,7 +297,7 @@ class Typewriter2 {
         options.hideInput == undefined ? options.hideInput = true : options.hideInput = options.hideInput;
         options.onFinish == undefined ? options.onFinish = function(){} : options.onFinish = options.onFinish;
 
-        let tokenBank = {
+        let tokenObject = {
             [options.newlineDelimiter]: "newline",
             [options.breakDelimiter]: "break",
             "/": "styleItalics",
@@ -303,6 +306,7 @@ class Typewriter2 {
             "-": "styleStrikethrough",
             "\\": "escape",
             "«": "increaseDelay",
+            "!": "outputIndex"
         };
         this.options = options;
         this.control = {
@@ -332,10 +336,11 @@ class Typewriter2 {
         charArray.forEach((char, i) => {
             let token = {
                 content: char,
-                type: tokenBank[char] || "displayCharacter",
+                type: tokenObject[char] || "displayCharacter",
                 index: i,
                 styles: [],
                 delay: this.options.charDelay,
+                color: "#000000"
             }
 
             if(token.type == "newline") token.delay = this.options.newlineDelay;
@@ -377,6 +382,15 @@ class Typewriter2 {
                     }
                 };
             }
+
+            if(token.type == "outputIndex") {
+                this.tokens[token.index] = {
+                    content: "",
+                    type: "outputIndex",
+                    index: token.index,
+                    styles: []
+                }
+            }
         });
 
         this.tokens.forEach(token => {
@@ -415,6 +429,12 @@ class Typewriter2 {
         }
     }
 
+    addColor(startIndex, endIndex, color){
+        this.tokens.forEach(token => {
+            if(token.index >= startIndex && token.index <= endIndex) token.color = color;
+        });
+    }
+
     /**
      * @description sets delay after character, overwriting custom delays
      * @param {Number} speed delay (ms)
@@ -436,9 +456,14 @@ class Typewriter2 {
             if(token.type == "noDisplay"){
                 this.control.index++;
                 this.start();
+            } else if(token.type == "outputIndex"){
+                console.log(this.control.index - 1);
+                this.control.index++;
+                this.start();
             } else {
                 window.scrollTo(window.scrollX, document.body.scrollHeight);
                 let char = token.content;
+                if(token.color != "#000000") char = `<span style="color: ${token.color};">${token.content}</span>`;
                 if(token.type == "newline") char = "<br>";
                 if(token.type == "break") char = "<br><br>";
                 if(token.type == "end") {
