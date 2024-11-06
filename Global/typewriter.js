@@ -320,7 +320,7 @@ class Typewriter2 {
             isPaused: false,
             isFinished: false,
             globalDelayChange: {},
-            tokens: {}
+            tokens: []
         };
         this.format = {
             isItalic: false,
