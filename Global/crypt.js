@@ -2,7 +2,7 @@ class Crypt {
     constructor() {
         console.warn("Crypt is a static class");
     }
-    static key = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ_abcdefghijkmnopqrstuvwxyz';
+    static key = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz_';
 
     static to(num) {
         let base60 = Crypt.key;

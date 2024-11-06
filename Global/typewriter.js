@@ -23,6 +23,8 @@ class Typewriter {
     * @param {Number} [options.charDelay=100] delay after character (ms) (default 100)
     * @param {Object<string, number>} [options.customDelays] custom delays for specific characters
     * 
+    * @param {Boolean} [options.stringInput=false] if true, the inputID will be treated as the string to display rather than an element (default false)
+    * 
     * @param {Function} [options.onFinish] fires after finishing typing
     * 
     * @description Creates a typewriter effect for text
@@ -32,6 +34,8 @@ class Typewriter {
         this.options = {};
         this.control = {};
         this.format = {};
+
+        options.stringInput == undefined ? this.options.stringInput = false : this.options.stringInput = options.stringInput;
 
         // control
         options.endChar == undefined ? this.options.endChar = "¶" : this.options.endChar = options.endChar;
@@ -60,10 +64,10 @@ class Typewriter {
         this.inputEl = document.getElementById(inputID);
         this.outputEl = document.getElementById(outputID);
 
-        this.plaintext = this.inputEl.textContent;
+        this.plaintext = this.options.stringInput ? inputID : this.inputEl.textContent;
         this.text = this.plaintext.split(this.options.breakDelimiter);
 
-        this.inputEl.style.display = "none";
+        if(!this.options.stringInput) this.inputEl.style.display = "none";
 
         // control
         this.control.index = 0;
@@ -89,7 +93,7 @@ class Typewriter {
     start() {
         // if last character isnt ¶, return error
         if(this.text[this.text.length - 1].slice(-1) != this.options.endChar) {
-            console.error(`Last character of text must be ${this.options.endChar} (yes i could append it myself im just doing this to troll you)`);
+            console.error(`no end char`);
             return;
         }
 
@@ -282,6 +286,7 @@ class Typewriter2 {
      * @param {Object<string, number>} [options.customDelays] custom delays for specific characters
      * @param {String} [options.newlineDelimiter="|"] inserts newline (default |)
      * @param {String} [options.breakDelimiter="~"] inserts linebreak (default ~)
+     * @param {Boolean} [options.stringInput=false] if true, the inputID will be treated as the string to display rather than an element (default false)
      * @param {Boolean} [options.hideInput=true] hides the input element (default true)
      * @param {Function} [options.onFinish] fires after finishing typing
      */
@@ -295,6 +300,7 @@ class Typewriter2 {
         options.newlineDelimiter == undefined ? options.newlineDelimiter = "|" : options.newlineDelimiter = options.newlineDelimiter;
         options.breakDelimiter == undefined ? options.breakDelimiter = "~" : options.breakDelimiter = options.breakDelimiter;
         options.hideInput == undefined ? options.hideInput = true : options.hideInput = options.hideInput;
+        options.stringInput == undefined ? options.stringInput = false : options.stringInput = options.stringInput;
         options.onFinish == undefined ? options.onFinish = function(){} : options.onFinish = options.onFinish;
 
         let tokenObject = {
@@ -328,7 +334,8 @@ class Typewriter2 {
 
         if(this.options.hideInput) this.inputEl.style.display = "none";
 
-        this.plaintext = this.inputEl.textContent;
+
+        this.plaintext = this.options.stringInput ? inputID : this.inputEl.textContent;
 
         let charArray = this.plaintext.split("");
 
