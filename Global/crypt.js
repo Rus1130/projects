@@ -37,4 +37,31 @@ class Crypt {
         });
         return arr.join('+');
     }
+
+    static reverseMe(str){
+        let arr = [...str];
+        let leftArr = [];
+        let rightArr = [];
+
+        arr.forEach((char, i) => {
+            arr[i] = char.charCodeAt(0) + 100;
+        });
+
+        for(let i = 0; i < arr.length; i++){
+            let right = arr[i] % 25;
+            let left = (arr[i] - right) / 25
+
+            leftArr.push(left);
+            rightArr.push(right);
+        }
+
+        rightArr = rightArr.map(right => right.toString().padStart(2, '0'));
+
+        let left = leftArr.join('');
+        let right = rightArr.join('');
+        
+        let result = left + ":" + right;
+
+        return result;
+    }
 }
