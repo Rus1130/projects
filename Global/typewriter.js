@@ -456,10 +456,9 @@ class Typewriter2 {
     /**
      * @description starts the typewriter
      */
-    start(tokens){
-        if(tokens == undefined) tokens = this.tokens;
-        if(this.control.index < tokens.length && !this.control.isPaused){
-            let token = tokens[this.control.index];
+    start(){
+        if(this.control.index < this.tokens.length && !this.control.isPaused){
+            let token = this.tokens[this.control.index];
             if(token.type == "noDisplay"){
                 this.control.index++;
                 this.start();
