@@ -319,7 +319,8 @@ class Typewriter2 {
             index: 0,
             isPaused: false,
             isFinished: false,
-            globalDelayChange: {}
+            globalDelayChange: {},
+            tokens: {}
         };
         this.format = {
             isItalic: false,
@@ -338,7 +339,6 @@ class Typewriter2 {
 
         let charArray = this.plaintext.split("");
 
-        this.tokens = [];
         charArray.forEach((char, i) => {
             let token = {
                 content: char,
@@ -353,18 +353,18 @@ class Typewriter2 {
             if(token.type == "break") token.delay = this.options.breakDelay;
             if(this.options.customDelays[char]) token.delay = this.options.customDelays[char];
 
-            this.tokens.push(token);
+            this.control.tokens.push(token);
         });
 
-        this.tokens.forEach(token => {
+        this.control.tokens.forEach(token => {
             if(token.type == "escape"){
-                if(this.tokens[token.index + 1] != undefined) this.tokens[token.index + 1].type = "displayCharacter";
+                if(this.control.tokens[token.index + 1] != undefined) this.control.tokens[token.index + 1].type = "displayCharacter";
             }
         });
 
-        this.tokens.forEach(token => {
+        this.control.tokens.forEach(token => {
             if(token.type == "escape"){
-                this.tokens[token.index] = {
+                this.control.tokens[token.index] = {
                     content: "",
                     type: "noDisplay",
                     index: token.index,
@@ -374,7 +374,7 @@ class Typewriter2 {
             }
 
             if(token.type == "increaseDelay") {
-                this.tokens[token.index] = {
+                this.control.tokens[token.index] = {
                     content: "",
                     type: "increaseDelay",
                     index: token.index,
@@ -390,7 +390,7 @@ class Typewriter2 {
             }
 
             if(token.type == "outputIndex") {
-                this.tokens[token.index] = {
+                this.control.tokens[token.index] = {
                     content: "",
                     type: "outputIndex",
                     index: token.index,
@@ -399,20 +399,20 @@ class Typewriter2 {
             }
         });
 
-        this.tokens.forEach(token => {
+        this.control.tokens.forEach(token => {
             if(token.type == "styleItalics") this.format.isItalic = !this.format.isItalic;
             if(token.type == "styleBold") this.format.isBold = !this.format.isBold;
             if(token.type == "styleUnderline") this.format.isUnderline = !this.format.isUnderline;
             if(token.type == "styleStrikethrough") this.format.isStrikethrough = !this.format.isStrikethrough;
 
-            if(this.format.isItalic) this.tokens[token.index].styles.push("italic");
-            if(this.format.isBold) this.tokens[token.index].styles.push("bold");
-            if(this.format.isUnderline) this.tokens[token.index].styles.push("underline");
-            if(this.format.isStrikethrough) this.tokens[token.index].styles.push("strikethrough");
+            if(this.format.isItalic) this.control.tokens[token.index].styles.push("italic");
+            if(this.format.isBold) this.control.tokens[token.index].styles.push("bold");
+            if(this.format.isUnderline) this.control.tokens[token.index].styles.push("underline");
+            if(this.format.isStrikethrough) this.control.tokens[token.index].styles.push("strikethrough");
         });
 
-        this.tokens.forEach(token => {
-            if(["styleItalics", "styleBold", "styleUnderline", "styleStrikethrough"].includes(token.type)) this.tokens[token.index] = {
+        this.control.tokens.forEach(token => {
+            if(["styleItalics", "styleBold", "styleUnderline", "styleStrikethrough"].includes(token.type)) this.control.tokens[token.index] = {
                 content: "",
                 type: "noDisplay",
                 index: token.index,
@@ -421,22 +421,22 @@ class Typewriter2 {
             }
         });
 
-        this.tokens.push({
+        this.control.tokens.push({
             content: "",
             type: "end",
-            index: this.tokens.length,
+            index: this.control.tokens.length,
             styles: [],
             delay: 0
         });
 
-        for(let i = this.control.globalDelayChange.index; i < this.tokens.length; i++){
-            this.tokens[i].delay = this.control.globalDelayChange.delays.charDelay;
-            if(this.control.globalDelayChange.delays.customDelays[this.tokens[i].content]) this.tokens[i].delay = this.control.globalDelayChange.delays.customDelays[this.tokens[i].content];
+        for(let i = this.control.globalDelayChange.index; i < this.control.tokens.length; i++){
+            this.control.tokens[i].delay = this.control.globalDelayChange.delays.charDelay;
+            if(this.control.globalDelayChange.delays.customDelays[this.control.tokens[i].content]) this.control.tokens[i].delay = this.control.globalDelayChange.delays.customDelays[this.control.tokens[i].content];
         }
     }
 
     addColor(startIndex, endIndex, color){
-        this.tokens.forEach(token => {
+        this.control.tokens.forEach(token => {
             if(token.index >= startIndex && token.index <= endIndex) token.color = color;
         });
     }
@@ -448,8 +448,8 @@ class Typewriter2 {
     setSpeed(speed){
         this.options.charDelay = speed;
         this.options.customDelays = {};
-        this.tokens.forEach(token => {
-            this.tokens[token.index].delay = speed;
+        this.control.tokens.forEach(token => {
+            this.control.tokens[token.index].delay = speed;
         });
     }
 
@@ -457,8 +457,8 @@ class Typewriter2 {
      * @description starts the typewriter
      */
     start(){
-        if(this.control.index < this.tokens.length && !this.control.isPaused){
-            let token = this.tokens[this.control.index];
+        if(this.control.index < this.control.tokens.length && !this.control.isPaused){
+            let token = this.control.tokens[this.control.index];
             if(token.type == "noDisplay"){
                 this.control.index++;
                 this.start();
