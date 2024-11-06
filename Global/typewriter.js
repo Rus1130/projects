@@ -334,7 +334,6 @@ class Typewriter2 {
 
         if(this.options.hideInput) this.inputEl.style.display = "none";
 
-
         this.plaintext = this.options.stringInput ? inputID : this.inputEl.textContent;
 
         let charArray = this.plaintext.split("");
@@ -457,9 +456,10 @@ class Typewriter2 {
     /**
      * @description starts the typewriter
      */
-    start(){
-        if(this.control.index < this.tokens.length && !this.control.isPaused){
-            let token = this.tokens[this.control.index];
+    start(tokens){
+        if(tokens == undefined) tokens = this.tokens;
+        if(this.control.index < tokens.length && !this.control.isPaused){
+            let token = tokens[this.control.index];
             if(token.type == "noDisplay"){
                 this.control.index++;
                 this.start();
