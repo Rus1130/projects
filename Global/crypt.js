@@ -1,6 +1,6 @@
 class Crypt {
     constructor() {
-        console.warn("Crypt is a static class");
+        return console.error(new Error('Useless to instantiate this class, all methods are static'));
     }
     static key = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz_';
 
@@ -27,13 +27,17 @@ class Crypt {
     static obfuscateText(str) {
         let arr = str.split('');
         arr.forEach((char, index) => {
-            // rand num from 1 to 3
-            let typeNumber = Math.floor(Math.random() * 2) + 1;
+            let typeNumber = Math.floor(Math.random() * 3) + 1;
             let type = '';
 
-            if(typeNumber == 1) type = `Math.round(Math.exp(${Math.log(char.charCodeAt(0))},2))`
-            if(typeNumber == 2) type = `Crypt.from("${Crypt.to(char.charCodeAt(0))}")`;
-            arr[index] = `String.fromCharCode(${type})`;
+            if(typeNumber == 1) type = `Math['round'](Math['exp'](${Math.log(char.charCodeAt(0))},2))`
+            if(typeNumber == 2) type = `Crypt['from']("${Crypt.to(char.charCodeAt(0))}")`;
+            if(typeNumber == 3){
+                let random = Math.floor(Math.random() * 150) + 150;
+                type = `'${String.fromCharCode(random)}'['charCodeAt'](0)-'${String.fromCharCode(random - char.charCodeAt(0))}'['charCodeAt'](0)`;
+
+            }
+            arr[index] = `String['fromCharCode'](${type})`;
         });
         return arr.join('+');
     }
