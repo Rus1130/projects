@@ -71,4 +71,5 @@ class Crypt {
 }
 
 const _Crypt = Crypt;
+
 export { _Crypt as Crypt };

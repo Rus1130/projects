@@ -114,4 +114,6 @@ class Keybinds {
     }
 }
 
-export { Keybinds as Keybinds };
+const _Keybinds = Keybinds;
+
+export { _Keybinds as Keybinds };

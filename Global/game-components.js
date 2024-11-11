@@ -381,6 +381,10 @@ class Game {
     }
 }
 
-export { Player as Player };
-export { GameObject as GameObject };
-export { Game as Game };
+const _Player = Player;
+const _GameObject = GameObject;
+const _Game = Game;
+
+export { _Player as Player };
+export { _GameObject as GameObject };
+export { _Game as Game };

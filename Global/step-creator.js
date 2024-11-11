@@ -195,5 +195,8 @@ class StepNode {
     }
 }
 
-export { StepCreator as StepCreator };
-export { StepNode as StepNode };
+const _StepCreator = StepCreator;
+const _StepNode = StepNode;
+
+export { _StepCreator as StepCreator };
+export { _StepNode as StepNode };

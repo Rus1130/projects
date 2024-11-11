@@ -508,4 +508,8 @@ class Typewriter2 {
     }
 }
 
-export { Typewriter as Typewriter, Typewriter2 as Typewriter2 };
+const _Typewriter = Typewriter;
+const _Typewriter2 = Typewriter2;
+
+export { _Typewriter as Typewriter }
+export { _Typewriter2 as Typewriter2 };
