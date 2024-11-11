@@ -507,9 +507,3 @@ class Typewriter2 {
         this.start();
     }
 }
-
-const _Typewriter = Typewriter;
-const _Typewriter2 = Typewriter2;
-
-export { _Typewriter as Typewriter }
-export { _Typewriter2 as Typewriter2 };

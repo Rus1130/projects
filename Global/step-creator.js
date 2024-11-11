@@ -194,9 +194,3 @@ class StepNode {
         return this;
     }
 }
-
-const _StepCreator = StepCreator;
-const _StepNode = StepNode;
-
-export { _StepCreator as StepCreator };
-export { _StepNode as StepNode };

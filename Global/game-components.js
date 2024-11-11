@@ -380,11 +380,3 @@ class Game {
         this.paused = false;
     }
 }
-
-const _Player = Player;
-const _GameObject = GameObject;
-const _Game = Game;
-
-export { _Player as Player };
-export { _GameObject as GameObject };
-export { _Game as Game };
