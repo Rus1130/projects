@@ -69,3 +69,5 @@ class Crypt {
         return result;
     }
 }
+
+export { Crypt as Crypt };

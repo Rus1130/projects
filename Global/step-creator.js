@@ -194,3 +194,6 @@ class StepNode {
         return this;
     }
 }
+
+export { StepCreator as StepCreator };
+export { StepNode as StepNode };

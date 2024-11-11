@@ -507,3 +507,5 @@ class Typewriter2 {
         this.start();
     }
 }
+
+export { Typewriter as Typewriter, Typewriter2 as Typewriter2 };

@@ -113,3 +113,5 @@ class Keybinds {
         });
     }
 }
+
+export { Keybinds as Keybinds };

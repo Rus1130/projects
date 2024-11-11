@@ -380,3 +380,7 @@ class Game {
         this.paused = false;
     }
 }
+
+export { Player as Player };
+export { GameObject as GameObject };
+export { Game as Game };
