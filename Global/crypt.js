@@ -1,4 +1,4 @@
-class Crypt {
+export class Crypt {
     constructor() {
         return console.error(new Error('Useless to instantiate this class, all methods are static'));
     }
@@ -69,5 +69,3 @@ class Crypt {
         return result;
     }
 }
-
-export { Crypt as Crypt };

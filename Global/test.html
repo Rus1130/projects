@@ -1,24 +1,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
 <!ATTLIST tag onsubmit CDATA #IMPLIED>
-<head>
-    <script src="./keybinds.js"></script>
-    <script src="./game-components.js"></script>
-    <script src="./math.js"></script>
-    <script src="./step-creator.js"></script>
-    <script src="./typewriter.js"></script>
-</head>
 <body>
     <div id="in">/Lorem ipsum dolor sit amet/, _consectetur adipiscing elit_, -*sed do eiusmod tempor incididunt ut labore et dolore magna aliqua*-. Ut enim ad minim veniam, quis nostru/d exercitation ullamco la/boris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit *in voluptate velit esse cillum* dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui */officia deserunt mollit anim id e/*st laborum.|the- quick brown fox ju-mps over the lazy dog|new line~line break|/italic/ *bold* _underline_ -strikethrough-~escaped characters: \~\|\/\*\_\-\«\!</div>
     <div id="out"></div>
 </body>
 <script type="module">
-    import { Crypt } from "./crypt.js";
-    import { Typewriter2 } from "./typewriter.js";
-    import { StepCreator, StepNode } from "./step-creator.js";
-    import { Keybinds } from "./keybinds.js";
-    import { Player, GameObject, Game } from "./game-components.js";
-    
+    import { Crypt } from "https://rus1130.github.io/projects/Global/crypt.js";
+    import { Typewriter2 } from "https://rus1130.github.io/projects/Global/typewriter.js";
+    import { StepCreator, StepNode } from "https://rus1130.github.io/projects/Global/step-creator.js";
+    import { Keybinds } from "https://rus1130.github.io/projects/Global/keybinds.js";
+    import { Player, GameObject, Game } from "https://rus1130.github.io/projects/Global/game-components.js";
+
     let tw = new Typewriter2("in", "out", {
         onFinish: () => {
             console.log("done");
