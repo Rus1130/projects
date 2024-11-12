@@ -30,13 +30,13 @@ class Crypt {
             let typeNumber = Math.floor(Math.random() * 2) + 1;
             let type = '';
 
-            if(typeNumber == 1) type = `Math['round'](Math['exp'](${Math.log(char.charCodeAt(0))},2))`
+            if(typeNumber == 1) type = `String['fromCharCode'](Math['round'](Math['exp'](${Math.log(char.charCodeAt(0))},2)))`
             if(typeNumber == 2){
                 let random = Math.floor(Math.random() * 150) + 150;
-                type = `'${String.fromCharCode(random)}'['charCodeAt'](0)-'${String.fromCharCode(random - char.charCodeAt(0))}'['charCodeAt'](0)`;
-
+                type = `String['fromCharCode']('${String.fromCharCode(random)}'['charCodeAt'](0)-'${String.fromCharCode(random - char.charCodeAt(0))}'['charCodeAt'](0))`;
             }
-            arr[index] = `String['fromCharCode'](${type})`;
+            
+            arr[index] = type;
         });
         return arr.join('+');
     }
