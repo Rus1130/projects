@@ -24,21 +24,28 @@ class Crypt {
         return decoded;
     }
 
-    static obfuscateTextNoCrypt(str) {
+    static obfuscateTextNoCrypt(str) {  
         let arr = str.split('');
+        let fromCharCodeVar = ['a', 'b', 'c', 'd', 'q', 'u', 'y', 'E', 'F', 'G', 'H', 'Q', "X"].sort(() => Math.random() - 0.5)[0];
+        let roundVar = ['e', 'f', 'g', 'h', 'r', 'v', 'z', 'I', 'J', 'K', 'L', "V", "Y"].sort(() => Math.random() - 0.5)[0]
+        let expVar = ['i', 'j', 'k', 'l', 's', 'w', 'A', 'B', 'C', 'D', 'R', "U", "W", "Z"].sort(() => Math.random() - 0.5)[0]
+        let charCodeAtVar = ['m', 'n', 'o', 'p', 't', 'x', 'M', 'N', "O", 'P', "T", "S"].sort(() => Math.random() - 0.5)[0]
+        let varDefs = `let ${fromCharCodeVar}='fromCharCode',${roundVar}='round',${expVar}='exp',${charCodeAtVar}='charCodeAt'`
         arr.forEach((char, index) => {
             let typeNumber = Math.floor(Math.random() * 2) + 1;
             let type = '';
 
-            if(typeNumber == 1) type = `String['fromCharCode'](Math['round'](Math['exp'](${Math.log(char.charCodeAt(0))},2)))`
+            if(typeNumber == 1) type = `String[${fromCharCodeVar}](Math[${roundVar}](Math[${expVar}](${Math.log(char.charCodeAt(0))},2)))`
             if(typeNumber == 2){
                 let random = Math.floor(Math.random() * 150) + 150;
-                type = `String['fromCharCode']('${String.fromCharCode(random)}'['charCodeAt'](0)-'${String.fromCharCode(random - char.charCodeAt(0))}'['charCodeAt'](0))`;
+                type = `String[${fromCharCodeVar}]('${String.fromCharCode(random)}'[${charCodeAtVar}](0)-'${String.fromCharCode(random - char.charCodeAt(0))}'[${charCodeAtVar}](0))`;
             }
             
             arr[index] = type;
         });
-        return arr.join('+');
+        let returnVal = arr.join('+');
+        let result = `(()=>{${varDefs};return ${returnVal}})()`;
+        return result;
     }
 
     static obfuscateText(str) {
