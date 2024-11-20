@@ -24,33 +24,151 @@ class Crypt {
         return decoded;
     }
 
-    static encrypt(s) {
-        const r = (a, b) => Math.random() * (b - a + 1) | 0 + a;
-        let o = [], d = s.split('').map(c => c.charCodeAt(0));
-        d.forEach((v, i) => {
-            let n = v + r(200, 240), t = n % 32, u = n >> 5, x = r(200, 240) ^ 0xAB, y = 0;
-            while (x >= 50) x -= 50, y++;
-            let g = [t, x, y, u];
-            o.push(...(i % 2 ? [g[1], g[0], g[3], g[2]] : g));
-        });
-        let p = o.length / 2;
-        return o.slice(0, p).map(z => String.fromCharCode(z + 600)).join("") + o.slice(p).map(z => String.fromCharCode(z + 950)).join("");
-    }
-    
-    static decrypt(input) {
-        let [x,y]=[input.slice(0,Math.ceil(input.length/2)).split(""),input.slice(Math.ceil(input.length / 2)).split("")];
-        let a=x.concat(y),b=[[],[],[],[]],c=[];
-        for(i=0;i<a.length;i++)b[i % 4].push(a[i]);
-        b[0].forEach((x,j)=>{
-            if (j%2)[b[0][j],b[1][j]]=[b[1][j],b[0][j]];
-            else[b[2][j],b[3][j]]=[b[3][j],b[2][j]];
-        });
-        b.forEach((r,i)=>r.forEach((v, j)=>{
-            let c=v.charCodeAt(0)-(j>=r.length/2?950:600);b[i][j]=c>50?c-350:c;
-        }));b[2].forEach((d,i)=>c.push(((d<<5)+b[0][i])-((b[1][i]+50*b[3][i])^0xAB)));
-        return c.map(x=>String.fromCharCode(x)).join('');
+    static encrypt(string){
+        function random(min, max){
+            return Math.floor(Math.random() * (max - min + 1)) + min
+        }
+
+        let decimalValues = string.split('').map(char => char.charCodeAt(0))
+
+        let encryptedMessageArray = []
+        let keysArray = []
+        let keyModifiersArray = []
+        let keyModifierOverflowCount = [];
+
+        
+
+        for(let i = 0; i < decimalValues.length; i++){
+            let originalValue = decimalValues[i]
+            let randomValue = random(200, 240)
+            let newValue = originalValue + randomValue
+
+            let key = newValue - (newValue >> 5 << 5)
+            let message = newValue >> 5
+            let keyModifier = randomValue ^ 0xAB
+
+            keyModifierOverflowCount.push(0)
+
+            while(keyModifier >= 50){
+                keyModifier -= 50
+                keyModifierOverflowCount[i]++
+            }
+
+            // keyModifierOverflowCount[i] = "KMO" + keyModifierOverflowCount[i]
+            // encryptedMessageArray.push("MSG" + message)
+            // keysArray.push("KEY" + key)
+            // keyModifiersArray.push("KMF" + keyModifier)
+
+            
+
+            keyModifierOverflowCount[i] = keyModifierOverflowCount[i]
+            encryptedMessageArray.push(message)
+            keysArray.push(key)
+            keyModifiersArray.push(keyModifier)
+        }
+
+
+        let reorderingArray = []
+
+
+        for(let i = 0; i < decimalValues.length; i++){
+            if(i % 2 == 0){
+                reorderingArray.push(keysArray[i])
+                reorderingArray.push(keyModifiersArray[i])
+                reorderingArray.push(keyModifierOverflowCount[i])
+                reorderingArray.push(encryptedMessageArray[i])
+            } else {
+                reorderingArray.push(keyModifiersArray[i])
+                reorderingArray.push(keysArray[i])
+                reorderingArray.push(encryptedMessageArray[i])
+                reorderingArray.push(keyModifierOverflowCount[i])
+            }
+        }
+
+        let finalEncryptedMessage = reorderingArray.slice(0, reorderingArray.length / 2).map(x => String.fromCharCode(x + 600)).join("")
+        let finalKey = reorderingArray.slice(reorderingArray.length / 2).map(x => String.fromCharCode(x + 950)).join("")
+
+        return finalEncryptedMessage + finalKey;
     }
 
+    /*
+    static decrypt(input){
+        let half = input.length / 2;
+        let reorderArray = input.slice(0, half).split("").concat(input.slice(half).split(""));
+
+        let resizedReorderArray = [];
+
+
+        for(let i = 0; i < 4; i++){
+            resizedReorderArray.push([])
+            for(let j = 0; j < reorderArray.length / 4; j++){
+                resizedReorderArray[i].push(reorderArray[i + j * 4])
+            }
+        }
+
+        for(let j = 0; j < resizedReorderArray[0].length; j++){
+            if(j % 2 == 1){
+                let temp = resizedReorderArray[0][j]
+                resizedReorderArray[0][j] = resizedReorderArray[1][j]
+                resizedReorderArray[1][j] = temp
+            } else {
+                let temp = resizedReorderArray[2][j]
+                resizedReorderArray[2][j] = resizedReorderArray[3][j]
+                resizedReorderArray[3][j] = temp
+            }
+        }
+
+
+        try {
+            for(let i = 0; i < resizedReorderArray.length; i++){
+                for(let j = 0; j < resizedReorderArray[i].length; j++){
+                    if(i == 0 || i == 1){
+                        if(j >= resizedReorderArray[i].length / 2){
+                            resizedReorderArray[i][j] = resizedReorderArray[i][j].charCodeAt(0) - 950
+                        } else {
+                            resizedReorderArray[i][j] = resizedReorderArray[i][j].charCodeAt(0) - 600
+                        }
+                    } else if(i == 2 || i == 3){
+                        if(j >= resizedReorderArray[i].length / 2){
+                            resizedReorderArray[i][j] = resizedReorderArray[i][j].charCodeAt(0) - 950
+                        } else {
+                            resizedReorderArray[i][j] = resizedReorderArray[i][j].charCodeAt(0) - 600
+                        }
+                    }
+                    if(resizedReorderArray[i][j] > 50){
+                        resizedReorderArray[i][j] = resizedReorderArray[i][j] - (950 - 600)
+                    }
+                }
+            }
+        } catch(e){}
+
+        let messages = resizedReorderArray[2]
+        let keys = resizedReorderArray[0]
+        let keyModifiers = resizedReorderArray[1]
+        let keyModifierOverflowCount = resizedReorderArray[3]
+
+
+        let decryptedMessage = []
+
+        for(let i = 0; i < messages.length; i++){
+            decryptedMessage.push(((messages[i] << 5) + keys[i]) - ((keyModifiers[i] + 50 * keyModifierOverflowCount[i]) ^ 0xAB))
+        }
+        
+        let result = decryptedMessage.map(x => String.fromCharCode(x)).join('')
+        return result
+    }
+    */
+    static decrypt(input) {
+        let a = input.slice(0, input.length / 2).split("").concat(input.slice(input.length / 2,).split(""))
+        let b = Array.from({ length: 4 }, (_, i) => Array.from({ length: a.length / 4 }, (_, j) => a[i + j * 4]));
+    
+        b[0].forEach((_, j) => {if (j % 2) [b[0][j], b[1][j]] = [b[1][j], b[0][j]]; else [b[2][j], b[3][j]] = [b[3][j], b[2][j]];});
+    
+        b.forEach((row, i) => row.forEach((v, j) => { let c = v.charCodeAt(0) - (j >= row.length / 2 ? 950 : 600); row[j] = c > 50 ? c - 350 : c; }));
+    
+        return b[2].map((m, i) => String.fromCharCode(((m << 5) + b[0][i]) - ((b[1][i] + 50 * b[3][i]) ^ 0xAB))).join('');
+    }
+    
     static obfuscateTextNoCrypt(str) {
         let arr = str.split('');
         let fromCharCodeVar = ['a', 'b', 'c', 'd', 'q', 'u', 'y', 'E', 'F', 'G', 'H', 'Q', "X"].sort(() => Math.random() - 0.5)[0];
