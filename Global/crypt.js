@@ -24,6 +24,16 @@ class Crypt {
         return decoded;
     }
 
+    static stringToBase60(str) {
+        let arr = Crypt.to(+str.split('').map(x => x.charCodeAt(0) + 100).join(''));
+        return arr;
+    }
+
+    static base60ToString(str) {
+        let result = String(Crypt.from(str)).match(/.{1,3}/g).map(x => String.fromCharCode(x - 100)).join("");
+        return result;
+    }
+
     static obfuscateTextNoCrypt(str) {  
         let arr = str.split('');
         let fromCharCodeVar = ['a', 'b', 'c', 'd', 'q', 'u', 'y', 'E', 'F', 'G', 'H', 'Q', "X"].sort(() => Math.random() - 0.5)[0];
@@ -31,6 +41,7 @@ class Crypt {
         let expVar = ['i', 'j', 'k', 'l', 's', 'w', 'A', 'B', 'C', 'D', 'R', "U", "W", "Z"].sort(() => Math.random() - 0.5)[0]
         let charCodeAtVar = ['m', 'n', 'o', 'p', 't', 'x', 'M', 'N', "O", 'P', "T", "S"].sort(() => Math.random() - 0.5)[0]
         let varDefs = `let ${fromCharCodeVar}='fromCharCode',${roundVar}='round',${expVar}='exp',${charCodeAtVar}='charCodeAt'`
+        
         arr.forEach((char, index) => {
             let typeNumber = Math.floor(Math.random() * 2) + 1;
             let type = '';
@@ -43,6 +54,7 @@ class Crypt {
             
             arr[index] = type;
         });
+
         let returnVal = arr.join('+');
         let result = `(()=>{${varDefs};return ${returnVal}})()`;
         return result;
