@@ -24,6 +24,33 @@ class Crypt {
         return decoded;
     }
 
+    static encrypt(s) {
+        const r = (a, b) => Math.random() * (b - a + 1) | 0 + a;
+        let o = [], d = s.split('').map(c => c.charCodeAt(0));
+        d.forEach((v, i) => {
+            let n = v + r(200, 240), t = n % 32, u = n >> 5, x = r(200, 240) ^ 0xAB, y = 0;
+            while (x >= 50) x -= 50, y++;
+            let g = [t, x, y, u];
+            o.push(...(i % 2 ? [g[1], g[0], g[3], g[2]] : g));
+        });
+        let p = o.length / 2;
+        return o.slice(0, p).map(z => String.fromCharCode(z + 600)).join("") + o.slice(p).map(z => String.fromCharCode(z + 950)).join("");
+    }
+    
+    static decrypt(input) {
+        let [x,y]=[input.slice(0,Math.ceil(input.length/2)).split(""),input.slice(Math.ceil(input.length / 2)).split("")];
+        let a=x.concat(y),b=[[],[],[],[]],c=[];
+        for(i=0;i<a.length;i++)b[i % 4].push(a[i]);
+        b[0].forEach((x,j)=>{
+            if (j%2)[b[0][j],b[1][j]]=[b[1][j],b[0][j]];
+            else[b[2][j],b[3][j]]=[b[3][j],b[2][j]];
+        });
+        b.forEach((r,i)=>r.forEach((v, j)=>{
+            let c=v.charCodeAt(0)-(j>=r.length/2?950:600);b[i][j]=c>50?c-350:c;
+        }));b[2].forEach((d,i)=>c.push(((d<<5)+b[0][i])-((b[1][i]+50*b[3][i])^0xAB)));
+        return c.map(x=>String.fromCharCode(x)).join('');
+    }
+
     static obfuscateTextNoCrypt(str) {
         let arr = str.split('');
         let fromCharCodeVar = ['a', 'b', 'c', 'd', 'q', 'u', 'y', 'E', 'F', 'G', 'H', 'Q', "X"].sort(() => Math.random() - 0.5)[0];
