@@ -25,12 +25,14 @@ class Crypt {
     }
 
     static stringToBase60(str) {
-        let arr = Crypt.to(+str.split('').map(x => x.charCodeAt(0) + 100).join(''));
+        let t=(n)=>{let b='0123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz_',d=0;for(let i=0;i<n.length;i++)d=d*60+b.indexOf(n[i]);return d;}
+        let arr = t(+str.split('').map(x=>x.charCodeAt(0)+100).join(''));
         return arr;
     }
 
     static base60ToString(str) {
-        let result = String(Crypt.from(str)).match(/.{1,3}/g).map(x => String.fromCharCode(x - 100)).join("");
+        let f=(n)=>{let b='0123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz_',d='';for(let i=0;n>0;i++)d=b[n%60]+d,n=(n-n%60)/60;return d;}
+        let result = String(f(str)).match(/.{1,3}/g).map(x=>String.fromCharCode(x-100)).join("");
         return result;
     }
 
