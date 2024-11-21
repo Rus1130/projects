@@ -23,76 +23,23 @@ class Crypt {
         }
         return decoded;
     }
-
-    static encrypt(string){
-        function random(min, max){
-            return Math.floor(Math.random() * (max - min + 1)) + min
-        }
-
-        let decimalValues = string.split('').map(char => char.charCodeAt(0))
-
-        let encryptedMessageArray = []
-        let keysArray = []
-        let keyModifiersArray = []
-        let keyModifierOverflowCount = [];
-
-        
-
-        for(let i = 0; i < decimalValues.length; i++){
-            let originalValue = decimalValues[i]
-            let randomValue = random(200, 240)
-            let newValue = originalValue + randomValue
-
-            let key = newValue - (newValue >> 5 << 5)
-            let message = newValue >> 5
-            let keyModifier = randomValue ^ 0xAB
-
-            keyModifierOverflowCount.push(0)
-
-            while(keyModifier >= 50){
-                keyModifier -= 50
-                keyModifierOverflowCount[i]++
-            }
-
-            // keyModifierOverflowCount[i] = "KMO" + keyModifierOverflowCount[i]
-            // encryptedMessageArray.push("MSG" + message)
-            // keysArray.push("KEY" + key)
-            // keyModifiersArray.push("KMF" + keyModifier)
-
-            
-
-            keyModifierOverflowCount[i] = keyModifierOverflowCount[i]
-            encryptedMessageArray.push(message)
-            keysArray.push(key)
-            keyModifiersArray.push(keyModifier)
-        }
-
-
-        let reorderingArray = []
-
-
-        for(let i = 0; i < decimalValues.length; i++){
-            if(i % 2 == 0){
-                reorderingArray.push(keysArray[i])
-                reorderingArray.push(keyModifiersArray[i])
-                reorderingArray.push(keyModifierOverflowCount[i])
-                reorderingArray.push(encryptedMessageArray[i])
-            } else {
-                reorderingArray.push(keyModifiersArray[i])
-                reorderingArray.push(keysArray[i])
-                reorderingArray.push(encryptedMessageArray[i])
-                reorderingArray.push(keyModifierOverflowCount[i])
-            }
-        }
-
-        let finalEncryptedMessage = reorderingArray.slice(0, reorderingArray.length / 2).map(x => String.fromCharCode(x + 600)).join("")
-        let finalKey = reorderingArray.slice(reorderingArray.length / 2).map(x => String.fromCharCode(x + 950)).join("")
-
-        return finalEncryptedMessage + finalKey;
+    static encrypt(s) {
+        const a = (b, c) => Math.floor(Math.random() * (c - b + 1)) + b;
+        let d = s.split('').map(e => e.charCodeAt(0)), f = [], g = [], h = [], i = [];
+        d.forEach(j => {
+            let k = a(200, 240), l = j + k, m = l % 32, n = l >> 5, o = k ^ 0xAB;
+            let p = 0, q = o; 
+            while (q >= 50) q -= 50, p++;
+            f.push(n), g.push(m), h.push(q), i.push(p);
+        });
+        let r = [];
+        d.forEach((_, s) => r.push(...(s % 2 ? [h[s], g[s], f[s], i[s]] : [g[s], h[s], i[s], f[s]])));
+        return r.slice(0, r.length / 2).map(t => String.fromCharCode(t + 600)).join("") +
+               r.slice(r.length / 2).map(u => String.fromCharCode(u + 950)).join("");
     }
     
-    static decrypt(input) {
-        let a = input.slice(0, input.length / 2).split("").concat(input.slice(input.length / 2,).split(""))
+    static decrypt(s) {
+        let a = s.slice(0, s.length / 2).split("").concat(s.slice(s.length / 2,).split(""))
         let b = Array.from({ length: 4 }, (_, i) => Array.from({ length: a.length / 4 }, (_, j) => a[i + j * 4]));
     
         b[0].forEach((_, j) => {if (j % 2) [b[0][j], b[1][j]] = [b[1][j], b[0][j]]; else [b[2][j], b[3][j]] = [b[3][j], b[2][j]];});
