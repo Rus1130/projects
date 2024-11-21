@@ -90,74 +90,7 @@ class Crypt {
 
         return finalEncryptedMessage + finalKey;
     }
-
-    /*
-    static decrypt(input){
-        let half = input.length / 2;
-        let reorderArray = input.slice(0, half).split("").concat(input.slice(half).split(""));
-
-        let resizedReorderArray = [];
-
-
-        for(let i = 0; i < 4; i++){
-            resizedReorderArray.push([])
-            for(let j = 0; j < reorderArray.length / 4; j++){
-                resizedReorderArray[i].push(reorderArray[i + j * 4])
-            }
-        }
-
-        for(let j = 0; j < resizedReorderArray[0].length; j++){
-            if(j % 2 == 1){
-                let temp = resizedReorderArray[0][j]
-                resizedReorderArray[0][j] = resizedReorderArray[1][j]
-                resizedReorderArray[1][j] = temp
-            } else {
-                let temp = resizedReorderArray[2][j]
-                resizedReorderArray[2][j] = resizedReorderArray[3][j]
-                resizedReorderArray[3][j] = temp
-            }
-        }
-
-
-        try {
-            for(let i = 0; i < resizedReorderArray.length; i++){
-                for(let j = 0; j < resizedReorderArray[i].length; j++){
-                    if(i == 0 || i == 1){
-                        if(j >= resizedReorderArray[i].length / 2){
-                            resizedReorderArray[i][j] = resizedReorderArray[i][j].charCodeAt(0) - 950
-                        } else {
-                            resizedReorderArray[i][j] = resizedReorderArray[i][j].charCodeAt(0) - 600
-                        }
-                    } else if(i == 2 || i == 3){
-                        if(j >= resizedReorderArray[i].length / 2){
-                            resizedReorderArray[i][j] = resizedReorderArray[i][j].charCodeAt(0) - 950
-                        } else {
-                            resizedReorderArray[i][j] = resizedReorderArray[i][j].charCodeAt(0) - 600
-                        }
-                    }
-                    if(resizedReorderArray[i][j] > 50){
-                        resizedReorderArray[i][j] = resizedReorderArray[i][j] - (950 - 600)
-                    }
-                }
-            }
-        } catch(e){}
-
-        let messages = resizedReorderArray[2]
-        let keys = resizedReorderArray[0]
-        let keyModifiers = resizedReorderArray[1]
-        let keyModifierOverflowCount = resizedReorderArray[3]
-
-
-        let decryptedMessage = []
-
-        for(let i = 0; i < messages.length; i++){
-            decryptedMessage.push(((messages[i] << 5) + keys[i]) - ((keyModifiers[i] + 50 * keyModifierOverflowCount[i]) ^ 0xAB))
-        }
-        
-        let result = decryptedMessage.map(x => String.fromCharCode(x)).join('')
-        return result
-    }
-    */
+    
     static decrypt(input) {
         let a = input.slice(0, input.length / 2).split("").concat(input.slice(input.length / 2,).split(""))
         let b = Array.from({ length: 4 }, (_, i) => Array.from({ length: a.length / 4 }, (_, j) => a[i + j * 4]));
