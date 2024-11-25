@@ -58,7 +58,7 @@ class Crypt {
     
         return b[2].map((m, i) => String.fromCharCode(((m << 5) + b[0][i]) - ((b[1][i] + 50 * b[3][i]) ^ 0xAB))).join('');
     }
-    //type = `Crypt['from']("${Crypt.to(char.charCodeAt(0))}")`;
+
     static obfuscateTextNoCrypt(str) {
         function p(inputArray) {
             const randomIndex = Math.floor(Math.random() * inputArray.length);
