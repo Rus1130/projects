@@ -124,7 +124,7 @@ class Crypt {
         let setup = `let ${varDefs.join(",")}`
         
         arr.forEach((char, index) => {
-            let typeNumber = Math.floor(Math.random() * 3) + 1;
+            let typeNumber = Math.floor(Math.random() * 4) + 1;
             let type = '';
 
             if(typeNumber == 1) type = `String[${fromCharCodeVar}](Math[${roundVar}](Math[${expVar}](${Math.log(char.charCodeAt(0))},2)))`
@@ -139,7 +139,7 @@ class Crypt {
         });
 
         let returnVal = arr.join('+');
-        let result = `(()=>{${setup};return ${returnVal}})()`;
+        let result = `(()=>{${setup};return ${returnVal}.replaceAll("\x00", "")})()`;
         return result;
     }
 }
