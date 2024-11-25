@@ -139,7 +139,7 @@ class Crypt {
         });
 
         let returnVal = arr.join('+');
-        let result = `(()=>{${setup};return ${returnVal}.replaceAll("\x00", "")})()`;
+        let result = `(()=>{${setup};return ${returnVal}.replaceAll("\x00","")})()`;
         return result;
     }
 }
