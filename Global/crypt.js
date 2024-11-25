@@ -4,6 +4,16 @@ class Crypt {
     }
     static key = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz_';
 
+    static stringTo(plainText) {
+        let mapper = [...plainText].map(x=>String(x.charCodeAt(0)+100).padStart(3, '0')).join('').match(/.{1,15}/g).map(x=>Crypt.to(parseInt(x)));
+        return mapper.join(":");
+    }
+
+    static stringFrom(cipherText) {
+        let mapper = cipherText.split(":").map(x=>Crypt.from(x)).join('').match(/.{1,3}/g).map(x=>String.fromCharCode(parseInt(x)-100)).join('');
+        return mapper;
+    }
+
     static to(num) {
         let base60 = Crypt.key;
         let encoded = '';
@@ -48,13 +58,19 @@ class Crypt {
     
         return b[2].map((m, i) => String.fromCharCode(((m << 5) + b[0][i]) - ((b[1][i] + 50 * b[3][i]) ^ 0xAB))).join('');
     }
-    
+    //type = `Crypt['from']("${Crypt.to(char.charCodeAt(0))}")`;
     static obfuscateTextNoCrypt(str) {
+        function p(inputArray) {
+            const randomIndex = Math.floor(Math.random() * inputArray.length);
+            return inputArray.splice(randomIndex, 1)[0];
+        }
+        let array = [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
+          
         let arr = str.split('');
-        let fromCharCodeVar = ['a', 'b', 'c', 'd', 'q', 'u', 'y', 'E', 'F', 'G', 'H', 'Q', "X"].sort(() => Math.random() - 0.5)[0];
-        let roundVar = ['e', 'f', 'g', 'h', 'r', 'v', 'z', 'I', 'J', 'K', 'L', "V", "Y"].sort(() => Math.random() - 0.5)[0]
-        let expVar = ['i', 'j', 'k', 'l', 's', 'w', 'A', 'B', 'C', 'D', 'R', "U", "W", "Z"].sort(() => Math.random() - 0.5)[0]
-        let charCodeAtVar = ['m', 'n', 'o', 'p', 't', 'x', 'M', 'N', "O", 'P', "T", "S"].sort(() => Math.random() - 0.5)[0]
+        let fromCharCodeVar = p(array);
+        let roundVar = p(array);    
+        let expVar = p(array);
+        let charCodeAtVar = p(array);
         let varDefs = `let ${fromCharCodeVar}='fromCharCode',${roundVar}='round',${expVar}='exp',${charCodeAtVar}='charCodeAt'`
         
         arr.forEach((char, index) => {
@@ -76,47 +92,54 @@ class Crypt {
     }
 
     static obfuscateText(str) {
+        function _p(inputArray) {
+            const randomIndex = Math.floor(Math.random() * inputArray.length);
+            return inputArray.splice(randomIndex, 1)[0];
+        }
+        let array = [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
+        
         let arr = str.split('');
+        let varDefs = [];
+
+        let fromCharCodeVar = _p(array);
+        let roundVar = _p(array);
+        let expVar = _p(array);
+        let charCodeAtVar = _p(array);
+        let fromVar = _p(array);
+        let decryptVar = _p(array);
+        
+        let declarations = {
+            [fromCharCodeVar]: `Crypt['stringFrom']('${Crypt.stringTo('fromCharCode')}')`, // fromCharCode
+            [roundVar]: `Crypt['stringFrom']('${Crypt.stringTo('round')}')`, // round
+            [expVar]: `Crypt['stringFrom']('${Crypt.stringTo('exp')}')`, // exp
+            [charCodeAtVar]: `Crypt['stringFrom']('${Crypt.stringTo('charCodeAt')}')`, // charCodeAt
+            [fromVar]: `Crypt['stringFrom']('${Crypt.stringTo('from')}')`, // from
+            [decryptVar]: `Crypt['stringFrom']('${Crypt.stringTo('decrypt')}')` // decrypt
+        }
+        for(let i = 0; i < Object.keys(declarations).length; i++){
+            let key = Object.keys(declarations)[i];
+            let value = Object.values(declarations)[i];
+            varDefs.push(`${key}=${value}`);
+        }
+        let setup = `let ${varDefs.join(",")}`
+        
         arr.forEach((char, index) => {
             let typeNumber = Math.floor(Math.random() * 3) + 1;
             let type = '';
 
-            if(typeNumber == 1) type = `Math['round'](Math['exp'](${Math.log(char.charCodeAt(0))},2))`
-            if(typeNumber == 2) type = `Crypt['from']("${Crypt.to(char.charCodeAt(0))}")`;
-            if(typeNumber == 3){
+            if(typeNumber == 1) type = `String[${fromCharCodeVar}](Math[${roundVar}](Math[${expVar}](${Math.log(char.charCodeAt(0))},2)))`
+            if(typeNumber == 2){
                 let random = Math.floor(Math.random() * 150) + 150;
-                type = `'${String.fromCharCode(random)}'['charCodeAt'](0)-'${String.fromCharCode(random - char.charCodeAt(0))}'['charCodeAt'](0)`;
-
+                type = `String[${fromCharCodeVar}]('${String.fromCharCode(random)}'[${charCodeAtVar}](0)-'${String.fromCharCode(random - char.charCodeAt(0))}'[${charCodeAtVar}](0))`;
             }
-            arr[index] = `String['fromCharCode'](${type})`;
-        });
-        return arr.join('+');
-    }
-
-    static reverseMe(str){
-        let arr = [...str];
-        let leftArr = [];
-        let rightArr = [];
-
-        arr.forEach((char, i) => {
-            arr[i] = char.charCodeAt(0) + 100;
+            if(typeNumber == 3) type = `String[${fromCharCodeVar}](Crypt[${fromVar}]('${Crypt.to(char.charCodeAt(0))}'))`;
+            if(typeNumber == 4) type = `String[${fromCharCodeVar}](Crypt[${decryptVar}]('${Crypt.encrypt(char)}'))`;
+            
+            arr[index] = type;
         });
 
-        for(let i = 0; i < arr.length; i++){
-            let right = arr[i] % 25;
-            let left = (arr[i] - right) / 25
-
-            leftArr.push(left);
-            rightArr.push(right);
-        }
-
-        rightArr = rightArr.map(right => right.toString().padStart(2, '0'));
-
-        let left = leftArr.join('');
-        let right = rightArr.join('');
-        
-        let result = left + ":" + right;
-
+        let returnVal = arr.join('+');
+        let result = `(()=>{${setup};return ${returnVal}})()`;
         return result;
     }
 }
