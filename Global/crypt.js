@@ -92,7 +92,7 @@ class Crypt {
     }
 
     static obfuscateText(str) {
-        function _p(inputArray) {
+        function p(inputArray) {
             const randomIndex = Math.floor(Math.random() * inputArray.length);
             return inputArray.splice(randomIndex, 1)[0];
         }
@@ -101,12 +101,14 @@ class Crypt {
         let arr = str.split('');
         let varDefs = [];
 
-        let fromCharCodeVar = _p(array);
-        let roundVar = _p(array);
-        let expVar = _p(array);
-        let charCodeAtVar = _p(array);
-        let fromVar = _p(array);
-        let decryptVar = _p(array);
+        let fromCharCodeVar = p(array);
+        let roundVar = p(array);
+        let expVar = p(array);
+        let charCodeAtVar = p(array);
+        let fromVar = p(array);
+        let StringVar = p(array);
+        let MathVar = p(array);
+        let CryptVar = p(array);
         
         let declarations = {
             [fromCharCodeVar]: `Crypt['stringFrom']('${Crypt.stringTo('fromCharCode')}')`, // fromCharCode
@@ -114,7 +116,9 @@ class Crypt {
             [expVar]: `Crypt['stringFrom']('${Crypt.stringTo('exp')}')`, // exp
             [charCodeAtVar]: `Crypt['stringFrom']('${Crypt.stringTo('charCodeAt')}')`, // charCodeAt
             [fromVar]: `Crypt['stringFrom']('${Crypt.stringTo('from')}')`, // from
-            [decryptVar]: `Crypt['stringFrom']('${Crypt.stringTo('decrypt')}')` // decrypt
+            [StringVar]: `Crypt['stringFrom']('${Crypt.stringTo('String')}')`, // String
+            [MathVar]: `Crypt['stringFrom']('${Crypt.stringTo('Math')}')`, // Math
+            [CryptVar]: `Crypt['stringFrom']('${Crypt.stringTo('Crypt')}')` // Crypt
         }
         for(let i = 0; i < Object.keys(declarations).length; i++){
             let key = Object.keys(declarations)[i];
@@ -124,22 +128,21 @@ class Crypt {
         let setup = `let ${varDefs.join(",")}`
         
         arr.forEach((char, index) => {
-            let typeNumber = Math.floor(Math.random() * 4) + 1;
+            let typeNumber = Math.floor(Math.random() * 3) + 1;
             let type = '';
 
-            if(typeNumber == 1) type = `String[${fromCharCodeVar}](Math[${roundVar}](Math[${expVar}](${Math.log(char.charCodeAt(0))},2)))`
+            if(typeNumber == 1) type = `eval(${StringVar})[${fromCharCodeVar}](eval(${MathVar})[${roundVar}](eval(${MathVar})[${expVar}](${Math.log(char.charCodeAt(0))},2)))`
             if(typeNumber == 2){
                 let random = Math.floor(Math.random() * 150) + 150;
-                type = `String[${fromCharCodeVar}]('${String.fromCharCode(random)}'[${charCodeAtVar}](0)-'${String.fromCharCode(random - char.charCodeAt(0))}'[${charCodeAtVar}](0))`;
+                type = `eval(${StringVar})[${fromCharCodeVar}]('${String.fromCharCode(random)}'[${charCodeAtVar}](0)-'${String.fromCharCode(random - char.charCodeAt(0))}'[${charCodeAtVar}](0))`;
             }
-            if(typeNumber == 3) type = `String[${fromCharCodeVar}](Crypt[${fromVar}]('${Crypt.to(char.charCodeAt(0))}'))`;
-            if(typeNumber == 4) type = `String[${fromCharCodeVar}](Crypt[${decryptVar}]('${Crypt.encrypt(char)}'))`;
+            if(typeNumber == 3) type = `eval(${StringVar})[${fromCharCodeVar}](eval(${CryptVar})[${fromVar}]('${Crypt.to(char.charCodeAt(0))}'))`;
             
             arr[index] = type;
         });
 
         let returnVal = arr.join('+');
-        let result = `(()=>{${setup};return ${returnVal}.replaceAll("\x00","")})()`;
+        let result = `(()=>{${setup};return ${returnVal}})()`;
         return result;
     }
 }
