@@ -276,7 +276,6 @@ class Typewriter2 {
     */
 
     /**
-     * 
      * @param {String} inputID ID of the element whose textContent will be typed
      * @param {String} outputID ID of the element where the text will be typed in innerHTML
      * @param {Object} options options object
@@ -289,6 +288,7 @@ class Typewriter2 {
      * @param {Boolean} [options.stringInput=false] if true, the inputID will be treated as the string to display rather than an element (default false)
      * @param {Boolean} [options.hideInput=true] hides the input element (default true)
      * @param {Function} [options.onFinish] fires after finishing typing
+     * @param {Function} [options.onCharacterDisplayed] fires after each character is displayed, has one parameter token, which is the token of the char being displayed
      */
     constructor(inputID, outputID, options){
         if(options == undefined) options = {};
@@ -302,6 +302,7 @@ class Typewriter2 {
         options.hideInput == undefined ? options.hideInput = true : options.hideInput = options.hideInput;
         options.stringInput == undefined ? options.stringInput = false : options.stringInput = options.stringInput;
         options.onFinish == undefined ? options.onFinish = function(){} : options.onFinish = options.onFinish;
+        options.onCharacterDisplayed == undefined ? options.onCharacterDisplayed = function(token){} : options.onCharacterDisplayed = options.onCharacterDisplayed;
 
         let tokenObject = {
             [options.newlineDelimiter]: "newline",
@@ -459,11 +460,11 @@ class Typewriter2 {
     start(){
         if(this.control.index < this.control.tokens.length && !this.control.isPaused){
             let token = this.control.tokens[this.control.index];
+            this.options.onCharacterDisplayed(token);
             if(token.type == "noDisplay"){
                 this.control.index++;
                 this.start();
             } else if(token.type == "outputIndex"){
-                console.log(this.control.index - 1);
                 this.control.index++;
                 this.start();
             } else {
