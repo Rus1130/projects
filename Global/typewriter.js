@@ -276,6 +276,7 @@ class Typewriter2 {
     */
 
     /**
+     * the names "line break" and "new line" are swapped, oopsies. cant change it now.
      * @param {String} inputID ID of the element whose textContent will be typed
      * @param {String} outputID ID of the element where the text will be typed in innerHTML
      * @param {Object} options options object
@@ -506,5 +507,42 @@ class Typewriter2 {
     resume(){
         this.control.isPaused = false;
         this.start();
+    }
+
+    reset(){
+        this.control.isPaused = true;
+        this.control.isFinished = false;
+        this.control.index = 0;
+        this.outputEl.innerHTML = "";
+    }
+}
+
+class ScrambleTextEffect {
+    /**
+     * Creates an instance of ScrambleTextEffect.
+     * @param {string} inputText - The text to apply the scramble effect to.
+     * @param {HTMLElement} outputElement - The HTML element where the scrambled text will be displayed.
+     * @param {number} speed - The speed of the scramble effect in milliseconds.
+     * @param {number} iterations - The number of iterations for scrambling each character.
+     */
+    constructor(inputText, outputElement, speed, iterations){
+        this.inputText = inputText;
+        this.outputElement = outputElement;
+        this.speed = speed;
+        this.iterations = iterations;
+    }
+
+    start(){
+        Helper.timedLoop(this.speed * this.iterations, this.inputText.length, (i) => {
+            Helper.timedLoop(this.speed, this.iterations, (j) => {
+                if(j < 9) {
+                    let newString = this.inputText.substring(0, i) + Helper.randomString(1);
+                    this.outputElement.innerHTML = newString;
+                } else {
+                    let newString = this.inputText.substring(0, i + 1);
+                    this.outputElement.innerHTML = newString;
+                }
+            });
+        });
     }
 }
