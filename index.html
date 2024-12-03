@@ -50,6 +50,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
     <script src="Global/crypt.js"></script>
     <script src="Global/typewriter.js"></script>
+    <script src="Global/helper.js"></script>
     <title>idle...</title>
 </head>
 <body>
@@ -99,6 +100,7 @@
     <div id="start"><span id="press-key-start">press any key to start</span><span id="dot-dot-dot">.</span></div>
 </body>
 <script>
+    Helper.timerSniffer();
     let animationFinished = false;
     function start(){
         let titleAnim = ["/", "-", "\\", "|"];
@@ -167,7 +169,6 @@
 
     let typewriter2 = new Typewriter2("typewriter-in", "typewriter-out", {
         charDelay: 80,
-        newlineDelay: 1000,
     });
 
     function show(id){

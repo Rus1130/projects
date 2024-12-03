@@ -3,9 +3,11 @@ class Helper {
         return console.error(new Error('Useless to instantiate this class, all methods are static'));
     }
 
+    static Timers = {};
+
     /**
-     * @param {number} ms - The time interval in milliseconds between each iteration.
-     * @param {number} iterations - The total number of iterations to execute the callback.
+     * @param {number} ms The time interval in milliseconds between each iteration.
+     * @param {number} iterations The total number of iterations to execute the callback.
      * @param {function(number): void} callback A callback function that gets called on each iteration. Receives the current iteration index (starting from 0) as an argument.
      */
     static timedLoop(ms, iterations, callback) {
@@ -28,5 +30,73 @@ class Helper {
             result += characters.charAt(Math.floor(Math.random() * characters.length));
         }
         return result;
+    }
+
+    /**
+     * A static method to override the default `setTimeout`, `setInterval`, `clearTimeout`, 
+     * and `clearInterval` functions in the browser's `window` object. This implementation 
+     * keeps track of active timers by storing metadata (type, function, delay) in a static 
+     * `Helper.Timers` object for debugging or management purposes.
+     *
+     * @example
+     * // Enable the timer sniffer
+     * Helper.timerSniffer();
+     * 
+     * // Example usage of setTimeout and setInterval
+     * const timeoutId = setTimeout(() => console.log("Hello after 1 second"), 1000);
+     * const intervalId = setInterval(() => console.log("Repeating every 2 seconds"), 2000);
+     * 
+     * // Access the Helper.Timers object to see active timers
+     * console.log(Helper.Timers);
+     * // Example Output:
+     * // {
+     * //   1: { type: "timeout", fn: [Function], delay: 1000 },
+     * //   2: { type: "interval", fn: [Function], delay: 2000 }
+     * // }
+     * 
+     * // Clear a timer
+     * clearTimeout(timeoutId);
+     * console.log(Helper.Timers); 
+     * // Output: { 2: { type: "interval", fn: [Function], delay: 2000 } }
+     * 
+     * // Clear all intervals when done
+     * clearInterval(intervalId);
+     */
+    static timerSniffer() {
+        (function(w) {
+            const oldST = w.setTimeout;
+            const oldSI = w.setInterval;
+            const oldCI = w.clearInterval;
+            
+            // Replace the array with an object
+            const timers = {};
+            Helper.Timers = timers;
+    
+            w.setTimeout = function(fn, delay) {
+                const id = oldST(function() {
+                    if (fn) fn();
+                    removeTimer(id);
+                }, delay);
+                timers[id] = { type: "timeout", fn, delay }
+                return id;
+            };
+    
+            w.setInterval = function(fn, delay) {
+                const id = oldSI(fn, delay);
+                timers[id] = { type: "interval", fn, delay };
+                return id;
+            };
+    
+            w.clearInterval = function(id) {
+                oldCI(id);
+                removeTimer(id);
+            };
+    
+            w.clearTimeout = w.clearInterval;
+    
+            function removeTimer(id) {
+                if (timers[id]) delete timers[id];
+            }
+        })(window);
     }
 }
