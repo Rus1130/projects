@@ -61,8 +61,10 @@ class Helper {
      * 
      * // Clear all intervals when done
      * clearInterval(intervalId);
+     * 
+     * @param {boolean} log Whether to log the timers to the console.
      */
-    static timerSniffer() {
+    static timerSniffer(log) {
         (function(w) {
             const oldST = w.setTimeout;
             const oldSI = w.setInterval;
@@ -78,12 +80,14 @@ class Helper {
                     removeTimer(id);
                 }, delay);
                 timers[id] = { type: "timeout", fn, delay }
+                if(log) console.warn(`[timerSniffer] Timeout ${id} created`, timers[id]);
                 return id;
             };
     
             w.setInterval = function(fn, delay) {
                 const id = oldSI(fn, delay);
                 timers[id] = { type: "interval", fn, delay };
+                if(log) console.warn(`[timerSniffer] Interval ${id} created`, timers[id]);
                 return id;
             };
     
@@ -96,6 +100,7 @@ class Helper {
     
             function removeTimer(id) {
                 if (timers[id]) delete timers[id];
+                if(log) console.warn(`[timerSniffer] Timer ${id} destroyed`);
             }
         })(window);
     }

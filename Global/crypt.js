@@ -60,6 +60,13 @@ class Crypt {
         return b[2].map((m, i) => String.fromCharCode(((m << 5) + b[0][i]) - ((b[1][i] + 50 * b[3][i]) ^ 0xAB))).join('');
     }
 
+    static a(){
+
+        let k=Array.from({length: 10}, (é, í) => é = í).join('')+Array.from({length: 26}, (é, í) => é = String.fromCharCode(í+65)).join('')+Array.from({length: 26}, (é, í) => é = String.fromCharCode(í+97)).join('')+"_"
+
+        return k;
+    }
+
     static obfuscateTextNoCrypt(str) {
         function p(inputArray) {
             const randomIndex = Math.floor(Math.random() * inputArray.length);
@@ -82,8 +89,13 @@ class Crypt {
         let decodeFunctArg2 = p(array);
         let decodeFunctArg3 = p(array);
         let decodeFunctArg4 = p(array);
+        let decodeFunctArg5 = p(array);
+        let decodeFunctArg6 = p(array);
+        let decodeFunctArg7 = p(array);
 
-        let decode = `${decodeFunctVar}=${decodeFunctArg1}=>{${decodeFunctArg2}=${decodeFunctArg3}=>{let ${decodeFunctArg4}=0,k="0123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz_";[...${decodeFunctArg3}].forEach(e=>${decodeFunctArg4}=${decodeFunctArg4}*60+k.indexOf(e));return ${decodeFunctArg4};};return ${decodeFunctArg1}.split(":").map(${decodeFunctArg2}).join("").match(/.../g).map(c=>String.fromCharCode(+c-100)).join("")}`;
+        let key = "0123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz_";
+
+        let decode = `let ${decodeFunctArg5}='${key}';${decodeFunctVar}=${decodeFunctArg1}=>{${decodeFunctArg2}=${decodeFunctArg3}=>{let ${decodeFunctArg4}=0;[...${decodeFunctArg3}].forEach(${decodeFunctArg6}=>${decodeFunctArg4}=${decodeFunctArg4}*0x3C+${decodeFunctArg5}.indexOf(${decodeFunctArg6}));return ${decodeFunctArg4}};return ${decodeFunctArg1}.split(String.fromCharCode(0x3A)).map(${decodeFunctArg2}).join('').match(/.../g).map(${decodeFunctArg7}=>String.fromCharCode(+${decodeFunctArg7}-0x64)).join('')}`;
     
         let varDefs = [];
 
