@@ -62,7 +62,7 @@ class Helper {
      * // Clear all intervals when done
      * clearInterval(intervalId);
      * 
-     * @param {boolean} log Whether to log the timers to the console.
+     * @param {boolean} [log=false] Whether to log the timers to the console.
      */
     static timerSniffer(log) {
         (function(w) {
