@@ -100,7 +100,10 @@
     <div id="start"><span id="press-key-start">press any key to start</span><span id="dot-dot-dot">.</span></div>
 </body>
 <script>
-    Helper.timerSniffer();
+    Helper.timerSniffer({
+        enableAllOptions: true,
+        intervalIDsToExclude: [2]
+    });
     let animationFinished = false;
     function start(){
         let titleAnim = ["/", "-", "\\", "|"];
@@ -165,7 +168,7 @@
             display = "The time has passed.";
         }
         document.getElementById("counter").textContent = display.replaceAll("\n", "");
-    }, 1)
+    }, 200)
 
     let typewriter2 = new Typewriter2("typewriter-in", "typewriter-out", {
         charDelay: 80,
