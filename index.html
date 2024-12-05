@@ -55,7 +55,7 @@
 </head>
 <body>
     <div id="wrapper" style="display: none">
-        <div>rus1130/projects/index.html</div>
+        <div id="scrambleTextDisplay">&nbsp;</div>
         <div id="counter"><br></div>
         <div id="-">--------------</div>
         <div id="cat-main">
@@ -104,6 +104,9 @@
         enableAllOptions: true,
         intervalIDsToExclude: [2]
     });
+
+    let ste = new ScrambleTextEffect("rus1130/projects/index.html", document.getElementById("scrambleTextDisplay"), 80, 10)
+
     let animationFinished = false;
     function start(){
         let titleAnim = ["/", "-", "\\", "|"];
@@ -117,6 +120,7 @@
             if(animationFinished){
                 clearInterval(anim);
                 document.title = "Welcome!";
+                ste.start();
             }
         }, 80)
     }

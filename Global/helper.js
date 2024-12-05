@@ -69,10 +69,10 @@ class Helper {
      * @param {boolean} [options.logTimerDistruction=false] log timer destruction
      * @param {boolean} [options.logIntervalCall=false] log interval call
      * @param {boolean} [options.logTimeoutCall=false] log timeout call
-     * @param {Array<number>} [options.intervalIDsToLog=[]] ids of intervals to log if logIntervalCall is true
-     * @param {Array<number>} [options.timeoutIDsToLog=[]] ids of timeouts to log if logTimeoutCall is true
-     * @param {Array<number>} [options.intervalIDsToExclude=[]] ids of intervals to exclude from logging
-     * @param {Array<number>} [options.timeoutIDsToExclude=[]] ids of timeouts to exclude from logging
+     * @param {Array<number>} [options.intervalIDsToLog=[]] will only log interval calls with these ids
+     * @param {Array<number>} [options.timeoutIDsToLog=[]]  will only log timeout calls with these ids
+     * @param {Array<number>} [options.intervalIDsToExclude=[]] will suppress interval call logging for these ids
+     * @param {Array<number>} [options.timeoutIDsToExclude=[]] will suppress timeout call logging for these ids
      */
     static timerSniffer(options) {
         if(options == undefined) options = {};
@@ -108,6 +108,17 @@ class Helper {
             // Replace the array with an object
             const timers = {};
             Helper.Timers = timers;
+
+            Helper.TimerDebugStartingTime = Date.now();
+
+            function timestamp() {
+                return `%c [timerSniffer ${Date.now()-Helper.TimerDebugStartingTime}ms]`;
+            }
+
+            if(opts.intervalIDsToLog.length != 0) console.log(`${timestamp()}%c Intervals with ID ${opts.intervalIDsToLog.join()} will only be logged`, "color: orange", "color: grey; font-style: italic;");
+            if(opts.timeoutIDsToLog.length != 0) console.log(`${timestamp()}%c Intervals with ID ${opts.intervalIDsToLog.join()} will only be logged`,  "color: orange","color: grey; font-style: italic;");
+            if(opts.intervalIDsToExclude.length != 0) console.log(`${timestamp()}%c Intervals with ID ${opts.intervalIDsToExclude.join()} will be excluded from logging`, "color: orange", "color: grey; font-style: italic;");
+            if(opts.timeoutIDsToExclude.length != 0) console.log(`${timestamp()}%c Intervals with ID ${opts.timeoutIDsToExclude.join()} will be excluded from logging`, "color: orange", "color: grey; font-style: italic;");
     
             w.setTimeout = function(fn, delay) {
                 const id = oldST(function() {
@@ -115,30 +126,30 @@ class Helper {
                     if(opts.logTimeoutCall && timers[id]){
                         if(opts.timeoutIDsToLog.length != 0) {
                             if(opts.timeoutIDsToExclude.includes(id) == false) {
-                                if(opts.timeoutIDsToLog.includes(id)) console.log(`%c [timerSniffer] %c Interval ${id} called`, "color: orange", "color: blue;"); 
+                                if(opts.timeoutIDsToLog.includes(id)) console.log(`${timestamp()}%c Timeout with ID of p${id}] called`, "color: orange", "color: blue;"); 
                             }
-                        } else if(opts.timeoutIDsToExclude.includes(id) == false) console.log(`%c [timerSniffer] %c Interval ${id} called`, "color: orange", "color: blue;");
+                        } else if(opts.timeoutIDsToExclude.includes(id) == false) console.log(`${timestamp()}%c Timeout with ID of [${id}] called`, "color: orange", "color: blue;");
                     }
                     removeTimer(id);
                 }, delay);
                 timers[id] = { type: "timeout", fn, delay }
-                if(opts.logTimeoutCreation) console.log(`%c [timerSniffer] %c Timeout ${id} created`, "color: orange", "color: green;", timers[id])
+                if(opts.logTimeoutCreation) console.log(`${timestamp()}%c Timeout with ID of [${id}] created`, "color: orange", "color: green;", timers[id])
                 return id;
             };
     
             w.setInterval = function(fn, delay) {
                 const id = oldSI(() => { 
                     fn();
-                    if(opts.logIntervalCall && timers[id]){
+                    if(opts.logIntervalCall){
                         if(opts.intervalIDsToLog.length != 0) {
                             if(opts.intervalIDsToExclude.includes(id) == false) {
-                                if(opts.intervalIDsToLog.includes(id)) console.log(`%c [timerSniffer] %c Interval ${id} called`, "color: orange", "color: blue;"); 
+                                if(opts.intervalIDsToLog.includes(id)) console.log(`${timestamp()}%c Interval with ID of [${id}] called`, "color: orange", "color: blue;"); 
                             }
-                        } else if(opts.intervalIDsToExclude.includes(id) == false) console.log(`%c [timerSniffer] %c Interval ${id} called`, "color: orange", "color: blue;");
+                        } else if(opts.intervalIDsToExclude.includes(id) == false) console.log(`${timestamp()}%c Interval with ID of [${id}] called`, "color: orange", "color: blue;");
                     }
                 }, delay);
                 timers[id] = { type: "interval", fn, delay };
-                if(opts.logIntervalCreation) console.log(`%c [timerSniffer] %c Interval ${id} created`, "color: orange", "color: green;", timers[id]);
+                if(opts.logIntervalCreation) console.log(`${timestamp()}%c Interval with ID of [${id}] created`, "color: orange", "color: green;", timers[id]);
                 return id;
             };
     
@@ -151,7 +162,7 @@ class Helper {
     
             function removeTimer(id) {
                 if (timers[id]) {
-                    if(opts.logTimerDistruction) console.log(`%c [timerSniffer] %c Timer ${id} with type ${timers[id].type} destroyed`, "color: orange", "color: red;");
+                    if(opts.logTimerDistruction) console.log(`${timestamp()}%c Timer type [${timers[id].type}] and ID [${id}] destroyed`, "color: orange", "color: red;");
                     delete timers[id];
                 }
             }
