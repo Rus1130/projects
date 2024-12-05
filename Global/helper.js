@@ -115,10 +115,10 @@ class Helper {
                 return `%c [timerSniffer ${Date.now()-Helper.TimerDebugStartingTime}ms]`;
             }
 
-            if(opts.intervalIDsToLog.length != 0) console.log(`${timestamp()}%c Intervals with ID ${opts.intervalIDsToLog.join()} will only be logged`, "color: orange", "color: grey; font-style: italic;");
-            if(opts.timeoutIDsToLog.length != 0) console.log(`${timestamp()}%c Intervals with ID ${opts.intervalIDsToLog.join()} will only be logged`,  "color: orange","color: grey; font-style: italic;");
-            if(opts.intervalIDsToExclude.length != 0) console.log(`${timestamp()}%c Intervals with ID ${opts.intervalIDsToExclude.join()} will be excluded from logging`, "color: orange", "color: grey; font-style: italic;");
-            if(opts.timeoutIDsToExclude.length != 0) console.log(`${timestamp()}%c Intervals with ID ${opts.timeoutIDsToExclude.join()} will be excluded from logging`, "color: orange", "color: grey; font-style: italic;");
+            if(opts.intervalIDsToLog.length != 0) console.log(`${timestamp()}%c calls from Intervals with ID ${opts.intervalIDsToLog.join()} will only be logged`, "color: orange", "color: grey; font-style: italic;");
+            if(opts.timeoutIDsToLog.length != 0) console.log(`${timestamp()}%c calls from Timeouts with ID ${opts.intervalIDsToLog.join()} will only be logged`,  "color: orange","color: grey; font-style: italic;");
+            if(opts.intervalIDsToExclude.length != 0) console.log(`${timestamp()}%c Intervals with ID ${opts.intervalIDsToExclude.join()} will be excluded from call logging`, "color: orange", "color: grey; font-style: italic;");
+            if(opts.timeoutIDsToExclude.length != 0) console.log(`${timestamp()}%c Timeouts with ID ${opts.timeoutIDsToExclude.join()} will be excluded from call logging`, "color: orange", "color: grey; font-style: italic;");
     
             w.setTimeout = function(fn, delay) {
                 const id = oldST(function() {
