@@ -12,9 +12,9 @@
     <script src="./math.js"></script>
 </head>
 <body>
-    <!-- <div id="in">/Lorem ipsum dolor sit amet/, _consectetur adipiscing elit_, -*sed do eiusmod tempor incididunt ut labore et dolore magna aliqua*-. Ut enim ad minim veniam, quis nostru/d exercitation ullamco la/boris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit *in voluptate velit esse cillum* dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui */officia deserunt mollit anim id e/*st laborum.|the- quick brown fox ju-mps over the lazy dog|new line~line break|/italic/ *bold* _underline_ -strikethrough-~escaped characters: \~\|\/\*\_\-\«\!</div> 
-     <div id="out"></div>-->
-    <div id="out" style="font-family: monospace"></div>
+    <div id="in">/Lorem ipsum dolor sit amet/, _consectetur adipiscing elit_, -*sed do eiusmod tempor incididunt ut labore et dolore magna aliqua*-. Ut enim ad minim veniam, quis nostru/d exercitation ullamco la/boris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit *in voluptate velit esse cillum* dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui */officia deserunt mollit anim id e/*st laborum.|the- quick brown fox ju-mps over the lazy dog|new line~line break|/italic/ *bold* _underline_ -strikethrough-~escaped characters: \~\|\/\*\_\-\«\!</div> 
+    <div id="out-tw"></div>
+    <div id="out-ste" style="font-family: monospace"></div>
 </body>
 <script>
     new TimerSniffer({
@@ -26,21 +26,22 @@
         enableAllOptions: true,
         eventIDsToExclude: [0],
     });
-    // let inputText = "Hello, world!";
-    // let inputTextLength = inputText.length;
-    // let outputElement = document.getElementById("out");
+    let inputText = "Hello, world!";
+    let inputTextLength = inputText.length;
+    let outputElement = document.getElementById("out");
 
-    // let innerSpeed = 80;
-    // let internalIterations = 10;
+    let innerSpeed = 80;
+    let internalIterations = 10;
 
-    // let ste = new ScrambleTextEffect("Hello, world!", document.getElementById("out"), 80, 10);
-    // ste.start();
+    let ste = new ScrambleTextEffect("Hello, world!", document.getElementById("out-ste"), 80, 10);
+    ste.start();
 
 
-    // let tw = new Typewriter2("in", "out");
+    let tw = new Typewriter2("in", "out-tw");
     
-    // tw.setSpeed(1);
-    // tw.start();
+    tw.setSpeed(10);
+    clearInterval(2);
+    //tw.start();
     
 
     // let sc = new StepCreator(document.body);
@@ -72,76 +73,72 @@
     //     new StepNode("button").id("step4").description("this is a button!").addButton(() => {console.log(sc.currentData())})
     // ])
     
-    let kb = new Keybinds();
-/*
-    kb.createSingle("a", "up", function(){
-        console.log("A was pressed on key up");
-    });
+    // let kb = new Keybinds();
+    // kb.createSingle("a", "up", function(){
+    //     console.log("A was pressed on key up");
+    // });
 
-    kb.createSingle("b", "down", function(){
-        console.log("B was pressed on key down");
-    });
+    // kb.createSingle("b", "down", function(){
+    //     console.log("B was pressed on key down");
+    // });
 
-    kb.createCombo("s+d+f", false, function(){
-        console.log("S, D, and F were pressed");
-    });
+    // kb.createCombo("s+d+f", false, function(){
+    //     console.log("S, D, and F were pressed");
+    // });
 
-    kb.createCombo("w+e+r", true, function(){
-        console.log("W, E, and R were pressed with full release");
-    });
+    // kb.createCombo("w+e+r", true, function(){
+    //     console.log("W, E, and R were pressed with full release");
+    // });
 
-    kb.createDouble("x", 500, function(){
-        console.log("X was double pressed within 500ms");
-    });
+    // kb.createDouble("x", 500, function(){
+    //     console.log("X was double pressed within 500ms");
+    // });
 
-    kb.createDouble("y", 1000, function(){
-        console.log("Y was double pressed within 1000ms");
-    });
-    */
+    // kb.createDouble("y", 1000, function(){
+    //     console.log("Y was double pressed within 1000ms");
+    // });
 
-    // create the element the player will control
-    let playerElement = Player.CreatePlayerElement(50, 50, 100, 100, "red");
+    // // create the element the player will control
+    // let playerElement = Player.CreatePlayerElement(50, 50, 100, 100, "red");
 
-    // create the cannon component
-    let cannonElement = Player.CreateComponentElement(25, 100, "blue");
+    // // create the cannon component
+    // let cannonElement = Player.CreateComponentElement(25, 100, "blue");
 
-    // create the player object
-    let player = new Player(playerElement, 10, 10, "restrict");
+    // // create the player object
+    // let player = new Player(playerElement, 10, 10, "restrict");
 
-    // create the cannon object
-    let playerCannon = new GameObject(cannonElement, 37.5, 50)
+    // // create the cannon object
+    // let playerCannon = new GameObject(cannonElement, 37.5, 50)
 
-    // add the cannon component to the player object
-    player.addComponent(playerCannon);
+    // // add the cannon component to the player object
+    // player.addComponent(playerCannon);
 
-    // create the bullet object
+    // // create the bullet object
 
-    kb.createMouse("left", "down", function(){
-        let bulletElement = GameObject.CreateGameObjectElement(10, 10, "green")
-        bulletElement.style.borderRadius = "50%";
+    // kb.createMouse("left", "down", function(){
+    //     let bulletElement = GameObject.CreateGameObjectElement(10, 10, "green")
+    //     bulletElement.style.borderRadius = "50%";
 
-        // add the bullet to the screen
-        let bullet = new GameObject(bulletElement, 50, 50);
+    //     // add the bullet to the screen
+    //     let bullet = new GameObject(bulletElement, 50, 50);
 
-        // FIX ===================
-        bullet.setVelocity(playerCannon.rotation, 10);
-        bullet.setPosition(player.getCenter().x, player.getCenter().y)
-    });
+    //     bullet.setVelocity(playerCannon.rotation + Math.PI * 66, 100);
+    //     bullet.setPosition(player.getCenter().x, player.getCenter().y)
+    // });
     
-    // create the game object
-    let game = new Game();
-    // every game frame, update the player's position
-    game.bind("playerUpdate", () => {
-        player.updatePosition();
-    })
+    // // create the game object
+    // let game = new Game();
+    // // every game frame, update the player's position
+    // game.bind("playerUpdate", () => {
+    //     player.updatePosition();
+    // })
 
-    // every game frame, update the cannon's rotation to follow the mouse
-    game.bind("update", () => {
-        // get the angle between playerComponent and mouseX, mouseY
-        let angle = (Math.atan2(kb.mousePos.y - player.getCenter().y, kb.mousePos.x - player.getCenter().x)) * (180/Math.PI) - 90;
-        playerCannon.rotate(angle, "top center", { y: -10 });
+    // // every game frame, update the cannon's rotation to follow the mouse
+    // game.bind("update", () => {
+    //     // get the angle between playerComponent and mouseX, mouseY
+    //     let angle = (Math.atan2(kb.mousePos.y - player.getCenter().y, kb.mousePos.x - player.getCenter().x)) * (180/Math.PI) - 90;
+    //     playerCannon.rotate(angle, "top center", { y: -10 });
 
-        GameObject.UpdateAll();
-    })
-    //*/
+    //     GameObject.UpdateAll();
+    // })
 </script>

@@ -121,8 +121,8 @@ class TimerSniffer {
             };
     
             w.clearInterval = function(id) {
-                oldCI(id);
                 removeTimer(id);
+                oldCI(id);
             };
     
             w.clearTimeout = w.clearInterval;
@@ -183,6 +183,7 @@ class EventSniffer {
                     options: options,
                     eventID: EventSniffer.eventIDIncrementer
                 }
+
                 oldAddEventListener.call(this, type, (event) => {
                     listener(event);
                     if(opts.logEventCall){
@@ -203,7 +204,6 @@ class EventSniffer {
                 if(opts.logEventDestruction) console.log(`${timestamp()}%c Event listener with EventsID [${events[listener].eventID}] destroyed`, "color: darkBlue", "color: red;", events[listener]);
                 delete events[listener];
             }
-
         }
 
         run(window);

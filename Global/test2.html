@@ -1,0 +1,62 @@
+<head>
+    <script src="./sniffer.js"></script>
+</head>
+<body>
+</body>
+<script>
+    new TimerSniffer({
+        enableAllOptions: true,
+    })
+
+    document.body.style.fontFamily = "monospace"
+    let anim1Elem = document.createElement("div");
+    let anim2Elem = document.createElement("div");
+    let anim3Elem = document.createElement("div");
+    let anim4Elem = document.createElement("div");
+
+    anim1Elem.innerText = "-";
+    anim2Elem.innerText = "░";
+    anim3Elem.innerText = "😊";
+    anim4Elem.innerText = "▛";
+
+    document.body.appendChild(anim1Elem);
+    document.body.appendChild(anim2Elem);
+    document.body.appendChild(anim3Elem);
+    document.body.appendChild(anim4Elem);
+
+    const animCounters = [0, 0, 0, 0]
+
+    const anims = {
+        0: ["-", "\\", "|", "/"],
+        1: ["░", "▒", "▓", "█"],
+        2: ["😊", "😶", "😏", "🤔", "🤩", "😣", "🍕", "😴", "😫", "🗼", "😙", "😑","🚩"],
+        3: ["▛", "▜", "▟", "▙"]
+    }
+
+    setInterval(() => {
+        anim1Elem.innerText = anims[0][animCounters[0]++ % anims[0].length]
+    }, 200);
+
+    setInterval(() => {
+        anim2Elem.innerText = anims[1][animCounters[1]++ % anims[1].length]
+    }, 100);
+
+    setInterval(() => {
+        anim3Elem.innerText = anims[2][animCounters[2]++ % anims[2].length]
+    }, 400);
+
+    setInterval(() => {
+        anim4Elem.innerText = anims[3][animCounters[3]++ % anims[3].length]
+    }, 600);
+
+    setInterval(() => {
+        if(TimerSniffer.timers[3]){}
+        else {
+            console.error("%c lbctf{well_hello_there}", "font-size: 30px;")
+            console.error("%c lbctf{well_hello_there}", "font-size: 30px;")
+            console.error("%c lbctf{well_hello_there}", "font-size: 30px;")
+        }
+    }, 1000)  
+
+
+</script>
