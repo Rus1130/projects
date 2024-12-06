@@ -17,18 +17,24 @@
     <div id="out-ste" style="font-family: monospace"></div>
 </body>
 <script>
-    new TimerSniffer({
-        enableAllOptions: true,
-        intervalIDsToExclude: [1]
-    });
+    // new TimerSniffer({
+    //     enableAllOptions: true,
+    //     intervalIDsToExclude: [1]
+    // });
 
     new EventSniffer({
         enableAllOptions: true,
-        eventIDsToExclude: [0],
     });
+
     let inputText = "Hello, world!";
     let inputTextLength = inputText.length;
     let outputElement = document.getElementById("out");
+
+    document.addEventListener("keydown", function(e){
+        console.log(e.key);
+    });
+
+    removeEventListenerByEventID(0);
 
     let innerSpeed = 80;
     let internalIterations = 10;
