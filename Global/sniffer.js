@@ -175,19 +175,23 @@ class EventSniffer {
     static timestamp() {
         return `%c [eventSniffer ${Date.now()-EventSniffer.startTime}ms]`;
     }
+    /*
+    @param {number[]} [options.eventIDsToExclude=[]] A list of specific eventIDs to exclude from logging.
+    @param {number[]} [options.eventTypesToExclude=[]] A list of specific event types to exclude from logging.
+    */
     /**
      * Creates an instance of `EventSniffer`.
      * This constructor modifies the global `EventTarget` prototype's `addEventListener` and `removeEventListener` methods.
      * 
      * 
      * @constructor
-     * @param {Object} [options] - Configuration options for the `EventSniffer`.
-     * @param {boolean} [options.enableAllOptions=false] - If true, enables all logging options by default.
-     * @param {boolean} [options.logEventCreation=false] - If true, logs the creation of event listeners.
-     * @param {boolean} [options.logEventDestruction=false] - If true, logs the destruction of event listeners.
-     * @param {boolean} [options.logEventCall=false] - If true, logs every call to an event listener.
-     * @param {number[]} [options.eventIDsToLog=[]] - A list of specific event IDs to log. If set, only these event IDs will be logged.
-     * @param {number[]} [options.eventIDsToExclude=[]] - A list of specific event IDs to exclude from logging.
+     * @param {Object} [options] Configuration options for the `EventSniffer`.
+     * @param {boolean} [options.enableAllOptions=false] If true, enables all logging options by default.
+     * @param {boolean} [options.logEventCreation=false] If true, logs the creation of event listeners.
+     * @param {boolean} [options.logEventDestruction=false] If true, logs the destruction of event listeners.
+     * @param {boolean} [options.logEventCall=false] If true, logs every call to an event listener.
+     * @param {number[]} [options.eventIDsToLog=[]] A list of specific eventIDs to log. If set, only these eventIDs will be logged.
+     * @param {number[]} [options.eventTypesToLog=[]] A list of specific event types to log. If set, only these event types will be logged.
      *
      * @example
      * // Create an instance with logging options
@@ -215,7 +219,9 @@ class EventSniffer {
             logEventDestruction: options.logEventDestruction == undefined ? false : options.logEventDestruction,
             logEventCall: options.logEventCall == undefined ? false : options.logEventCall,
             eventIDsToLog: options.eventIDsToLog == undefined ? [] : options.eventIDsToLog,
-            eventIDsToExclude: options.eventIDsToExclude == undefined ? [] : options.eventIDsToExclude
+            eventIDsToExclude: options.eventIDsToExclude == undefined ? [] : options.eventIDsToExclude,
+            // eventTypesToLog: options.eventTypesToLog == undefined ? [] : options.eventTypesToLog,
+            // eventTypesToExclude: options.eventTypesToExclude == undefined ? [] : options.eventTypesToExclude
         }
 
         if(opts.enableAllOptions) {
@@ -241,11 +247,13 @@ class EventSniffer {
                     type: type,
                     listener: listener,
                     options: options,
-                    eventID: EventSniffer.eventIDIncrementer
+                    eventID: EventSniffer.eventIDIncrementer,
+                    event: null
                 }
 
                 oldAddEventListener.call(this, type, (event) => {
-                    listener(event);
+                    listener.call(this, event);
+                    events[listener].event = event;
                     if(opts.logEventCall){
                         let text = `${EventSniffer.timestamp()}%c Event listener with EventsID [${events[listener].eventID}] and type [${events[listener].type}] called`;
                         if(opts.eventIDsToLog.length != 0) {

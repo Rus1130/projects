@@ -22,9 +22,7 @@
     //     intervalIDsToExclude: [1]
     // });
 
-    new EventSniffer({
-        enableAllOptions: true,
-    });
+    new AllSniffer();
 
     let inputText = "Hello, world!";
     let inputTextLength = inputText.length;
@@ -36,18 +34,14 @@
 
     removeEventListenerByEventID(0);
 
-    let innerSpeed = 80;
-    let internalIterations = 10;
-
     let ste = new ScrambleTextEffect("Hello, world!", document.getElementById("out-ste"), 80, 10);
     ste.start();
 
 
     let tw = new Typewriter2("in", "out-tw");
     
-    tw.setSpeed(10);
-    clearInterval(2);
-    //tw.start();
+    tw.setSpeed(80);
+    tw.start();
     
 
     // let sc = new StepCreator(document.body);
@@ -76,7 +70,7 @@
     //     ,
     //     new StepNode("text").id("step3").placeholder("type something here").revealOnSubmit("step4").pattern(/\w+/)
     //     ,
-    //     new StepNode("button").id("step4").description("this is a button!").addButton(() => {console.log(sc.currentData())})
+    //     new StepNode("button").id("step4").description("this is a button!").addButton(() => {console.log(sc.getCurrentData())})
     // ])
     
     // let kb = new Keybinds();

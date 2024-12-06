@@ -51,6 +51,7 @@
     <script src="Global/crypt.js"></script>
     <script src="Global/typewriter.js"></script>
     <script src="Global/helper.js"></script>
+    <script src="Global/sniffer.js"></script>
     <title>idle...</title>
 </head>
 <body>
@@ -100,7 +101,7 @@
     <div id="start"><span id="press-key-start">press any key to start</span><span id="dot-dot-dot">.</span></div>
 </body>
 <script>
-    Helper.timerSniffer({
+    new timerSniffer({
         enableAllOptions: true,
         intervalIDsToExclude: [2]
     });

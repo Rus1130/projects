@@ -29,7 +29,7 @@ class StepCreator {
                     }
                 };
 
-                radio.addEventListener('click', function(){
+                radio.addEventListener('click', function(e){
                     let name = this.name;
                     let value = this.value;
                     let allInputs = document.getElementsByName(name);
@@ -185,7 +185,6 @@ class StepNode {
         return this;
     }
     /**
-     * 
      * @param {Regexp} regex 
      */
     pattern(regex){
