@@ -1,6 +1,6 @@
 class AllSniffer {
     /**
-     * @examples
+     * @example
      * // timer only
      * new AllSniffer({eventOptions: {enableAllOptions: false}});
      * 
