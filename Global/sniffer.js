@@ -108,6 +108,36 @@ class TimerSniffer {
             if(opts.intervalIDsToExclude.length != 0) console.log(`${TimerSniffer.timestamp()}%c Intervals with ID ${opts.intervalIDsToExclude.join()} will be excluded from call logging`, "color: orange", "color: grey; font-style: italic;");
             if(opts.timeoutIDsToExclude.length != 0) console.log(`${TimerSniffer.timestamp()}%c Timeouts with ID ${opts.timeoutIDsToExclude.join()} will be excluded from call logging`, "color: orange", "color: grey; font-style: italic;");
     
+            w.setInterval = function(fn, delay) {
+                const id = oldSI(() => { 
+                    fn();
+                    if(opts.logIntervalCall){
+                        if(opts.intervalIDsToLog.length != 0) {
+                            if(opts.intervalIDsToExclude.includes(id) == false) {
+                                if(opts.intervalIDsToLog.includes(id)) console.log(`${TimerSniffer.timestamp()}%c Interval with ID of [${id}] called`, "color: orange", "color: blue;"); 
+                            }
+                        } else if(opts.intervalIDsToExclude.includes(id) == false) console.log(`${TimerSniffer.timestamp()}%c Interval with ID of [${id}] called`, "color: orange", "color: blue;");
+                    }
+                }, delay);
+
+                let location = new Error().stack.split("\n");
+                location.shift();
+                
+                location.forEach((line, i) => {
+                    location[i] = location[i].split("").reverse().join("").trim().split("").reverse().join("");
+                });
+
+                timers[id] = {
+                    type: "interval",
+                    fn: fn,
+                    delay: delay,
+                    location: location
+                };
+
+                if(opts.logIntervalCreation) console.log(`${TimerSniffer.timestamp()}%c Interval with ID of [${id}] created`, "color: orange", "color: green;", timers[id]);
+                return id;
+            };
+
             w.setTimeout = function(fn, delay) {
                 const id = oldST(function() {
                     if (fn) fn();
@@ -120,24 +150,22 @@ class TimerSniffer {
                     }
                     removeTimer(id);
                 }, delay);
-                timers[id] = { type: "timeout", fn, delay }
+
+                let location = new Error().stack.split("\n");
+                location.shift();
+                
+                location.forEach((line, i) => {
+                    location[i] = location[i].split("").reverse().join("").trim().split("").reverse().join("");
+                });
+
+                timers[id] = {
+                    type: "timeout",
+                    fn: fn, 
+                    delay: delay,
+                    location: location
+                }
+
                 if(opts.logTimeoutCreation) console.log(`${TimerSniffer.timestamp()}%c Timeout with ID of [${id}] created`, "color: orange", "color: green;", timers[id])
-                return id;
-            };
-    
-            w.setInterval = function(fn, delay) {
-                const id = oldSI(() => { 
-                    fn();
-                    if(opts.logIntervalCall){
-                        if(opts.intervalIDsToLog.length != 0) {
-                            if(opts.intervalIDsToExclude.includes(id) == false) {
-                                if(opts.intervalIDsToLog.includes(id)) console.log(`${TimerSniffer.timestamp()}%c Interval with ID of [${id}] called`, "color: orange", "color: blue;"); 
-                            }
-                        } else if(opts.intervalIDsToExclude.includes(id) == false) console.log(`${TimerSniffer.timestamp()}%c Interval with ID of [${id}] called`, "color: orange", "color: blue;");
-                    }
-                }, delay);
-                timers[id] = { type: "interval", fn, delay };
-                if(opts.logIntervalCreation) console.log(`${TimerSniffer.timestamp()}%c Interval with ID of [${id}] created`, "color: orange", "color: green;", timers[id]);
                 return id;
             };
     
@@ -243,11 +271,19 @@ class EventSniffer {
             if(opts.eventIDsToExclude.length != 0) console.log(`${EventSniffer.timestamp()}%c Events with EventID ${opts.eventIDsToExclude.join()} will be excluded from call logging`, "color: darkViolet", "color: grey; font-style: italic;");
 
             w.EventTarget.prototype.addEventListener = function(type, listener, options) {
+                let location = new Error().stack.split("\n");
+                location.shift();
+                
+                location.forEach((line, i) => {
+                    location[i] = location[i].split("").reverse().join("").trim().split("").reverse().join("");
+                });
+
                 events[listener] = {
                     type: type,
                     listener: listener,
                     options: options,
                     eventID: EventSniffer.eventIDIncrementer,
+                    location: location,
                     event: null
                 }
 
