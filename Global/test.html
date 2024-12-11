@@ -28,21 +28,21 @@
     let inputTextLength = inputText.length;
     let outputElement = document.getElementById("out");
 
-    document.addEventListener("keydown", function(e){
-        let key = e.key;
-    });
+    // document.addEventListener("keydown", function(e){
+    //     let key = e.key;
+    // });
 
     //EventSniffer.removeEventListenerByEventID(0);
 
 
     let ste = new ScrambleTextEffect("Hello, world!", document.getElementById("out-ste"), 80, 10);
-    // ste.start();
+    ste.start();
 
 
     let tw = new Typewriter2("in", "out-tw");
     
     tw.setSpeed(1);
-    // stw.start();
+    tw.start();
     
 
     // let sc = new StepCreator(document.body);

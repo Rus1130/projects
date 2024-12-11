@@ -1,3 +1,34 @@
+/**
+ * @example
+ *  let sc = new StepCreator(document.body);
+ *  sc.addSteps([
+ *      new StepNode("radio").id("step1").description("radio")
+ *          .addRadio("radio1")
+ *          .radioOption("1", "one", "step2")
+ *          .radioOption("2", "two", "step2")
+ *          .radioOption("3", "three", "step2")
+ *          .radioOption("4", "four", "step2")
+ *      ,  
+ *      new StepNode("radio").id("step2").description("radio 2")
+ *          .addRadio("radio2")
+ *          .radioOption("5", "five", ["step3", "step2-note5"])
+ *          .radioOption("6", "six", ["step3", "step2-note6"])
+ *          .radioOption("7", "seven", ["step3", "step2-note7"])
+ *          .radioOption("8", "eight", ["step3", "step2-note8"])
+ *      ,
+ *      new StepNode("note").id("step2-note5").description("this is a note for 5!")
+ *      ,
+ *      new StepNode("note").id("step2-note6").description("this is a note for 6!")
+ *      ,
+ *      new StepNode("note").id("step2-note7").description("this is a note for 7!")
+ *      ,
+ *      new StepNode("note").id("step2-note8").description("this is a note for 8!")
+ *      ,
+ *      new StepNode("text").id("step3").placeholder("type something here").revealOnSubmit("step4").pattern(/\w+/)
+ *      ,
+ *      new StepNode("button").id("step4").description("this is a button!").addButton(() => {console.log(sc.getCurrentData())})
+ *  ])
+ */
 class StepCreator {
     static StepElements = [];
     static Data = [];
@@ -8,6 +39,11 @@ class StepCreator {
         this.parent.appendChild(this.element);
     }
 
+    /**
+     * add a step to the step creator
+     * @param {StepNode} json
+     * @returns {StepCreator}
+     */
     addStep(json) {
         let step = document.createElement('div');
 
@@ -57,7 +93,7 @@ class StepCreator {
             step.id = json.nodeId;
             step.placeholder = json.nodeText;
             step.setAttribute('autocomplete', 'off');
-            step.addEventListener('keydown', function(e){
+            step.addEventListener('keyup', function(e){
                 if(e.key == "Enter"){
                     if(json.textPattern !== undefined){ 
                         if(json.textPattern.test(this.value) === true){
@@ -85,6 +121,11 @@ class StepCreator {
         return this;
     }
 
+    /**
+     * shorthand for multiple addStep calls
+     * @alias addStep
+     * @param {Array} arr an array of StepNode objects
+     */
     addSteps(arr){
         for(let i = 0; i < arr.length; i++){
             this.addStep(arr[i]);
@@ -129,20 +170,52 @@ class StepCreator {
 }
 
 class StepNode {
+    /**
+     * @example
+     * // radio
+     * new StepNode("radio").id("step1").description("radio")
+     *     .addRadio("radio1")
+     *     .radioOption("1", "one", "step2")
+     *     .radioOption("2", "two", "step2")
+     *     .radioOption("3", "three", "step2")
+     *     .radioOption("4", "four", "step2")
+     * 
+     * // text input
+     * new StepNode("text").id("step3").placeholder("type something here").revealOnSubmit("step4").pattern(/\w+/)
+     * 
+     * // button
+     * new StepNode("button").id("step4").description("this is a button!").addButton(() => {console.log(sc.getCurrentData())})
+     */
     constructor(type) {
         if(!["text", "radio", "note", "button"].includes(type)) return console.error(`${type} is invalid type`);
         this.nodeType = type;
         return this;
     }
+
+    /**
+     * set the id of the node
+     * @param {String} id 
+     * @returns {StepNode}
+     */
     id(id){
         this.nodeId = id;
         return this;
     }
+    /**
+     * if the type is `text`, set the placeholder text
+     * @param {String} text 
+     * @returns {StepNode}
+     */
     description(text){
         if(this.nodeType === "text") return console.error(`${this.nodeType} invalid type`);
         this.nodeText = text;
         return this;
     }
+    /**
+     * if the type is not `text`, set the description text
+     * @param {String} text
+     * @returns {StepNode}
+     */
     placeholder(text){
         if(this.nodeType !== "text") return console.error(`${this.nodeType} invalid type`);
         this.nodeText = text;
@@ -151,6 +224,7 @@ class StepNode {
     /**
      * 
      * @param {string} name the name of the radio group
+     * @returns {StepNode}
      */
     addRadio(name){
         if(this.nodeType !== "radio") return console.error(`${this.nodeType} invalid type`);
@@ -163,28 +237,41 @@ class StepNode {
         return this;
     }
     /**
-    * @param {string} value the internal values of the radio buttons
-    * @param {string} text the display text of the radio buttons
-    * @param {string|string[]} ids what the radio buttons will reveal when clicked
+     * add a radio option
+     * @param {string[]} value the internal values of the radio buttons
+     * @param {string[]} text the display text of the radio buttons
+     * @param {string[]} ids what the radio buttons will reveal when clicked
+     * @returns {StepNode}
     */
-    radioOption(value, text, id){
+    radioOption(value, text, ids){
         if(this.nodeType !== "radio") return console.error(`${this.nodeType} invalid type`);
         this.radioValues.push(value);
         this.radioTexts.push(text);
-        this.radioIds.push(id);
+        this.radioIds.push(ids);
         return this;
     }
+    /**
+     * add a callback for the button
+     * @param {function} callback
+     * @returns {StepNode}
+     */
     addButton(callback){
         if(this.nodeType !== "button") return console.error(`${this.nodeType} invalid type`);
         this.callback = callback;
         return this;
     }
+    /**
+     * reveal an element when the text input is submitted
+     * @param {string} id the id of the element to reveal
+     * @returns {StepNode}
+     */
     revealOnSubmit(id){
         if(this.nodeType !== "text") return console.error(`${this.nodeType} invalid type`);
         this.onsubmit = id;
         return this;
     }
     /**
+     * set a pattern for the text input
      * @param {Regexp} regex 
      */
     pattern(regex){

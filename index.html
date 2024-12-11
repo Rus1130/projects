@@ -101,10 +101,7 @@
     <div id="start"><span id="press-key-start">press any key to start</span><span id="dot-dot-dot">.</span></div>
 </body>
 <script>
-    new TimerSniffer({
-        enableAllOptions: true,
-        intervalIDsToExclude: [2]
-    });
+    new AllSniffer();
 
     let ste = new ScrambleTextEffect("rus1130/projects/index.html", document.getElementById("scrambleTextDisplay"), 80, 10)
 
