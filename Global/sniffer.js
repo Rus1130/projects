@@ -1,6 +1,3 @@
-// TODO ======================
-// change all options to a "this" context
-
 class AllSniffer {
     /**
      * @example
@@ -195,25 +192,42 @@ class TimerSniffer {
  * A class that overrides the `addEventListener` and `removeEventListener` methods of the `EventTarget` prototype.
  * It provides additional logging and tracking functionalities for event listeners, such as logging their creation, 
  * destruction, and calls. Additionally, it allows filtering logs based on specific eventIDs.
- * 
- * This class also adds a global utility function, `removeEventListenerByEventID`, to remove an event listener
- * using its unique eventID.
+ * This class also adds many static methods. NOTE: This class will only log events that are added after the class is instantiated.
  */
 class EventSniffer {
     static events;
     static eventIDIncrementer = 0;
     static startTime = Date.now();
+
     static timestamp() {
         return `%c [eventSniffer ${Date.now()-EventSniffer.startTime}ms]`;
     }
+
+    static logCreated(id, obj) {
+        console.log(`${EventSniffer.timestamp()}%c Event listener with EventsID [${id}] created`, "color: darkBlue", "color: green;", obj);
+    } 
+    static logCalled(id, type, obj) {
+        console.log(`${EventSniffer.timestamp()}%c Event listener with EventsID [${id}] and type [${type}] called`, "color: darkBlue", "color: blue;", obj);
+    }
+    static logDestroyed(id, obj) {
+        console.log(`${EventSniffer.timestamp()}%c Event listener with EventsID [${id}] destroyed`, "color: darkBlue", "color: red;", obj);
+    }
+
+    static logErrorAttemptFailed(fn) {
+        console.error(`${EventSniffer.timestamp()}%c Attempted to delete event listener, failed (may not exist)`, "color: darkBlue", "color: darkRed", {fn});
+    }
+    static logErrorDNE(id) {
+        console.error(`${EventSniffer.timestamp()}%c Event listener with EventID [${id}] does not exist`, "color: darkBlue", "color: darkRed");
+    }
+
+
     /*
-    @param {number[]} [options.eventIDsToExclude=[]] A list of specific eventIDs to exclude from logging.
-    @param {number[]} [options.eventTypesToExclude=[]] A list of specific event types to exclude from logging.
+         * @param {number[]} [options.eventTypesToLog=[]] A list of specific event types to log. If set, only these event types will be logged.
+         * @param {number[]} [options.eventTypesToExclude=[]] A list of specific event types to exclude from logging.
     */
     /**
      * Creates an instance of `EventSniffer`.
      * This constructor modifies the global `EventTarget` prototype's `addEventListener` and `removeEventListener` methods.
-     * 
      * 
      * @constructor
      * @param {Object} [options] Configuration options for the `EventSniffer`.
@@ -221,8 +235,9 @@ class EventSniffer {
      * @param {boolean} [options.logEventCreation=false] If true, logs the creation of event listeners.
      * @param {boolean} [options.logEventDestruction=false] If true, logs the destruction of event listeners.
      * @param {boolean} [options.logEventCall=false] If true, logs every call to an event listener.
+     * @param {boolean} [options.logErrors=false] If true, logs errors.
      * @param {number[]} [options.eventIDsToLog=[]] A list of specific eventIDs to log. If set, only these eventIDs will be logged.
-     * @param {number[]} [options.eventTypesToLog=[]] A list of specific event types to log. If set, only these event types will be logged.
+     * @param {number[]} [options.eventIDsToExclude=[]] A list of specific eventIDs to exclude from logging.
      *
      * @example
      * // Create an instance with logging options
@@ -252,6 +267,7 @@ class EventSniffer {
             logEventCreation: options.logEventCreation == undefined ? false : options.logEventCreation,
             logEventDestruction: options.logEventDestruction == undefined ? false : options.logEventDestruction,
             logEventCall: options.logEventCall == undefined ? false : options.logEventCall,
+            logErrors: options.logErrors == undefined ? false : options.logErrors,
             eventIDsToLog: options.eventIDsToLog == undefined ? [] : options.eventIDsToLog,
             eventIDsToExclude: options.eventIDsToExclude == undefined ? [] : options.eventIDsToExclude,
             // eventTypesToLog: options.eventTypesToLog == undefined ? [] : options.eventTypesToLog,
@@ -262,7 +278,9 @@ class EventSniffer {
             for(const key in opts) {
                 if(key == 'eventIDsToLog' ||
                 key == 'eventIDsToExclude' ||
-                key == 'enableAllOptions') continue;
+                key == 'enableAllOptions' ||
+                key == 'eventTypesToLog' ||
+                key == 'eventTypesToExclude') continue;
                 opts[key] = true;
             }
         }
@@ -297,41 +315,65 @@ class EventSniffer {
                     if(events[fn] == undefined) return; // doesnt actually remove the event listener, just makes it so it cannot be called
                     const eventObject = events[fn];
                     if(opts.logEventCall){
-                        let text = `${EventSniffer.timestamp()}%c Event listener with EventsID [${eventObject.eventID}] and type [${eventObject.type}] called`;
+                        // // if the filter is not empty
+                        // if(opts.eventTypesToLog.length != 0) {
+                        //     // if the event type is not in the exclude list
+                        //     if(opts.eventTypesToExclude.includes(eventObject.type) == false) {
+                        //         // if the event type is in the include list
+                        //         if(opts.eventTypesToLog.includes(eventObject.type)) EventSniffer.logCalled(eventObject.eventID, eventObject.type, eventObject);
+                        //     }
+                        //     // if the event type is in the exclude list
+                        // } else if(opts.eventTypesToExclude.includes(eventObject.type) == false) EventSniffer.logCalled(eventObject.eventID, eventObject.type, eventObject);
+
+                        // if the filter is not empty
                         if(opts.eventIDsToLog.length != 0) {
+                            // if the event id is not in the exclude list
                             if(opts.eventIDsToExclude.includes(eventObject.eventID) == false) {
-                                if(opts.eventIDsToLog.includes(eventObject.eventID)) console.log(text, "color: darkBlue", "color: blue;", eventObject); 
+                                // if the event id is in the include list
+                                if(opts.eventIDsToLog.includes(eventObject.eventID)) EventSniffer.logCalled(eventObject.eventID, eventObject.type, eventObject);
                             }
-                        } else if(opts.eventIDsToExclude.includes(eventObject.eventID) == false) console.log(text, "color: darkBlue", "color: blue;", eventObject);
+                            // if the event id is in the exclude list
+                        } else if(opts.eventIDsToExclude.includes(eventObject.eventID) == false) EventSniffer.logCalled(eventObject.eventID, eventObject.type, eventObject);
                     }
                     fn.call(this, event);
                     eventObject.event = event;
                 }, options);
                 EventSniffer.eventIDIncrementer++;
-                if(opts.logEventCreation) console.log(`${EventSniffer.timestamp()}%c Event listener with EventsID [${events[fn].eventID}] created`, "color: darkBlue", "color: green;", events[fn]);
+                if(opts.logEventCreation) EventSniffer.logCreated(events[fn].eventID, events[fn]);
             }
 
             w.EventTarget.prototype.removeEventListener = function(type, fn, op) {
-                // fix not found events, most likely has to do with the .onload, .onclick, etc
+                const eventNotFound = events[fn] == undefined;
+
                 let eventProperties = {
                     type: type,
                     fn: fn,
                     options: op,
-                    eventID: events[fn] === undefined ? 'ID Unknown' : events[fn].eventID,
+                    eventID: eventNotFound ? null : events[fn].eventID,
                     event: null
                 }
 
-                if(eventProperties.fn == undefined) {
-                    console.error(`${EventSniffer.timestamp()}%c Event listener not found`, "color: darkBlue", "color: darkRed");
+                if(eventNotFound) {
+                    if(opts.logErrors) EventSniffer.logErrorAttemptFailed(fn);
                     return;
+                } else {
+                    if(opts.logEventDestruction) EventSniffer.logDestroyed(eventProperties.eventID, eventProperties);
+                    oldRemoveEventListener.call(this, type, fn, op);
+                    delete events[fn];
                 }
-
-                if(opts.logEventDestruction) console.log(`${EventSniffer.timestamp()}%c Event listener with EventsID [${eventProperties.eventID}] destroyed`, "color: darkBlue", "color: red;", eventProperties);
-                oldRemoveEventListener.call(this, type, fn, op);
-                delete events[fn];
             }
 
-            w.removeEventListenerByEventID = function(eventID) {
+            // static methods ========================================
+            // putting them here makes it easy to access options bc i dont feel like putting the options on the class
+
+            /**
+             * Removes an event listener by its eventID.
+             * @param {number} eventID The eventID of the event listener to remove.
+             * @returns {void}
+             * @example
+             * EventSniffer.removeEventListenerByEventID(1);
+             */
+            EventSniffer.removeEventListenerByEventID = function(eventID) {
                 let eventProperties = {}
                 for(const key in events) {
                     if(events[key].eventID == eventID) {
@@ -339,22 +381,45 @@ class EventSniffer {
                     }
                 }
 
-                if(eventProperties.type == undefined) {
-                    console.error(`${EventSniffer.timestamp()}%c Event listener with EventID [${eventID}] not found`, "color: darkBlue", "color: darkRed");
+                if(eventProperties.fn == undefined) {
+                    if(opts.logErrors) EventSniffer.logErrorDNE(eventID);
                     return;
-                } else oldRemoveEventListener.call(this, eventProperties.type, eventProperties.fn, events.options);
-                
+                } else {
+                    if(opts.logEventDestruction) EventSniffer.logDestroyed(eventID, eventProperties);
+                    oldRemoveEventListener.call(w, eventProperties.type, eventProperties.fn);   
+                    delete events[eventProperties.fn];
+                }   
             }
 
-            w.eventWithIDExists = function(eventID) {
+            /**
+             * Checks if an event listener with a specific eventID exists.
+             * @param {number} eventID The eventID to check for.
+             * @returns {boolean} Returns true if an event listener with the specified eventID exists. 
+             * @example
+             * console.log(EventSniffer.eventWithIDExists(1));
+             */
+            EventSniffer.eventWithIDExists = function(eventID) {
                 let exists = false;
                 for(const key in events) {
                     if(events[key].eventID == eventID) exists = true;
                 }
                 return exists;
             }
-        }
 
+            EventSniffer.getEventByEventID = function(eventID) {
+                let eventProperties = {}
+                for(const key in events) {
+                    if(events[key].eventID == eventID) {
+                        eventProperties = events[key];
+                    }
+                }
+                return eventProperties;
+            }
+            // ========================================================
+        }
         run(window);
     }
 }
+
+new EventSniffer({eventTypesToLog: 'progress'})
+// new AllSniffer();

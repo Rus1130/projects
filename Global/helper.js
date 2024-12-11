@@ -31,4 +31,15 @@ class Helper {
         }
         return result;
     }
+
+    /**
+     * @param {(Array|Object)} input The object to copy.
+     * @returns {(Array|Object)} A copy of the object.
+     */
+    static copy(input) {
+        if(typeof input === 'object'){
+            if(Array.isArray(obinj)) return input.map(e => (e));
+            else return Object.assign({}, input);
+        } else return new Error('Argument is not an object');
+    }
 }

@@ -22,17 +22,22 @@
     // }, 500);
 
     new EventSniffer({enableAllOptions: true});
+    let fn = function() {
+        console.log("kaboam");
+    }
 
-    // fix why not happening..........
-    window.addEventListener("load",() => {
-        document.body.addEventListener("keydown", function(e) {
-            console.log("you should remove this event listener");
-        });
+    document.body.addEventListener("keydown", fn);
+    document.body.removeEventListener("keydown", fn);
 
-        setInterval(() => {
-            if(!eventWithIDExists(1)) console.log("lbctf{zzz}")
-        }, 500);
-    })
+    // window.addEventListener("load",() => {
+    //     document.body.addEventListener("keydown", function(e) {
+    //         console.log("you should remove this event listener");
+    //     });
+
+    //     setInterval(() => {
+    //         if(!eventWithIDExists(1)) console.log("lbctf{zzz}")
+    //     }, 500);
+    // })
 
     /*
 
