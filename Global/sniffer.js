@@ -110,7 +110,6 @@ class TimerSniffer {
     
             w.setInterval = function(fn, delay) {
                 const id = oldSI(() => { 
-                    fn();
                     if(opts.logIntervalCall){
                         if(opts.intervalIDsToLog.length != 0) {
                             if(opts.intervalIDsToExclude.includes(id) == false) {
@@ -118,6 +117,7 @@ class TimerSniffer {
                             }
                         } else if(opts.intervalIDsToExclude.includes(id) == false) console.log(`${TimerSniffer.timestamp()}%c Interval with ID of [${id}] called`, "color: orange", "color: blue;");
                     }
+                    fn();
                 }, delay);
 
                 let location = new Error().stack.split("\n");
@@ -170,8 +170,8 @@ class TimerSniffer {
             };
     
             w.clearInterval = function(id) {
-                removeTimer(id);
                 oldCI(id);
+                removeTimer(id);
             };
     
             w.clearTimeout = w.clearInterval;
@@ -238,6 +238,9 @@ class EventSniffer {
      * 
      * // Remove an event listener using its eventID
      * removeEventListenerByEventID(1);
+     * 
+     * // Check if an event listener with a specific eventID exists
+     * console.log(eventWithIDExists(2));
      */
     constructor(options) {
         if(options == undefined) options = {};
@@ -270,7 +273,7 @@ class EventSniffer {
             if(opts.eventIDsToLog.length != 0) console.log(`${EventSniffer.timestamp()}%c calls from Events with EventID ${opts.eventIDsToLog.join()} will only be logged`, "color: darkViolet", "color: grey; font-style: italic;");
             if(opts.eventIDsToExclude.length != 0) console.log(`${EventSniffer.timestamp()}%c Events with EventID ${opts.eventIDsToExclude.join()} will be excluded from call logging`, "color: darkViolet", "color: grey; font-style: italic;");
 
-            w.EventTarget.prototype.addEventListener = function(type, listener, options) {
+            w.EventTarget.prototype.addEventListener = function(type, fn, options) {
                 let location = new Error().stack.split("\n");
                 location.shift();
                 
@@ -278,9 +281,9 @@ class EventSniffer {
                     location[i] = location[i].split("").reverse().join("").trim().split("").reverse().join("");
                 });
 
-                events[listener] = {
+                events[fn] = {
                     type: type,
-                    listener: listener,
+                    fn: fn,
                     options: options,
                     eventID: EventSniffer.eventIDIncrementer,
                     location: location,
@@ -288,43 +291,46 @@ class EventSniffer {
                 }
 
                 oldAddEventListener.call(this, type, (event) => {
-                    listener.call(this, event);
-                    events[listener].event = event;
+                    if(events[fn] == undefined) return; // doesnt actually remove the event listener, just makes it so it cannot be called
+                    const eventObject = events[fn];
                     if(opts.logEventCall){
-                        let text = `${EventSniffer.timestamp()}%c Event listener with EventsID [${events[listener].eventID}] and type [${events[listener].type}] called`;
+                        let text = `${EventSniffer.timestamp()}%c Event listener with EventsID [${eventObject.eventID}] and type [${eventObject.type}] called`;
                         if(opts.eventIDsToLog.length != 0) {
-                            if(opts.eventIDsToExclude.includes(events[listener].eventID) == false) {
-                                if(opts.eventIDsToLog.includes(events[listener].eventID)) console.log(text, "color: darkBlue", "color: blue;", events[listener]); 
+                            if(opts.eventIDsToExclude.includes(eventObject.eventID) == false) {
+                                if(opts.eventIDsToLog.includes(eventObject.eventID)) console.log(text, "color: darkBlue", "color: blue;", eventObject); 
                             }
-                        } else if(opts.eventIDsToExclude.includes(events[listener].eventID) == false) console.log(text, "color: darkBlue", "color: blue;", events[listener]);
+                        } else if(opts.eventIDsToExclude.includes(eventObject.eventID) == false) console.log(text, "color: darkBlue", "color: blue;", eventObject);
                     }
+                    fn.call(this, event);
+                    eventObject.event = event;
                 }, options);
                 EventSniffer.eventIDIncrementer++;
-                if(opts.logEventCreation) console.log(`${EventSniffer.timestamp()}%c Event listener with EventsID [${events[listener].eventID}] created`, "color: darkBlue", "color: green;", events[listener]);
+                if(opts.logEventCreation) console.log(`${EventSniffer.timestamp()}%c Event listener with EventsID [${events[fn].eventID}] created`, "color: darkBlue", "color: green;", events[fn]);
             }
 
-            w.EventTarget.prototype.removeEventListener = function(type, listener, op) {
+            w.EventTarget.prototype.removeEventListener = function(type, fn, op) {
                 let eventProperties = {
-                    listener: undefined,
+                    fn: undefined,
                     type: undefined,
                     eventID: undefined
                 };
 
                 for(const key in events) {
-                    if(key == listener) {
-                        eventProperties.listener = key;
+                    if(key == fn) {
+                        eventProperties.fn = fn;
                         eventProperties.type = events[key].type;
                         eventProperties.eventID = events[key].eventID;
                     }
                 }
 
-                if(eventProperties.listener == undefined) {
+                if(eventProperties.fn == undefined) {
                     console.error(`${EventSniffer.timestamp()}%c Event listener not found`, "color: darkBlue", "color: darkRed");
                     return;
                 }
 
                 if(opts.logEventDestruction) console.log(`${EventSniffer.timestamp()}%c Event listener with EventsID [${eventProperties.eventID}] destroyed`, "color: darkBlue", "color: red;");
-                oldRemoveEventListener.call(this, type, listener, op);
+                delete events[fn];
+                oldRemoveEventListener.call(this, type, fn, op);
             }
 
             w.removeEventListenerByEventID = function(eventID) {
@@ -338,7 +344,16 @@ class EventSniffer {
                 if(eventProperties.type == undefined) {
                     console.error(`${EventSniffer.timestamp()}%c Event listener with EventID [${eventID}] not found`, "color: darkBlue", "color: darkRed");
                     return;
-                } else w.removeEventListener(eventProperties.type, eventProperties.listener, events.options);
+                } else w.removeEventListener(eventProperties.type, eventProperties.fn, events.options);
+                
+            }
+
+            w.eventWithIDExists = function(eventID) {
+                let exists = false;
+                for(const key in events) {
+                    if(events[key].eventID == eventID) exists = true;
+                }
+                return exists;
             }
         }
 

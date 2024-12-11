@@ -8,26 +8,31 @@
     <div id="out"></div>
 </body>
 <script>
-    new TimerSniffer(/*{enableAllOptions: true}*/);
+    // new TimerSniffer({enableAllOptions: true});
 
-    let ste = new ScrambleTextEffect("Hello, world!", document.getElementById("out"), 80, 10);
-    ste.start();
+    // let ste = new ScrambleTextEffect("Hello, world!", document.getElementById("out"), 80, 10);
+    // ste.start();
 
-    setInterval(function() {
-        console.log('Might want to try removing some of these timers');
-    }, 1000);
+    // setInterval(function() {
+    //     console.log('Might want to try removing some of these timers');
+    // }, 1000);
 
-    setInterval(function() {
-        if(!TimerSniffer.timers[2]) console.log("lbctf{well_hello_there}")
-    }, 500);
+    // setInterval(function() {
+    //     if(!TimerSniffer.timers[2]) console.log("lbctf{yyy}")
+    // }, 500);
 
-    new EventSniffer();
+    new EventSniffer({enableAllOptions: true});
 
     // fix why not happening..........
-    document.body.addEventListener("load", function(e){
-        console.log("a");
-    });
+    window.addEventListener("load",() => {
+        document.body.addEventListener("keydown", function(e) {
+            console.log("you should remove this event listener");
+        });
 
+        setInterval(() => {
+            if(!eventWithIDExists(1)) console.log("lbctf{zzz}")
+        }, 500);
+    })
 
     /*
 
