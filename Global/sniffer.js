@@ -1,3 +1,6 @@
+// TODO ======================
+// change all options to a "this" context
+
 class AllSniffer {
     /**
      * @example
@@ -113,9 +116,9 @@ class TimerSniffer {
                     if(opts.logIntervalCall){
                         if(opts.intervalIDsToLog.length != 0) {
                             if(opts.intervalIDsToExclude.includes(id) == false) {
-                                if(opts.intervalIDsToLog.includes(id)) console.log(`${TimerSniffer.timestamp()}%c Interval with ID of [${id}] called`, "color: orange", "color: blue;"); 
+                                if(opts.intervalIDsToLog.includes(id)) console.log(`${TimerSniffer.timestamp()}%c Interval with ID of [${id}] called`, "color: orange", "color: blue;", timers[id]); 
                             }
-                        } else if(opts.intervalIDsToExclude.includes(id) == false) console.log(`${TimerSniffer.timestamp()}%c Interval with ID of [${id}] called`, "color: orange", "color: blue;");
+                        } else if(opts.intervalIDsToExclude.includes(id) == false) console.log(`${TimerSniffer.timestamp()}%c Interval with ID of [${id}] called`, "color: orange", "color: blue;", timers[id]);
                     }
                     fn();
                 }, delay);
@@ -144,9 +147,9 @@ class TimerSniffer {
                     if(opts.logTimeoutCall && timers[id]){
                         if(opts.timeoutIDsToLog.length != 0) {
                             if(opts.timeoutIDsToExclude.includes(id) == false) {
-                                if(opts.timeoutIDsToLog.includes(id)) console.log(`${TimerSniffer.timestamp()}%c Timeout with ID of p${id}] called`, "color: orange", "color: blue;"); 
+                                if(opts.timeoutIDsToLog.includes(id)) console.log(`${TimerSniffer.timestamp()}%c Timeout with ID of p${id}] called`, "color: orange", "color: blue;", timers[id]); 
                             }
-                        } else if(opts.timeoutIDsToExclude.includes(id) == false) console.log(`${TimerSniffer.timestamp()}%c Timeout with ID of [${id}] called`, "color: orange", "color: blue;");
+                        } else if(opts.timeoutIDsToExclude.includes(id) == false) console.log(`${TimerSniffer.timestamp()}%c Timeout with ID of [${id}] called`, "color: orange", "color: blue;", timers[id]);
                     }
                     removeTimer(id);
                 }, delay);
@@ -309,18 +312,13 @@ class EventSniffer {
             }
 
             w.EventTarget.prototype.removeEventListener = function(type, fn, op) {
+                // fix not found events, most likely has to do with the .onload, .onclick, etc
                 let eventProperties = {
-                    fn: undefined,
-                    type: undefined,
-                    eventID: undefined
-                };
-
-                for(const key in events) {
-                    if(key == fn) {
-                        eventProperties.fn = fn;
-                        eventProperties.type = events[key].type;
-                        eventProperties.eventID = events[key].eventID;
-                    }
+                    type: type,
+                    fn: fn,
+                    options: op,
+                    eventID: events[fn] === undefined ? 'ID Unknown' : events[fn].eventID,
+                    event: null
                 }
 
                 if(eventProperties.fn == undefined) {
@@ -328,9 +326,9 @@ class EventSniffer {
                     return;
                 }
 
-                if(opts.logEventDestruction) console.log(`${EventSniffer.timestamp()}%c Event listener with EventsID [${eventProperties.eventID}] destroyed`, "color: darkBlue", "color: red;");
-                delete events[fn];
+                if(opts.logEventDestruction) console.log(`${EventSniffer.timestamp()}%c Event listener with EventsID [${eventProperties.eventID}] destroyed`, "color: darkBlue", "color: red;", eventProperties);
                 oldRemoveEventListener.call(this, type, fn, op);
+                delete events[fn];
             }
 
             w.removeEventListenerByEventID = function(eventID) {
@@ -344,7 +342,7 @@ class EventSniffer {
                 if(eventProperties.type == undefined) {
                     console.error(`${EventSniffer.timestamp()}%c Event listener with EventID [${eventID}] not found`, "color: darkBlue", "color: darkRed");
                     return;
-                } else w.removeEventListener(eventProperties.type, eventProperties.fn, events.options);
+                } else oldRemoveEventListener.call(this, eventProperties.type, eventProperties.fn, events.options);
                 
             }
 
