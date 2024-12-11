@@ -420,6 +420,4 @@ class EventSniffer {
         run(window);
     }
 }
-
-new EventSniffer({eventTypesToLog: 'progress'})
 // new AllSniffer();

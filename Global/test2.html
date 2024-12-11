@@ -22,12 +22,10 @@
     // }, 500);
 
     new EventSniffer({enableAllOptions: true});
-    let fn = function() {
-        console.log("kaboam");
-    }
-
-    document.body.addEventListener("keydown", fn);
-    document.body.removeEventListener("keydown", fn);
+    
+    document.body.addEventListener("keydown", function() {
+        console.log("kaboom kaboom!!!");
+    });
 
     // window.addEventListener("load",() => {
     //     document.body.addEventListener("keydown", function(e) {
