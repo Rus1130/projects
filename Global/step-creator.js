@@ -155,6 +155,11 @@ class StepCreator {
         return StepCreator.Data;
     }
     
+    /**
+     * reset the step creator to a specific id
+     * @param {string} id the id to reset to
+     * @param {boolean} [include=false] whether or not to include the id in the reset
+     */
     resetToId(id, include){
         if(include === undefined) include = false;
         StepCreator.Data.push(this.getCurrentData());
