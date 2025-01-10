@@ -1,3 +1,4 @@
+<!--DISCLAIMER: this is not owned by Rus1130-->
 <style>
     body {
         background-color: #000000;
@@ -51,40 +52,46 @@
         font-family: "Press Start 2P", serif;
         font-size: 8px;
         overflow-y: auto;
+        cursor: none;
     }
 
-    .output {
-        flex-grow: 1;
-        margin-bottom: 10px;
-    }
-
-    .path {
+    .term-noedit, .term-edit {
         color: #00AA00;
         font-size: 8px;
-    }
-
-    #cursor {
-        display: inline;
-        color: #00AA00;
-        border-right: 2px solid #FFFFFF;
-        padding: 0 2px;
-        white-space: nowrap;
-    }
-
-    #cursor:focus {
         outline: none;
+        text-decoration: none;
     }
 
-    #cursor:empty:before {
-        content: "_";
+    .term-noedit::before, .term-edit::before {
+        content: attr(data-path);
         color: #00AA00;
+    }
+
+    .cursor:focus {
+        height: 8px;
+        caret-color: transparent;
+    }
+
+    @keyframes cursor-anim {
+        0% {
+            content: "_";
+        }
+        50% {
+            content: "";
+        }
+        100% {
+            content: "_";
+        }
+    }
+    .cursor:focus::after {
+        content: "_";
+        animation: cursor-anim 1s infinite;
     }
 </style>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>froggyOS</title>
-    <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -102,18 +109,19 @@
         <!-- End of statistics bar -->
 
         <!-- Terminal section -->
-        <div id="terminal">
-            <div id="output">
-            </div>
-            <div class="path">
-                <span>F:/Home></span><span id="cursor" contenteditable="true" spellcheck="false" onfocus="moveCaretToEnd()" oninput="moveCaretToEnd()"></span>
-            </div>
-            <div id="input">
-            </div>
-        </div>
+        <div id="terminal"></div>
     </div>
 </body>
 <script>
+    // path variable
+    let path = 'F:/Home>';
+
+    let terminal = document.getElementById('terminal');
+
+    terminal.onclick = function() {
+        terminal.lastChild.focus();
+    }
+
     function updateDateTime() {
         const now = new Date();
 
@@ -141,90 +149,86 @@
     updateDateTime(); // Initial call to display the live date and time.
 
     // Section 2: The terminal itself.
+    // search through all lines with the class "terminal-line"
 
-    // Function to move the caret to the end of the editable content. This fixes cursor jumping.
-    function moveCaretToEnd() {
-        const cursor = document.getElementById("cursor");
-        const range = document.createRange();
-        const selection = window.getSelection();
-        
-        range.selectNodeContents(cursor);
-        range.collapse(false);  // Collapse to the end of the content.
-        selection.removeAllRanges();
-        selection.addRange(range);
+    /*
+    create a line for displaying text
+    text - the text
+    path - the path
+    */
+    function createTerminalLine(text, path){
+        let terminalLine = document.createElement('div');
+
+        terminalLine.classList.add('term-noedit');
+
+        terminalLine.setAttribute('data-path', `${path} `);
+
+        terminalLine.textContent = text;
+
+        terminal.appendChild(terminalLine);
+        terminal.scrollTop = terminal.scrollHeight;
     }
 
-    // This is the commands section.
-    function handleKeyPress(event) {
-        if (event.key === "Enter") {
-            event.preventDefault(); // Prevent default action (new line).
+    /*
+    create a line for user input
+    path - the path
+    */
+    function createEditableTerminalLine(path){
+        let terminalLine = document.createElement('div');
 
-            const input = document.getElementById("cursor").textContent;
+        terminalLine.classList.add('term-edit');
+        terminalLine.classList.add('cursor');
 
-            // Display the user input (F:/Home> <input>) in green.
-            displayUserInput(`F:/Home> ${input}`);
+        terminalLine.setAttribute('contenteditable', 'true');
+        terminalLine.setAttribute('data-path', `${path} `);
+        terminalLine.setAttribute('spellcheck', 'false');
 
-            // Clear input after pressing enter.
-            document.getElementById("cursor").textContent = "";
+        terminalLine.addEventListener('keydown', function(e){
+            if(e.key == "Enter"){
+                e.preventDefault();
+                terminalLine.setAttribute('contenteditable', 'false');
+                let userInput = terminalLine.textContent;
+                let args = userInput.split(" ");
 
-            // "Hello" command.
-            if (input.toLowerCase() === "hello") {
-                displayOutput("Hello, and welcome to froggyOS.");
+                let command = args[0];
+                args = args.slice(1);
 
-            // Clears the terminal
-            } else if (input.toLowerCase() === "clear") {
-                document.getElementById("output").innerHTML = "";
-            
-            // "Pulse" command.
-            } else if (input.toLowerCase() === "pulse") {
-                displayOutput("froggyOS is (probably) working as intended.");
+                switch(command){
+                    case "hello":
+                        createTerminalLine("Hello, and welcome to froggyOS.", path);
+                        break;
 
-            // Help command
-            } else if (input.toLowerCase() === "help") {
-                displayOutput("* A few basic froggyOS commands *");
-                displayOutput("clear - Clears the terminal output.");
-                displayOutput("hello - Displays a greeting message.");
-                displayOutput("pulse - Tells the user if froggyOS is working.");
-                
-            // If froggy cannot recognize the command...
-            } else {
-                displayOutput(`Froggy doesn't know "${input}", sorry.`);
+                    case "clear":
+                        document.getElementById('terminal').innerHTML = "";
+                        break;
+
+                    case "pulse":
+                        createTerminalLine("froggyOS is (probably) working as intended.", path);
+                        break;
+
+                    case "help":
+                        createTerminalLine("* A few basic froggyOS commands *", path);
+                        createTerminalLine("clear - Clears the terminal output.", path);
+                        createTerminalLine("hello - Displays a greeting message.", path);
+                        createTerminalLine("pulse - Tells the user if froggyOS is working.", path);
+                        break;
+
+                    case "[[DEV]]changepath":
+                        path = args.join(" ");
+                        break;
+
+                    default:
+                        createTerminalLine(`Froggy doesn't know "${userInput}", sorry.`, path);
+                        break;
+                }
+                createEditableTerminalLine(path);
             }
+        });
 
-            // Move the cursor to the end after each input
-            moveCaretToEnd();
-        }
+        terminal.appendChild(terminalLine);
+        terminal.scrollTop = terminal.scrollHeight;
+        terminalLine.focus();
     }
 
-    // Function to display the user input (F:/Home>) in green
-    function displayUserInput(input) {
-        const outputDiv = document.getElementById("output");
-        const outputElement = document.createElement("div");
-        const promptElement = document.createElement("span");
-        
-        promptElement.textContent = "F:/Home> ";
-        promptElement.style.color = "#00AA00";  // Set the prompt to a froggy green.
-        outputElement.appendChild(promptElement);
-        
-        const inputText = document.createElement("span");
-        inputText.textContent = input.slice("F:/Home> ".length);  // Only the input part (without the prompt).
-        inputText.style.color = "#00AA00";
-        outputElement.appendChild(inputText);
-        
-        outputDiv.appendChild(outputElement);
-        outputDiv.scrollTop = outputDiv.scrollHeight; // Auto-scroll to the bottom
-    }
-
-    // Function to display output in green (for results)
-    function displayOutput(output) {
-        const outputDiv = document.getElementById("output");
-        const outputElement = document.createElement("div");
-        outputElement.textContent = output;
-        outputElement.style.color = "#00AA00"; // Set text color for command output to a bright red.
-        outputDiv.appendChild(outputElement);
-        outputDiv.scrollTop = outputDiv.scrollHeight; // Auto-scroll to the bottom
-    }
-
-    // Make sure the cursor is always at the end
-    document.getElementById("cursor").addEventListener("keydown", handleKeyPress);
+    createEditableTerminalLine(path);
 </script>
