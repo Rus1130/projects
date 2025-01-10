@@ -118,6 +118,9 @@
 
     let terminal = document.getElementById('terminal');
 
+    const commandHistory = [];
+    let commandHistoryIndex = 0;
+
     terminal.onclick = function() {
         terminal.lastChild.focus();
     }
@@ -221,7 +224,11 @@
                         createTerminalLine(`Froggy doesn't know "${userInput}", sorry.`, path);
                         break;
                 }
+                commandHistory.reverse();
+                commandHistory.push(userInput);
+                commandHistory.reverse();
                 createEditableTerminalLine(path);
+                console.log(commandHistory);
             }
         });
 
