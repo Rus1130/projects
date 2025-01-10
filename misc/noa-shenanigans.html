@@ -198,7 +198,7 @@
 
             case "[[DEV]]changepath":
                 if(args.length == 0){
-                    createTerminalLine("!ERROR! - Please provide a path.", path);
+                    createTerminalLine("!!ERROR!! - Please provide a path.", path);
                     break;
                 }
                 path = args.join(" ");
@@ -206,7 +206,7 @@
 
             case '[[DEV]]help':
                 createTerminalLine("* A few developer commands *", path);
-                createTerminalLine("[[DEV]]changepath - Changes the path of the terminal", path);
+                createTerminalLine("[[DEV]]changepath [path] - Changes the path of the terminal", path);
                 break;
 
             default:
