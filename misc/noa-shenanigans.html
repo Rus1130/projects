@@ -1,4 +1,4 @@
-<!--DISCLAIMER: this is not owned by Rus1130-->
+<!--mrjuice43, Rus1130, 2025/01/10-->
 <style>
     body {
         background-color: #000000;
@@ -10,7 +10,7 @@
         height: 100vh;
     }
 
-    #container {
+    #screen {
         width: 640px;
         height: 480px;
         background-color: #FFFFFF;
@@ -20,9 +20,10 @@
         align-items: center;
         padding-top: 0;
         box-sizing: border-box;
+        margin-bottom: -10px;
     }
 
-    #stats-bar {
+    #stat-bar {
         background-color: #0000AA;
         height: 10px;
         width: 100%;
@@ -32,6 +33,7 @@
         padding: 0 1px;
         box-sizing: border-box;
         position: relative;
+        cursor: none;
     }
 
     .date-and-time {
@@ -51,8 +53,11 @@
         box-sizing: border-box;
         font-family: "Press Start 2P", serif;
         font-size: 8px;
-        overflow-y: auto;
         cursor: none;
+        overflow-y: auto;
+        scrollbar-width: none;
+        padding-bottom: 0px;
+        caret-color: transparent;
     }
 
     .term-noedit, .term-edit {
@@ -60,6 +65,7 @@
         font-size: 8px;
         outline: none;
         text-decoration: none;
+        caret-color: transparent;
     }
 
     .term-noedit::before, .term-edit::before {
@@ -67,9 +73,8 @@
         color: #00AA00;
     }
 
-    .cursor:focus {
+    .cursor {
         height: 8px;
-        caret-color: transparent;
     }
 
     @keyframes cursor-anim {
@@ -83,23 +88,21 @@
             content: "_";
         }
     }
-    .cursor:focus::after {
+    .cursor::after {
         content: "_";
         animation: cursor-anim 1s infinite;
     }
 </style>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>froggyOS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="container">
+    <div id="screen">
         <!-- Beginning of statistics bar -->
-        <div id="stats-bar">
+        <div id="stat-bar">
             <div class="date-and-time" id="date-time">
                 <p>
                     <!-- Time will update automatically now -->
@@ -114,14 +117,15 @@
 </body>
 <script>
     // path variable
-    let path = 'F:/Home>';
+    let path = 'C:\\>';
 
+    let screen = document.getElementById('screen');
     let terminal = document.getElementById('terminal');
 
     const commandHistory = [];
-    let commandHistoryIndex = 0;
+    let commandHistoryIndex = -1;
 
-    terminal.onclick = function() {
+    screen.onclick = function() {
         terminal.lastChild.focus();
     }
 
@@ -161,7 +165,6 @@
     */
     function createTerminalLine(text, path){
         let terminalLine = document.createElement('div');
-
         terminalLine.classList.add('term-noedit');
 
         terminalLine.setAttribute('data-path', `${path} `);
@@ -172,70 +175,122 @@
         terminal.scrollTop = terminal.scrollHeight;
     }
 
+    function sendCommand(command, args){
+        switch(command){
+            case "hello":
+                createTerminalLine("Hello, and welcome to froggyOS.", path);
+                break;
+
+            case "clear":
+                document.getElementById('terminal').innerHTML = "";
+                break;
+
+            case "pulse":
+                createTerminalLine("froggyOS is (probably) working as intended.", path);
+                break;
+
+            case "help":
+                createTerminalLine("* A few basic froggyOS commands *", path);
+                createTerminalLine("clear - Clears the terminal output.", path);
+                createTerminalLine("hello - Displays a greeting message.", path);
+                createTerminalLine("pulse - Tells the user if froggyOS is working.", path);
+                break;
+
+            case "[[DEV]]changepath":
+                if(args.length == 0){
+                    createTerminalLine("!ERROR! - Please provide a path.", path);
+                    break;
+                }
+                path = args.join(" ");
+                break;
+
+            case '[[DEV]]help':
+                createTerminalLine("* A few developer commands *", path);
+                createTerminalLine("[[DEV]]changepath - Changes the path of the terminal", path);
+                break;
+
+            default:
+                createTerminalLine(`Froggy doesn't know "${command}", sorry.`, path);
+                break;
+        }
+        createEditableTerminalLine(path);
+    }
+
     /*
     create a line for user input
     path - the path
     */
     function createEditableTerminalLine(path){
         let terminalLine = document.createElement('div');
+        let cursor = document.createElement('span');
 
         terminalLine.classList.add('term-edit');
-        terminalLine.classList.add('cursor');
+        cursor.classList.add('cursor');
 
         terminalLine.setAttribute('contenteditable', 'true');
         terminalLine.setAttribute('data-path', `${path} `);
         terminalLine.setAttribute('spellcheck', 'false');
 
-        terminalLine.addEventListener('keydown', function(e){
+        terminalLine.addEventListener('keyup', function(e){
             if(e.key == "Enter"){
                 e.preventDefault();
                 terminalLine.setAttribute('contenteditable', 'false');
                 let userInput = terminalLine.textContent;
                 let args = userInput.split(" ");
 
+                terminalLine.innerHTML = terminalLine.innerHTML.replaceAll("<div><br></div>", "");
+                terminalLine.innerHTML = terminalLine.innerHTML.replaceAll("<span class=\"cursor\"></span>", "");
+
                 let command = args[0];
                 args = args.slice(1);
 
-                switch(command){
-                    case "hello":
-                        createTerminalLine("Hello, and welcome to froggyOS.", path);
-                        break;
+                if(userInput.trim() == ""){
+                    createTerminalLine("Froggy doesn't like that. >:(", path);
+                    createEditableTerminalLine(path);
+                } else {
+                    commandHistory.reverse();
+                    commandHistory.push(userInput);
+                    commandHistory.reverse();
+                    commandHistoryIndex = -1;
 
-                    case "clear":
-                        document.getElementById('terminal').innerHTML = "";
-                        break;
-
-                    case "pulse":
-                        createTerminalLine("froggyOS is (probably) working as intended.", path);
-                        break;
-
-                    case "help":
-                        createTerminalLine("* A few basic froggyOS commands *", path);
-                        createTerminalLine("clear - Clears the terminal output.", path);
-                        createTerminalLine("hello - Displays a greeting message.", path);
-                        createTerminalLine("pulse - Tells the user if froggyOS is working.", path);
-                        break;
-
-                    case "[[DEV]]changepath":
-                        path = args.join(" ");
-                        break;
-
-                    default:
-                        createTerminalLine(`Froggy doesn't know "${userInput}", sorry.`, path);
-                        break;
+                    sendCommand(command, args);
                 }
-                commandHistory.reverse();
-                commandHistory.push(userInput);
-                commandHistory.reverse();
-                createEditableTerminalLine(path);
-                console.log(commandHistory);
+            }
+
+            if(e.key == "Backspace"){
+                // e.preventDefault();
+            }
+
+            if(e.key == "ArrowUp"){
+                let cursor = document.createElement('span');
+                cursor.classList.add('cursor');
+
+                e.preventDefault();
+                if(commandHistoryIndex <= commandHistory.length - 2) commandHistoryIndex++;
+                if(commandHistoryIndex != -1){
+                    terminalLine.textContent = commandHistory[commandHistoryIndex];
+                }
+            }
+
+            if(e.key == "ArrowDown"){
+                let cursor = document.createElement('span');
+                cursor.classList.add('cursor');
+
+                e.preventDefault();
+                if(commandHistoryIndex > 0) commandHistoryIndex--;
+                if(commandHistoryIndex == -1){
+                    terminalLine.textContent = "";
+                } else {
+                    terminalLine.textContent = commandHistory[commandHistoryIndex];
+                }
             }
         });
 
+        terminalLine.appendChild(cursor);
         terminal.appendChild(terminalLine);
         terminal.scrollTop = terminal.scrollHeight;
         terminalLine.focus();
     }
 
-    createEditableTerminalLine(path);
+    sendCommand('hello');
 </script>
