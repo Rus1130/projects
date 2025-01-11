@@ -85,7 +85,8 @@
         path: 'C:/>',
         commandHistory: [],
         commandHistoryIndex: -1,
-        timeFormat: 'w. y/m/d h:n:s'
+        timeFormat: 'w. y/m/d h:n:s',
+        updateStatBar: true,
     }
 
     let screen = document.getElementById('screen');
@@ -112,6 +113,7 @@
     }
 
     function updateDateTime() {
+        if(!config.updateStatBar) return;
         const now = new Date();
 
         // Grab the current weekday.
@@ -170,24 +172,8 @@
 
     function sendCommand(command, args){
         switch(command){
-            case "hello":
-                createTerminalLine("Hello, I'm froggy! ^v^", ">");
-                break;
-
             case "clear":
                 document.getElementById('terminal').innerHTML = "";
-                break;
-
-            case "pulse":
-                createTerminalLine("froggyOS is (probably) working as intended.", ">");
-                break;
-
-            case "help":
-                createTerminalLine("* A few basic froggyOS commands *", "");
-                createTerminalLine("clear - Clears the terminal output.", ">");
-                createTerminalLine("hello - Displays a greeting message.", ">");
-                createTerminalLine("pulse - Tells the user if froggyOS is working.", ">");
-                createTerminalLine("formattime [time format] - Changes the time format.", ">");
                 break;
 
             case "formattime":
@@ -205,7 +191,23 @@
                 config.timeFormat = args.join(" ");
                 break;
 
-            case "[[DEV]]changepath":
+            case "hello":
+                createTerminalLine("Hello, I'm froggy! ^v^", ">");
+                break;
+
+            case "help":
+                createTerminalLine("* A few basic froggyOS commands *", "");
+                createTerminalLine("clear - Clears the terminal output.", ">");
+                createTerminalLine("formattime [time format] - Changes the time format.", ">");
+                createTerminalLine("hello - Displays a greeting message.", ">");
+                createTerminalLine("pulse - Tells the user if froggyOS is working.", ">");
+                break;
+
+            case "pulse":
+                createTerminalLine("froggyOS is (probably) working as intended.", ">");
+                break;
+
+            case "[[FROG]]changepath":
                 if(args.length == 0){
                     createTerminalLine("Please provide a path.", "!!ERROR!! - ");
                     break;
@@ -213,23 +215,36 @@
                 config.path = args.join(" ");
                 break;
 
-            case '[[DEV]]help':
-                createTerminalLine("* A few developer commands *", "");
-                createTerminalLine("[[DEV]]changepath [path] - Changes the path of the terminal", ">");
-                createTerminalLine("[[DEV]]greeting - Displays the greeting message", ">");
-                break;
-
-            case '[[DEV]]greeting':
+            case '[[FROG]]greeting':
                 createTerminalLine("Type ‘help’ to receive support with commands, and possibly navigation.", "");
                 createTerminalLine("* Welcome to froggyOS, version 1.0 *" , "");
                 break;
 
-            case '[[DEV]]setstatbar':
+            case '[[FROG]]help':
+                createTerminalLine("* A few frog commands *", "");
+                createTerminalLine("[[FROG]]changepath [path] - Changes the path of the terminal", ">");
+                createTerminalLine("[[FROG]]greeting - Displays the greeting message", ">");
+                createTerminalLine("[[FROG]]setstatbar [text] - Changes the text in the status bar", ">");
+                createTerminalLine("[[FROG]]statbarlock [0/1] - Locks the status bar from updating", ">");
+                break;
+
+            case '[[FROG]]setstatbar':
                 if(args.length > 80){
                     createTerminalLine("The argument is too long.", "!!ERROR!! - ");
                     break;
                 }
                 document.getElementById('bar').textContent = args.join(" ");
+                break;
+
+            case '[[FROG]]statbarlock':
+                let bool = args[0];
+                if(bool == "1"){
+                    config.updateStatBar = false;
+                } else if(bool == "0"){
+                    config.updateStatBar = true;
+                } else {
+                    createTerminalLine("Invalid argument. Please provide '1' or '0'.", "!!ERROR!! - ");
+                }
                 break;
 
             default:
@@ -310,5 +325,12 @@
         terminalLine.focus();
     }
 
-    sendCommand('[[DEV]]greeting', []);
+    sendCommand('[[FROG]]greeting', []);
+
+    let ce = document.querySelector('[contenteditable]')
+        ce.addEventListener('paste', function (e) {
+        e.preventDefault()
+        var text = e.clipboardData.getData('text/plain')
+        document.execCommand('insertText', false, text)
+    })
 </script>
