@@ -171,9 +171,20 @@
     }
 
     function sendCommand(command, args){
+        command = command.trim();
+        args = args.filter(arg => arg.trim() != "");
+
         switch(command){
             case "clear":
                 document.getElementById('terminal').innerHTML = "";
+                break;
+
+            case "ribbit":
+                if(args.length == 0){
+                    createTerminalLine("Please provide text to display.", "!!ERROR!! - ");
+                    break;
+                }
+                createTerminalLine(args.join(" "), ">")
                 break;
 
             case "formattime":
@@ -198,6 +209,7 @@
             case "help":
                 createTerminalLine("* A few basic froggyOS commands *", "");
                 createTerminalLine("clear - Clears the terminal output.", ">");
+                createTerminalLine("ribbit [text] - Displays the text.", ">");
                 createTerminalLine("formattime [time format] - Changes the time format.", ">");
                 createTerminalLine("hello - Displays a greeting message.", ">");
                 createTerminalLine("pulse - Tells the user if froggyOS is working.", ">");
