@@ -437,6 +437,12 @@ class Typewriter2 {
         }
     }
 
+    /**
+     * @description adds color to a range of characters
+     * @param {Number} startIndex start index
+     * @param {Number} endIndex end index
+     * @param {String} color color
+     */
     addColor(startIndex, endIndex, color){
         this.control.tokens.forEach(token => {
             if(token.index >= startIndex && token.index <= endIndex) token.color = color;
