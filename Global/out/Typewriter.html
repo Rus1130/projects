@@ -49,7 +49,7 @@
 
 
 <div class="description">
-    Creates a typewriter effect for text<br> note: characters used in options cannot be used in the text
+    Creates a typewriter effect for text
 </div>
 
 
@@ -315,7 +315,7 @@
                 </td>
             
 
-            <td class="description last">surrounded characters become italicized (default /)</td>
+            <td class="description last">surround text with character to italicize (/text/)</td>
         </tr>
 
     
@@ -354,7 +354,7 @@
                 </td>
             
 
-            <td class="description last">surrounded characters become bolded (default *)</td>
+            <td class="description last">surround text with character to bold (*text*)</td>
         </tr>
 
     
@@ -393,7 +393,7 @@
                 </td>
             
 
-            <td class="description last">surrounded characters become underlined (default _)</td>
+            <td class="description last">envelop text by a pair to apply underline format (_text_)</td>
         </tr>
 
     
@@ -432,7 +432,46 @@
                 </td>
             
 
-            <td class="description last">surrounded characters become strikethroughed (default -)</td>
+            <td class="description last">envelop text by a pair to apply strikethrough format (-text-)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>styleEscape</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    "\\"
+                
+                </td>
+            
+
+            <td class="description last">prefix character you want to escape (\text) Note: cannot escape the line break character</td>
         </tr>
 
     
@@ -710,6 +749,45 @@
 
         <tr>
             
+                <td class="name"><code>stringInput</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">if true, the inputID will be treated as the string to display rather than an element (default false)</td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>onFinish</code></td>
             
 
@@ -788,7 +866,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="typewriter.js.html">typewriter.js</a>, <a href="typewriter.js.html#line36">line 36</a>
+        <a href="typewriter.js.html">typewriter.js</a>, <a href="typewriter.js.html#line32">line 32</a>
     </li></ul></dd>
     
 
@@ -968,7 +1046,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="typewriter.js.html">typewriter.js</a>, <a href="typewriter.js.html#line234">line 234</a>
+        <a href="typewriter.js.html">typewriter.js</a>, <a href="typewriter.js.html#line255">line 255</a>
     </li></ul></dd>
     
 
@@ -1125,7 +1203,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="typewriter.js.html">typewriter.js</a>, <a href="typewriter.js.html#line180">line 180</a>
+        <a href="typewriter.js.html">typewriter.js</a>, <a href="typewriter.js.html#line200">line 200</a>
     </li></ul></dd>
     
 
@@ -1235,7 +1313,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="typewriter.js.html">typewriter.js</a>, <a href="typewriter.js.html#line215">line 215</a>
+        <a href="typewriter.js.html">typewriter.js</a>, <a href="typewriter.js.html#line236">line 236</a>
     </li></ul></dd>
     
 
@@ -1323,7 +1401,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="typewriter.js.html">typewriter.js</a>, <a href="typewriter.js.html#line222">line 222</a>
+        <a href="typewriter.js.html">typewriter.js</a>, <a href="typewriter.js.html#line243">line 243</a>
     </li></ul></dd>
     
 
@@ -1359,7 +1437,7 @@
     
 
     
-    <h4 class="name" id="setSpeed"><span class="type-signature"></span>setSpeed<span class="signature">(delay)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="setSpeed"><span class="type-signature"></span>setSpeed<span class="signature">(delay, overrideCustomDelay<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
     
 
     
@@ -1367,7 +1445,7 @@
 
 
 <div class="description">
-    Sets the speed of the typewriter, overwriting all custom delays
+    Sets the speed of the typewriter
 </div>
 
 
@@ -1391,7 +1469,11 @@
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -1416,10 +1498,61 @@
             </td>
 
             
+                <td class="attributes">
+                
 
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last">delay in ms</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>overrideCustomDelay</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">whether to override custom delays</td>
         </tr>
 
     
@@ -1460,7 +1593,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="typewriter.js.html">typewriter.js</a>, <a href="typewriter.js.html#line205">line 205</a>
+        <a href="typewriter.js.html">typewriter.js</a>, <a href="typewriter.js.html#line226">line 226</a>
     </li></ul></dd>
     
 
@@ -1548,7 +1681,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="typewriter.js.html">typewriter.js</a>, <a href="typewriter.js.html#line91">line 91</a>
+        <a href="typewriter.js.html">typewriter.js</a>, <a href="typewriter.js.html#line93">line 93</a>
     </li></ul></dd>
     
 
@@ -1612,13 +1745,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Typewriter.html">Typewriter</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ScrambleTextEffect.html">ScrambleTextEffect</a></li><li><a href="Typewriter.html">Typewriter</a></li><li><a href="Typewriter2.html">Typewriter2</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Oct 28 2024 20:46:45 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sat Jan 11 2025 22:47:21 GMT-0500 (Eastern Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
