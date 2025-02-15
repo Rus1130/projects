@@ -31,17 +31,38 @@
             // V-A = z
             // a-C = ā
 
-            if(left == "a" && C.includes(right)) s = s.substring(0, i) + "ā" + s.substring(i+1)
-            if(C.includes(left) && C.includes(right)) s = s.substring(0, i) + "ə" + s.substring(i+1)
-            if(P.includes(left) && C.includes(right)) s = s.substring(0, i) + "ə" + s.substring(i+1)
-            if(V.includes(left) && V.includes(right)) s = s.substring(0, i) + "c" + s.substring(i+1)
-            if(V.includes(left) && C1.includes(right)) s = s.substring(0, i) + "z" + s.substring(i+1)
-            if(V.includes(left) && D.includes(right)) s = s.substring(0, i) + "c" + s.substring(i+1)
-            if(V.includes(left) && A.includes(right)) s = s.substring(0, i) + "z" + s.substring(i+1)
+            if(left == "a" && C.includes(right)) {
+                s = s.substring(0, i) + "ā" + s.substring(i+1)
+                continue
+            }
+            if(V.includes(left) && D.includes(right)) {
+                s = s.substring(0, i) + "c" + s.substring(i+1)
+                continue
+            }
+            if(P.includes(left) && C.includes(right)) {
+                s = s.substring(0, i) + "ə" + s.substring(i+1)
+                continue
+            }
+            if(C.includes(left) && C.includes(right)) {
+                s = s.substring(0, i) + "ə" + s.substring(i+1)
+                continue
+            }
+            if(V.includes(left) && V.includes(right)) {
+                s = s.substring(0, i) + "c" + s.substring(i+1)
+                continue
+            }
+            if(V.includes(left) && C1.includes(right)) {
+                s = s.substring(0, i) + "z" + s.substring(i+1)
+                continue
+            }
+            if(V.includes(left) && A.includes(right)) {
+                s = s.substring(0, i) + "z" + s.substring(i+1)
+                continue
+            }
         }
     }
 
-    s = s.replaceAll("az", "ā")
+    s = s.replaceAll("aā", "ā")
     
     // catch NotAllowedError
 
