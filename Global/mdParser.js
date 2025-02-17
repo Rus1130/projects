@@ -32,7 +32,8 @@ class mdParser {
         this.inputType = inputType;
         this.input = input;
 
-        this.toc = false;
+        this.toc_ = false;
+        this.newWindowArgs_ = "";
 
         this.md = "";
         this.html = "";
@@ -46,7 +47,7 @@ class mdParser {
     // table of contents
     toc(bool){
         if(typeof bool !== "boolean") throw new Error("toc must be boolean");
-        this.toc = bool;
+        this.toc_ = bool;
         return this
     }
 
@@ -54,6 +55,11 @@ class mdParser {
     generate(){
         // get the html from the markdown
         // ...
+        return this
+    }
+
+    newWindowArgs(args){
+        this.newWindowArgs_ = args;
         return this
     }
 
