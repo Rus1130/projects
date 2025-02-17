@@ -58,7 +58,7 @@ class MarkdownParser {
         parsed-container, .toc {
             font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif;
         }
-            
+
         code {
             padding-left: 5px;
             padding-right: 5px;
@@ -85,7 +85,8 @@ class MarkdownParser {
             top: 0;
             right: 0;
             position: fixed;
-            height: 100%;
+            height: calc(100% - 1px);
+            line-height: 1.3;
         }
 
         .toc {
@@ -93,7 +94,8 @@ class MarkdownParser {
             margin: 8px;
             padding: 5px;
             font-size: 0.9em;
-            height: 100%;
+            height: calc(100% - 1px);
+            overflow-y: auto;
             margin-left: 0;
         }
 
@@ -242,7 +244,9 @@ class MarkdownParser {
         }
 
         if(this.toc_) {
-            setBodyOffset(windowToUse);
+            setInterval(() => {
+                setBodyOffset(windowToUse);
+            }, 100);
         }
 
         return this
