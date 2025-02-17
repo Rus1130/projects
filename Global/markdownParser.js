@@ -51,10 +51,16 @@
     openDocumentationWindow();
 */
 
-class mdParser {
-    static customCSS = `
+class MarkdownParser {
+    static i = 0;
+    static css = `
     <style>
+        :root {
+            --toc-offset: 0px;
+        }
+
         code {
+    
             padding-left: 5px;
             padding-right: 5px;
 
@@ -71,10 +77,53 @@ class mdParser {
             line-height: 1.5;
             overflow-x: auto;
         }
+
+        parsed-container {
+            display: block;
+        }
+
+        toc-container {
+            top: 0;
+            right: 0;
+            position: fixed;
+            height: 100%;
+        }
+
+        .toc {
+            background-color: #f9f9f9;
+            margin: 8px;
+            padding: 5px;
+            font-size: 0.9em;
+            height: 100%;
+            margin-left: 0;
+        }
+
+        .toc > ul {
+            margin-top: 0;
+        }
+
+        .toc > * ul, .toc > ul {
+            padding-inline-start: 15px;
+        }
+
+        a {
+            color: #000;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
     </style>`
 
-    // get some stuff from froggyOS
-
+    /**
+     * Creates an instance for processing Markdown input from either text or a URL.
+     * 
+     * @constructor
+     * @param {string} inputType - The type of input, either "text" or "url".
+     * @param {string} input - The Markdown content or URL pointing to the Markdown file.
+     * @throws {Error} If the inputType is not "text" or "url".
+     */
     constructor(inputType, input){
         if(!["text", "url"].includes(inputType)) throw new Error("Invalid input type (text, url)");
 
@@ -82,39 +131,121 @@ class mdParser {
         this.input = input;
 
         this.toc_ = false;
-        this.newWindowArgs_ = "";
+        this.newWindowArgs_ = null;
 
-        this.md = "";
-        this.html = "";
+        this.md = null;
+        this.html = MarkdownParser.css;
 
-        // get the markdown
-        // ...
+        if(inputType == "text") this.md = input;
+        else if (inputType == "url") {
+            let xhr = new XMLHttpRequest();
+            xhr.open('GET', input, false);
+            xhr.send();
+            this.md = xhr.responseText;
+        }
 
         return this;
     }
 
-    // table of contents
+    /**
+     * Sets the table of contents to be displayed.
+     * 
+     * @param {boolean} bool - Whether or not to display the table of contents.
+     */
     toc(bool){
         if(typeof bool !== "boolean") throw new Error("toc must be boolean");
         this.toc_ = bool;
         return this
     }
 
-    // actually generate the markdown
-    generate(){
-        // get the html from the markdown
-        // ...
-        return this
-    }
-
+    /**
+     * If the open type is "newWindow", sets the arguments for the new window.
+     */
     newWindowArgs(args){
         this.newWindowArgs_ = args;
         return this
     }
 
+    /**
+     * If the open type is "element", sets the element to append the HTML to.
+     */
+    element(element){
+        if(!element) throw new Error("Element must be defined");
+        this.element_ = element;
+        return this
+    }
+
+    /**
+     * Generates the HTML from the Markdown.
+     */
+    generate() {
+        const converter = new showdown.Converter();
+        this.html += `<mdparser data-i=${MarkdownParser.i}><parsed-container>${converter.makeHtml(this.md)}</parsed-container>`;
+
+
+        if(this.toc_) {
+            let elementsWithIds = Array.from(new DOMParser().parseFromString(this.html, "text/html").querySelectorAll("h1, h2, h3, h4, h5, h6[id]"));
+            let tocElement = document.createElement("div");
+            tocElement.classList.add("toc");
+        
+            let toc = "";
+        
+            elementsWithIds.forEach((element) => {
+                let level = parseInt(element.tagName.replace("H", ""));
+                toc += `${"    ".repeat(level - 1)} * <a href="#${element.id}">${element.innerText}</a>\n`;
+            });
+
+            tocElement.innerHTML = converter.makeHtml(toc);
+
+            this.html += `<toc-container>${tocElement.outerHTML}</toc-container>`;
+        }
+
+        this.html += "</mdparser>";
+
+        MarkdownParser.i++;
+
+        return this;
+    }
+
+    /**
+     * Opens the HTML in the specified way.
+     * 
+     * @param {string} type - The type of opening, either "element", "thisTab", "newTab", or "newWindow".
+     */
     open(type){
-        if(!["newTab", "newWindow"].includes(type)) throw new Error("Invalid open type (newTab, newWindow)");
-        // ...
+        if(!["element", "thisTab", "newTab", "newWindow"].includes(type)) throw new Error("Invalid open type (element, thisTab, newTab, newWindow)");
+        if(this.html == MarkdownParser.css) throw new Error("HTML must be generated before opening");
+
+        let windowToUse = window;
+
+        function setBodyOffset(parent) {
+            setTimeout(() => {
+                let tocWidth = parent.document.querySelector(`mdparser[data-i="${MarkdownParser.i - 1}"] toc-container`).offsetWidth;
+                let parsed = parent.document.querySelector(`mdparser[data-i="${MarkdownParser.i - 1}"] parsed-container`);
+                parsed.style.width = `calc(100% - ${tocWidth}px)`;
+            }, parent == window ? 0 : 150)
+        }
+
+        if(type == "element"){
+            if(this.element_?.style == undefined) throw new Error("Element must be defined");
+            this.element_.innerHTML += this.html;
+        } else if (type == "thisTab"){
+            document.body.innerHTML = this.html;
+        } else if (type == "newTab"){
+            let newTab = window.open("", null);
+            newTab.document.body.innerHTML = this.html;
+            windowToUse = newTab;
+        } else if (type == "newWindow"){
+            if(this.newWindowArgs_ == null) throw new Error("New window arguments must be defined");
+            let newWindow = window.open("", null, this.newWindowArgs_);
+            newWindow.document.body.innerHTML = this.html;
+            windowToUse = newWindow;
+        }
+
+        if(this.toc_) {
+            setBodyOffset(windowToUse);
+        }
+
         return this
     }
 }
