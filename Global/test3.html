@@ -366,8 +366,9 @@ loaddata [variable]
 `
 
 let mdp = new MarkdownParser("url", `https://froggyos.github.io/versions/1.8/README.md`)
-    .newWindowArgs("height=800,width=900")
+    .newWindowArgs("height=889,width=700")
     .toc(true)
+    .title("FroggyOS Documentation")
     .generate()
     .open("newWindow")
 
