@@ -152,6 +152,7 @@ class MarkdownParser {
      * Sets the table of contents to be displayed.
      * 
      * @param {boolean} bool - Whether or not to display the table of contents.
+     * @throws {Error} If the input is not a boolean.
      */
     toc(bool){
         if(typeof bool !== "boolean") throw new Error("toc must be boolean");
@@ -167,11 +168,17 @@ class MarkdownParser {
         return this
     }
 
+    title(title){
+        this.html += `<title>${title}</title>`;
+        return this
+    }
+
     /**
      * If the open type is "element", sets the element to append the HTML to.
+     * @throws {Error} If the element is not defined.
      */
     element(element){
-        if(!element) throw new Error("Element must be defined");
+        if(element?.style == undefined) throw new Error("Element must be defined");
         this.element_ = element;
         return this
     }
@@ -212,6 +219,7 @@ class MarkdownParser {
      * Opens the HTML in the specified way.
      * 
      * @param {string} type - The type of opening, either "element", "thisTab", "newTab", or "newWindow".
+     * @throws {Error} If the type is not "element", "thisTab", "newTab", or "newWindow".
      */
     open(type){
         if(!["element", "thisTab", "newTab", "newWindow"].includes(type)) throw new Error("Invalid open type (element, thisTab, newTab, newWindow)");
@@ -228,7 +236,6 @@ class MarkdownParser {
         }
 
         if(type == "element"){
-            if(this.element_?.style == undefined) throw new Error("Element must be defined");
             this.element_.innerHTML += this.html;
         } else if (type == "thisTab"){
             document.body.innerHTML = this.html;
