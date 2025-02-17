@@ -53,6 +53,7 @@
 
 class MarkdownParser {
     static i = 0;
+    // theres a bug where the scroll bar shows at first and then dissapears when you resize-y, FIX!
     static css = `
     <style>
         parsed-container, .toc {
