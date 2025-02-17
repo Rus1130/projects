@@ -59,6 +59,7 @@ class mdParser {
 
     open(type){
         if(!["newTab", "newWindow"].includes(type)) throw new Error("Invalid open type (newTab, newWindow)");
+        // ...
         return this
     }
 }
