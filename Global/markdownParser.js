@@ -85,8 +85,8 @@ class MarkdownParser {
             top: 0;
             right: 0;
             position: fixed;
-            height: calc(100% - 1px);
-            line-height: 1.3;
+            height: 100%;
+            line-height: 1.25;
         }
 
         .toc {
@@ -94,7 +94,7 @@ class MarkdownParser {
             margin: 8px;
             padding: 5px;
             font-size: 0.9em;
-            height: calc(100% - 1px);
+            height: 100%;
             overflow-y: auto;
             margin-left: 0;
         }
