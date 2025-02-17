@@ -5,6 +5,7 @@
 class MarkdownParser {
     static i = 0;
     // theres a bug where the scroll bar shows at first and then dissapears when you resize-y, FIX!
+    // also fix the weird aah margins that is on like EVERY SINGLE ELEMENT
     static css = `
     <style>
         parsed-container, .toc {
@@ -146,6 +147,7 @@ class MarkdownParser {
      * Generates the HTML from the Markdown.
      */
     generate() {
+        if(this.md == null) throw new Error("No markdown to convert to HTML");
         const converter = new showdown.Converter();
         this.html += `<mdparser data-i=${MarkdownParser.i}><parsed-container>${converter.makeHtml(this.md)}</parsed-container>`;
 
@@ -169,6 +171,7 @@ class MarkdownParser {
 
         this.html += "</mdparser>";
 
+        // this.i = MarkdownParser.i;
         MarkdownParser.i++;
 
         return this;
