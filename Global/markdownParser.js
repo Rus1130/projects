@@ -101,9 +101,10 @@ class MarkdownParser {
     }
 
     /**
+     * Must be used before the `generate` method.
      * Sets the table of contents to be displayed.
      * 
-     * @param {boolean} bool - Whether or not to display the table of contents.
+     * @param {boolean} bool - Whether or not to display a table of contents.
      * @throws {Error} If the input is not a boolean.
      */
     toc(bool){
@@ -113,6 +114,7 @@ class MarkdownParser {
     }
 
     /**
+     * Must be used before the `generate` method.
      * If the open type is "newWindow", sets the arguments for the new window.
      */
     newWindowArgs(args){
@@ -120,12 +122,17 @@ class MarkdownParser {
         return this
     }
 
+    /**
+     * Must be used before the `generate` method.
+     * Sets the title of the HTML.
+     */
     title(title){
         this.html += `<title>${title}</title>`;
         return this
     }
 
     /**
+     * Must be used before the `generate` method.
      * If the open type is "element", sets the element to append the HTML to.
      * @throws {Error} If the element is not defined.
      */
