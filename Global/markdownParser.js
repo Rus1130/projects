@@ -55,12 +55,11 @@ class MarkdownParser {
     static i = 0;
     static css = `
     <style>
-        :root {
-            --toc-offset: 0px;
+        parsed-container, .toc {
+            font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif;
         }
-
+            
         code {
-    
             padding-left: 5px;
             padding-right: 5px;
 
@@ -74,12 +73,12 @@ class MarkdownParser {
             display: block;
             padding: 15px;
 
-            line-height: 1.5;
             overflow-x: auto;
         }
 
         parsed-container {
             display: block;
+            line-height: 1.5;
         }
 
         toc-container {
