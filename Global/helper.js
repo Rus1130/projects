@@ -43,8 +43,8 @@ class Helper {
         } else return new Error('Argument is not an object');
     }
 
-    static timeFormat(formatString) {
-        const now = new Date(), dows = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], monthsLong = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], ord = n => (n % 100 >= 11 && n % 100 <= 13) ? "th" : ["st", "nd", "rd"][n % 10 - 1] || "th";
+    static timeFormat(formatString, time) {
+        const now = time == undefined ? new Date() : new Date(time), dows = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], monthsLong = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], ord = n => (n % 100 >= 11 && n % 100 <= 13) ? "th" : ["st", "nd", "rd"][n % 10 - 1] || "th";
 
         const pad = n => String(n).padStart(2, '0'), day = now.getDate(), hr = now.getHours(), min = now.getMinutes(), sec = now.getSeconds();
         const map = {
