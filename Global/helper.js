@@ -44,103 +44,16 @@ class Helper {
     }
 
     static timeFormat(formatString) {
-        const now = new Date();
+        const now = new Date(), dows = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], monthsLong = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], ord = n => (n % 100 >= 11 && n % 100 <= 13) ? "th" : ["st", "nd", "rd"][n % 10 - 1] || "th";
 
-        const dowListShort = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        const dowListLong = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const monthListShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const monthListLong = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
-        const dayOfWeekShort = dowListShort[now.getDay()];
-        const dayOfWeekLong = dowListLong[now.getDay()];
-
-        const year = now.getFullYear();
-
-        const monthNumber = String(now.getMonth() + 1).padStart(2, '0');
-        const monthNumberUnpadded = String(now.getMonth() + 1);
-        const monthShort = monthListShort[now.getMonth()];
-        const monthLong = monthListLong[now.getMonth()]; 
-
-        const day = String(now.getDate()).padStart(2, '0');
-        const dayUnpadded = String(now.getDate());
-        const ordinalDay = String(now.getDate()) + getOrdinalSuffix(+day);
-
-        const hour24 = String(now.getHours()).padStart(2, '0');
-        const hour12 = String((now.getHours() + 11) % 12 + 1).padStart(2, '0');
-        const hour24Unpadded = String(now.getHours());
-        const hour12Unpadded = String((now.getHours() + 11) % 12 + 1);
-
-        const minute = String(now.getMinutes()).padStart(2, '0');
-        const minuteUnpadded = String(now.getMinutes());
-
-        const second = String(now.getSeconds()).padStart(2, '0');
-        const secondUnpadded = String(now.getSeconds());
-
-        const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
-
-        const timezone = new Date().toLocaleString(["en-US"], {timeZoneName: "short"}).split(" ").pop();
-
-        function getOrdinalSuffix(num) {
-            if (typeof num !== "number" || isNaN(num)) return "";
-
-            let lastDigit = num % 10;
-            let lastTwoDigits = num % 100;
-
-            if (lastTwoDigits >= 11 && lastTwoDigits <= 13) {
-                return "th";
-            }
-
-            switch (lastDigit) {
-                case 1:
-                    return "st";
-                case 2:
-                    return "nd";
-                case 3:
-                    return "rd";
-                default:
-                    return "th";
-            }
-        }
-
-        let dateTemplate = formatString;
-
-        // totally not ai
-        const replacements = [
-            { char: 'w', value: dayOfWeekShort },
-            { char: 'W', value: dayOfWeekLong },
-
-            { char: 'y', value: year },
-
-            { char: 'mn', value: monthNumber },
-            { char: 'mnu', value: monthNumberUnpadded },
-            { char: "m", value: monthShort },
-            { char: "M", value: monthLong },
-
-            { char: 'd', value: day },
-            { char: 'du', value: dayUnpadded },
-            { char: "D", value: ordinalDay },
-
-            { char: 'h', value: hour24 },
-            { char: 'hu', value: hour24Unpadded },
-            { char: 'H', value: hour12 },
-            { char: 'Hu', value: hour12Unpadded },
-
-            { char: 'm', value: minute },
-            { char: 'mu', value: minuteUnpadded },
-
-            { char: 's', value: second },
-            { char: 'su', value: secondUnpadded },
-
-            { char: 'a', value: ampm },
-
-            { char: 'z', value: timezone },
-        ];
-
-        let replacementMap = Object.fromEntries(replacements.map(({ char, value }) => [char, value]));
-
-        let dateString = dateTemplate.replace(/!([a-zA-Z]+)/g, "!$1") // Preserve escaped characters
-            .replace(/\b([a-zA-Z]+)\b/g, (match) => replacementMap[match] ?? match); // Replace only whole words
-
-        return dateString;
+        const pad = n => String(n).padStart(2, '0'), day = now.getDate(), hr = now.getHours(), min = now.getMinutes(), sec = now.getSeconds();
+        const map = {
+            w: dows[now.getDay()], W: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][now.getDay()],
+            y: now.getFullYear(), mn: pad(now.getMonth() + 1), mnu: now.getMonth() + 1, m: months[now.getMonth()], M: monthsLong[now.getMonth()],
+            d: pad(day), du: day, D: day + ord(day), h: pad(hr), hu: hr, H: pad((hr + 11) % 12 + 1), Hu: (hr + 11) % 12 + 1,
+            m: pad(min), mu: min, s: pad(sec), su: sec, a: hr >= 12 ? 'PM' : 'AM', z: new Date().toLocaleString("en-US", { timeZoneName: "short" }).split(" ").pop()
+        };
+        
+        return formatString.replace(/!([a-zA-Z]+)/g, "!$1").replace(/\b([a-zA-Z]+)\b/g, (m) => map[m] ?? m);
     }
 }
