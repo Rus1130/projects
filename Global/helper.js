@@ -49,7 +49,7 @@ class Helper {
         const pad = n => String(n).padStart(2, '0'), day = now.getDate(), hr = now.getHours(), min = now.getMinutes(), sec = now.getSeconds();
         const map = {
             w: dows[now.getDay()], W: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][now.getDay()],
-            y: now.getFullYear(), mn: pad(now.getMonth() + 1), mnu: now.getMonth() + 1, m: months[now.getMonth()], M: monthsLong[now.getMonth()],
+            y: now.getFullYear(), mn: pad(now.getMonth() + 1), mnu: now.getMonth() + 1, ms: months[now.getMonth()], M: monthsLong[now.getMonth()],
             d: pad(day), du: day, D: day + ord(day), h: pad(hr), hu: hr, H: pad((hr + 11) % 12 + 1), Hu: (hr + 11) % 12 + 1,
             m: pad(min), mu: min, s: pad(sec), su: sec, a: hr >= 12 ? 'PM' : 'AM', z: new Date().toLocaleString("en-US", { timeZoneName: "short" }).split(" ").pop()
         };
