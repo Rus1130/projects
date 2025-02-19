@@ -69,17 +69,28 @@ class Helper {
      * @returns {string} The formatted number.
      */
     static stringifyNumber(num, zero_n) {
+        let firstPart = num.toString().split('.')[0] + ".";
+        let secondPart = num.toString().split('.')[1];
 
-        let result = num.toString();
+        let decimalResult = num.toString().split('.')[1];
 
-        let intPart = result.split('.')[0];
-        let decPart = result.split('.')[1];
+        for(let i = 0; i < secondPart.length; i++){
+            let digit = secondPart[i];
+            if(digit == "0") break;
+            firstPart += digit;
+            decimalResult = decimalResult.substring(1);
+        }
 
-        // get the part that was matched
-        decPart.replace(new RegExp(`(\\d+)0*(\\d{${zero_n}})`, 'g'), (match, contents, offset, input_string) => {
-            console.log(`match: ${match}\ncontents: ${contents}\noffset: ${offset}\ninput_string: ${input_string}`);
-        });
+        // for each character after the first time a non zero follows a zero,
 
-        return result
+        let addition = "";
+
+        if(decimalResult.match(new RegExp(`0*(\\d{${zero_n}})`, "g")) != null){
+            addition = decimalResult.match(new RegExp(`0*(\\d{${zero_n}})`, "g"))[0];
+        }
+
+        let result = firstPart + addition;
+
+        return result;
     }
 }
