@@ -50,12 +50,12 @@ class Helper {
      * @returns 
      */
     static timeFormat(formatString, time) {
-        const now = time == undefined ? new Date() : new Date(time), dows = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], monthsLong = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], ord = n => (n % 100 >= 11 && n % 100 <= 13) ? "th" : ["st", "nd", "rd"][n % 10 - 1] || "th";
+        const now = time == undefined ? new Date() : new Date(time), wL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], dS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], mS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], mL = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], ord = n => (n % 100 >= 11 && n % 100 <= 13) ? "th" : ["st", "nd", "rd"][n % 10 - 1] || "th";
 
         const pad = n => String(n).padStart(2, '0'), day = now.getDate(), hr = now.getHours(), min = now.getMinutes(), sec = now.getSeconds();
         const map = {
-            w: dows[now.getDay()], W: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][now.getDay()],
-            y: now.getFullYear(), mn: pad(now.getMonth() + 1), mnu: now.getMonth() + 1, ms: months[now.getMonth()], M: monthsLong[now.getMonth()],
+            w: dS[now.getDay()], W: wL[now.getDay()],
+            y: now.getFullYear(), mn: pad(now.getMonth() + 1), mnu: now.getMonth() + 1, ms: mS[now.getMonth()], M: mL[now.getMonth()],
             d: pad(day), du: day, D: day + ord(day), h: pad(hr), hu: hr, H: pad((hr + 11) % 12 + 1), Hu: (hr + 11) % 12 + 1,
             m: pad(min), mu: min, s: pad(sec), su: sec, a: hr >= 12 ? 'PM' : 'AM', z: new Date().toLocaleString("en-US", { timeZoneName: "short" }).split(" ").pop()
         };
@@ -69,35 +69,17 @@ class Helper {
      * @returns {string} The formatted number.
      */
     static stringifyNumber(num, zero_n) {
-        const strNum = num.toString();
-        const [intPart, decPart] = strNum.split(".");
-    
-        if (!decPart) return num;
-    
-        let result = intPart + ".";
-        let foundZero = false;
-        let pushAllNumbers = true;
-        let pushCount = zero_n + 1;
-    
-        for (let i = 0; i < decPart.length; i++) {
-            const digit = decPart[i];
-    
-            if(digit == "0") foundZero = true;
-            if(pushAllNumbers) result += digit;
-    
-            if(decPart[i + 1] != "0" && foundZero) {
-                pushAllNumbers = false;
-            }
-    
-            if(!pushAllNumbers) {
-                if(pushCount > 0) {
-                    result += digit;
-                    pushCount--;
-                }
-            }
-            
-        }
-    
+
+        let result = num.toString();
+
+        let intPart = result.split('.')[0];
+        let decPart = result.split('.')[1];
+
+        // get the part that was matched
+        decPart.replace(new RegExp(`(\\d+)0*(\\d{${zero_n}})`, 'g'), (match, contents, offset, input_string) => {
+            console.log(`match: ${match}\ncontents: ${contents}\noffset: ${offset}\ninput_string: ${input_string}`);
+        });
+
         return result
     }
 }

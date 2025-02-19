@@ -1,5 +1,6 @@
 <head>
     <script src="./markdownParser.js"></script>
+    <script src="./helper.js"></script>
 </head>
 <body>
     <div id="md-append" style="width: 100px"></div>
@@ -365,11 +366,16 @@ loaddata [variable]
 \`\`\`
 `
 
-let mdp = new MarkdownParser("url", `https://froggyos.github.io/versions/1.8/README.md`)
-    .newWindowArgs("height=850,width=700")
-    .toc(true)
-    .title("FroggyOS Documentation")
-    .generate()
-    .open("newWindow")
+// let mdp = new MarkdownParser("url", `https://froggyos.github.io/versions/1.8/README.md`)
+//     .newWindowArgs("height=850,width=700")
+//     .toc(true)
+//     .title("FroggyOS Documentation")
+//     .generate()
+//     .open("newWindow")
+
+
+console.log(Helper.stringifyNumber(0.0000112303, 2))
+console.log(Helper.stringifyNumber(0.2340056, 2))
+console.log(Helper.stringifyNumber(123.456, 2))
 
 </script>
