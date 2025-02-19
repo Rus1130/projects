@@ -71,26 +71,34 @@ class Helper {
     static stringifyNumber(num, zero_n) {
         let firstPart = num.toString().split('.')[0] + ".";
         let secondPart = num.toString().split('.')[1];
-
+    
         let decimalResult = num.toString().split('.')[1];
-
+    
+        if(secondPart == undefined) return firstPart.substring(0, firstPart.length - 1);
+    
         for(let i = 0; i < secondPart.length; i++){
             let digit = secondPart[i];
             if(digit == "0") break;
             firstPart += digit;
             decimalResult = decimalResult.substring(1);
         }
-
-        // for each character after the first time a non zero follows a zero,
-
+    
         let addition = "";
-
+    
         if(decimalResult.match(new RegExp(`0*(\\d{${zero_n}})`, "g")) != null){
             addition = decimalResult.match(new RegExp(`0*(\\d{${zero_n}})`, "g"))[0];
         }
-
+    
+    
+        if(firstPart.split(".")[1][0] != 0 && firstPart.split(".")[1][0] != undefined){
+            firstPart = firstPart.split(".")[0] + "." + firstPart.split(".")[1].substring(0, zero_n);
+            addition = "";
+        }
+    
         let result = firstPart + addition;
-
+    
+            
+        result = result.replace(/0+$/, '');
         return result;
     }
 }
