@@ -43,6 +43,12 @@ class Helper {
         } else return new Error('Argument is not an object');
     }
 
+    /**
+     * 
+     * @param {Str} formatString - The format string to use for the time formatting.
+     * @param {Date} time - The time to format. If not provided, the current time is used.
+     * @returns 
+     */
     static timeFormat(formatString, time) {
         const now = time == undefined ? new Date() : new Date(time), dows = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], monthsLong = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], ord = n => (n % 100 >= 11 && n % 100 <= 13) ? "th" : ["st", "nd", "rd"][n % 10 - 1] || "th";
 
@@ -55,5 +61,43 @@ class Helper {
         };
         
         return formatString.replace(/!([a-zA-Z]+)/g, "!$1").replace(/\b([a-zA-Z]+)\b/g, (m) => map[m] ?? m);
+    }
+
+    /**
+     * @param {number} num The number to format.
+     * @param {number} zero_n Once a zero has occured, the amount of numbers to include after the zero
+     * @returns {string} The formatted number.
+     */
+    static stringifyNumber(num, zero_n) {
+        const strNum = num.toString();
+        const [intPart, decPart] = strNum.split(".");
+    
+        if (!decPart) return num;
+    
+        let result = intPart + ".";
+        let foundZero = false;
+        let pushAllNumbers = true;
+        let pushCount = zero_n + 1;
+    
+        for (let i = 0; i < decPart.length; i++) {
+            const digit = decPart[i];
+    
+            if(digit == "0") foundZero = true;
+            if(pushAllNumbers) result += digit;
+    
+            if(decPart[i + 1] != "0" && foundZero) {
+                pushAllNumbers = false;
+            }
+    
+            if(!pushAllNumbers) {
+                if(pushCount > 0) {
+                    result += digit;
+                    pushCount--;
+                }
+            }
+            
+        }
+    
+        return result
     }
 }
