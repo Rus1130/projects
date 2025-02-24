@@ -25,7 +25,17 @@
         { pattern: "mb", value: "ᵐb" },
         { pattern: "ngg", value: "ᵑg" },
         { pattern: "ts", value: "t͡s" },
-        { pattern: "n", value: "n̪"},
+
+        // combining vowels
+        { pattern: "á", value: "aː" },
+        { pattern: "é", value: "eː" },
+        { pattern: "í", value: "iː" },
+        { pattern: "ó", value: "oː" },
+        { pattern: "ú", value: "uː" },
+        { pattern: "är", value: "ɑː" },
+        { pattern: "ä", value: "ɑ" },
+        { pattern: "ë", value: "ə" },
+        { pattern: "ü", value: "y" },
 
         // vowels
         { pattern: 'a', value: "a." },
@@ -47,11 +57,12 @@
     const replacements2 = [
         { pattern: ".‿", value: "‿"},
         { pattern: "a.o", value: "ao̯"},
-        { pattern: "e.o", value: "eo̯"}
+        { pattern: "e.o", value: "eo̯"},
+        { pattern: ".,", value: "|"},
     ]
 
-    const V = ["a", "e", "i", "o", "u", "ː", "ɑ", "ə", "y"]
-    const C = ["b", "d", "f", "g", "h", "k", "l", "m", "n̪", "p", "s", "t", "v", "w", "j", "c", "ŋ", "ʔ"]
+    const v = ["a", "e", "i", "o", "u", "ː", "ɑ", "ə", "y"]
+    const c = ["b", "d", "f", "g", "h", "k", "l", "m", "n", "p", "s", "t", "v", "w", "j", "c", "ŋ", "ʔ"]
 
     let replacementMap = Object.fromEntries(replacements.map(({ pattern, value }) => [pattern, value]));
     let replacementMap2 = Object.fromEntries(replacements2.map(({ pattern, value }) => [pattern, value]));
@@ -69,13 +80,23 @@
         }
     });
 
+    const V = "["+v.join("")+"]";
+    const C = "["+c.join("")+"]";
+
     result.forEach((index, i) => {
-        result[i] = index.replaceAll(new RegExp(`([${C.join("")}][${V.join("")}])\\.([${C.join("")}][^${V.join("")}]?)$`, "g"), "$1$2")
+        let split = result[i].split(".");
+        
+        // fix delimited syllable boundaries 
+        result[i] = index.replaceAll(new RegExp(`(${C}${V})(\.)(${C})(‿)`, "g"), "$1$3$4")   
+
+        // fix non-delimited syllable boundaries
+        result[i] = result[i].replaceAll(new RegExp(`(${C}${V})(\.)(${C})$`, "g"), "$1$3") 
+
+        // fix nasal syllable boundaries le.ŋki -> leŋ.ki
+        result[i] = result[i].replaceAll(new RegExp(`(\.)([mn̪ŋ])(${C})`, "g"), "$2.$3")  
     })
 
-    result = result.join(" ");
-
-    console.log(result)
+    result = ("/"+result.join(" ").replaceAll("n", "n̪").replaceAll("| ", " | ")+"/").replaceAll(".​", "");
 
 
     navigator.clipboard.writeText(result)
