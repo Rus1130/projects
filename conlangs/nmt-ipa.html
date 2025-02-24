@@ -1,0 +1,88 @@
+<head>
+
+</head>
+<body>
+</body>
+<script>
+    // get query strings
+    let urlParams = new URLSearchParams(window.location.search);
+    // get the param called "s"
+    let s = urlParams.get('s');
+
+    const replacements = [
+        // delimiters 
+        { pattern: "ā", value: "a‿"},
+        { pattern: "c", value: "‿"},
+        { pattern: "ə", value: "‿"},
+        { pattern: "z", value: "‿"},
+
+        // consonants
+        { pattern: 'ng', value: "ŋ" },
+        { pattern: 'y', value: "j" },
+        { pattern: "gy", value: "c"},
+        { pattern: "'", value: "ʔ" },
+        { pattern: "nd", value: "ⁿd" },
+        { pattern: "mb", value: "ᵐb" },
+        { pattern: "ngg", value: "ᵑg" },
+        { pattern: "ts", value: "t͡s" },
+        { pattern: "n", value: "n̪"},
+
+        // vowels
+        { pattern: 'a', value: "a." },
+        { pattern: 'e', value: "e." },
+        { pattern: 'i', value: "i." },
+        { pattern: 'o', value: "o." },
+        { pattern: 'u', value: "u." },
+        { pattern: 'á', value: "aː." },
+        { pattern: 'é', value: "eː." },
+        { pattern: 'í', value: "iː." },
+        { pattern: 'ó', value: "oː." },
+        { pattern: 'ú', value: "uː." },
+        { pattern: 'är', value: "ɑː." },
+        { pattern: 'ä', value: "ɑ." },
+        { pattern: 'ë', value: "ə." },
+        { pattern: 'ü', value: "y." },
+    ];
+
+    const replacements2 = [
+        { pattern: ".‿", value: "‿"},
+        { pattern: "a.o", value: "ao̯"},
+        { pattern: "e.o", value: "eo̯"}
+    ]
+
+    const V = ["a", "e", "i", "o", "u", "ː", "ɑ", "ə", "y"]
+    const C = ["b", "d", "f", "g", "h", "k", "l", "m", "n̪", "p", "s", "t", "v", "w", "j", "c", "ŋ", "ʔ"]
+
+    let replacementMap = Object.fromEntries(replacements.map(({ pattern, value }) => [pattern, value]));
+    let replacementMap2 = Object.fromEntries(replacements2.map(({ pattern, value }) => [pattern, value]));
+
+    // teng%20kaoki%20túwus%20süm%20ken%20tsi%27an%20bëm%20nam%20fasu%27i%27an%20tsuti%27an
+
+
+    let result = s.replace(new RegExp(Object.keys(replacementMap).join("|"), "g"), match => replacementMap[match] || match)
+    result = result.replace(new RegExp(Object.keys(replacementMap2).join("|"), "g"), match => replacementMap2[match] || match)
+
+    result = result.split(" ")
+    result.forEach((index, i) => {
+        if(result[i][result[i].length - 1] == ".") {
+            result[i] = result[i].substring(0, result[i].length - 1)
+        }
+    });
+
+    result.forEach((index, i) => {
+        result[i] = index.replaceAll(new RegExp(`([${C.join("")}][${V.join("")}])\\.([${C.join("")}][^${V.join("")}]?)$`, "g"), "$1$2")
+    })
+
+    result = result.join(" ");
+
+    console.log(result)
+
+
+    navigator.clipboard.writeText(result)
+    .then(() => {
+        document.write('copied to clipboard');
+    })
+    .catch(err => {
+        document.write('didnt work make sure ur focused on the window');
+    });
+</script>
