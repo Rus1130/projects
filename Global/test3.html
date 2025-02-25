@@ -47,7 +47,7 @@
     input.addEventListener("input", function(){
         output.innerHTML = "";
 
-        let mdp = new MarkdownParser("text",input.innerText).credits(false, true)
+        new MarkdownParser("text",input.innerText).credits(false, true)
         .element(output)
         .toc(input.innerText.split("\n")[0] == "toc=true")
         .generate()
