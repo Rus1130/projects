@@ -28,7 +28,7 @@
     <script src="./helper.js"></script>
 </head>
 <body>
-    <div id="input" contenteditable>edit here... write toc=true on a line to add table of contents</div>
+    <div id="input" contenteditable>edit here... write toc=true on the first line to add table of contents</div>
     <div id="output"></div>
 </body>
 <script>
@@ -37,11 +37,11 @@
     let output = document.getElementById("output");
 
     input.addEventListener("focus", function(){
-        if(input.innerText == "edit here... write toc=true on a line to add table of contents") input.innerText = "";
+        if(input.innerText == "edit here... write toc=true on the first line to add table of contents") input.innerText = "";
     })
 
     input.addEventListener("blur", function(){
-        if(input.innerText == "") input.innerText = "edit here... write toc=true on a line to add table of contents";
+        if(input.innerText == "") input.innerText = "edit here... write toc=true on the first line to add table of contents";
     })
 
     input.addEventListener("input", function(){
