@@ -1,19 +1,17 @@
 <style>
-    #input {
+    div[data-inputType="in"] {
         width: 50%;
-        height: 100%;
         border-right: 1px black solid;
         white-space: pre-wrap;
         display: inline-block
     }
 
-    #input:focus {
+    div[data-inputType="in"]:focus {
         outline: none;
     }
 
-    #output {
+    div[data-inputType="out"] {
         width: 50%;
-        height: 100%;
         border-left: 1px black solid;
         display: inline-block;
     }
@@ -28,13 +26,13 @@
     <script src="./helper.js"></script>
 </head>
 <body>
-    <div id="input" contenteditable>edit here... write toc=true on the first line to add table of contents</div>
-    <div id="output"></div>
+    <div contenteditable data-inputType="in">edit here... write toc=true on the first line to add table of contents</div>
+    <div data-inputType="out"></div>
 </body>
 <script>
 
-    let input = document.getElementById("input");
-    let output = document.getElementById("output");
+    let input = document.querySelector("div[data-inputType='in']");
+    let output = document.querySelector("div[data-inputType='out']");
 
     input.addEventListener("focus", function(){
         if(input.innerText == "edit here... write toc=true on the first line to add table of contents") input.innerText = "";
@@ -47,7 +45,7 @@
     input.addEventListener("input", function(){
         output.innerHTML = "";
 
-        new MarkdownParser("text",input.innerText).credits(false, true)
+        new MarkdownParser("text",input.innerText).credits(true, false)
         .element(output)
         .toc(input.innerText.split("\n")[0] == "toc=true")
         .generate()
