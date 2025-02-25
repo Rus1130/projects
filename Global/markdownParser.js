@@ -62,11 +62,15 @@ class MarkdownParser {
 
         a {
             color: #000;
-            text-decoration: none;
+            text-decoration: underline dotted;
+        }
+
+        div.toc a {
+            text-decoration: none
         }
 
         a:hover {
-            text-decoration: underline;
+            text-decoration: underline !important;
         }
     </style>`
 
