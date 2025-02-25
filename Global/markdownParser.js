@@ -175,7 +175,12 @@ class MarkdownParser {
         
             elementsWithIds.forEach((element) => {
                 let level = parseInt(element.tagName.replace("H", ""));
-                toc += `${"    ".repeat(level - 1)} * <a href="${window.location.href}#${element.id}">${element.innerText}</a>\n`;
+                let href = null;
+
+                if(["element", "thisTab", "text"].includes(this.inputType)) href = window.location.href;
+                else if (this.inputType == "url") href = "about:blank"
+
+                toc += `${"    ".repeat(level - 1)} * <a href="${href}#${element.id}">${element.innerText}</a>\n`;
             });
 
             tocElement.innerHTML = converter.makeHtml(toc);
