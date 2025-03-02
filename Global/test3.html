@@ -3,7 +3,8 @@
         width: 50%;
         border-right: 1px black solid;
         white-space: pre-wrap;
-        display: inline-block
+        display: inline-block;
+        overflow-y: scroll;
     }
 
     div[data-inputType="in"]:focus {
@@ -14,6 +15,7 @@
         width: 50%;
         border-left: 1px black solid;
         display: inline-block;
+        overflow-y: scroll;
     }
 
     body {
@@ -43,6 +45,8 @@
     })
 
     input.addEventListener("input", function(){
+        let scroll = output.scrollTop;
+
         output.innerHTML = "";
 
         new MarkdownParser("text",input.innerText).credits(true, false)
@@ -52,6 +56,8 @@
         .open("element")
 
         output.innerHTML = output.innerHTML.replace(/toc=true/g, "")
+
+        output.scrollBy(0, scroll);
     });
 
 </script>
