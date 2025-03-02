@@ -2,7 +2,9 @@
 
 </head>
 <body>
-
+    <div id="out" style="font-family: monospace"></div>
+    <button id="ortho" style="padding: 10px;">copy ortho</button>
+    <button id="ipa" style="padding: 10px;">copy IPA</button>
 </body>
 <script>
     // get query strings
@@ -11,70 +13,73 @@
     let type = urlParams.get('t');
     let s = urlParams.get('s');
 
-    function ipa(){
-        const replacements = [
-            // delimiters 
-            { pattern: "ā", value: "a‿"},
-            { pattern: "c", value: "‿"},
-            { pattern: "ə", value: "‿"},
-            { pattern: "z", value: "‿"},
+    function ipa(s){
+        s = delim(s);
+        const r = [
+            [   
+                // replace combining vowels with their combined counterparts
+                { pattern: "á", value: "á" },
+                { pattern: "é", value: "é" },
+                { pattern: "í", value: "í" },
+                { pattern: "ó", value: "ó" },
+                { pattern: "ú", value: "ú" },
+                { pattern: "ä", value: "ä" },
+                { pattern: "ë", value: "ë" },
+                { pattern: "ü", value: "ü" },
 
-            // consonants
-            { pattern: 'ng', value: "ŋ" },
-            { pattern: 'y', value: "j" },
-            { pattern: "gy", value: "c"},
-            { pattern: "'", value: "ʔ" },
-            { pattern: "nd", value: "ⁿd" },
-            { pattern: "mb", value: "ᵐb" },
-            { pattern: "ngg", value: "ᵑg" },
-            { pattern: "ts", value: "t͡s" },
+                { pattern: "ngg", value: "ᵑg" },
+            ],
+            [
+                // delimiters 
+                { pattern: "ā", value: "a‿"},
+                { pattern: "c", value: "‿"},
+                { pattern: "ə", value: "‿"},
+                { pattern: "z", value: "‿"},
 
-            // combining vowels
-            { pattern: "á", value: "aː" },
-            { pattern: "é", value: "eː" },
-            { pattern: "í", value: "iː" },
-            { pattern: "ó", value: "oː" },
-            { pattern: "ú", value: "uː" },
-            { pattern: "är", value: "ɑː" },
-            { pattern: "ä", value: "ɑ" },
-            { pattern: "ë", value: "ə" },
-            { pattern: "ü", value: "y" },
+                // consonants
+                { pattern: 'ng', value: "ŋ" },
+                { pattern: 'y', value: "j" },
+                { pattern: "gy", value: "c"},
+                { pattern: "'", value: "ʔ" },
+                { pattern: "nd", value: "ⁿd" },
+                { pattern: "mb", value: "ᵐb" },
+                { pattern: "ts", value: "t͡s" },
 
-            // vowels
-            { pattern: 'a', value: "a." },
-            { pattern: 'e', value: "e." },
-            { pattern: 'i', value: "i." },
-            { pattern: 'o', value: "o." },
-            { pattern: 'u', value: "u." },
-            { pattern: 'á', value: "aː." },
-            { pattern: 'é', value: "eː." },
-            { pattern: 'í', value: "iː." },
-            { pattern: 'ó', value: "oː." },
-            { pattern: 'ú', value: "uː." },
-            { pattern: 'är', value: "ɑː." },
-            { pattern: 'ä', value: "ɑ." },
-            { pattern: 'ë', value: "ə." },
-            { pattern: 'ü', value: "y." },
-        ];
-
-        const replacements2 = [
-            { pattern: ".‿", value: "‿"},
-            { pattern: "a.o", value: "ao̯"},
-            { pattern: "e.o", value: "eo̯"},
-            { pattern: ".,", value: "|"},
+                // vowels
+                { pattern: 'a', value: "a." },
+                { pattern: 'e', value: "e." },
+                { pattern: 'i', value: "i." },
+                { pattern: 'o', value: "o." },
+                { pattern: 'u', value: "u." },
+                { pattern: 'á', value: "aː." },
+                { pattern: 'é', value: "eː." },
+                { pattern: 'í', value: "iː." },
+                { pattern: 'ó', value: "oː." },
+                { pattern: 'ú', value: "uː." },
+                { pattern: 'är', value: "ɑː." },
+                { pattern: 'ä', value: "ɑ." },
+                { pattern: 'ë', value: "ə." },
+                { pattern: 'ü', value: "y." },
+            ],
+            [
+                { pattern: ".‿", value: "‿"},
+                { pattern: "a.o", value: "ao̯"},
+                { pattern: "e.o", value: "eo̯"},
+                { pattern: ".,", value: " |"},
+            ]
         ]
 
         const v = ["a", "e", "i", "o", "u", "ː", "ɑ", "ə", "y"]
         const c = ["b", "d", "f", "g", "h", "k", "l", "m", "n", "p", "s", "t", "v", "w", "j", "c", "ŋ", "ʔ"]
 
-        let replacementMap = Object.fromEntries(replacements.map(({ pattern, value }) => [pattern, value]));
-        let replacementMap2 = Object.fromEntries(replacements2.map(({ pattern, value }) => [pattern, value]));
+        const map = m => Object.fromEntries(m.map(({ pattern, value }) => [pattern, value]))
 
         // teng%20kaoki%20túwus%20süm%20ken%20tsi%27an%20bëm%20nam%20fasu%27i%27an%20tsuti%27an
 
 
-        let result = s.replace(new RegExp(Object.keys(replacementMap).join("|"), "g"), match => replacementMap[match] || match)
-        result = result.replace(new RegExp(Object.keys(replacementMap2).join("|"), "g"), match => replacementMap2[match] || match)
+        let result = s.replace(new RegExp(Object.keys(map(r[0])).join("|"), "g"), match => map(r[0])[match] || match)
+        result = result.replace(new RegExp(Object.keys(map(r[1])).join("|"), "g"), match => map(r[1])[match] || match)
+        result = result.replace(new RegExp(Object.keys(map(r[2])).join("|"), "g"), match => map(r[2])[match] || match)
 
         result = result.split(" ")
         result.forEach((index, i) => {
@@ -97,12 +102,15 @@
 
             // fix nasal syllable boundaries le.ŋki -> leŋ.ki
             result[i] = result[i].replaceAll(new RegExp(`(\.)([mn̪ŋ])(${C})`, "g"), "$2.$3")  
+
+            // fix velar prenasalized syllable boundaries
+            //result[i] = result[i].replaceAll(new RegExp(`\.ŋg`, "g"), "ᵑg\.");
         })
 
-        return result = ("/"+result.join(" ").replaceAll("n", "n̪").replaceAll("| ", " | ")+"/").replaceAll(".​", "");
+        return result = ("/"+result.join(" ").replaceAll("n", "n̪").replaceAll("| ", " | ").replaceAll(". ", " || ")+"/").replaceAll(".​", "");
     }
 
-    function delim(){
+    function delim(s){
         const V = ["a", "e", "i", "o", "u", "á", "é", "í", "ó", "ú", "ä", "ë", "ü"]
         const C = ["b", "d", "f", "g", "h", "k", "l", "m", "n", "p", "s", "t", "v", "w", "y", "r"]
         const C1 = ["m", "n", "s", "v", "w", "r"]
@@ -160,22 +168,15 @@
         return s;
     }
 
-    let result = null;
+    let result = delim(s) + "\n" + ipa(s);
 
-    switch(type){
-        case "i":
-            result = ipa();
-        break;
-        case "d":
-            result = delim();
-        break;
-    }
+    document.getElementById("out").innerText = result;
 
-    navigator.clipboard.writeText(result)
-    .then(() => {
-        document.write('copied to clipboard');
+    document.getElementById("ortho").addEventListener("click", function(){
+        navigator.clipboard.writeText(delim(s));
     })
-    .catch(err => {
-        document.write('didnt work make sure ur focused on the window');
-    });
+
+    document.getElementById("ipa").addEventListener("click", function(){
+        navigator.clipboard.writeText(ipa(s));
+    })
 </script>
