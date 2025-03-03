@@ -27,18 +27,30 @@
         return result;
     }
 
-    const number = 31;
+    async function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
-    let line = new Chart('line')
-    .appendTo('#chart')
-    .setData(`number: ${number}`, 'Y', 'X', 200, 4, [
-        {
-            color: 'red',
-            label: 'number',
-            pointRadius: 3.5,
-            lineWidth: 1,
-            points: new Array(makeNumber(number).length).fill(0).map((_, i) => [i+2, makeNumber(number)[i]])
-        }
-    ])
+    for(let num = 2; num <= 31; num++){
+        let line = new Chart('line')
+        .appendTo('#chart')
+        .setData(`number: ${num}`, 'Y', 'X', 100, 100, [
+            {
+                color: 'red',
+                label: 'number',
+                pointRadius: 3.5,
+                lineWidth: 1,
+                pointLabels: true,
+                hoverPointRadius: 5,
+                points: new Array(makeNumber(num).length).fill(0).map((_, i) => [i+1, makeNumber(num)[i]])
+            }
+        ])
+
+        console.log(line)
+
+        await sleep(1000);
+        document.getElementById('chart').innerHTML = '';
+    }
+
         
 </script>

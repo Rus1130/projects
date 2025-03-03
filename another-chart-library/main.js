@@ -122,33 +122,35 @@ export class Chart {
      */
     setData(args) {
         if(this.type == 'bar') {
-            let chartTitle = arguments[0];
-            let xAxisLabel = arguments[1];
-            let yAxisLabel = arguments[2];
-            let yStep = arguments[3];
-            let xAxisData = arguments[4];
-            let yAxisData = arguments[5];
-            let barColor = arguments[6];
-            new classes[this.type](chartTitle, xAxisLabel, yAxisLabel, yStep, xAxisData, yAxisData, barColor);
+            this.chartTitle = arguments[0];
+            this.xAxisLabel = arguments[1];
+            this.yAxisLabel = arguments[2];
+            this.yStep = arguments[3];
+            this.xAxisData = arguments[4];
+            this.yAxisData = arguments[5];
+            this.barColor = arguments[6];
+            new classes[this.type](this.chartTitle, this.xAxisLabel, this.yAxisLabel, this.yStep, this.xAxisData, this.yAxisData, this.barColor);
         }
 
         if(this.type == 'pie') {
-            let chartTitle = arguments[0];
-            let data = arguments[1];
-            let popout = arguments[2];
-            let showPercentages = arguments[3];
-            new classes[this.type](chartTitle, data, popout, showPercentages);
+            this.chartTitle = arguments[0];
+            this.data = arguments[1];
+            this.popout = arguments[2];
+            this.showPercentages = arguments[3];
+            new classes[this.type](this.chartTitle, this.data, this.popout, this.showPercentages);
         }
 
         if(this.type == 'line'){
-            let chartTitle = arguments[0]
-            let xAxisLabel = arguments[1]
-            let yAxisLabel = arguments[2]
-            let yStep = arguments[3]
-            let xStep = arguments[4]
-            let data = arguments[5]
-            new classes[this.type](chartTitle, xAxisLabel, yAxisLabel, yStep, xStep, data)
+            this.chartTitle = arguments[0]
+            this.xAxisLabel = arguments[1]
+            this.yAxisLabel = arguments[2]
+            this.yStep = arguments[3]
+            this.xStep = arguments[4]
+            this.data = arguments[5]
+            new classes[this.type](this.chartTitle, this.xAxisLabel, this.yAxisLabel, this.yStep, this.xStep, this.data)
         }
+
+        return this;
 
     }
 }
