@@ -80,6 +80,8 @@ let line = new Chart('line')
  */
     export class LineChart {
         constructor(chartTitle, xAxisLabel, yAxisLabel, yStep, xStep, data){
+            if(yStep <= 0) return console.error(new Error('yStep must be greater than 0'))
+            if(xStep <= 0) return console.error(new Error('xStep must be greater than 0'))
             let draw = Chart.options.draw
             this.data = data;
     
@@ -123,7 +125,7 @@ let line = new Chart('line')
             let xMeasureCount = 0;
 
 
-            for(let i = yMin; i <= yMax; i += yStep ) {
+            for(let i = yMin; i < yMax; i += yStep ) {
                 if(i < yMin) continue;
                 
                 let measureLine = draw.line(yLine.attr('x1') - 5, xLine.attr('y1') + yMeasureStep * (i - yMin), yLine.attr('x1') + 5, xLine.attr('y2') + yMeasureStep * (i - yMin))
@@ -163,7 +165,6 @@ let line = new Chart('line')
                 measureLine.attr('y1', measureLine.attr('y1') - 1.5)
                 measureLine.attr('y2', measureLine.attr('y2') + 1.5)
                 let measureLabel = draw.text(i.toString()).font({ family: 'Helvetica', size: 10 })
-
                 measureLabel.x(yLine.attr('x1') + xMeasureStep * (i - xMin) - measureLabel.bbox().width / 2)
                 .y(measureLine.attr('y1') + measureLabel.bbox().height + 2)
                 .dx(-5)
@@ -173,20 +174,12 @@ let line = new Chart('line')
                 measureLineArray.push(measureLine)
                 textArray.push(measureLabel)
 
+                console.log(measureLineArray)
+
                 xMeasureCount++;
             }
 
             xLabel.y(xLabel.y() + 14)
-
-            measureLineArray[measureLineArray.length - 1].remove()
-            textArray[textArray.length - 1].remove()
-
-            measureLineArray.pop()
-            measureLineArray.pop()
-
-            textArray.pop()
-            textArray.pop()
-            
 
             function plot(x, y, color, r){
                 try {

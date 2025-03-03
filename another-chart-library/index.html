@@ -23,9 +23,17 @@
         [3099, 2561, 3214, 3557, 3768, 3789, 3879, 4013, 3861, 4101, 3599, 3498]
     )
 
+    let arr = new Array(50).fill({}).map((_, i) => {
+        return {
+            arc: 2,
+            color: 'blue',
+            label: i
+        }
+    })
+
     let pie = new Chart('pie')
     .appendTo('#pie-chart')
-    .setData("Favorite Color", [
+    .setData("Favorite Color",[
         { arc: 42, color: 'blue', label: 'Blue' },
         { arc: 14, color: 'green', label: 'Green' },
         { arc: 14, color: 'purple', label: 'Purple' },
@@ -35,9 +43,11 @@
         { arc: 10, color: 'grey', label: "Other"},
     ], 4, true)
 
+    //console.log(arr)
+
     let line = new Chart('line')
     .appendTo('#line-chart')
-    .setData("Average Stock Prices (2000 - 2022)", 'Year', 'Price', 10, 1, [
+    .setData("Average Stock Prices (2000 - 2022)", 'Year', 'Price', 10, 5, [
         {
             color: 'red',
             label: 'Apple',
