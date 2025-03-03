@@ -137,26 +137,27 @@ let line = new Chart('line')
             for(let i = yMin; i < yMax; i += yStep ) {
                 if(i < yMin) continue;
                 
-                let measureLine = draw.line(yLine.attr('x1') - 5, xLine.attr('y1') + yMeasureStep * (i - yMin), yLine.attr('x1') + 5, xLine.attr('y2') + yMeasureStep * (i - yMin))
-                .stroke({ width: 1, color: '#000' })
+                let measureLine = draw.line(
+                    yLine.attr('x1') - 5, 
+                    xLine.attr('y1') + ((i-1) * yMeasureStep),  
+                    yLine.attr('x1') + 5, 
+                    xLine.attr('y1') + ((i-1) * yMeasureStep)
+                ).stroke({ width: 1, color: '#000' })
+
+
 
                 if(i == 0) measureLine.attr("x2",measureLine.attr('x2') - 5)
                 
                 let text = i.toString()
                 if(text.split('.')[1] && text.split('.')[1].length > 2) text = Math.round(i * 100) / 100
 
-                if(yMeasureCount % yStep == 0) {
-                    let measureLabel = draw.text(text).font({ family: 'Helvetica', size: 10 })
+                let measureLabel = draw.text().tspan(text).fill('#5C5858').font({ family: 'Helvetica', size: 8 })
+                
+                measureLabel.x(measureLine.attr('x1') - measureLabel.bbox().width - 2)
+                .y(xLine.attr('y1') + (yMeasureStep) * (i - yMin) - measureLabel.bbox().height / 2)
 
-                    measureLabel.x(measureLine.attr('x1') - measureLabel.bbox().width - 2)
-                    .cy(xLine.attr('y1') + yMeasureStep * (i - yMin))
-                } else {
-                    let measureLabel = draw.text().tspan(text).fill('#5C5858').font({ family: 'Helvetica', size: 8 })
-                    measureLabel.x(measureLine.attr('x1') - measureLabel.bbox().width - 2)
-                    .cy(xLine.attr('y1') + yMeasureStep * i)
-                }
 
-                // horizontal lines
+                //horizontal lines
                 draw.line(measureLine.attr('x2'), measureLine.attr('y1'), xLine.attr('x2'), measureLine.attr('y1'))
                 .stroke({ width: 1, color: '#DCDCDC' })
 
@@ -166,7 +167,7 @@ let line = new Chart('line')
             let measureLineArray = []
             let textArray = []
 
-            for(let i = xMin; i <= xMax; i += xStep ) {
+            for(let i = xMin; i < xMax; i += xStep ) {
                 if(i < xMin) continue;
                 let measureLine = draw.line(yLine.attr('x1') + xMeasureStep * (i - xMin), xLine.attr('y1'), yLine.attr('x1') + xMeasureStep * (i - xMin), xLine.attr('y1') + 5)
                 .stroke({ width: 1, color: '#000' })
@@ -174,6 +175,7 @@ let line = new Chart('line')
                 measureLine.attr('y1', measureLine.attr('y1') - 1.5)
                 measureLine.attr('y2', measureLine.attr('y2') + 1.5)
                 let measureLabel = draw.text(i.toString()).font({ family: 'Helvetica', size: 10 })
+
                 measureLabel.x(yLine.attr('x1') + xMeasureStep * (i - xMin) - measureLabel.bbox().width / 2)
                 .y(measureLine.attr('y1') + measureLabel.bbox().height + 2)
                 .dx(-5)

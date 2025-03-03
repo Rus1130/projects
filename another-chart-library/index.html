@@ -16,28 +16,102 @@
 <script type="module">
     import { Chart } from './main.js'
 
-    let bar = new Chart('bar')
-    .appendTo("#bar-chart")
-    .setData("Motor Vehicle Deaths by Month (2021)", "Month", "Deaths", 1000, 4, 
-        ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-        [3099, 2561, 3214, 3557, 3768, 3789, 3879, 4013, 3861, 4101, 3599, 3498]
-    )
+    // let bar = new Chart('bar')
+    // .appendTo("#bar-chart")
+    // .setData("Motor Vehicle Deaths by Month (2021)", "Month", "Deaths", 1000, 4, 
+    //     ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    //     [3099, 2561, 3214, 3557, 3768, 3789, 3879, 4013, 3861, 4101, 3599, 3498]
+    // )
     
-    let pie = new Chart('pie')
-    .appendTo('#pie-chart')
-    .setData("Favorite Color", [
-        { arc: 42, color: 'blue', label: 'Blue' },
-        { arc: 14, color: 'green', label: 'Green' },
-        { arc: 14, color: 'purple', label: 'Purple' },
-        { arc: 8, color: 'red', label: "Red"},
-        { arc: 7, color: 'black', label: "Black"},
-        { arc: 5, color: 'orange', label: 'Orange'},
-        { arc: 10, color: 'grey', label: "Other"},
-    ], 4, true)
+    // let pie = new Chart('pie')
+    // .appendTo('#pie-chart')
+    // .setData("Favorite Color", [
+    //     { arc: 42, color: 'blue', label: 'Blue' },
+    //     { arc: 14, color: 'green', label: 'Green' },
+    //     { arc: 14, color: 'purple', label: 'Purple' },
+    //     { arc: 8, color: 'red', label: "Red"},
+    //     { arc: 7, color: 'black', label: "Black"},
+    //     { arc: 5, color: 'orange', label: 'Orange'},
+    //     { arc: 10, color: 'grey', label: "Other"},
+    // ], 4, true)
 
     let line = new Chart('line')
     .appendTo('#line-chart')
     .setData("Average Stock Prices (2000 - 2022)", 'Year', 'Price', 5, 10, [
+        // {
+        //     color: "red",
+        //     label: "line",
+        //     pointRadius: 2,
+        //     hoverPointRadius: 4,
+        //     lineWidth: 1,
+        //     pointLabels: true,
+        //     points: [
+        //         [1, 2],
+        //         [2, 3],
+        //         [3, 4],
+        //         [4, 5],
+        //         [5, 6],
+        //         [6, 7],
+        //         [7, 8],
+        //         [8, 9],
+        //         [9, 10],
+        //         [10, 11],
+        //         [11, 12],
+        //         [12, 13],
+        //         [13, 14],
+        //         [14, 15],
+        //         [15, 16],
+        //         [16, 17],
+        //         [17, 18],
+        //         [18, 19],
+        //         [19, 20],
+        //         [20, 21],
+        //         [21, 22],
+        //         [22, 23],
+        //         [23, 24],
+        //         [24, 25],
+        //         [25, 26],
+        //         [26, 27],
+        //         [27, 28],
+        //         [28, 29],
+        //         [29, 30],
+        //         [30, 31],
+        //         [31, 32],
+        //         [32, 33],
+        //         [33, 34],
+        //         [34, 35],
+        //         [35, 36],
+        //         [36, 37],
+        //         [37, 38],
+        //         [38, 39],
+        //         [39, 40],
+        //         [40, 41],
+        //         [41, 42],
+        //         [42, 43],
+        //         [43, 44],
+        //         [44, 45],
+        //         [45, 46],
+        //         [46, 47],
+        //         [47, 48],
+        //         [48, 49],
+        //         [49, 50],
+        //         [50, 51],
+        //         [51, 52],
+        //         [52, 53],
+        //         [53, 54],
+        //         [54, 55],
+        //         [55, 56],
+        //         [56, 57],
+        //         [57, 58],
+        //         [58, 59],
+        //         [59, 60],
+        //         [60, 61],
+        //         [61, 62],
+        //         [62, 63],
+        //         [63, 64],
+        //         [64, 65],
+        //     ]
+        // }
         {
             color: 'red',
             label: 'Apple',
