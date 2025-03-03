@@ -154,7 +154,7 @@ let line = new Chart('line')
                 let measureLabel = draw.text().tspan(text).fill('#5C5858').font({ family: 'Helvetica', size: 8 })
                 
                 measureLabel.x(measureLine.attr('x1') - measureLabel.bbox().width - 2)
-                .y(xLine.attr('y1') + (yMeasureStep) * (i - yMin) - measureLabel.bbox().height / 2)
+                .y(measureLine.attr('y1') - measureLabel.bbox().height / 2)
 
 
                 //horizontal lines
