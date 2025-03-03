@@ -181,9 +181,11 @@
 
     document.getElementById("ortho").addEventListener("click", function(){
         navigator.clipboard.writeText(delim(s));
+        document.getElementById("ortho").innerText = "copied!";
     })
 
     document.getElementById("ipa").addEventListener("click", function(){
         navigator.clipboard.writeText(ipa(s));
+        document.getElementById("ipa").innerText = "copied!";
     })
 </script>
