@@ -142,12 +142,12 @@ export class Chart {
 
         if(this.type == 'line'){
             this.chartTitle = arguments[0]
-            this.xAxisLabel = arguments[1]
-            this.yAxisLabel = arguments[2]
-            this.yStep = arguments[3]
-            this.xStep = arguments[4]
+            this.yAxisLabel = arguments[1]
+            this.xAxisLabel = arguments[2]
+            this.xStep = arguments[3]
+            this.yStep = arguments[4]
             this.data = arguments[5]
-            new classes[this.type](this.chartTitle, this.xAxisLabel, this.yAxisLabel, this.yStep, this.xStep, this.data)
+            new classes[this.type](this.chartTitle, this.xAxisLabel, this.yAxisLabel, this.xStep, this.yStep, this.data)
         }
 
         return this;

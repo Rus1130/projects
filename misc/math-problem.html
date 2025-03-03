@@ -51,11 +51,11 @@
         let yLength = largest - smallest;
 
         let xStep = +(1+"0".repeat(String(xLength).length-1));
-        let yStep = +(1+"0".repeat(String(xLength).length-1));
+        let yStep = +(1+"0".repeat(String(yLength).length-1));
 
         let line = new Chart('line')
         .appendTo('#chart')
-        .setData(`number: ${num}`, 'X', 'Y',xStep, yStep, [
+        .setData(`number: ${num}`, 'Y', 'X',xStep, yStep, [
             {
                 color: 'red',
                 label: 'number',
