@@ -22,15 +22,7 @@
         ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
         [3099, 2561, 3214, 3557, 3768, 3789, 3879, 4013, 3861, 4101, 3599, 3498]
     )
-
-    let arr = new Array(50).fill({}).map((_, i) => {
-        return {
-            arc: 2,
-            color: 'blue',
-            label: i
-        }
-    })
-
+    
     let pie = new Chart('pie')
     .appendTo('#pie-chart')
     .setData("Favorite Color", [
