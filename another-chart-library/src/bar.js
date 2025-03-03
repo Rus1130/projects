@@ -70,7 +70,7 @@ export class BarChart {
             .cx(rect.attr('x') + rect.attr('width') / 2)
             .cy(rect.attr('y') - 10)
 
-            rect.on('mouseenter', function() {
+            rect.on('mouseover', function() {
                 text.build(true)
                 text.fill('#000000')
                 text.build(false)
@@ -78,9 +78,7 @@ export class BarChart {
 
             rect.on('mouseleave', function() {
                 setTimeout(() => {
-                    text.build(true)
                     text.fill('transparent')
-                    text.build(false)
                 }, 1000)
             })
         }   

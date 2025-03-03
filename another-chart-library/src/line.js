@@ -10,6 +10,12 @@ import { PathArray } from 'https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.1.2/s
  * @param {number}            xStep      step value for the x axis
  * @param {number}            yStep      step value for the y axis
  * @param {object[]}          data       the data for the line chart
+ * @param {string}            data[].color color of the line
+ * @param {string}            data[].label label for the line
+ * @param {number}            data[].pointRadius radius of the points
+ * @param {number}            data[].lineWidth width of the line
+ * @param {number}            data[].hoverPointRadius radius of the hover points
+ * @param {boolean}           data[].pointLabels whether or not to show the point labels
  * @description Has trouble with extremely small numbers (<0)
  * @example
 let line = new Chart('line')
@@ -20,6 +26,8 @@ let line = new Chart('line')
             label: 'Apple',
             pointRadius: 1,
             lineWidth: 2,
+            hoverPointRadius: 4,
+            pointLabels: true,
             points: [
                 [2000, 0.6937],
                 [2001, 0.3068],
@@ -50,6 +58,8 @@ let line = new Chart('line')
             label: 'Microsoft',
             pointRadius: 2,
             lineWidth: 1,
+            hoverPointRadius: 4,
+            pointLabels: false,
             points: [
                 [2000, 23.8554],
                 [2001, 19.5747],
@@ -110,7 +120,6 @@ let line = new Chart('line')
                 for(let j = 0; j < data[i].points.length; j++){
                     yData.push(Math.round(data[i].points[j][1] * 100) / 100)
                     xData.push(data[i].points[j][0])
-    
                 }
             }
             
@@ -204,9 +213,27 @@ let line = new Chart('line')
                 for(let j = 0; j < line.points.length; j++){
                     try {
                         let point = plot(line.points[j][0], line.points[j][1], line.color, line.pointRadius)
-                        let hoverPoint = draw.circle(line.pointRadius * 10).fill('transparent')
+
+                        let hoverPoint = draw.circle(line.hoverPointRadius).fill('transparent')
+
+
+                        let hoverText = draw.text(line.points[j][1]).font({ family: 'Helvetica', size: 12 })
+                        .cx(point.attr('cx')).cy(point.attr('cy') - (line.hoverPointRadius + 4)).fill('black')
+
+                        hoverText.hide()
+
                         hoverPoint.cx(point.attr('cx'))
                         hoverPoint.cy(point.attr('cy'))
+
+                        hoverPoint.on("mouseenter",function() {
+                            hoverPoint.fill(line.color)
+                            if(line.pointLabels) hoverText.show();
+                        });
+
+                        hoverPoint.on("mouseleave",function() {
+                            hoverPoint.fill('transparent')
+                            if(line.pointLabels) hoverText.hide()
+                        });
     
                         pointLabels.push(line.points[j][1])
                         hoverPoints.push(hoverPoint)
