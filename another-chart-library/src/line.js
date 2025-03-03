@@ -89,7 +89,7 @@ let line = new Chart('line')
     ])
  */
     export class LineChart {
-        constructor(chartTitle, xAxisLabel, yAxisLabel, yStep, xStep, data){
+        constructor(chartTitle, yAxisLabel, xAxisLabel, xStep, yStep, data){
             if(yStep <= 0) return console.error(new Error('yStep must be greater than 0'))
             if(xStep <= 0) return console.error(new Error('xStep must be greater than 0'))
             let draw = Chart.options.draw

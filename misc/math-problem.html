@@ -31,10 +31,16 @@
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    for(let num = 2; num <= 31; num++){
+    for(let num = 31; num <= 100; num++){
+        let data = new Array(makeNumber(num).length).fill(0).map((_, i) => [i+1, makeNumber(num)[i]])
+        console.log(data)
+
+        let largest = Math.max(...data.map(x => x[1]))
+        let smallest = Math.min(...data.map(x => x[1]))
+
         let line = new Chart('line')
         .appendTo('#chart')
-        .setData(`number: ${num}`, 'Y', 'X', 100, 100, [
+        .setData(`number: ${num}`, 'Y', 'X', 100, 10, [
             {
                 color: 'red',
                 label: 'number',
@@ -42,13 +48,13 @@
                 lineWidth: 1,
                 pointLabels: true,
                 hoverPointRadius: 5,
-                points: new Array(makeNumber(num).length).fill(0).map((_, i) => [i+1, makeNumber(num)[i]])
+                points: data
             }
         ])
 
         console.log(line)
 
-        await sleep(1000);
+        await sleep(10000000000);
         document.getElementById('chart').innerHTML = '';
     }
 
