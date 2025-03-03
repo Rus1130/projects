@@ -173,9 +173,7 @@ let line = new Chart('line')
 
                 measureLineArray.push(measureLine)
                 textArray.push(measureLabel)
-
-                console.log(measureLineArray)
-
+                
                 xMeasureCount++;
             }
 
