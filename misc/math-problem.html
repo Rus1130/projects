@@ -27,20 +27,35 @@
         return result;
     }
 
-    async function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+    async function waitForKeyPress(targetKey = "any") {
+        return new Promise((resolve) => {
+            function onKeyDown(event) {
+                if (targetKey === "any" || event.key === targetKey) {
+                    document.removeEventListener("keydown", onKeyDown);
+                    resolve(event.key);
+                }
+            }
+            document.addEventListener("keydown", onKeyDown);
+        });
     }
 
-    for(let num = 31; num <= 100; num++){
+    let num = 1;
+
+    while(true){
         let data = new Array(makeNumber(num).length).fill(0).map((_, i) => [i+1, makeNumber(num)[i]])
-        console.log(data)
 
         let largest = Math.max(...data.map(x => x[1]))
         let smallest = Math.min(...data.map(x => x[1]))
 
+        let xLength = data.length;
+        let yLength = largest - smallest;
+
+        let xStep = +(1+"0".repeat(String(xLength).length-1));
+        let yStep = +(1+"0".repeat(String(xLength).length-1));
+
         let line = new Chart('line')
         .appendTo('#chart')
-        .setData(`number: ${num}`, 'Y', 'X', 100, 10, [
+        .setData(`number: ${num}`, 'X', 'Y',xStep, yStep, [
             {
                 color: 'red',
                 label: 'number',
@@ -52,10 +67,17 @@
             }
         ])
 
-        console.log(line)
+        let key = await waitForKeyPress("any");
 
-        await sleep(10000000000);
-        document.getElementById('chart').innerHTML = '';
+        if (key === "ArrowRight") {
+            document.getElementById('chart').innerHTML = '';
+            num++; // Decrease num on Spacebar
+        } else if (key === "ArrowLeft") {
+            document.getElementById('chart').innerHTML = '';
+            if(num > 0) num--; // Increase num on any other key
+        } else {
+            document.getElementById('chart').innerHTML = '';
+        }
     }
 
         
