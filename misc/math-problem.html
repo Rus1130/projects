@@ -52,8 +52,8 @@
 
         console.log(String(yLength).length*5)
 
-        let xStep = String(xLength).length*5//+(1+"0".repeat(String(xLength).length-1));
-        let yStep = +(1+"0".repeat(String(yLength).length-1));
+        let xStep = 1;
+        let yStep = 10;
 
         let line = new Chart('line')
         .appendTo('#chart')
@@ -74,7 +74,7 @@
         if (key === "ArrowRight") {
             num++; // Decrease num on Spacebar
         } else if (key === "ArrowLeft") {
-            if(num > 0) num--; // Increase num on any other key
+            if(num > 1) num--;
         } else if(key === "Enter") {
             let newNum = prompt("Enter a number");
             if(newNum != null) {
