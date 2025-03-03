@@ -3,6 +3,7 @@
 </head>
 <body>
     <div id="out" style="font-family: monospace"></div>
+    <button id="both" style="padding: 10px;">copy both</button>
     <button id="ortho" style="padding: 10px;">copy ortho</button>
     <button id="ipa" style="padding: 10px;">copy IPA</button>
 </body>
@@ -178,6 +179,11 @@
     let result = delim(s) + "\n" + ipa(s);
 
     document.getElementById("out").innerText = result;
+
+    document.getElementById("both").addEventListener("click", function(){
+        navigator.clipboard.writeText(result);
+        document.getElementById("both").innerText = "copied!";
+    })
 
     document.getElementById("ortho").addEventListener("click", function(){
         navigator.clipboard.writeText(delim(s));
