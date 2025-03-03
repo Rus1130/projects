@@ -160,9 +160,6 @@ let line = new Chart('line')
                 let measureLine = draw.line(yLine.attr('x1') + xMeasureStep * (i - xMin), xLine.attr('y1'), yLine.attr('x1') + xMeasureStep * (i - xMin), xLine.attr('y1') + 5)
                 .stroke({ width: 1, color: '#000' })
 
-                console.log(measureLine)
-
-
                 measureLine.attr('y1', measureLine.attr('y1') - 1.5)
                 measureLine.attr('y2', measureLine.attr('y2') + 1.5)
                 let measureLabel = draw.text(i.toString()).font({ family: 'Helvetica', size: 10 })
