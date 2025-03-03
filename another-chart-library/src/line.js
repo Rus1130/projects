@@ -156,10 +156,11 @@ let line = new Chart('line')
             let textArray = []
 
             for(let i = xMin; i <= xMax; i += xStep ) {
-                if(i <= xMin) continue;
-                
+                if(i < xMin) continue;
                 let measureLine = draw.line(yLine.attr('x1') + xMeasureStep * (i - xMin), xLine.attr('y1'), yLine.attr('x1') + xMeasureStep * (i - xMin), xLine.attr('y1') + 5)
                 .stroke({ width: 1, color: '#000' })
+
+                console.log(measureLine)
 
 
                 measureLine.attr('y1', measureLine.attr('y1') - 1.5)
@@ -174,8 +175,6 @@ let line = new Chart('line')
 
                 measureLineArray.push(measureLine)
                 textArray.push(measureLabel)
-
-               
 
                 xMeasureCount++;
             }
@@ -193,32 +192,43 @@ let line = new Chart('line')
             
 
             function plot(x, y, color, r){
-                let point = draw.circle(r).fill(color)
-                point.cx(measureLineArray[0].attr('x1') + (xData.indexOf(x) * xMeasureStep))
-                let yPlot = (measureLineArray[0].attr('y1') + 6) + y * yMeasureStep
-
-                yPlot > xLine.attr('y1') ? yPlot = xLine.attr('y1') - 1 : yPlot = yPlot
-
-                point.cy(yPlot)
-                return point
+                try {
+                    let point = draw.circle(r).fill(color)
+                    point.cx(measureLineArray[0].attr('x1') + (xData.indexOf(x) * xMeasureStep))
+                    let yPlot = (measureLineArray[0].attr('y1') + 6) + y * yMeasureStep
+    
+                    yPlot > xLine.attr('y1') ? yPlot = xLine.attr('y1') - 1 : yPlot = yPlot
+    
+                    point.cy(yPlot)
+                    return point
+                } catch(e) {
+                    console.error(new Error('Data point out of bounds'))
+                }
             }
 
             let points = []
             let pointLabels = []
             let hoverPoints = []
+            let error = false;
             for(let i = 0; i < data.length; i++){
                 let line = data[i]
                 points.push([])
                 for(let j = 0; j < line.points.length; j++){
-                    let point = plot(line.points[j][0], line.points[j][1], line.color, line.pointRadius)
-                    let hoverPoint = draw.circle(line.pointRadius * 10).fill('transparent')
-                    hoverPoint.cx(point.attr('cx'))
-                    hoverPoint.cy(point.attr('cy'))
-
-                    pointLabels.push(line.points[j][1])
-                    hoverPoints.push(hoverPoint)
-
-                    points[i].push(point)
+                    try {
+                        let point = plot(line.points[j][0], line.points[j][1], line.color, line.pointRadius)
+                        let hoverPoint = draw.circle(line.pointRadius * 10).fill('transparent')
+                        hoverPoint.cx(point.attr('cx'))
+                        hoverPoint.cy(point.attr('cy'))
+    
+                        pointLabels.push(line.points[j][1])
+                        hoverPoints.push(hoverPoint)
+    
+                        points[i].push(point)
+                    } catch(e) {
+                        if(error) return;
+                        console.error(new Error('Data point out of bounds'))
+                        error = true;
+                    }
                 }
             }
 
