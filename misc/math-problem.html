@@ -1,0 +1,44 @@
+<style>
+    #chart {
+        border: 1px solid black;
+        display: inline-block;
+    }
+</style>
+<head>
+    
+</head>
+<body>
+    <div id="chart"></div>
+</body>
+<script type="module">
+    import { Chart } from 'https://rus1130.github.io/projects/another-chart-library/main.js'
+
+    function makeNumber(n) {
+        let result = [];
+        result.push(n);
+        while(n != 1){
+            if(n % 2 == 0){
+                n = n / 2;
+            } else {
+                n = 3 * n + 1;
+            }
+            result.push(n);
+        }
+        return result;
+    }
+
+    const number = 31;
+
+    let line = new Chart('line')
+    .appendTo('#chart')
+    .setData(`number: ${number}`, 'Y', 'X', 200, 4, [
+        {
+            color: 'red',
+            label: 'number',
+            pointRadius: 3.5,
+            lineWidth: 1,
+            points: new Array(makeNumber(number).length).fill(0).map((_, i) => [i+2, makeNumber(number)[i]])
+        }
+    ])
+        
+</script>
