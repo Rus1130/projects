@@ -72,10 +72,8 @@
         let key = await waitForKeyPress("any");
 
         if (key === "ArrowRight") {
-            document.getElementById('chart').innerHTML = '';
             num++; // Decrease num on Spacebar
         } else if (key === "ArrowLeft") {
-            document.getElementById('chart').innerHTML = '';
             if(num > 0) num--; // Increase num on any other key
         } else if(key === "Enter") {
             let newNum = prompt("Enter a number");
@@ -84,12 +82,10 @@
                     alert("Please enter a number");
                 } else {
                     num = newNum;
-                    document.getElementById('chart').innerHTML = '';
                 }
             }
-        } else {
-            document.getElementById('chart').innerHTML = '';
         }
+        document.getElementById('chart').innerHTML = '';
     }
 
         

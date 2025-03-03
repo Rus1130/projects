@@ -2,6 +2,7 @@ import { SVG, extend as SVGextend, Element as SVGElement, PathArray } from 'http
 import { BarChart } from './src/bar.js';
 import { PieChart } from './src/pie.js';
 import { LineChart } from './src/line.js';
+import { Line2Chart } from './src/line2.js';
 
 // CONTINUE
 /**
@@ -88,7 +89,7 @@ export class Chart {
             }
         }
 
-        if(this.type == 'line') {
+        if(this.type == 'line' || this.type == 'line2') {
             let h = options.height;
             let w = options.width;
             let p = Chart.precision;
@@ -140,7 +141,7 @@ export class Chart {
             new classes[this.type](this.chartTitle, this.data, this.popout, this.showPercentages);
         }
 
-        if(this.type == 'line'){
+        if(this.type == 'line' || this.type == 'line2'){
             this.chartTitle = arguments[0]
             this.yAxisLabel = arguments[1]
             this.xAxisLabel = arguments[2]
@@ -158,5 +159,6 @@ export class Chart {
 const classes = {
     'bar': BarChart,
     'pie': PieChart,
-    'line': LineChart
+    'line': LineChart,
+    'line2': Line2Chart
 }
