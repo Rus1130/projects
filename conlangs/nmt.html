@@ -43,6 +43,7 @@
                 { pattern: 'ng', value: "ŋ" },
                 { pattern: 'y', value: "j" },
                 { pattern: "gy", value: "c"},
+                { pattern: "ky", value: "c"},
                 { pattern: "'", value: "ʔ" },
                 { pattern: "nd", value: "ⁿd" },
                 { pattern: "mb", value: "ᵐb" },
@@ -110,6 +111,7 @@
 
         return result = result
         .replaceAll("n", "n̪")
+        .replaceAll("g", "ɡ")
         .replaceAll("./","/")
         .replaceAll(".​", "");
     }
