@@ -103,6 +103,9 @@
             result[i] = result[i].replaceAll(new RegExp(`(\.)([wl])(${C})`, "g"), "$2.$3")
             result[i] = result[i].replaceAll(new RegExp(`(\.)([wl])$`, "g"), "$2")
 
+            // fix s syllable boundaries
+            result[i] = result[i].replaceAll(new RegExp(`(${V})\.s$`, "g"), "$1s.")
+
             // fix velar prenasalized syllable boundaries
             //result[i] = result[i].replaceAll(new RegExp(`\.ŋg`, "g"), "ᵑg\.");
         })
@@ -113,7 +116,8 @@
         .replaceAll("n", "n̪")
         .replaceAll("g", "ɡ")
         .replaceAll("./","/")
-        .replaceAll(".​", "");
+        .replaceAll(".​", "")
+        .replaceAll(". ", " ")
     }
 
     function ortho(s){
