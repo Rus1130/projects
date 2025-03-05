@@ -1,0 +1,36 @@
+<style>
+    #in, #out {
+        width: 300px;
+        height: 500px;
+    }
+</style>
+<body>
+    <textarea id="in" placeholder="input"></textarea>
+    <textarea id="out" placeholder="output"></textarea>
+    <button id="convert">press to convert</button>
+</body>
+<script>
+    document.getElementById("convert").addEventListener("click", () => {
+        let inVal = document.getElementById("in").value.split("\n")
+        let out = document.getElementById("out")
+
+        let result = [];
+
+        inVal.forEach((val) => {
+            let romanization = val.split(" ")[0]
+            let ipa = val.split(" ")[1]        
+
+            romanization = romanization.replaceAll(/\./g, "");
+            ipa = ipa.replaceAll(/\.\//g, "/");
+
+            result.push(romanization + " " + ipa)
+        })
+
+        out.value = result.join("\n")
+    })
+
+    // on click out, select whole text
+    document.getElementById("out").addEventListener("click", () => {
+        document.getElementById("out").select()
+    })
+</script>
