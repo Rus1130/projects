@@ -23,7 +23,16 @@
             romanization = romanization.replaceAll(/\./g, "");
             ipa = ipa.replaceAll(/\.\//g, "/");
 
+            let V = "[iuɪɛɔä]"
+
+            ipa = ipa.replaceAll()
+
+            ipa = ipa.normalize("NFC");
+            const pattern = new RegExp("([iuɪɛɔä])\\.\\1", "g");  // Use ä instead of ä
+            ipa = ipa.replaceAll(pattern, "$1:");
+
             result.push(romanization + " " + ipa)
+            
         })
 
         out.value = result.join("\n")
