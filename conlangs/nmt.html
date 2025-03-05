@@ -105,6 +105,7 @@
 
             // fix s syllable boundaries
             result[i] = result[i].replaceAll(new RegExp(`(${V})\.s$`, "g"), "$1s.")
+            result[i] = result[i].replaceAll(new RegExp(`(${V}).s‿`, "g"), "$1s‿")
 
             // fix velar prenasalized syllable boundaries
             //result[i] = result[i].replaceAll(new RegExp(`\.ŋg`, "g"), "ᵑg\.");
