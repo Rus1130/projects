@@ -10,6 +10,7 @@ import { Chart } from '../main.js';
  * @param {string}   data[].label      the label for the slice
  * @param {number}   [popAmount]       how far the slice should pop out when hovered over
  * @param {boolean}  [showPercentages] whether or not to show the percentages of the slices
+ * @param {boolean}  [donut]           whether or not to make the pie chart a donut chart
  * @example 
     let chart = new Chart('pie')
     .appendTo('#pie-chart')
@@ -21,14 +22,14 @@ import { Chart } from '../main.js';
         { arc: 7, color: 'black', label: "Black"},
         { arc: 5, color: 'orange', label: 'Orange'},
         { arc: 10, color: 'grey', label: "Other"},
-    ], 2, true)
+    ], 2, true, true)
 */
-export class PieChart {
-    constructor(chartTitle, data, popAmount, showPercentages) {
+export class PieChart_ {
+    constructor(chartTitle, data, popAmount, showPercentages, donut) {
         popAmount = popAmount || 0;
         showPercentages = showPercentages || false;
-
-        
+        donut = donut || false;
+        this.science = {};
 
         function getD(radius, startAngle, endAngle) {
             const isCircle = endAngle - startAngle === 360;
@@ -86,7 +87,12 @@ export class PieChart {
             labels.push(data[i].label);
         }
 
+        this.science.arcs = arcs;
+        this.science.colors = colors;
+        this.science.labels = labels;
+
         let arcList = []
+        let donutArcList = [];
         let labelElements = []
         for(let i = 0; i < arcs.length; i++){
             let startingAngle = 0;
@@ -101,9 +107,22 @@ export class PieChart {
             .dy(circle.attr('cy') - circle.attr('r'))
             .stroke({ width: 1, color: '#fff' })
 
+            if(donut) {
+                let donutArc = draw.path(getD(circle.attr('r') * 0.5, startingAngle, endAngle)).fill("white")
+                .dx(circle.attr('cx') - circle.attr('r') * 0.5)
+                .dy(circle.attr('cy') - circle.attr('r') * 0.5)
+                .stroke({ width: 1, color: '#fff' })
+
+                donutArcList.push(donutArc)
+            }
+
 
             arcList.push(arc);
         }
+
+        this.science.arcList = arcList;
+        this.science.donutArcList = donutArcList;
+        this.science.labelElements = labelElements;
 
         for(let i = 0; i < arcList.length; i++){
             let percentage = Math.round((Math.round(arcs[i] / 360 * 10000) / 10000) * 100) * 10000 / 10000
@@ -129,14 +148,26 @@ export class PieChart {
             arcList[i].remember('originalX', arcList[i].x())
             arcList[i].remember('originalY', arcList[i].y())
 
+            if(donut) {
+                donutArcList[i].remember('originalX', donutArcList[i].x())
+                donutArcList[i].remember('originalY', donutArcList[i].y())
+            }
+
             text.remember('originalX', text.x())
             text.remember('originalY', text.y())
-
 
             arcList[i].on('mouseenter', function() {
                 arcList[i].animate(100)
                 .dx(circle.attr('cx') - Math.cos((angle + 90) * Math.PI / 180) * popAmount - circle.attr('r') * 2)
                 .dy(circle.attr('cy') - Math.sin((angle + 90) * Math.PI / 180) * popAmount - circle.attr('r') * 2)
+
+                if(donut) {
+                    let halfR = circle.attr('r') * 0.5
+
+                    donutArcList[i].animate(100)
+                    .dx((circle.attr('cx') - Math.cos((angle + 90) * Math.PI / 180) * popAmount - halfR * 2) - circle.attr('r'))
+                    .dy((circle.attr('cy') - Math.sin((angle + 90) * Math.PI / 180) * popAmount - halfR * 2) - circle.attr('r'))
+                }
 
 
 
@@ -152,6 +183,12 @@ export class PieChart {
                 .x(arcList[i].remember('originalX'))
                 .y(arcList[i].remember('originalY'))
 
+                if(donut) {
+                    donutArcList[i].animate(100)
+                    .x(donutArcList[i].remember('originalX'))
+                    .y(donutArcList[i].remember('originalY'))
+                }
+
                 text.animate(100)
                 .x(text.remember('originalX'))
                 .y(text.remember('originalY'))
@@ -159,7 +196,6 @@ export class PieChart {
 
             labelElements.push(text)
         }
-
 
         // title
         draw.text().tspan(chartTitle).fill('#8e8e8e')

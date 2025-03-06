@@ -1,10 +1,16 @@
 import { SVG, extend as SVGextend, Element as SVGElement, PathArray } from 'https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.1.2/svg.esm.js';
-import { BarChart } from './src/bar.js';
-import { PieChart } from './src/pie.js';
-import { LineChart } from './src/line.js';
-import { Line2Chart } from './src/line2.js';
+import { BarChart_ } from './src/bar.js';
+import { PieChart_ } from './src/pie.js';
+import { LineChart_ } from './src/line.js';
+import { Line2Chart_ } from './src/line2.js';
 
-// CONTINUE
+const classes = {
+    'bar': BarChart_,
+    'pie': PieChart_,
+    'line': LineChart_,
+    'line2': Line2Chart_
+}
+
 /**
  * @class Chart
  * @classdesc Create different types of charts from the given data. You can currently create {@link Chart.BarChart|bar charts}, {@link Chart.LineChart|line charts}, and {@link Chart.PieChart|pie charts}.
@@ -138,7 +144,10 @@ export class Chart {
             this.data = arguments[1];
             this.popout = arguments[2];
             this.showPercentages = arguments[3];
-            new classes[this.type](this.chartTitle, this.data, this.popout, this.showPercentages);
+            this.donut = arguments[4];
+            let chart = new classes[this.type](this.chartTitle, this.data, this.popout, this.showPercentages, this.donut);
+            let science = chart.science;
+            this.science = science;
         }
 
         if(this.type == 'line' || this.type == 'line2'){
@@ -152,13 +161,191 @@ export class Chart {
         }
 
         return this;
-
     }
 }
 
-const classes = {
-    'bar': BarChart,
-    'pie': PieChart,
-    'line': LineChart,
-    'line2': Line2Chart
+export class PieChart extends Chart {
+    /**
+     * @param {string} element        element to append the chart to
+     * @param {object} options        options for the chart
+     * @param {number} options.width  width of the chart
+     * @param {number} options.height height of the chart
+     */
+    constructor(element, options) {
+        super('pie').appendTo(element, options)
+    }
+    /**
+     * @param {string}   chartTitle        the title of the chart
+     * @param {object} data[]            the data for the pie chart
+     * @param {number}   data[].arc        the length of the slice (in percent)
+     * @param {string}   data[].color      the color of the slice
+     * @param {string}   data[].label      the label for the slice
+     * @param {number}   [popAmount]       how far the slice should pop out when hovered over
+     * @param {boolean}  [showPercentages] whether or not to show the percentages of the slices
+     * @param {boolean}  [donut]           whether or not to make the pie chart a donut chart
+     * @example 
+        let chart = new PieChart('#pie-chart')
+        .setData("Favorite Color", [
+            { arc: 42, color: 'blue', label: 'Blue' },
+            { arc: 14, color: 'green', label: 'Green' },
+            { arc: 14, color: 'purple', label: 'Purple' },
+            { arc: 8, color: 'red', label: "Red"},
+            { arc: 7, color: 'black', label: "Black"},
+            { arc: 5, color: 'orange', label: 'Orange'},
+            { arc: 10, color: 'grey', label: "Other"},
+        ], 2, true, true)
+    */
+    setData(chartTitle, data, popout, showPercentages, donut) {
+        super.setData(chartTitle, data, popout, showPercentages, donut);
+        return this;
+    }
+}
+
+export class BarChart extends Chart {
+    /**
+     * @param {string} element        element to append the chart to
+     * @param {object} options        options for the chart
+     * @param {number} options.width  width of the chart
+     * @param {number} options.height height of the chart
+     */
+    constructor(element, options) {
+        super('bar').appendTo(element, options)
+    }
+    /**
+     * @param {string}            chartTitle title of the chart
+     * @param {string}            xAxisLabel label for the x axis
+     * @param {string}            yAxisLabel label for the y axis
+     * @param {number}            step       step value
+     * @param {string[]|number[]} xAxisData  data for the x axis
+     * @param {string[]|number[]} yAxisData  data for the y axis
+     * @param {string}            [barColor] color of the bars
+     * @example
+        let chart = new BarChart('#bar-chart')
+        .setData("Motor Vehicle Deaths by Month (2021)", "Month", "Deaths", 1000, 
+            ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            [3099, 2561, 3214, 3557, 3768, 3789, 3879, 4013, 3861, 4101, 3599, 3498]
+        )
+    */
+    setData(chartTitle, xAxisLabel, yAxisLabel, step, xAxisData, yAxisData, barColor) {
+        super.setData(chartTitle, xAxisLabel, yAxisLabel, step, xAxisData, yAxisData, barColor);
+        return this;
+    }
+}
+
+export class LineChart extends Chart {
+    /**
+     * @param {string} element        element to append the chart to
+     * @param {object} options        options for the chart
+     * @param {number} options.width  width of the chart
+     * @param {number} options.height height of the chart
+     */
+    constructor(element, options) {
+        super('line').appendTo(element, options)
+    }
+
+    /**
+     * @param {string}            chartTitle title of the chart
+     * @param {string}            xAxisLabel label for the x axis
+     * @param {string}            yAxisLabel label for the y axis
+     * @param {number}            xStep      step value for the x axis
+     * @param {number}            yStep      step value for the y axis
+     * @param {object[]}          data       the data for the line chart
+     * @param {string}            data[].color color of the line
+     * @param {string}            data[].label label for the line
+     * @param {number}            data[].pointRadius radius of the points
+     * @param {number}            data[].lineWidth width of the line
+     * @param {number}            data[].hoverPointRadius radius of the hover points
+     * @param {boolean}           data[].pointLabels whether or not to show the point labels
+     * @description Has trouble with extremely small numbers (<0)
+     * @example
+        let chart = new LineChart('#line-chart')
+        .setData("Average Stock Prices (2000 - 2022)", 'Year', 'Price', 10, 10, [
+            {
+                color: 'red',
+                label: 'Apple',
+                pointRadius: 1,
+                lineWidth: 2,
+                hoverPointRadius: 4,
+                pointLabels: true,
+                points: [
+                    [2000, 0.6937],
+                    [2001, 0.3068],
+                    [2002, 0.2905],
+                    [2003, 0.2814],
+                    [2004, 0.5391],
+                    [2005, 1.4167],
+                    [2006, 2.1492],
+                    [2007, 3.8933],
+                    [2008, 4.3092],
+                    [2009, 4.4560],
+                    [2010, 7.8866],
+                    [2011, 11.0480],
+                    [2012, 17.5266],
+                    [2013, 14.6700],
+                    [2014, 20.5310],
+                    [2015, 27.1667],
+                    [2016, 24.1638],
+                    [2017, 35.4349],
+                    [2018, 45.1771],
+                    [2019, 50.5541],
+                    [2020, 93.6424],
+                    [2021, 139.3947],
+                    [2022, 153.9328],
+                ],
+            }, {
+                color: 'blue',
+                label: 'Microsoft',
+                pointRadius: 2,
+                lineWidth: 1,
+                hoverPointRadius: 4,
+                pointLabels: false,
+                points: [
+                    [2000, 23.8554],
+                    [2001, 19.5747],
+                    [2002, 17.0729],
+                    [2003, 16.4050],
+                    [2004, 17.3987],
+                    [2005, 18.3417],
+                    [2006, 18.8863],
+                    [2007, 22.1793],
+                    [2008, 19.6798],
+                    [2009, 17.3973],
+                    [2010, 20.8738],
+                    [2011, 20.5793],
+                    [2012, 24.2010],
+                    [2013, 27.1941],
+                    [2014, 36.5584],
+                    [2015, 41.2965],
+                    [2016, 50.1958],
+                    [2017, 67.0252],
+                    [2018, 95.8759],
+                    [2019, 125.5735],
+                    [2020, 187.8096],
+                    [2021, 271.0883],
+                    [2022, 266.2800],
+                ],
+            }
+        ])
+    */
+    setData(chartTitle, xAxisLabel, yAxisLabel, xStep, yStep, data) {
+        super.setData(chartTitle, xAxisLabel, yAxisLabel, xStep, yStep, data);
+        return this;
+    }
+}
+
+export class Line2Chart extends Chart {
+    /**
+     * @param {string} element        element to append the chart to
+     * @param {object} options        options for the chart
+     * @param {number} options.width  width of the chart
+     * @param {number} options.height height of the chart
+     */
+    constructor(element, options) {
+        super('line2').appendTo(element, options)
+    }
+
+    setData(chartTitle, yAxisLabel, xAxisLabel, xStep, yStep, data){
+        super.setData(chartTitle, yAxisLabel, xAxisLabel, xStep, yStep, data)
+        return this;
+    }
 }

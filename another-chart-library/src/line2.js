@@ -88,7 +88,7 @@ let line = new Chart('line')
         }
     ])
  */
-    export class Line2Chart {
+    export class Line2Chart_ {
         constructor(chartTitle, yAxisLabel, xAxisLabel, xStep, yStep, data){
             if(yStep <= 0) return console.error(new Error('yStep must be greater than 0'))
             if(xStep <= 0) return console.error(new Error('xStep must be greater than 0'))
@@ -133,18 +133,39 @@ let line = new Chart('line')
             let xMeasureStep = (xLine.attr('x2') - xLine.attr('x1')) / (xMax - xMin)
             let xMeasureCount = 0;
 
-            console.log(yMin, yMax, yMeasureStep)
+            let xLabelText = []
+            for(let i = 0; i < data.length; i++){
+                for(let j = 0; j < data[i].points.length; j++){
+                    xLabelText.push(data[i].points[j][0])
+                }
+            }
 
-            console.log(xMin, xMax, xMeasureStep)
+            xLabelText = [...new Set(xLabelText)]
+
+            let xMeasureLines = [];
+            
+            for(let i = 0; i < xLabelText.length; i++){
+                if(i % xStep != 0) continue;
+                let x = (xLine.attr('x1') + xMeasureStep * (xLabelText[i] - xMin)) + xMeasureStep/2
+                let y = xLine.attr('y1')
+                let line = draw.line(x, y, x, y + 5).stroke({ width: 1, color: '#8e8e8e' })
+
+                let text = draw.text(xLabelText[i]).font({ family: 'Helvetica', size: 10, color: "black" });
+
+                text.x(x - text.bbox().width / 2)
+                .y(y + 10)
+                .rotate(-45)
+
+                xMeasureLines.push(line)
+            }
 
             for(let i = 0; i < data.length; i++){
-
                 let colorDisplay = draw.rect(20, 20).fill(data[i].color)
                 .x(xLine.attr('x2') + 10)
                 .y(yLine.attr('y1') + 30 * i)
                 .radius(2)
 
-                let displayLabel = draw.text(data[i].label).font({ family: 'Helvetica', size: 12 })
+                draw.text(data[i].label).font({ family: 'Helvetica', size: 12 })
                 .x(xLine.attr('x2') + 10 + colorDisplay.bbox().width + 5)
                 .y(yLine.attr('y1') + 30 * i + colorDisplay.bbox().height / 2 - 6)
             }

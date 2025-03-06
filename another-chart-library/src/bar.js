@@ -19,7 +19,7 @@ import { Chart } from '../main.js';
         [3099, 2561, 3214, 3557, 3768, 3789, 3879, 4013, 3861, 4101, 3599, 3498]
     )
 */
-export class BarChart {
+export class BarChart_ {
     constructor(chartTitle, xAxisLabel, yAxisLabel, step, density, xAxisData, yAxisData, barColor) {
         let draw = Chart.options.draw
 
