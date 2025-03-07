@@ -11,7 +11,7 @@
     <div id="chart"></div>
 </body>
 <script type="module">
-    import { LineChart } from 'https://rus1130.github.io/projects/another-chart-library/main.js'
+    import { Line2Chart } from 'https://rus1130.github.io/projects/another-chart-library/main.js'
 
     function makeNumber(n) {
         let result = [];
@@ -52,10 +52,12 @@
 
         console.log(String(yLength).length*5)
 
-        let xStep = 1;
+
+        // round data.length to nearest 10
+        let xStep = 10;
         let yStep = 10;
 
-        let line = new LineChart('#chart')
+        let line = new Line2Chart('#chart')
         .setData(`number: ${num}`, 'X', 'Y', xStep, yStep, [
             {
                 color: 'red',
