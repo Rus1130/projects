@@ -182,8 +182,8 @@ let line = new Chart('line')
             for(let i = 0; i < data.length; i++){
                 points.push([])
                 for(let j = 0; j < data[i].points.length; j++){
-                    if(xMeasureLines[0].attr == undefined) console.error(new Error('x value out of bounds; lower xStep'));
-                    if(yMeasureLines[0].attr == undefined) console.error(new Error('y value out of bounds; lower yStep'));
+                    if(xMeasureLines[0] == undefined) console.error(new Error('x value out of bounds; lower xStep'));
+                    if(yMeasureLines[0] == undefined) console.error(new Error('y value out of bounds; lower yStep'));
 
                     let x = xMeasureLines[0].attr('x1') + xMeasureStep * (data[i].points[j][0] - xMin)
                     let y = yMeasureLines[0].attr('y1') + yMeasureStep * (data[i].points[j][1] - yMin)
