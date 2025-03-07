@@ -182,17 +182,19 @@ let line = new Chart('line')
             for(let i = 0; i < data.length; i++){
                 points.push([])
                 for(let j = 0; j < data[i].points.length; j++){
-                    if(xMeasureLines[0] == undefined) console.error(new Error('x value out of bounds; lower xStep'));
-                    if(yMeasureLines[0] == undefined) console.error(new Error('y value out of bounds; lower yStep'));
+                    try {
+                        let x = xMeasureLines[0].attr('x1') + xMeasureStep * (data[i].points[j][0] - xMin)
+                        let y = yMeasureLines[0].attr('y1') + yMeasureStep * (data[i].points[j][1] - yMin)
 
-                    let x = xMeasureLines[0].attr('x1') + xMeasureStep * (data[i].points[j][0] - xMin)
-                    let y = yMeasureLines[0].attr('y1') + yMeasureStep * (data[i].points[j][1] - yMin)
+                        let point = draw.circle(data[i].pointRadius).fill(data[i].color)
+                        .cx(x)
+                        .cy(y)
 
-                    let point = draw.circle(data[i].pointRadius).fill(data[i].color)
-                    .cx(x)
-                    .cy(y)
-
-                    points[points.length - 1].push(point)
+                        points[points.length - 1].push(point)
+                    } catch(e) {
+                        if(xMeasureLines[0] == undefined) console.error(new Error('x value out of bounds; lower xStep'));
+                        if(yMeasureLines[0] == undefined) console.error(new Error('y value out of bounds; lower yStep'));
+                    }
                 }
             }
 
