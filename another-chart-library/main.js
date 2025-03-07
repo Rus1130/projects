@@ -181,7 +181,7 @@ export class PieChart extends Chart {
      * @param {string}   data[].color                            the color of the slice
      * @param {string}   data[].label                            the label for the slice
      * @param {object}   [options={}]                            the options for the pie chart
-     * @param {number}   [options.popAmount=10]                  how far the slice should pop out when hovered over
+     * @param {number}   [options.popAmount=0]                   how far the slice should pop out when hovered over
      * @param {boolean}  [options.showPercentages=false]         whether or not to show the percentages of the slices
      * @param {boolean}  [options.donut=false]                   whether or not to make the pie chart a donut chart
      * @param {boolean}  [options.sliceOutlineWidth=1]           whether or not to show the percentages of the slices
