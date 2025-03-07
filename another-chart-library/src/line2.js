@@ -189,16 +189,6 @@ let line = new Chart('line')
                     .cx(x)
                     .cy(y)
 
-                    // some weird shit is here
-
-                    point.on('mouseenter', () => {
-                        point.radius(data[i].hoverPointRadius)
-                    })
-
-                    point.on('mouseleave', () => {
-                        point.radius(data[i].pointRadius)
-                    })
-
                     points[points.length - 1].push(point)
                 }
             }
@@ -214,6 +204,11 @@ let line = new Chart('line')
                 path.plot(pathString)
             }
 
+            for(let i = 0; i < points.length; i++){
+                for(let j = 0; j < points[i].length; j++){
+                    points[i][j].front()
+                }
+            }
 
 
 

@@ -1,34 +1,14 @@
 import { Chart } from '../main.js';
 
-/**
- * @class PieChart
- * @memberof Chart
- * @param {string}   chartTitle        the title of the chart
- * @param {object[]} data              the data for the pie chart
- * @param {number}   data[].arc        the length of the slice (in percent)
- * @param {string}   data[].color      the color of the slice
- * @param {string}   data[].label      the label for the slice
- * @param {number}   [popAmount]       how far the slice should pop out when hovered over
- * @param {boolean}  [showPercentages] whether or not to show the percentages of the slices
- * @param {boolean}  [donut]           whether or not to make the pie chart a donut chart
- * @example 
-    let chart = new Chart('pie')
-    .appendTo('#pie-chart')
-    .setData("Favorite Color", [
-        { arc: 42, color: 'blue', label: 'Blue' },
-        { arc: 14, color: 'green', label: 'Green' },
-        { arc: 14, color: 'purple', label: 'Purple' },
-        { arc: 8, color: 'red', label: "Red"},
-        { arc: 7, color: 'black', label: "Black"},
-        { arc: 5, color: 'orange', label: 'Orange'},
-        { arc: 10, color: 'grey', label: "Other"},
-    ], 2, true, true)
-*/
 export class PieChart_ {
-    constructor(chartTitle, data, popAmount, showPercentages, donut) {
-        popAmount = popAmount || 0;
-        showPercentages = showPercentages || false;
-        donut = donut || false;
+    constructor(chartTitle, data, options) {
+        const opts = options || {};
+        const popAmount = opts.popAmount || 0;
+        const showPercentages = opts.showPercentages || false;
+        const donut = opts.donut || false;
+        const sliceOutlineWidth = opts.sliceOutlineWidth || 0;
+        const sliceOutlineColor = opts.sliceOutlineColor || 'transparent';
+
         this.science = {};
 
         function getD(radius, startAngle, endAngle) {
@@ -105,13 +85,13 @@ export class PieChart_ {
             let arc = draw.path(getD(circle.attr('r'), startingAngle, endAngle)).fill(colors[i])
             .dx(circle.attr('cx') - circle.attr('r'))
             .dy(circle.attr('cy') - circle.attr('r'))
-            .stroke({ width: 1, color: '#fff' })
+            .stroke({ width: sliceOutlineWidth, color: sliceOutlineColor })
 
             if(donut) {
                 let donutArc = draw.path(getD(circle.attr('r') * 0.5, startingAngle, endAngle)).fill("white")
                 .dx(circle.attr('cx') - circle.attr('r') * 0.5)
                 .dy(circle.attr('cy') - circle.attr('r') * 0.5)
-                .stroke({ width: 1, color: '#fff' })
+                .stroke({ width: sliceOutlineWidth+1, color: "#ffffff" })
 
                 donutArcList.push(donutArc)
             }

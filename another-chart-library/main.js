@@ -142,10 +142,8 @@ export class Chart {
         if(this.type == 'pie') {
             this.chartTitle = arguments[0];
             this.data = arguments[1];
-            this.popout = arguments[2];
-            this.showPercentages = arguments[3];
-            this.donut = arguments[4];
-            let chart = new classes[this.type](this.chartTitle, this.data, this.popout, this.showPercentages, this.donut);
+            this.options = arguments[2];
+            let chart = new classes[this.type](this.chartTitle, this.data, this.options);
             let science = chart.science;
             this.science = science;
         }
@@ -175,14 +173,19 @@ export class PieChart extends Chart {
         super('pie').appendTo(element, options)
     }
     /**
-     * @param {string}   chartTitle        the title of the chart
-     * @param {object} data[]            the data for the pie chart
-     * @param {number}   data[].arc        the length of the slice (in percent)
-     * @param {string}   data[].color      the color of the slice
-     * @param {string}   data[].label      the label for the slice
-     * @param {number}   [popAmount]       how far the slice should pop out when hovered over
-     * @param {boolean}  [showPercentages] whether or not to show the percentages of the slices
-     * @param {boolean}  [donut]           whether or not to make the pie chart a donut chart
+     * @class PieChart
+     * @memberof Chart
+     * @param {string}   chartTitle                              the title of the chart
+     * @param {object[]} data                                    the data for the pie chart
+     * @param {number}   data[].arc                              the length of the slice (in percent)
+     * @param {string}   data[].color                            the color of the slice
+     * @param {string}   data[].label                            the label for the slice
+     * @param {object}   [options={}]                            the options for the pie chart
+     * @param {number}   [options.popAmount=10]                  how far the slice should pop out when hovered over
+     * @param {boolean}  [options.showPercentages=false]         whether or not to show the percentages of the slices
+     * @param {boolean}  [options.donut=false]                   whether or not to make the pie chart a donut chart
+     * @param {boolean}  [options.sliceOutlineWidth=1]           whether or not to show the percentages of the slices
+     * @param {boolean}  [options.sliceOutlineColor=transparent] whether or not to show the percentages of the slices
      * @example 
         let chart = new PieChart('#pie-chart')
         .setData("Favorite Color", [
@@ -193,10 +196,16 @@ export class PieChart extends Chart {
             { arc: 7, color: 'black', label: "Black"},
             { arc: 5, color: 'orange', label: 'Orange'},
             { arc: 10, color: 'grey', label: "Other"},
-        ], 2, true, true)
+        ], {
+            popAmount: 10,
+            showPercentages: true,
+            donut: true,
+            sliceOutlineWidth: 1,
+            sliceOutlineColor: 'white'
+    })
     */
-    setData(chartTitle, data, popout, showPercentages, donut) {
-        super.setData(chartTitle, data, popout, showPercentages, donut);
+    setData(chartTitle, data, options) {
+        super.setData(chartTitle, data, options);
         return this;
     }
 }
