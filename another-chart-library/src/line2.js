@@ -20,7 +20,7 @@ import { PathArray } from 'https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.1.2/s
  * @example
 let line = new Chart('line')
     .appendTo('#line-chart')
-    .setData("Average Stock Prices (2000 - 2022)", 'Year', 'Price', 10, [
+    .setData("Average Stock Prices (2000 - 2022)", 'Year', 'Price', 1, 10, [
         {
             color: 'red',
             label: 'Apple',
@@ -123,8 +123,8 @@ let line = new Chart('line')
                 }
             }
             
-            let yMax = Math.max(...yData) + yStep
-            let yMin = Math.floor(Math.min(...yData) - (yStep - (Math.min(...yData) % yStep)) + yStep)
+            let yMax = Math.max(...[0].concat(yData)) + yStep
+            let yMin = Math.floor(Math.min(...new Array(1).fill(0).concat(yData)) - (yStep - (Math.min(...new Array(1).fill(0).concat(yData)) % yStep)) + yStep)
             let yMeasureStep = (yLine.attr('y1') - yLine.attr('y2')) / (yMax - yMin)
             let yMeasureCount = 0;
 
@@ -133,19 +133,22 @@ let line = new Chart('line')
             let xMeasureStep = (xLine.attr('x2') - xLine.attr('x1')) / (xMax - xMin)
             let xMeasureCount = 0;
 
-            let xLabelText = []
-            for(let i = 0; i < data.length; i++){
-                for(let j = 0; j < data[i].points.length; j++){
-                    xLabelText.push(data[i].points[j][0])
-                }
+            let xLabelText = [];
+            let yLabelText = [];
+
+            for(let i = xMin; i < xMax; i += 1){
+                xLabelText.push(i)
             }
 
-            xLabelText = [...new Set(xLabelText)]
+            for(let i = yMin; i < yMax; i += 1){
+                yLabelText.push(i)
+            }
 
             let xMeasureLines = [];
+            let yMeasureLines = [];
             
             for(let i = 0; i < xLabelText.length; i++){
-                if(i % xStep != 0) continue;
+                if(i % xStep !== 0) continue;
                 let x = (xLine.attr('x1') + xMeasureStep * (xLabelText[i] - xMin)) + xMeasureStep/2
                 let y = xLine.attr('y1')
                 let line = draw.line(x, y, x, y + 5).stroke({ width: 1, color: '#8e8e8e' })
@@ -158,6 +161,61 @@ let line = new Chart('line')
 
                 xMeasureLines.push(line)
             }
+
+            for(let i = 0; i < yLabelText.length; i++){
+                if(i % yStep !== 0) continue;
+                let x = yLine.attr('x1')
+                let y = yLine.attr('y2') + yMeasureStep * i
+
+                let measureLine = draw.line(x, y, xLine.attr('x2'), y).stroke({ width: 1, color: '#dcdcdc' })
+                let line = draw.line(x + 5, y, x - 5, y).stroke({ width: 1, color: '#000' })
+                let text = draw.text(yLabelText[i]).font({ family: 'Helvetica', size: 10, color: "black" });
+
+                text.x(x - text.bbox().width - 10)
+                .y(y - text.bbox().height / 2)
+
+                yMeasureLines.push(line)
+            }
+
+            // points
+            let points = []
+            for(let i = 0; i < data.length; i++){
+                points.push([])
+                for(let j = 0; j < data[i].points.length; j++){
+                    let x = xMeasureLines[0].attr('x1') + xMeasureStep * (data[i].points[j][0] - xMin)
+                    let y = yMeasureLines[0].attr('y1') + yMeasureStep * (data[i].points[j][1] - yMin)
+
+                    let point = draw.circle(data[i].pointRadius).fill(data[i].color)
+                    .cx(x)
+                    .cy(y)
+
+                    // some weird shit is here
+
+                    point.on('mouseenter', () => {
+                        point.radius(data[i].hoverPointRadius)
+                    })
+
+                    point.on('mouseleave', () => {
+                        point.radius(data[i].pointRadius)
+                    })
+
+                    points[points.length - 1].push(point)
+                }
+            }
+
+            for(let i = 0; i < data.length; i++){
+                let path = draw.path().fill('none').stroke({ width: data[i].lineWidth, color: data[i].color })
+                let pathString = `M ${points[i][0].attr('cx')} ${points[i][0].attr('cy')} `
+
+                for(let j = 1; j < points[i].length; j++){
+                    pathString += `L ${points[i][j].attr('cx')} ${points[i][j].attr('cy')} `
+                }
+
+                path.plot(pathString)
+            }
+
+
+
 
             for(let i = 0; i < data.length; i++){
                 let colorDisplay = draw.rect(20, 20).fill(data[i].color)
