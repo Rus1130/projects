@@ -358,3 +358,6 @@ export class Line2Chart extends Chart {
         return this;
     }
 }
+
+
+// update classes to use options object instead of weird arguments
