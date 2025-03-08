@@ -1,0 +1,197 @@
+<style>
+    #board {
+        width: 800px;
+        height: 800px;
+        border: 1px solid black;
+    }
+</style>
+<body>
+    <div id="board"></div>
+</body>
+<script type="module">
+    import { SVG, extend as SVGextend, Element as SVGElement, PathArray } from 'https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.1.2/svg.esm.js';
+
+    function rand(min, max) {
+        const minCeiled = Math.ceil(min);
+        const maxFloored = Math.floor(max);
+        return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled);
+    }
+
+    class DungeonMaker {
+        static macroDelim = "\u200B\u200B";
+        static microDelim = "\u200B";
+
+        /**
+         * @param {number} roomCount
+         * @param {number} roomCount
+         * @param {number} maxRoomSize
+         * @param {number} minRoomSize
+         * @example
+         * const dungeon = new DungeonMaker(10, 100, 20);
+         */
+        constructor(DOMElement) {
+            this.boardWidth = DOMElement.clientWidth - 2;
+            this.boardHeight = DOMElement.clientHeight;
+            this.draw = SVG().addTo(DOMElement).size(this.boardWidth, this.boardHeight);
+            this.redrawAttempts = 0;
+            this.maximumRedrawAttempts = 100;
+            this.rooms = [];
+            this.roomCenters = [];
+            this.corridors = [];
+        }
+
+        drawRoom() {
+            if (this.redrawAttempts >= this.maximumRedrawAttempts) {
+                return console.error("Maximum redraw attempts reached. Room placement failed.");
+            }
+
+            this.redrawAttempts++;
+
+            let roomX = rand(this.minRoomSize, this.maxRoomSize);
+            let roomY = rand(this.minRoomSize, this.maxRoomSize);
+            let room = this.draw.rect(roomX, roomY).fill('white').stroke('black');
+
+            room.attr("x", rand(0, this.boardWidth - room.width()));
+            room.attr("y", rand(0, this.boardHeight - room.height()));
+
+            let roomCenter = this.draw.circle(5).fill('orange').center(room.cx(), room.cy());
+
+            for (let i = 0; i < this.rooms.length; i++) {
+                let otherRoom = this.rooms[i];
+                // if any rooms overlap with a 10 pixel margin, remove the room and redraw it
+                if (room.x() < otherRoom.x() + otherRoom.width() + this.options.clearance &&
+                        room.x() + room.width() > otherRoom.x() - this.options.clearance &&
+                        room.y() < otherRoom.y() + otherRoom.height() + this.options.clearance &&
+                        room.y() + room.height() > otherRoom.y() - this.options.clearance) {
+                        room.remove();
+                        roomCenter.remove();
+                        return this.drawRoom();
+                }
+            }
+
+            this.redrawAttempts = 0;
+
+            this.rooms.push(room);
+            this.roomCenters.push(roomCenter);
+            return room;
+        }
+
+        construct(roomCount, minRoomSize, maxRoomSize, options) {
+            this.roomCount = roomCount;
+            this.minRoomSize = minRoomSize;
+            this.maxRoomSize = maxRoomSize;
+
+            this.options = options || {};
+            this.options = {
+                clearance: options?.clearance || 10,
+                hallwayWidth: options?.hallwayWidth || 1,
+            }
+
+            for (let i = 0; i < this.roomCount; i++) {
+                let room = this.drawRoom();
+            }
+
+            let centerIndexes = new Array(this.roomCenters.length).fill(0).map((_, index) => index);
+
+            function weightedRand(spec) {
+                let i, sum=0, r=Math.random();
+                for (i in spec) {
+                    sum += spec[i];
+                    if (r <= sum) return i;
+                }
+            }
+
+            let startIndex = rand(0, this.roomCenters.length - 1);
+            let currentRoom = this.roomCenters[startIndex];
+            let startingRoom = this.roomCenters[startIndex];
+
+            currentRoom.fill('red')
+            centerIndexes[startIndex] = "empty";
+            
+            let drawLine = () => {
+                let closestCenter = null;
+                let closestDistance = Infinity;
+
+                for(let i = 0; i < centerIndexes.length; i++) {
+                    if(centerIndexes[i] === "empty") continue;
+                    let index = centerIndexes[i];
+                    let room = this.roomCenters[index] // error is here
+                    let distance = Math.sqrt(Math.pow(room.cx() - currentRoom.cx(), 2) + Math.pow(room.cy() - currentRoom.cy(), 2));
+                    if( distance < closestDistance) {
+                        closestDistance = distance;
+                        closestCenter = room;
+                    }
+                }
+
+                // draw a line from the current room to the closest center
+                let midX = (currentRoom.cx() + closestCenter.cx()) / 2;
+                let midY = (currentRoom.cy() + closestCenter.cy()) / 2;
+                let angle = (Math.atan2(closestCenter.cy() - currentRoom.cy(), closestCenter.cx() - currentRoom.cx())) * 180 / Math.PI + 90;
+
+                let outline = this.draw.rect(this.options.hallwayWidth + 2, closestDistance).fill('black').center(midX, midY).rotate(angle).attr("stroke", "black");
+                let corridor = this.draw.rect(this.options.hallwayWidth, closestDistance).fill('white').center(midX, midY).rotate(angle).attr("stroke", "white");
+
+                this.corridors.push(corridor);
+
+                centerIndexes[this.roomCenters.indexOf(closestCenter)] = "empty";
+                currentRoom = closestCenter;
+            }
+
+            while(centerIndexes.every((e) => e === "empty") === false) {
+                drawLine();
+            }
+
+            let midX = (currentRoom.cx() + startingRoom.cx()) / 2;
+            let midY = (currentRoom.cy() + startingRoom.cy()) / 2;
+            let angle = (Math.atan2(startingRoom.cy() - currentRoom.cy(), startingRoom.cx() - currentRoom.cx())) * 180 / Math.PI + 90;
+
+            let distance = Math.sqrt(Math.pow(startingRoom.cx() - currentRoom.cx(), 2) + Math.pow(startingRoom.cy() - currentRoom.cy(), 2));
+
+            let outline = this.draw.rect(this.options.hallwayWidth + 2, distance).fill('black').center(midX, midY).rotate(angle).attr("stroke", "black");
+            let corridor = this.draw.rect(this.options.hallwayWidth, distance).fill('white').center(midX, midY).rotate(angle).attr("stroke", "white");
+            this.corridors.push(corridor);
+
+            this.rooms.forEach((room) => {
+                room.front()
+            });
+
+            this.corridors.forEach((corridor) => {
+                corridor.front()
+            });
+
+            return this;
+        }
+
+        toString() {
+            let result = ["D\u200bU\u200bN\u200bG\u200bE\u200bO\u200bN["];
+
+            let roomString = [];
+            for(let i = 0; i < this.rooms.length; i++) {
+                let room = this.rooms[i];
+                let x = room.x().toString(36);
+                let y = room.y().toString(36);
+                let w = room.width().toString(36);
+                let h = room.height().toString(36);
+                roomString.push(`${x}${DungeonMaker.microDelim}${y}${DungeonMaker.microDelim}${w}${DungeonMaker.microDelim}${h}`);
+            }
+
+            result.push(roomString.join(DungeonMaker.macroDelim));
+
+
+            result.push("]");
+            console.log(result)
+        }
+    }
+
+    const board = document.getElementById("board");
+    let dungeon = new DungeonMaker(board)
+    .construct(10, 100, 130, {
+       clearance: 20,
+       hallwayWidth: 10,
+    });
+
+    dungeon.toString();
+
+    console.log(dungeon)
+
+</script>
