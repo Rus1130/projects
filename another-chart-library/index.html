@@ -17,11 +17,11 @@
 <script type="module">
     import { PieChart, BarChart, LineChart, Chart } from './main.js'
 
-    let bar = new BarChart('#bar-chart')
-    .setData("Motor Vehicle Deaths by Month (2021)", "Month", "Deaths", 1000, 4, 
-        ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-        [3099, 2561, 3214, 3557, 3768, 3789, 3879, 4013, 3861, 4101, 3599, 3498], "red"
-    )
+    let bar = new BarChart('#bar-chart').example()
+    // .setData("Motor Vehicle Deaths by Month (2021)", "Month", "Deaths", 1000, 4, 
+    //     ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    //     [3099, 2561, 3214, 3557, 3768, 3789, 3879, 4013, 3861, 4101, 3599, 3498], "red"
+    // )
 
     function generateGradientHexColors() {
         let startColor = "#ff0000";
@@ -150,6 +150,4 @@
     //         ],
     //     }
     // ])
-
-    console.log(bar, pie, line)
 </script>
