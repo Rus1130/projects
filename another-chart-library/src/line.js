@@ -56,12 +56,24 @@ export class LineChart_ {
         let yMeasureLines = []
 
         for(let i = 0; i < xMax - xMin + 1; i++){
-            xLabelText.push(Math.round((xMin + i) * 100) / 100)
+            try {
+                xLabelText.push(Math.round((xMin + i) * 100) / 100)
+            } catch(e) {
+                console.error(new Error('number too large;'));
+                this.error = true;
+            }
         }
 
         for(let i = 0; i < yMax - yMin + 1; i++){
-            yLabelText.push(Math.round((yMin + i) * 100) / 100)
+            try {
+                yLabelText.push(Math.round((yMin + i) * 100) / 100)
+            } catch(e) {
+                console.error(new Error('number too large;'));
+                this.error = true;
+            }   
         }
+
+        if(this.error) return;
         
         for(let i = 0; i < xLabelText.length; i++){
             if(i % xStep !== 0) continue;

@@ -52,11 +52,11 @@
         let yLength = largest - smallest;
 
 
-        console.log()
+        console.log(xLength, yLength)
 
         // round data.length to nearest 10
-        let xStep = 100;
-        let yStep = 100
+        let xStep = 10 ** (String(xLength).length - 1);
+        let yStep = 10 ** (String(yLength).length - 1);
 
         let line = new LineChart('#numbers')
         .setData(`number: ${num}`, 'X', 'Y', xStep, yStep, [
@@ -87,7 +87,7 @@
                 }
             }
         }
-        console.log(xStep, yStep, data)
+        console.log(xStep, yStep)
         document.getElementById('numbers').innerHTML = '';
     }
 
