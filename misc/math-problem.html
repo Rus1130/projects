@@ -11,7 +11,7 @@
     <div id="numbers"></div>
 </body>
 <script type="module">
-    import { Line2Chart } from 'https://rus1130.github.io/projects/another-chart-library/main.js'
+    import { LineChart } from 'https://rus1130.github.io/projects/another-chart-library/main.js'
 
 
     function makeNumber(n) {
@@ -58,7 +58,7 @@
         let xStep = (xLength - (xLength % 5)) / 5 + 1;
         let yStep = (yLength - (yLength % 5)) / 5 + 1
 
-        let line = new Line2Chart('#numbers')
+        let line = new LineChart('#numbers')
         .setData(`number: ${num}`, 'X', 'Y', xStep, yStep, [
             {
                 color: 'red',
