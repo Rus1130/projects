@@ -100,6 +100,8 @@ let line = new Chart('line')
     
             let xCenter = Chart.measureLines.xCenterLine;
             let yCenter = Chart.measureLines.yCenterLine;
+
+            this.error = false;
             
             // X Axis Label
             let xLabel = draw.text(xAxisLabel).font({ family: 'Helvetica', size: 16 })
@@ -179,6 +181,7 @@ let line = new Chart('line')
 
             // points
             let points = []
+            let hoverPoints = [];
             for(let i = 0; i < data.length; i++){
                 points.push([])
                 for(let j = 0; j < data[i].points.length; j++){
@@ -190,13 +193,31 @@ let line = new Chart('line')
                         .cx(x)
                         .cy(y)
 
+                        let hoverPoint = draw.circle(data[i].hoverPointRadius).fill('transparent')
+                        .cx(x)
+                        .cy(y)
+
+                        hoverPoint.on("mouseenter",function() {
+                            hoverPoint.fill(data[i].color)
+                        });
+
+                        hoverPoint.on("mouseleave",function() {
+                            hoverPoint.fill('transparent')
+                        });
+
+                        hoverPoints.push(hoverPoint)
+
                         points[points.length - 1].push(point)
                     } catch(e) {
                         if(xMeasureLines[0] == undefined) console.error(new Error('x value out of bounds; lower xStep'));
                         if(yMeasureLines[0] == undefined) console.error(new Error('y value out of bounds; lower yStep'));
+
+                        this.error = true;
                     }
                 }
             }
+
+            if(this.error) return console.error(new Error('Error: x or y value out of bounds'));
 
             for(let i = 0; i < data.length; i++){
                 let path = draw.path().fill('none').stroke({ width: data[i].lineWidth, color: data[i].color })
@@ -209,11 +230,9 @@ let line = new Chart('line')
                 path.plot(pathString)
             }
 
-            for(let i = 0; i < points.length; i++){
-                for(let j = 0; j < points[i].length; j++){
-                    points[i][j].front()
-                }
-            }
+            hoverPoints.forEach(point => {
+                point.front()
+            })
 
 
 
