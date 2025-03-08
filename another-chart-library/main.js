@@ -148,8 +148,7 @@ export class Chart {
             this.data = arguments[1];
             this.options = arguments[2];
             let chart = new classes[this.type](this.chartTitle, this.data, this.options);
-            let science = chart.science;
-            this.science = science;
+            this.science = chart.science;
         }
 
         if(this.type == 'line_legacy' || this.type == 'line'){
@@ -378,19 +377,6 @@ export class LineChart extends Chart {
     setData(chartTitle, yAxisLabel, xAxisLabel, xStep, yStep, data){
         super.setData(chartTitle, yAxisLabel, xAxisLabel, xStep, yStep, data)
         return this;
-    }
-
-    chartClassData() {
-        return {
-            type: Chart.type,
-            draw: Chart.draw,
-            measureLines: Chart.measureLines,
-            precision: Chart.precision,
-            fullScreen: Chart.fullScreen,
-            width: Chart.width,
-            height: Chart.height,
-            options: Chart.options,
-        }
     }
 
     example(){
