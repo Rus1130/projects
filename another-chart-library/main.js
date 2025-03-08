@@ -98,7 +98,7 @@ export class Chart {
             }
         }
 
-        if(this.type == 'line' || this.type == 'line2') {
+        if(this.type == 'line') {
             let h = options.height;
             let w = options.width;
             let p = Chart.precision;
@@ -131,33 +131,16 @@ export class Chart {
      * @description the arguments for the data, depending on the type of chart
      */
     setData(args) {
-        if(this.type == 'bar') {
-            this.chartTitle = arguments[0];
-            this.xAxisLabel = arguments[1];
-            this.yAxisLabel = arguments[2];
-            this.yStep = arguments[3];
-            this.xAxisData = arguments[4];
-            this.yAxisData = arguments[5];
-            this.barColor = arguments[6];
-            new Chart.classes[this.type](this.chartTitle, this.xAxisLabel, this.yAxisLabel, this.yStep, this.xAxisData, this.yAxisData, this.barColor);
+        switch(this.type) {
+            case "bar": [this.chartTitle, this.xAxisLabel, this.yAxisLabel, this.yStep, this.density, this.xAxisData, this.yAxisData, this.barColor] = arguments; break;
+            case "pie": [this.chartTitle, this.data, this.options] = arguments; break;
+            case "line": [this.chartTitle, this.xAxisLabel, this.yAxisLabel, this.xStep, this.yStep, this.data] = arguments; break;
         }
 
-        if(this.type == 'pie') {
-            this.chartTitle = arguments[0];
-            this.data = arguments[1];
-            this.options = arguments[2];
-            let chart = new Chart.classes[this.type](this.chartTitle, this.data, this.options);
-            this.science = chart.science;
-        }
+        let chart = new Chart.classes[this.type](...arguments);
 
-        if(this.type == 'line_legacy' || this.type == 'line'){
-            this.chartTitle = arguments[0]
-            this.yAxisLabel = arguments[1]
-            this.xAxisLabel = arguments[2]
-            this.xStep = arguments[3]
-            this.yStep = arguments[4]
-            this.data = arguments[5]
-            new Chart.classes[this.type](this.chartTitle, this.xAxisLabel, this.yAxisLabel, this.xStep, this.yStep, this.data)
+        switch(this.type) {
+            case "pie": this.science = chart.science; break;
         }
 
         return this;
