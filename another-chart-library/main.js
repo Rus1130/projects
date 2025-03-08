@@ -48,6 +48,11 @@ export class Chart {
      * @param {object} options        options for the chart
      * @param {number} options.width  width of the chart
      * @param {number} options.height height of the chart
+     * @example
+     * // using a query selector
+     * chart.appendTo('#chart', { width: 500, height: 500 })
+     * // using a DOM element
+     * chart.appendTo(document.getElementById('chart'), { width: 500, height: 500 })
      */
     appendTo(element, options) {
         options = options || {};
