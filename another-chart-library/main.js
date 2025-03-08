@@ -3,12 +3,6 @@ import { BarChart_ } from './src/bar.js';
 import { PieChart_ } from './src/pie.js';
 import { LineChart_ } from './src/line.js';
 
-const classes = {
-    'bar': BarChart_,
-    'pie': PieChart_,
-    'line': LineChart_
-}
-
 /**
  * @class Chart
  * @classdesc Create different types of charts from the given data. You can currently create {@link Chart.BarChart|bar charts}, {@link Chart.LineChart|line charts}, and {@link Chart.PieChart|pie charts}.
@@ -17,6 +11,11 @@ const classes = {
  * let chart = new Chart('bar')
  */
 export class Chart {
+    static classes = {
+        'bar': BarChart_,
+        'pie': PieChart_,
+        'line': LineChart_
+    }
     static type = ''
     static draw = null;
     static measureLines = []
@@ -36,7 +35,7 @@ export class Chart {
     }
 
     constructor(type) {
-        if(!Object.keys(classes).includes(type)) throw new Error('Invalid chart type');
+        if(!Object.keys(Chart.classes).includes(type)) throw new Error('Invalid chart type');
         this.type = type;
         Chart.type = type;
     }
@@ -140,14 +139,14 @@ export class Chart {
             this.xAxisData = arguments[4];
             this.yAxisData = arguments[5];
             this.barColor = arguments[6];
-            new classes[this.type](this.chartTitle, this.xAxisLabel, this.yAxisLabel, this.yStep, this.xAxisData, this.yAxisData, this.barColor);
+            new Chart.classes[this.type](this.chartTitle, this.xAxisLabel, this.yAxisLabel, this.yStep, this.xAxisData, this.yAxisData, this.barColor);
         }
 
         if(this.type == 'pie') {
             this.chartTitle = arguments[0];
             this.data = arguments[1];
             this.options = arguments[2];
-            let chart = new classes[this.type](this.chartTitle, this.data, this.options);
+            let chart = new Chart.classes[this.type](this.chartTitle, this.data, this.options);
             this.science = chart.science;
         }
 
@@ -158,7 +157,7 @@ export class Chart {
             this.xStep = arguments[3]
             this.yStep = arguments[4]
             this.data = arguments[5]
-            new classes[this.type](this.chartTitle, this.xAxisLabel, this.yAxisLabel, this.xStep, this.yStep, this.data)
+            new Chart.classes[this.type](this.chartTitle, this.xAxisLabel, this.yAxisLabel, this.xStep, this.yStep, this.data)
         }
 
         return this;
@@ -380,7 +379,7 @@ export class LineChart extends Chart {
     }
 
     example(){
-        super.setData("Average Stock Prices (2000 - 2022)", 'Year', 'Price', 5, 10, [
+        super.setData("Average Stock Prices (2000 - 2022)", 'Year', 'Price', 2, 10, [
             {
                 color: 'red',
                 label: 'Apple',
