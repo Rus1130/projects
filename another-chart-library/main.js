@@ -17,7 +17,6 @@ const classes = {
  * let chart = new Chart('bar')
  */
 export class Chart {
-    static SVGData = ''
     static type = ''
     static draw = null;
     static measureLines = []
@@ -39,6 +38,7 @@ export class Chart {
     constructor(type) {
         if(!Object.keys(classes).includes(type)) throw new Error('Invalid chart type');
         this.type = type;
+        Chart.type = type;
     }
 
     /**
@@ -57,8 +57,7 @@ export class Chart {
 
         Chart.options = options;
 
-        this.draw = SVG().addTo(element).size(options.width, options.height);
-        options.draw = this.draw
+        Chart.draw = SVG().addTo(element).size(options.width, options.height);
         
 
         if(this.type == 'bar') {
@@ -66,14 +65,14 @@ export class Chart {
             let w = options.width;
             let p = Chart.precision;
 
-            let xAxisLine = this.draw.line(h / p, h - h / p, w - 50, h - h / p).stroke({ width: 1, color: '#000' });
-            let yAxisLine = this.draw.line(w / p, 50, w / p, h - h / p).stroke({ width: 1, color: '#000' });
+            let xAxisLine = Chart.draw.line(h / p, h - h / p, w - 50, h - h / p).stroke({ width: 1, color: '#000' });
+            let yAxisLine = Chart.draw.line(w / p, 50, w / p, h - h / p).stroke({ width: 1, color: '#000' });
 
-            let rect = this.draw.rect(xAxisLine.attr('x2') - yAxisLine.attr('x1'), xAxisLine.attr('y1'))
+            let rect = Chart.draw.rect(xAxisLine.attr('x2') - yAxisLine.attr('x1'), xAxisLine.attr('y1'))
             .move(yAxisLine.attr('x1'), yAxisLine.attr('y1')).fill('none')
 
-            let xCenterLine = this.draw.line(rect.attr('x') + rect.attr('width') / 2, rect.attr('y'), rect.attr('x') + rect.attr('width') / 2, h - yAxisLine.attr('x1')).stroke('none')
-            let yCenterLine = this.draw.line(yAxisLine.attr('x1') + 15, rect.attr('y') + rect.attr('height') / 2, w - 5, rect.attr('y') + rect.attr('height') / 2).stroke('none');
+            let xCenterLine = Chart.draw.line(rect.attr('x') + rect.attr('width') / 2, rect.attr('y'), rect.attr('x') + rect.attr('width') / 2, h - yAxisLine.attr('x1')).stroke('none')
+            let yCenterLine = Chart.draw.line(yAxisLine.attr('x1') + 15, rect.attr('y') + rect.attr('height') / 2, w - 5, rect.attr('y') + rect.attr('height') / 2).stroke('none');
 
             Chart.measureLines = {
                 xAxisLine: xAxisLine,
@@ -85,10 +84,10 @@ export class Chart {
         }
 
         if(this.type == 'pie'){
-            let xCenterLine = this.draw.line(options.width / 2, 0, options.width / 2, options.height).stroke('none');
-            let yCenterLine = this.draw.line(0, options.height / 2, options.width, options.height / 2).stroke('none');
+            let xCenterLine = Chart.draw.line(options.width / 2, 0, options.width / 2, options.height).stroke('none');
+            let yCenterLine = Chart.draw.line(0, options.height / 2, options.width, options.height / 2).stroke('none');
             
-            let circle = this.draw.circle(options.width / 2)
+            let circle = Chart.draw.circle(options.width / 2)
             .cx(options.width / 2)
             .cy(options.height / 2)
             .fill('none')
@@ -105,14 +104,14 @@ export class Chart {
             let w = options.width;
             let p = Chart.precision;
 
-            let xAxisLine = this.draw.line(h / p, h - h / p, w - 100, h - h / p).stroke({ width: 1, color: '#000' });
-            let yAxisLine = this.draw.line(w / p, 50, w / p, h - h / p).stroke({ width: 1, color: '#000' });
+            let xAxisLine = Chart.draw.line(h / p, h - h / p, w - 100, h - h / p).stroke({ width: 1, color: '#000' });
+            let yAxisLine = Chart.draw.line(w / p, 50, w / p, h - h / p).stroke({ width: 1, color: '#000' });
 
-            let rect = this.draw.rect(xAxisLine.attr('x2') - yAxisLine.attr('x1'), xAxisLine.attr('y1'))
+            let rect = Chart.draw.rect(xAxisLine.attr('x2') - yAxisLine.attr('x1'), xAxisLine.attr('y1'))
             .move(yAxisLine.attr('x1'), yAxisLine.attr('y1')).fill('none')
 
-            let xCenterLine = this.draw.line(rect.attr('x') + rect.attr('width') / 2, rect.attr('y'), rect.attr('x') + rect.attr('width') / 2, h - yAxisLine.attr('x1')).stroke('none')
-            let yCenterLine = this.draw.line(yAxisLine.attr('x1') + 15, rect.attr('y') + rect.attr('height') / 2, w - 5, rect.attr('y') + rect.attr('height') / 2).stroke('none');
+            let xCenterLine = Chart.draw.line(rect.attr('x') + rect.attr('width') / 2, rect.attr('y'), rect.attr('x') + rect.attr('width') / 2, h - yAxisLine.attr('x1')).stroke('none')
+            let yCenterLine = Chart.draw.line(yAxisLine.attr('x1') + 15, rect.attr('y') + rect.attr('height') / 2, w - 5, rect.attr('y') + rect.attr('height') / 2).stroke('none');
 
             Chart.measureLines = {
                 xAxisLine: xAxisLine,
@@ -213,6 +212,26 @@ export class PieChart extends Chart {
         super.setData(chartTitle, data, options);
         return this;
     }
+
+    example() {
+        super.setData("Favorite Color", [
+            { arc: 42, color: 'blue', label: 'Blue' },
+            { arc: 14, color: 'green', label: 'Green' },
+            { arc: 14, color: 'purple', label: 'Purple' },
+            { arc: 8, color: 'red', label: "Red"},
+            { arc: 7, color: 'black', label: "Black"},
+            { arc: 5, color: 'orange', label: 'Orange'},
+            { arc: 10, color: 'grey', label: "Other"},
+        ], {
+            popAmount: 4,
+            showPercentages: true,
+            donut: true,
+            sliceOutlineWidth: 1,
+            sliceOutlineColor: 'white'
+        })
+
+        return this;
+    }
 }
 
 export class BarChart extends Chart {
@@ -246,6 +265,14 @@ export class BarChart extends Chart {
     */
     setData(chartTitle, xAxisLabel, yAxisLabel, step, xAxisData, yAxisData, barColor) {
         super.setData(chartTitle, xAxisLabel, yAxisLabel, step, xAxisData, yAxisData, barColor);
+        return this;
+    }
+
+    example() {
+        super.setData("Motor Vehicle Deaths by Month (2021)", "Month", "Deaths", 1000, 4, 
+            ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            [3099, 2561, 3214, 3557, 3768, 3789, 3879, 4013, 3861, 4101, 3599, 3498], '#4285f4'
+        )
         return this;
     }
 }
@@ -350,6 +377,91 @@ export class LineChart extends Chart {
     */
     setData(chartTitle, yAxisLabel, xAxisLabel, xStep, yStep, data){
         super.setData(chartTitle, yAxisLabel, xAxisLabel, xStep, yStep, data)
+        return this;
+    }
+
+    chartClassData() {
+        return {
+            type: Chart.type,
+            draw: Chart.draw,
+            measureLines: Chart.measureLines,
+            precision: Chart.precision,
+            fullScreen: Chart.fullScreen,
+            width: Chart.width,
+            height: Chart.height,
+            options: Chart.options,
+        }
+    }
+
+    example(){
+        super.setData("Average Stock Prices (2000 - 2022)", 'Year', 'Price', 5, 10, [
+            {
+                color: 'red',
+                label: 'Apple',
+                pointRadius: 5,
+                lineWidth: 2,
+                hoverPointRadius: 7,
+                pointLabels: true,
+                points: [
+                    [2000, 0.6937],
+                    [2001, 0.3068],
+                    [2002, 0.2905],
+                    [2003, 0.2814],
+                    [2004, 0.5391],
+                    [2005, 1.4167],
+                    [2006, 2.1492],
+                    [2007, 3.8933],
+                    [2008, 4.3092],
+                    [2009, 4.4560],
+                    [2010, 7.8866],
+                    [2011, 11.0480],
+                    [2012, 17.5266],
+                    [2013, 14.6700],
+                    [2014, 20.5310],
+                    [2015, 27.1667],
+                    [2016, 24.1638],
+                    [2017, 35.4349],
+                    [2018, 45.1771],
+                    [2019, 50.5541],
+                    [2020, 93.6424],
+                    [2021, 139.3947],
+                    [2022, 153.9328],
+                ],
+            }, {
+                color: 'blue',
+                label: 'Microsoft',
+                pointRadius: 2,
+                lineWidth: 1,
+                hoverPointRadius: 4,
+                pointLabels: false,
+                points: [
+                    [2000, 23.8554],
+                    [2001, 19.5747],
+                    [2002, 17.0729],
+                    [2003, 16.4050],
+                    [2004, 17.3987],
+                    [2005, 18.3417],
+                    [2006, 18.8863],
+                    [2007, 22.1793],
+                    [2008, 19.6798],
+                    [2009, 17.3973],
+                    [2010, 20.8738],
+                    [2011, 20.5793],
+                    [2012, 24.2010],
+                    [2013, 27.1941],
+                    [2014, 36.5584],
+                    [2015, 41.2965],
+                    [2016, 50.1958],
+                    [2017, 67.0252],
+                    [2018, 95.8759],
+                    [2019, 125.5735],
+                    [2020, 187.8096],
+                    [2021, 271.0883],
+                    [2022, 266.2800],
+                ],
+            }
+        ])
+
         return this;
     }
 }

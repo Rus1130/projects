@@ -5,7 +5,7 @@ export class LineChart_ {
     constructor(chartTitle, yAxisLabel, xAxisLabel, xStep, yStep, data){
         if(yStep <= 0) return console.error(new Error('yStep must be greater than 0'))
         if(xStep <= 0) return console.error(new Error('xStep must be greater than 0'))
-        let draw = Chart.options.draw
+        let draw = Chart.draw
         this.data = data;
 
         let xLine = Chart.measureLines.xAxisLine;

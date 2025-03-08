@@ -2,7 +2,7 @@ import { Chart } from '../main.js';
 
 export class BarChart_ {
     constructor(chartTitle, xAxisLabel, yAxisLabel, step, density, xAxisData, yAxisData, barColor) {
-        let draw = Chart.options.draw
+        let draw = Chart.draw
 
         barColor = barColor || '#4285f4';
 

@@ -40,7 +40,7 @@ export class PieChart_ {
             };
         }
 
-        let draw = Chart.options.draw
+        let draw = Chart.draw
         this.data = data;
 
         let totalArc = 0;
