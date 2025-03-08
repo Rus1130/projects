@@ -55,8 +55,8 @@
         console.log()
 
         // round data.length to nearest 10
-        let xStep = (xLength - (xLength % 5)) / 5 + 1;
-        let yStep = (yLength - (yLength % 5)) / 5 + 1
+        let xStep = 100;
+        let yStep = 100
 
         let line = new LineChart('#numbers')
         .setData(`number: ${num}`, 'X', 'Y', xStep, yStep, [
@@ -87,6 +87,7 @@
                 }
             }
         }
+        console.log(xStep, yStep, data)
         document.getElementById('numbers').innerHTML = '';
     }
 

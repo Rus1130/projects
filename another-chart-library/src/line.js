@@ -64,6 +64,7 @@ export class LineChart_ {
         }
         
         for(let i = 0; i < xLabelText.length; i++){
+            if(i % xStep !== 0) continue;
             let x = (xLine.attr('x1') + xMeasureStep * (xLabelText[i] - xMin)) //+ xMeasureStep/2
             let y = xLine.attr('y1')
             let line = draw.line(x, y, x, y + 5).stroke({ width: 1, color: '#8e8e8e' })
@@ -79,6 +80,7 @@ export class LineChart_ {
         }
 
         for(let i = 0; i < yLabelText.length; i++){
+            if(i % yStep !== 0) continue;
             let x = yLine.attr('x1')
             let y = yLine.attr('y2') + yMeasureStep * i
 
@@ -92,19 +94,6 @@ export class LineChart_ {
             yTickLines.push(line)
             yMeasureLines.push(measureLine)
             yLabels.push(text)
-        }
-
-        for (let i = 0; i < xLabelText.length; i++) {
-            let shouldShow = i % xStep === 0;
-            xTickLines[i][shouldShow ? 'show' : 'hide']();
-            xLabels[i][shouldShow ? 'show' : 'hide']();
-        }
-
-        for (let i = 0; i < yLabelText.length; i++) {
-            let shouldShow = i % yStep === 0;
-            yTickLines[i][shouldShow ? 'show' : 'hide']();
-            yLabels[i][shouldShow ? 'show' : 'hide']();
-            yMeasureLines[i][shouldShow ? 'show' : 'hide']();
         }
 
         // points
