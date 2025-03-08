@@ -29,111 +29,118 @@
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    const depth = rand(3, 7);
-    const petalCount = rand(3, 10);
-
-    const color = {
-        h: rand(0, 360),
-        s: 100,
-        l: rand(30, 70)
-    }
-
-    while(color.h - (10 * depth) <= 0){
-        color.h = rand(0, 360);
-    }
-
-    while(color.l + (4 * depth) >= 70){
-        color.l = rand(30, 70);
-    }
-
-    const colorCopy = JSON.parse(JSON.stringify(color));
-
-    const flowerExportObject = {
-        color: colorCopy,
-        depth: depth,
-        petalCount: petalCount,
-    }
-
-    
-    function returnColor() {
-        return `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
-    }
-
-    function varyColor(depth) {
-        color.h -= 10;
-        color.s -= 7;
-        color.l += 4;
-    }
-
-    let petals = [];
-
-    function createPetal(x, y, color, size, theta){
-        let ellipse = two.makeEllipse(two.width / 2, (two.height / 2) - 200, 100 - (size * (100/depth)), 200 - (size * (200/depth)));
-
-        ellipse.fill = color;
-        ellipse.stroke = 'none';
-
-        ellipse.position._x = Math.cos((theta / petalCount) * Math.PI * 2) * 200 + two.width / 2;
-        ellipse.position._y = Math.sin((theta / petalCount) * Math.PI * 2) * 200 + two.height / 2;
+    function createFlower(h, l, depth, petalCount){
         
-        let pointPosX = Math.cos((theta / petalCount) * Math.PI * 2) * 200 + two.width / 2;
-        let pointPosY = Math.sin((theta / petalCount) * Math.PI * 2) * 200 + two.height / 2;
+        two.clear();
 
-        //let point = two.makeCircle(pointPosX, pointPosY, 5);
-
-        let centerPointX = two.width / 2;
-        let centerPointY = two.height / 2;
-
-        let angle = Math.atan2(pointPosY - centerPointY, pointPosX - centerPointX);
-
-        ellipse.rotation = angle + Math.PI / 2;
-
-        petals.push(ellipse);
-
-        if(size > 0){
-            ellipse.position._x = Math.cos((theta / petalCount) * Math.PI * 2) * (200 - (size * (200/depth))) + two.width / 2;
-            ellipse.position._y = Math.sin((theta / petalCount) * Math.PI * 2) * (200 - (size * (200/depth))) + two.height / 2;
+        const color = {
+            h: h, // rand(0, 360),
+            s: 100,
+            l: l //rand(30, 70)
         }
+
+        while(color.h - (10 * depth) <= 0){
+            color.h = rand(0, 360);
+        }
+
+        while(color.l + (4 * depth) >= 70){
+            color.l = rand(30, 70);
+        }
+
+        const colorCopy = JSON.parse(JSON.stringify(color));
+        
+        function returnColor() {
+            return `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
+        }
+
+        function varyColor(depth) {
+            color.h -= 10;
+            color.s -= 7;
+            color.l += 4;
+        }
+
+        let petals = [];
+
+        function createPetal(x, y, color, size, theta){
+            let ellipse = two.makeEllipse(two.width / 2, (two.height / 2) - 200, 100 - (size * (100/depth)), 200 - (size * (200/depth)));
+
+            ellipse.fill = color;
+            ellipse.stroke = 'none';
+
+            ellipse.position._x = Math.cos((theta / petalCount) * Math.PI * 2) * 200 + two.width / 2;
+            ellipse.position._y = Math.sin((theta / petalCount) * Math.PI * 2) * 200 + two.height / 2;
+            
+            let pointPosX = Math.cos((theta / petalCount) * Math.PI * 2) * 200 + two.width / 2;
+            let pointPosY = Math.sin((theta / petalCount) * Math.PI * 2) * 200 + two.height / 2;
+
+            //let point = two.makeCircle(pointPosX, pointPosY, 5);
+
+            let centerPointX = two.width / 2;
+            let centerPointY = two.height / 2;
+
+            let angle = Math.atan2(pointPosY - centerPointY, pointPosX - centerPointX);
+
+            ellipse.rotation = angle + Math.PI / 2;
+
+            petals.push(ellipse);
+
+            if(size > 0){
+                ellipse.position._x = Math.cos((theta / petalCount) * Math.PI * 2) * (200 - (size * (200/depth))) + two.width / 2;
+                ellipse.position._y = Math.sin((theta / petalCount) * Math.PI * 2) * (200 - (size * (200/depth))) + two.height / 2;
+            }
+        }
+
+        for(i = 0; i < depth; i++){
+            for(j = 0; j < petalCount; j++){
+                createPetal(two.width / 2, (two.height / 2) - 200, returnColor(), i, j);
+            }
+            varyColor();
+        }
+
+        let centerDot = two.makeCircle(two.width / 2, two.height / 2, petals[petals.length-1].height / 4);
+        centerDot.stroke = 'none';
+        centerDot.fill = `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
+
+        const flowerExportObject = {
+            color: colorCopy,
+            depth: depth,
+            petalCount: petalCount,
+        }
+
+        return flowerExportObject;
     }
 
-
-    for(i = 0; i < depth; i++){
-        for(j = 0; j < petalCount; j++){
-            createPetal(two.width / 2, (two.height / 2) - 200, returnColor(), i, j);
-        }
-        varyColor();
-    }
-
-    let centerDot = two.makeCircle(two.width / 2, two.height / 2, petals[petals.length-1].height / 4);
-    centerDot.stroke = 'none';
-    centerDot.fill = `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
-
-    function encodeFlower(){
+    function encodeFlower(obj){
         let result = '';
-        // base 10 to base 36
-        result += flowerExportObject.color.h.toString(36).padStart(2, '0');
-        result += flowerExportObject.color.l.toString(36).padStart(2, '0');
-        result += flowerExportObject.depth.toString(36);
-        result += flowerExportObject.petalCount.toString(36);
+        result += obj.color.h.toString(36).padStart(2, '0');
+        result += obj.color.l.toString(36).padStart(2, '0');
+        result += obj.depth.toString(36).padStart(2, '0');
+        result += obj.petalCount.toString(36).padStart(2, '0');
 
         return result;
     }
 
+    let flower = createFlower(rand(0, 360), rand(30, 70), rand(3, 7), rand(7, 10));
+
     function decodeFlower(key){
+        let array = key.match(/.{1,2}/g);
+        console.log(array)
         let object = {
             color: {
-                h: parseInt(key.substring(0, 2), 36),
+                h: parseInt(array[0], 36),
                 s: 100,
-                l: parseInt(key.substring(2, 4), 36)
+                l: parseInt(array[1], 36)
             },
-            depth: parseInt(key.substring(4, 5), 36),
-            petalCount: parseInt(key.substring(5, 6), 36)
+            depth: parseInt(array[2], 36),
+            petalCount: parseInt(array[3], 36)
         };
 
         return object;
     }
 
-    keyDisplay.textContent = encodeFlower();
+    //createFlower(decodedFlower.h, decodedFlower.l, decodedFlower.depth, decodedFlower.petalCount);
+
+    keyDisplay.textContent = encodeFlower(flower);
 </script>
 
 
