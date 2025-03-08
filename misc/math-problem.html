@@ -1,5 +1,5 @@
 <style>
-    #chart {
+    #numbers {
         border: 1px solid black;
         display: inline-block;
     }
@@ -8,10 +8,11 @@
     
 </head>
 <body>
-    <div id="chart"></div>
+    <div id="numbers"></div>
 </body>
 <script type="module">
     import { Line2Chart } from 'https://rus1130.github.io/projects/another-chart-library/main.js'
+
 
     function makeNumber(n) {
         let result = [];
@@ -39,7 +40,7 @@
         });
     }
 
-    let num = 1;
+    let num = 2;
 
     while(true){
         let data = new Array(makeNumber(num).length).fill(0).map((_, i) => [i+1, makeNumber(num)[i]])
@@ -50,14 +51,14 @@
         let xLength = data.length;
         let yLength = largest - smallest;
 
-        console.log(String(yLength).length*5)
 
+        console.log()
 
         // round data.length to nearest 10
-        let xStep = 10;
-        let yStep = 10;
+        let xStep = (xLength - (xLength % 5)) / 5 + 1;
+        let yStep = (yLength - (yLength % 5)) / 5 + 1
 
-        let line = new Line2Chart('#chart')
+        let line = new Line2Chart('#numbers')
         .setData(`number: ${num}`, 'X', 'Y', xStep, yStep, [
             {
                 color: 'red',
@@ -75,7 +76,7 @@
         if (key === "ArrowRight") {
             num++; // Decrease num on Spacebar
         } else if (key === "ArrowLeft") {
-            if(num > 1) num--;
+            if(num > 2) num--;
         } else if(key === "Enter") {
             let newNum = prompt("Enter a number");
             if(newNum != null) {
@@ -86,7 +87,7 @@
                 }
             }
         }
-        document.getElementById('chart').innerHTML = '';
+        document.getElementById('numbers').innerHTML = '';
     }
 
         

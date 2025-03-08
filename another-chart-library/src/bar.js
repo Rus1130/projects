@@ -1,24 +1,5 @@
 import { Chart } from '../main.js';
 
-/**
- * @class BarChart
- * @memberof Chart
- * @param {string}            chartTitle title of the chart
- * @param {string}            xAxisLabel label for the x axis
- * @param {string}            yAxisLabel label for the y axis
- * @param {number}            step       step value
- * @param {number}            density    how many minor lines to draw
- * @param {string[]|number[]} xAxisData  data for the x axis
- * @param {string[]|number[]} yAxisData  data for the y axis
- * @param {string}            [barColor] color of the bars
- * @example
-    let bar = new Chart('bar')
-    .appendTo("#bar-chart")
-    .setData("Motor Vehicle Deaths by Month (2021)", "Month", "Deaths", 1000, 4, 
-        ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-        [3099, 2561, 3214, 3557, 3768, 3789, 3879, 4013, 3861, 4101, 3599, 3498]
-    )
-*/
 export class BarChart_ {
     constructor(chartTitle, xAxisLabel, yAxisLabel, step, density, xAxisData, yAxisData, barColor) {
         let draw = Chart.options.draw
@@ -114,10 +95,6 @@ export class BarChart_ {
         }
 
         // title
-        draw.text().tspan(chartTitle).fill('#8e8e8e')
-        .y(10)
-        .x(10)
-        .font({ family: 'Helvetica', size: Chart.options.height / 30  })
-
+        Chart.setTitle(draw, chartTitle);
     }
 }

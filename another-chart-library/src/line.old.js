@@ -18,9 +18,9 @@ import { PathArray } from 'https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.1.2/s
  * @param {boolean}           data[].pointLabels whether or not to show the point labels
  * @description Has trouble with extremely small numbers (<0)
  * @example
-let line = new Chart('line')
+    let line = new Chart('line')
     .appendTo('#line-chart')
-    .setData("Average Stock Prices (2000 - 2022)", 'Year', 'Price', 1, 10, [
+    .setData("Average Stock Prices (2000 - 2022)", 'Year', 'Price', 10, [
         {
             color: 'red',
             label: 'Apple',
@@ -88,7 +88,7 @@ let line = new Chart('line')
         }
     ])
  */
-    export class Line2Chart_ {
+    export class Line_legacy_Chart_ {
         constructor(chartTitle, yAxisLabel, xAxisLabel, xStep, yStep, data){
             if(yStep <= 0) return console.error(new Error('yStep must be greater than 0'))
             if(xStep <= 0) return console.error(new Error('xStep must be greater than 0'))
@@ -100,8 +100,6 @@ let line = new Chart('line')
     
             let xCenter = Chart.measureLines.xCenterLine;
             let yCenter = Chart.measureLines.yCenterLine;
-
-            this.error = false;
             
             // X Axis Label
             let xLabel = draw.text(xAxisLabel).font({ family: 'Helvetica', size: 16 })
@@ -125,8 +123,8 @@ let line = new Chart('line')
                 }
             }
             
-            let yMax = Math.max(...[0].concat(yData)) + yStep
-            let yMin = Math.floor(Math.min(...new Array(1).fill(0).concat(yData)) - (yStep - (Math.min(...new Array(1).fill(0).concat(yData)) % yStep)) + yStep)
+            let yMax = Math.max(...yData) + yStep
+            let yMin = Math.floor(Math.min(...yData) - (yStep - (Math.min(...yData) % yStep)) + yStep)
             let yMeasureStep = (yLine.attr('y1') - yLine.attr('y2')) / (yMax - yMin)
             let yMeasureCount = 0;
 
@@ -135,118 +133,139 @@ let line = new Chart('line')
             let xMeasureStep = (xLine.attr('x2') - xLine.attr('x1')) / (xMax - xMin)
             let xMeasureCount = 0;
 
-            let xLabelText = [];
-            let yLabelText = [];
 
-            for(let i = xMin; i < xMax; i += 1){
-                xLabelText.push(i)
+            for(let i = yMin; i < yMax; i += yStep ) {
+                if(i < yMin) continue;
+                
+                let measureLine = draw.line(
+                    yLine.attr('x1') - 5, 
+                    xLine.attr('y1') + ((i-1) * yMeasureStep),  
+                    yLine.attr('x1') + 5, 
+                    xLine.attr('y1') + ((i-1) * yMeasureStep)
+                ).stroke({ width: 1, color: '#000' })
+
+
+
+                if(i == 0) measureLine.attr("x2",measureLine.attr('x2') - 5)
+                
+                let text = i.toString()
+                if(text.split('.')[1] && text.split('.')[1].length > 2) text = Math.round(i * 100) / 100
+
+                let measureLabel = draw.text().tspan(text).fill('#5C5858').font({ family: 'Helvetica', size: 8 })
+                
+                measureLabel.x(measureLine.attr('x1') - measureLabel.bbox().width - 2)
+                .y(measureLine.attr('y1') - measureLabel.bbox().height / 2)
+
+
+                //horizontal lines
+                draw.line(measureLine.attr('x2'), measureLine.attr('y1'), xLine.attr('x2'), measureLine.attr('y1'))
+                .stroke({ width: 1, color: '#DCDCDC' })
+
+                yMeasureCount++;
             }
 
-            for(let i = yMin; i < yMax; i += 1){
-                yLabelText.push(i)
-            }
+            let measureLineArray = []
+            let textArray = []
 
-            let xMeasureLines = [];
-            let yMeasureLines = [];
-            
-            for(let i = 0; i < xLabelText.length; i++){
-                if(i % xStep !== 0) continue;
-                let x = (xLine.attr('x1') + xMeasureStep * (xLabelText[i] - xMin)) + xMeasureStep/2
-                let y = xLine.attr('y1')
-                let line = draw.line(x, y, x, y + 5).stroke({ width: 1, color: '#8e8e8e' })
+            for(let i = xMin; i < xMax; i += xStep ) {
+                if(i < xMin) continue;
+                let measureLine = draw.line(yLine.attr('x1') + xMeasureStep * (i - xMin), xLine.attr('y1'), yLine.attr('x1') + xMeasureStep * (i - xMin), xLine.attr('y1') + 5)
+                .stroke({ width: 1, color: '#000' })
 
-                let text = draw.text(xLabelText[i]).font({ family: 'Helvetica', size: 10, color: "black" });
+                measureLine.attr('y1', measureLine.attr('y1') - 1.5)
+                measureLine.attr('y2', measureLine.attr('y2') + 1.5)
+                let measureLabel = draw.text(i.toString()).font({ family: 'Helvetica', size: 10 })
 
-                text.x(x - text.bbox().width / 2)
-                .y(y + 10)
+                measureLabel.x(yLine.attr('x1') + xMeasureStep * (i - xMin) - measureLabel.bbox().width / 2)
+                .y(measureLine.attr('y1') + measureLabel.bbox().height + 2)
+                .dx(-5)
+                .dy(5)
                 .rotate(-45)
 
-                xMeasureLines.push(line)
+                measureLineArray.push(measureLine)
+                textArray.push(measureLabel)
+                
+                xMeasureCount++;
             }
 
-            for(let i = 0; i < yLabelText.length; i++){
-                if(i % yStep !== 0) continue;
-                let x = yLine.attr('x1')
-                let y = yLine.attr('y2') + yMeasureStep * i
+            xLabel.y(xLabel.y() + 14)
 
-                let measureLine = draw.line(x, y, xLine.attr('x2'), y).stroke({ width: 1, color: '#dcdcdc' })
-                let line = draw.line(x + 5, y, x - 5, y).stroke({ width: 1, color: '#000' })
-                let text = draw.text(yLabelText[i]).font({ family: 'Helvetica', size: 10, color: "black" });
-
-                text.x(x - text.bbox().width - 10)
-                .y(y - text.bbox().height / 2)
-
-                yMeasureLines.push(line)
+            function plot(x, y, color, r){
+                try {
+                    let point = draw.circle(r).fill(color)
+                    point.cx(measureLineArray[0].attr('x1') + (xData.indexOf(x) * xMeasureStep))
+                    let yPlot = (measureLineArray[0].attr('y1') + 6) + y * yMeasureStep
+    
+                    yPlot > xLine.attr('y1') ? yPlot = xLine.attr('y1') - 1 : yPlot = yPlot
+    
+                    point.cy(yPlot)
+                    return point
+                } catch(e) {
+                    console.error(new Error('Data point out of bounds'))
+                }
             }
 
-            // points
             let points = []
-            let hoverPoints = [];
+            let pointLabels = []
+            let hoverPoints = []
+            let error = false;
             for(let i = 0; i < data.length; i++){
+                let line = data[i]
                 points.push([])
-                for(let j = 0; j < data[i].points.length; j++){
+                for(let j = 0; j < line.points.length; j++){
                     try {
-                        let x = xMeasureLines[0].attr('x1') + xMeasureStep * (data[i].points[j][0] - xMin)
-                        let y = yMeasureLines[0].attr('y1') + yMeasureStep * (data[i].points[j][1] - yMin)
+                        let point = plot(line.points[j][0], line.points[j][1], line.color, line.pointRadius)
 
-                        let point = draw.circle(data[i].pointRadius).fill(data[i].color)
-                        .cx(x)
-                        .cy(y)
+                        let hoverPoint = draw.circle(line.hoverPointRadius).fill('transparent')
 
-                        let hoverPoint = draw.circle(data[i].hoverPointRadius).fill('transparent')
-                        .cx(x)
-                        .cy(y)
+
+                        let hoverText = draw.text(line.points[j][1]).font({ family: 'Helvetica', size: 12 })
+                        .cx(point.attr('cx')).cy(point.attr('cy') - (line.hoverPointRadius + 4)).fill('black')
+
+                        hoverText.hide()
+
+                        hoverPoint.cx(point.attr('cx'))
+                        hoverPoint.cy(point.attr('cy'))
 
                         hoverPoint.on("mouseenter",function() {
-                            hoverPoint.fill(data[i].color)
+                            hoverPoint.fill(line.color)
+                            if(line.pointLabels) hoverText.show();
                         });
 
                         hoverPoint.on("mouseleave",function() {
                             hoverPoint.fill('transparent')
+                            if(line.pointLabels) hoverText.hide()
                         });
-
+    
+                        pointLabels.push(line.points[j][1])
                         hoverPoints.push(hoverPoint)
-
-                        points[points.length - 1].push(point)
+    
+                        points[i].push(point)
                     } catch(e) {
-                        if(xMeasureLines[0] == undefined) console.error(new Error('x value out of bounds; lower xStep'));
-                        if(yMeasureLines[0] == undefined) console.error(new Error('y value out of bounds; lower yStep'));
-
-                        this.error = true;
+                        if(error) return;
+                        console.error(new Error('Data point out of bounds'))
+                        error = true;
                     }
                 }
             }
 
-            if(this.error) return console.error(new Error('Error: x or y value out of bounds'));
-
-            for(let i = 0; i < data.length; i++){
-                let path = draw.path().fill('none').stroke({ width: data[i].lineWidth, color: data[i].color })
-                let pathString = `M ${points[i][0].attr('cx')} ${points[i][0].attr('cy')} `
-
+            for(let i = 0; i < points.length; i++){
+                let path = []
                 for(let j = 1; j < points[i].length; j++){
-                    pathString += `L ${points[i][j].attr('cx')} ${points[i][j].attr('cy')} `
+                    path.push(["M", points[i][j - 1].attr('cx'), points[i][j - 1].attr('cy')])
+                    path.push(["L", points[i][j].attr('cx'), points[i][j].attr('cy')])
                 }
+                draw.path(new PathArray(path)).stroke({ width: data[i].lineWidth, color: data[i].color })
 
-                path.plot(pathString)
-            }
-
-            hoverPoints.forEach(point => {
-                point.front()
-            })
-
-
-
-            for(let i = 0; i < data.length; i++){
                 let colorDisplay = draw.rect(20, 20).fill(data[i].color)
                 .x(xLine.attr('x2') + 10)
                 .y(yLine.attr('y1') + 30 * i)
                 .radius(2)
 
-                draw.text(data[i].label).font({ family: 'Helvetica', size: 12 })
+                let displayLabel = draw.text(data[i].label).font({ family: 'Helvetica', size: 12 })
                 .x(xLine.attr('x2') + 10 + colorDisplay.bbox().width + 5)
                 .y(yLine.attr('y1') + 30 * i + colorDisplay.bbox().height / 2 - 6)
             }
-
 
             // title
             draw.text().tspan(chartTitle).fill('#8e8e8e')

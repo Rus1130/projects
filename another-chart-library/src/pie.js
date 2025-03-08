@@ -178,9 +178,6 @@ export class PieChart_ {
         }
 
         // title
-        draw.text().tspan(chartTitle).fill('#8e8e8e')
-        .y(10)
-        .x(10)
-        .font({ family: 'Helvetica', size: Chart.options.height / 30  })
+        Chart.setTitle(draw, chartTitle);
     }
 }

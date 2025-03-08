@@ -2,13 +2,11 @@ import { SVG, extend as SVGextend, Element as SVGElement, PathArray } from 'http
 import { BarChart_ } from './src/bar.js';
 import { PieChart_ } from './src/pie.js';
 import { LineChart_ } from './src/line.js';
-import { Line2Chart_ } from './src/line2.js';
 
 const classes = {
     'bar': BarChart_,
     'pie': PieChart_,
-    'line': LineChart_,
-    'line2': Line2Chart_
+    'line': LineChart_
 }
 
 /**
@@ -30,6 +28,13 @@ export class Chart {
     static height = 500;
 
     static options = null;
+
+    static setTitle(draw, title) {
+        draw.text().tspan(title).fill('#8e8e8e')
+        .y(10)
+        .x(10)
+        .font({ family: 'Helvetica', size: Chart.options.height / 30  })
+    }
 
     constructor(type) {
         if(!Object.keys(classes).includes(type)) throw new Error('Invalid chart type');
@@ -148,7 +153,7 @@ export class Chart {
             this.science = science;
         }
 
-        if(this.type == 'line' || this.type == 'line2'){
+        if(this.type == 'line_legacy' || this.type == 'line'){
             this.chartTitle = arguments[0]
             this.yAxisLabel = arguments[1]
             this.xAxisLabel = arguments[2]
@@ -221,16 +226,20 @@ export class BarChart extends Chart {
         super('bar').appendTo(element, options)
     }
     /**
+     * @class BarChart
+     * @memberof Chart
      * @param {string}            chartTitle title of the chart
      * @param {string}            xAxisLabel label for the x axis
      * @param {string}            yAxisLabel label for the y axis
      * @param {number}            step       step value
+     * @param {number}            density    how many minor lines to draw
      * @param {string[]|number[]} xAxisData  data for the x axis
      * @param {string[]|number[]} yAxisData  data for the y axis
      * @param {string}            [barColor] color of the bars
      * @example
-        let chart = new BarChart('#bar-chart')
-        .setData("Motor Vehicle Deaths by Month (2021)", "Month", "Deaths", 1000, 
+        let bar = new Chart('bar')
+        .appendTo("#bar-chart")
+        .setData("Motor Vehicle Deaths by Month (2021)", "Month", "Deaths", 1000, 4, 
             ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
             [3099, 2561, 3214, 3557, 3768, 3789, 3879, 4013, 3861, 4101, 3599, 3498]
         )
@@ -253,6 +262,8 @@ export class LineChart extends Chart {
     }
 
     /**
+     * @class LineChart
+     * @memberof Chart
      * @param {string}            chartTitle title of the chart
      * @param {string}            xAxisLabel label for the x axis
      * @param {string}            yAxisLabel label for the y axis
@@ -267,8 +278,9 @@ export class LineChart extends Chart {
      * @param {boolean}           data[].pointLabels whether or not to show the point labels
      * @description Has trouble with extremely small numbers (<0)
      * @example
-        let chart = new LineChart('#line-chart')
-        .setData("Average Stock Prices (2000 - 2022)", 'Year', 'Price', 10, 10, [
+        let line = new Chart('line')
+        .appendTo('#line-chart')
+        .setData("Average Stock Prices (2000 - 2022)", 'Year', 'Price', 1, 10, [
             {
                 color: 'red',
                 label: 'Apple',
@@ -336,23 +348,6 @@ export class LineChart extends Chart {
             }
         ])
     */
-    setData(chartTitle, xAxisLabel, yAxisLabel, xStep, yStep, data) {
-        super.setData(chartTitle, xAxisLabel, yAxisLabel, xStep, yStep, data);
-        return this;
-    }
-}
-
-export class Line2Chart extends Chart {
-    /**
-     * @param {string} element        element to append the chart to
-     * @param {object} options        options for the chart
-     * @param {number} options.width  width of the chart
-     * @param {number} options.height height of the chart
-     */
-    constructor(element, options) {
-        super('line2').appendTo(element, options)
-    }
-
     setData(chartTitle, yAxisLabel, xAxisLabel, xStep, yStep, data){
         super.setData(chartTitle, yAxisLabel, xAxisLabel, xStep, yStep, data)
         return this;
