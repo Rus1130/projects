@@ -66,7 +66,12 @@
                 wallColor: options?.wallColor || 'black',
                 floorColor: options?.floorColor || 'white',
                 maximumRedrawAttempts: options?.maximumRedrawAttempts || 100,
+                logging: options?.logging || false,
+                maxRandomAngle: options?.maxRandomAngle || 0,
             }
+
+            if(this.options.logging) console.error("WARNING! Logging will increase generation time.")
+            else console.log("Beginning dungeon generation...")
 
             let drawRoom = (iteration) => {
                 this.error = false;
@@ -85,20 +90,33 @@
 
                 room.attr("x", rand(0, this.boardWidth - room.width()));
                 room.attr("y", rand(0, this.boardHeight - room.height()));
+                room.rotate(rand(0, this.options.maxRandomAngle));
 
                 let roomCenter = this.draw.circle(5).fill('transparent').center(room.cx(), room.cy());
 
                 for (let i = 0; i < this.rooms.length; i++) {
                     let otherRoom = this.rooms[i];
                     // if any rooms overlap with a 10 pixel margin, remove the room and redraw it
-                    if (room.x() < otherRoom.x() + otherRoom.width() + this.options.clearance &&
-                            room.x() + room.width() > otherRoom.x() - this.options.clearance &&
-                            room.y() < otherRoom.y() + otherRoom.height() + this.options.clearance &&
-                            room.y() + room.height() > otherRoom.y() - this.options.clearance) {
-                            room.remove();
-                            roomCenter.remove();
-                            console.warn(`(${this.getTime()}) (1/4) Redrawing room ${iteration} (${this.redrawAttempts}/${this.options.maximumRedrawAttempts})`);
-                            return drawRoom(iteration);
+                    // use rbox() to get the bounding box of the room
+
+                    let roomX = room.rbox().x;
+                    let roomY = room.rbox().y;
+                    let roomWidth = room.rbox().width;
+                    let roomHeight = room.rbox().height;
+
+                    let otherRoomX = otherRoom.rbox().x;
+                    let otherRoomY = otherRoom.rbox().y;
+                    let otherRoomWidth = otherRoom.rbox().width;
+                    let otherRoomHeight = otherRoom.rbox().height;
+
+                    if (roomX < otherRoomX + otherRoomWidth + this.options.clearance &&
+                        roomX + roomWidth > otherRoomX - this.options.clearance &&
+                        roomY < otherRoomY + otherRoomHeight + this.options.clearance &&
+                        roomY + roomHeight > otherRoomY - this.options.clearance) {
+                        room.remove();
+                        roomCenter.remove();
+                        if(this.options.logging) console.warn(`(${this.getTime()}) (1/4) Redrawing room ${iteration} (${this.redrawAttempts}/${this.options.maximumRedrawAttempts})`);
+                        return drawRoom(iteration);
                     }
                 }
 
@@ -110,9 +128,11 @@
             }
 
             for (let i = 0; i < this.roomCount; i++) {
-                console.log(`(${this.getTime()}) (1/4) Drawing room (${i+1}/${this.roomCount})`);
                 let room = drawRoom(i);
+                if(this.options.logging) console.log(`(${this.getTime()}) (1/4) Drawing room (${i+1}/${this.roomCount})`);
             }
+
+            if(!this.options.logging) console.log(`Room drawing complete.`)
 
             this.timestamps.roomDrawEnd = this.getTime();
 
@@ -164,8 +184,8 @@
                     return count;
                 }
 
-                console.log(`(${this.getTime()}) (2/4) Drawing corridor from ${currentRoom} to ${closestCenter} (${iterations+1}/${this.rooms.length})`);
-
+                if(this.options.logging) console.log(`(${this.getTime()}) (2/4) Drawing corridor from ${currentRoom} to ${closestCenter} (${iterations+1}/${this.rooms.length})`);
+                
                 this.corridors.push(corridor);
 
                 centerIndexes[this.roomCenters.indexOf(closestCenter)] = "empty";
@@ -190,19 +210,22 @@
 
             this.timestamps.corridorDrawEnd = this.getTime();
 
-            console.log(`(${this.getTime()}) (2/4) Drawing corridor from ${currentRoom} to ${startingRoom} (${lineIterations+1}/${this.rooms.length})`);
+            if(this.options.logging) console.log(`(${this.getTime()}) (2/4) Drawing corridor from ${currentRoom} to ${startingRoom} (${lineIterations+1}/${this.rooms.length})`);
+            else console.log(`Corridor drawing complete.`);
 
             this.rooms.forEach((room, i) => {
                 room.front()
-                console.log(`(${this.getTime()}) (3/4) bringing room ${room} to front (${i+1}/${this.rooms.length})`);	
+                if(this.options.logging) console.log(`(${this.getTime()}) (3/4) bringing room ${room} to front (${i+1}/${this.rooms.length})`);	
             });
+            if(!this.options.logging) console.log(`Room fronting complete.`);
 
             this.timestamps.roomFrontEnd = this.getTime();
 
             this.corridors.forEach((corridor, i) => {
                 corridor.front()
-                console.log(`(${this.getTime()}) (4/4) bringing corridor ${corridor} to front (${i+1}/${this.corridors.length})`);
+                if(this.options.logging) console.log(`(${this.getTime()}) (4/4) bringing corridor ${corridor} to front (${i+1}/${this.corridors.length})`);
             });
+            if(!this.options.logging) console.log(`Corridor fronting complete.`);
 
             this.timestamps.corridorFrontEnd = this.getTime();
 
@@ -246,14 +269,12 @@
 
     const board = document.getElementById("board");
     let dungeon = new DungeonMaker(board)
-    .construct(100, 1, 10, {
+    .construct(100, 10, 100, {
         clearance: 1,
         wallWidth: 1,
-        corridorWidth: 1,  
-        corridorWallWidth: 2, 
-        wallColor: "black",
-        floorColor: "white",
-        maximumRedrawAttempts: 100 
+        maximumRedrawAttempts: 1000,
+        logging: true,
+        maxRandomAngle: 360,
     });
 
     //dungeon.toString();
