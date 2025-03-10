@@ -86,7 +86,7 @@
                 room.attr("x", rand(0, this.boardWidth - room.width()));
                 room.attr("y", rand(0, this.boardHeight - room.height()));
 
-                let roomCenter = this.draw.circle(5).fill('orange').center(room.cx(), room.cy());
+                let roomCenter = this.draw.circle(5).fill('transparent').center(room.cx(), room.cy());
 
                 for (let i = 0; i < this.rooms.length; i++) {
                     let otherRoom = this.rooms[i];
@@ -246,7 +246,7 @@
 
     const board = document.getElementById("board");
     let dungeon = new DungeonMaker(board)
-    .construct(2650, 1, 10, {
+    .construct(100, 1, 10, {
         clearance: 1,
         wallWidth: 1,
         corridorWidth: 1,  
