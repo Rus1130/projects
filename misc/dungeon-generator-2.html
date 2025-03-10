@@ -37,6 +37,7 @@
             this.rooms = [];
             this.roomCenters = [];
             this.corridors = [];
+            this.corridorWalls = [];
             this.timestamps = {
                 startTime: null,
                 roomDrawEnd: null,
@@ -127,12 +128,13 @@
                 return room;
             }
 
+            if(!this.options.logging) console.log(`(${this.getTime()}) Drawing rooms...`)
             for (let i = 0; i < this.roomCount; i++) {
                 let room = drawRoom(i);
                 if(this.options.logging) console.log(`(${this.getTime()}) (1/4) Drawing room (${i+1}/${this.roomCount})`);
             }
 
-            if(!this.options.logging) console.log(`Room drawing complete.`)
+            if(!this.options.logging) console.log(`(${this.getTime()}) Room drawing complete.`)
 
             this.timestamps.roomDrawEnd = this.getTime();
 
@@ -187,11 +189,13 @@
                 if(this.options.logging) console.log(`(${this.getTime()}) (2/4) Drawing corridor from ${currentRoom} to ${closestCenter} (${iterations+1}/${this.rooms.length})`);
                 
                 this.corridors.push(corridor);
+                this.corridorWalls.push(outline);
 
                 centerIndexes[this.roomCenters.indexOf(closestCenter)] = "empty";
                 currentRoom = closestCenter;
             }
 
+            if(!this.options.logging) console.log(`(${this.getTime()}) Drawing corridors...`)
             let lineIterations = 0;
             while(centerIndexes.every((e) => e === "empty") === false) {
                 drawLine(lineIterations);
@@ -207,25 +211,28 @@
             let outline = this.draw.rect(this.options.corridorWidth + this.options.corridorWallWidth, distance).fill(this.options.wallColor).center(midX, midY).rotate(angle).attr("stroke", this.options.wallColor);
             let corridor = this.draw.rect(this.options.corridorWidth, distance).fill(this.options.floorColor).center(midX, midY).rotate(angle).attr("stroke", this.options.floorColor);
             this.corridors.push(corridor);
+            this.corridorWalls.push(outline);
 
             this.timestamps.corridorDrawEnd = this.getTime();
 
             if(this.options.logging) console.log(`(${this.getTime()}) (2/4) Drawing corridor from ${currentRoom} to ${startingRoom} (${lineIterations+1}/${this.rooms.length})`);
-            else console.log(`Corridor drawing complete.`);
+            else console.log(`(${this.getTime()}) Corridor drawing complete.`);
 
+            if(!this.options.logging) console.log(`(${this.getTime()}) Bringing rooms to front...`);
             this.rooms.forEach((room, i) => {
                 room.front()
                 if(this.options.logging) console.log(`(${this.getTime()}) (3/4) bringing room ${room} to front (${i+1}/${this.rooms.length})`);	
             });
-            if(!this.options.logging) console.log(`Room fronting complete.`);
+            if(!this.options.logging) console.log(`(${this.getTime()}) Room fronting complete.`);
 
             this.timestamps.roomFrontEnd = this.getTime();
 
+            if(!this.options.logging) console.log(`(${this.getTime()}) Bringing corridors to front...`);
             this.corridors.forEach((corridor, i) => {
                 corridor.front()
                 if(this.options.logging) console.log(`(${this.getTime()}) (4/4) bringing corridor ${corridor} to front (${i+1}/${this.corridors.length})`);
             });
-            if(!this.options.logging) console.log(`Corridor fronting complete.`);
+            if(!this.options.logging) console.log(`(${this.getTime()}) Corridor fronting complete.`);
 
             this.timestamps.corridorFrontEnd = this.getTime();
 
@@ -246,36 +253,15 @@
             console.log("If this number is less than 100%, try increasing maximumRedrawAttempts, or decreasing room count, room size, or clearance.");
             return this;
         }
-
-        toString() {
-            let result = ["DUNGEON["];
-
-            let roomString = [];
-            for(let i = 0; i < this.rooms.length; i++) {
-                let room = this.rooms[i];
-                let x = room.x().toString(36).padStart(2, '0');
-                let y = room.y().toString(36).padStart(2, '0');
-                let w = room.width().toString(36).padStart(2, '0');
-                let h = room.height().toString(36).padStart(2, '0');
-                roomString.push(`${x}${y}${w}${h}`);
-            }
-
-            result.push(roomString.join(""));
-
-            result.push("]");
-            console.log(result.join(""))
-        }
     }
 
     const board = document.getElementById("board");
     let dungeon = new DungeonMaker(board)
-    .construct(100, 10, 100, {
-        clearance: 1,
+    .construct(100, 20, 50, {
+        clearance: 10,
         wallWidth: 1,
         maximumRedrawAttempts: 1000,
-        logging: true,
         maxRandomAngle: 360,
+        //logging: true
     });
-
-    //dungeon.toString();
 </script>   
