@@ -267,26 +267,32 @@
 
                     for(let i = 0; i < objects.length; i++){
                         let object = objects[i];
-                        let found = false;
+                        // get every object that is colliding with that object
+                        // recursively get every object that is colliding to that object until there are no more objects colliding
 
-                        for(let j = 0; j < groups.length; j++){
-                            let group = groups[j];
-                            for(let k = 0; k < group.length; k++){
-                                let groupObject = group[k];
-                                if(object.x < groupObject.x + groupObject.w + this.options.clearance &&
-                                object.x + object.w > groupObject.x - this.options.clearance &&
-                                object.y < groupObject.y + groupObject.h + this.options.clearance &&
-                                object.y + object.h > groupObject.y - this.options.clearance){
-                                    group.push(object);
-                                    found = true;
-                                    break;
+                        let group = [object];
+
+                        let groupIndex = 0;
+
+                        let groupCheck = (object) => {
+                            for(let i = 0; i < objects.length; i++){
+                                let otherObject = objects[i];
+                                if(object === otherObject) continue;
+                                if(object.x < otherObject.x + otherObject.w &&
+                                    object.x + object.w > otherObject.x &&
+                                    object.y < otherObject.y + otherObject.h &&
+                                    object.y + object.h > otherObject.y) {
+                                        // if they are colliding, add the object to the group
+                                        if(group.indexOf(otherObject) === -1){
+                                            group.push(otherObject);
+                                            groupCheck(otherObject);
+                                        }
                                 }
                             }
                         }
 
-                        if(!found){
-                            groups.push([object]);
-                        }
+                        groupCheck(object);
+                        groups.push(group);
                     }
 
                     //remove duplicates
@@ -312,6 +318,8 @@
 
                 rooms = group(rooms);
 
+                let displayRects = [];
+
                 // color the rooms based on group
                 for(let i = 0; i < rooms.length; i++){
                     let color = `rgb(${rand(0, 255)}, ${rand(0, 255)}, ${rand(0, 255)})`;
@@ -320,6 +328,7 @@
                             color: this.options.wallColor,
                             width: this.options.wallWidth,
                         }).attr("x", room.x).attr("y", room.y).rotate(room.a);
+                        displayRects.push(rect);
                     });
                 }
 
@@ -405,11 +414,9 @@
                         width: this.options.wallWidth,
                     }).fill(randomColor);
 
-                    polygons.push(polygon);
-                    //polygon.remove();
+                    displayRects.forEach(rect => rect.front());
                 }
 
-                console.log(polygons)
             }
 
             return this;
@@ -418,9 +425,9 @@
 
     const board = document.getElementById("board");
     let dungeon = new DungeonMaker(board)
-    .construct(1000, 10, 10, {
+    .construct(500, 10, 25, {
         clearance: 0,
-        maximumRedrawAttempts: 5000,
+        maximumRedrawAttempts: 100,
         maxRandomAngle: 100,
         roomMerging: true,
         logging: true
