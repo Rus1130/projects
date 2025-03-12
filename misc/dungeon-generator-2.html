@@ -53,6 +53,21 @@
             return (Date.now() - this.timestamps.startTime) + "ms";
         }
 
+        isPointInPolygon(polygon, px, py) {
+            const points = polygon._array;
+            let inside = false
+
+            for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+                const [xi, yi] = points[i]
+                const [xj, yj] = points[j]
+
+                const intersect = yi > py !== yj > py && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi
+                if (intersect) inside = !inside
+            }
+
+            return inside
+        }
+
         construct(roomCount, minRoomSize, maxRoomSize, options) {
             this.roomCount = roomCount;
             this.minRoomSize = minRoomSize;
@@ -318,8 +333,6 @@
 
                 rooms = group(rooms);
 
-                let displayRects = [];
-
 
                 function jarvisMarch(points) {
                     function cross(o, a, b) {
@@ -351,9 +364,11 @@
                     return hull.map(p => ([p.x, p.y]));
                 }
 
-                let polygons = [];
+                this.polygons = [];
+                this.rects = [];
 
-                for(let i = 0; i < 1/*rooms.length*/; i++){
+
+                for(let i = 0; i < rooms.length; i++){
                     let verticies = [];
                     rooms[i].forEach(rooms => {
 
@@ -409,41 +424,86 @@
                         width: this.options.wallWidth,
                     }).fill(randomColor);
 
+                    this.polygons.push(polygon);
+
                     let lines = []
 
                     marchedVertices.forEach(point => {
                         let circle = this.draw.circle(5).fill('orange').center(point[0], point[1]);
 
-                        let line1 = this.draw.line(point[0], point[1], point[0] + 10, point[1]).stroke({
-                            color: 'black',
-                            width: 1,
-                        });
+                        let linesOnPoint = 0;
 
-                        let line2 = this.draw.line(point[0], point[1], point[0], point[1] + 10).stroke({
-                            color: 'black',
-                            width: 1,
-                        });
-                        
-                        let line3 = this.draw.line(point[0], point[1], point[0] - 10, point[1]).stroke({
-                            color: 'black',
-                            width: 1,
-                        });
+                        let objs = [];
 
-                        let line4 = this.draw.line(point[0], point[1], point[0], point[1] - 10).stroke({
-                            color: 'black',
-                            width: 1,
-                        });
-
-                        // continue
-                        if(!polygon.inside(point[0] + 10, point[1])) {
-                            line1.remove();
+                        if(this.isPointInPolygon(polygon, point[0] + 10, point[1])) {
+                            let line1 = this.draw.line(point[0], point[1], point[0] + 10, point[1]).stroke({
+                                color: 'white',
+                                width: 1,
+                            });
+                            linesOnPoint++;
+                            objs.push({
+                                x:point[0] + 10,
+                                y:point[1],
+                                orentation: "horizontal",
+                                el: line1,
+                                sharesPoint: null,
+                            })
+                        }
+                        if(this.isPointInPolygon(polygon, point[0], point[1] + 10)) {
+                            let line2 = this.draw.line(point[0], point[1], point[0], point[1] + 10).stroke({
+                                color: 'white',
+                                width: 1,
+                            });
+                            linesOnPoint++;
+                            objs.push({
+                                x:point[0],
+                                y:point[1] + 10,
+                                orentation: "vertical",
+                                el: line2,
+                                sharesPoint: null,
+                            })
+                        }
+                        if(this.isPointInPolygon(polygon, point[0] - 10, point[1])) {
+                            let line3 = this.draw.line(point[0], point[1], point[0] - 10, point[1]).stroke({
+                                color: 'white',
+                                width: 1,
+                            });
+                            linesOnPoint++;
+                            objs.push({
+                                x:point[0] - 10,
+                                y:point[1],
+                                orentation: "horizontal",
+                                el: line3,
+                                sharesPoint: null,
+                            })
+                        }
+                        if(this.isPointInPolygon(polygon, point[0], point[1] - 10)) {
+                            let line4 = this.draw.line(point[0], point[1], point[0], point[1] - 10).stroke({
+                                color: 'white',
+                                width: 1,
+                            });
+                            linesOnPoint++;
+                            objs.push({
+                                x:point[0],
+                                y:point[1] - 10,
+                                orentation: "vertical",
+                                el: line4,
+                                sharesPoint: null,
+                            });
                         }
 
-                        // for each line, remove it if it doesnt intersect with the polygon
+                        // continue here ================================================================
+                        objs.forEach(obj => {
+                            obj.sharesPoint = Boolean(objs.filter(o => o !== obj).length);
+                        })
 
-
+                        lines.push(...objs)
                         testCircles.push(circle);
+
+
                     });
+
+                    console.log(lines)
 
                     // 
 
@@ -461,11 +521,11 @@
                 //             color: this.options.wallColor,
                 //             width: this.options.wallWidth,
                 //         }).attr("x", room.x).attr("y", room.y).rotate(room.a);
-                //         displayRects.push(rect);
+                //         this.rects.push(rect);
                 //     });
                 // }
 
-                // displayRects.forEach(rect => rect.front());
+                this.rects.forEach(rect => rect.forward());
 
             }
 
@@ -474,12 +534,14 @@
     }
 
     const board = document.getElementById("board");
+
     let dungeon = new DungeonMaker(board)
-    .construct(100, 80, 25, {
-        clearance: 0,
-        maximumRedrawAttempts: 100,
-        maxRandomAngle: 100,
+    .construct(100, 27, 27, {
+        clearance: 50,
+        maximumRedrawAttempts: 1000,
+        maxRandomAngle: 360,
         roomMerging: true,
-        logging: true
+        logging: false
     });
+
 </script>   
