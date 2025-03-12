@@ -320,18 +320,6 @@
 
                 let displayRects = [];
 
-                // color the rooms based on group
-                for(let i = 0; i < rooms.length; i++){
-                    let color = `rgb(${rand(0, 255)}, ${rand(0, 255)}, ${rand(0, 255)})`;
-                    rooms[i].forEach(room => {
-                        let rect = this.draw.rect(room.w, room.h).fill(color).stroke({
-                            color: this.options.wallColor,
-                            width: this.options.wallWidth,
-                        }).attr("x", room.x).attr("y", room.y).rotate(room.a);
-                        displayRects.push(rect);
-                    });
-                }
-
 
                 function jarvisMarch(points) {
                     function cross(o, a, b) {
@@ -365,7 +353,7 @@
 
                 let polygons = [];
 
-                for(let i = 0; i < rooms.length; i++){
+                for(let i = 0; i < 1/*rooms.length*/; i++){
                     let verticies = [];
                     rooms[i].forEach(rooms => {
 
@@ -407,6 +395,13 @@
                     
                     let marchedVertices = jarvisMarch(verticies);
 
+                    if(marchedVertices.length == 4) continue;
+
+                    // plot the points
+                    
+                    let pointsToPlot = [];
+                    let testCircles = [];
+
                     let polygon = this.draw.polygon().plot(marchedVertices);
                     let randomColor = `rgb(${rand(0, 255)}, ${rand(0, 255)}, ${rand(0, 255)})`;
                     polygon.stroke({
@@ -414,8 +409,63 @@
                         width: this.options.wallWidth,
                     }).fill(randomColor);
 
-                    displayRects.forEach(rect => rect.front());
+                    let lines = []
+
+                    marchedVertices.forEach(point => {
+                        let circle = this.draw.circle(5).fill('orange').center(point[0], point[1]);
+
+                        let line1 = this.draw.line(point[0], point[1], point[0] + 10, point[1]).stroke({
+                            color: 'black',
+                            width: 1,
+                        });
+
+                        let line2 = this.draw.line(point[0], point[1], point[0], point[1] + 10).stroke({
+                            color: 'black',
+                            width: 1,
+                        });
+                        
+                        let line3 = this.draw.line(point[0], point[1], point[0] - 10, point[1]).stroke({
+                            color: 'black',
+                            width: 1,
+                        });
+
+                        let line4 = this.draw.line(point[0], point[1], point[0], point[1] - 10).stroke({
+                            color: 'black',
+                            width: 1,
+                        });
+
+                        // continue
+                        if(!polygon.inside(point[0] + 10, point[1])) {
+                            line1.remove();
+                        }
+
+                        // for each line, remove it if it doesnt intersect with the polygon
+
+
+                        testCircles.push(circle);
+                    });
+
+                    // 
+
+                    // if left.y > right.y, plot new point as: left.x, right.y
+                    // if left.y < right.y, plot new point as: right.x, left.y
+
+
                 }
+
+                // color the rooms based on group
+                // for(let i = 0; i < rooms.length; i++){
+                //     let color = `rgb(${rand(0, 255)}, ${rand(0, 255)}, ${rand(0, 255)})`;
+                //     rooms[i].forEach(room => {
+                //         let rect = this.draw.rect(room.w, room.h).fill(color).stroke({
+                //             color: this.options.wallColor,
+                //             width: this.options.wallWidth,
+                //         }).attr("x", room.x).attr("y", room.y).rotate(room.a);
+                //         displayRects.push(rect);
+                //     });
+                // }
+
+                // displayRects.forEach(rect => rect.front());
 
             }
 
@@ -425,7 +475,7 @@
 
     const board = document.getElementById("board");
     let dungeon = new DungeonMaker(board)
-    .construct(500, 10, 25, {
+    .construct(100, 80, 25, {
         clearance: 0,
         maximumRedrawAttempts: 100,
         maxRandomAngle: 100,
