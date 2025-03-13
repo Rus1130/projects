@@ -567,6 +567,7 @@
 
                             let finalMidpoint = this.draw.circle(5).fill('green').center((midX + point2MidX) / 2, (midY + point2MidY) / 2);
                             newPoints[i] = [(midX + point2MidX) / 2, (midY + point2MidY) / 2];
+                            console.log(finalMidpoint)
                         }
                         
                         if((current.sharesPoint == true && next.sharesPoint == true) &&
@@ -581,17 +582,25 @@
                         }
                     }
 
+                    let pointsToPlot = [];
+
+                    let max = marchedVertices.length;
+
+
+                                        // weird aah shit happening the order is WRONG and my code is SO FUCKING BAd i cant READ SHIT this shit SUCKS SO BAD HOLY FUCK
+                    // this shit is so bad
+                    for(let i = 0; i < max; i++){
+                        pointsToPlot.push(marchedVertices[i]);
+                        if(newPoints[i]) {
+                            pointsToPlot.push(newPoints[i]);
+                            max++;
+                        }
+                    }
                     
 
-                    Object.entries(newPoints)
-                        .sort((a, b) => b[0] - a[0]) // Sort descending to avoid index shift issues
-                        .forEach(([index, values]) => {
-                            marchedVertices.splice(+index -1, 0, values);
-                    });
-
-                    marchedVertices.forEach((point, i) => {
-                        let circle = this.draw.circle(5).fill('red').center(point[0], point[1]);
-                        marchedVertices[i][2] = circle.node
+                    pointsToPlot.forEach((point, i) => {
+                        let circle = this.draw.circle(5).fill('transparent').center(point[0], point[1]);
+                        pointsToPlot[i][2] = circle.node
                         let text = this.draw.text(i).fill('white').stroke({
                             color: "black",
                             width: 0.5,
@@ -600,8 +609,6 @@
                             family: "Arial",
                         })
                     })
-
-                    // weird aah shit happening the order is WRONG and my code is SO FUCKING BAd i cant READ SHIT this shit SUCKS SO BAD HOLY FUCK
 
                     console.log(marchedVertices);
 
