@@ -340,7 +340,7 @@
                     }
 
                     // Find the leftmost point
-                    let leftmost = points.reduce((left, p) => (p.x < left.x ? p : left), points[0]);
+                    let leftmost = points.reduce((left, p) => (p.x < left.x ? p : left), points[1]);
 
                     let hull = [];
                     let point = leftmost;
@@ -413,8 +413,7 @@
                     if(marchedVertices.length == 4) continue;
 
                     // plot the points
-                    
-                    let pointsToPlot = [];
+                
                     let testCircles = [];
 
                     let polygon = this.draw.polygon().plot(marchedVertices);
@@ -428,10 +427,13 @@
 
                     let lines = []
 
+                    let pointNum = 0;
+
                     marchedVertices.forEach(point => {
                         let circle = this.draw.circle(5).fill('orange').center(point[0], point[1]);
 
                         let linesOnPoint = 0;
+                        pointNum++;
 
                         let objs = [];
 
@@ -444,9 +446,11 @@
                             objs.push({
                                 x:point[0] + 10,
                                 y:point[1],
-                                orentation: "horizontal",
+                                orientation: "horizontal",
                                 el: line1,
                                 sharesPoint: null,
+                                pointNum: pointNum,
+                                pointCoords: [point[0], point[1]],
                             })
                         }
                         if(this.isPointInPolygon(polygon, point[0], point[1] + 10)) {
@@ -458,9 +462,11 @@
                             objs.push({
                                 x:point[0],
                                 y:point[1] + 10,
-                                orentation: "vertical",
+                                orientation: "vertical",
                                 el: line2,
                                 sharesPoint: null,
+                                pointNum: pointNum,
+                                pointCoords: [point[0], point[1]],
                             })
                         }
                         if(this.isPointInPolygon(polygon, point[0] - 10, point[1])) {
@@ -472,9 +478,11 @@
                             objs.push({
                                 x:point[0] - 10,
                                 y:point[1],
-                                orentation: "horizontal",
+                                orientation: "horizontal",
                                 el: line3,
                                 sharesPoint: null,
+                                pointNum: pointNum,
+                                pointCoords: [point[0], point[1]],
                             })
                         }
                         if(this.isPointInPolygon(polygon, point[0], point[1] - 10)) {
@@ -486,9 +494,11 @@
                             objs.push({
                                 x:point[0],
                                 y:point[1] - 10,
-                                orentation: "vertical",
+                                orientation: "vertical",
                                 el: line4,
                                 sharesPoint: null,
+                                pointNum: pointNum,
+                                pointCoords: [point[0], point[1]],
                             });
                         }
 
@@ -503,17 +513,122 @@
 
                     });
 
-                    console.log(lines)
+                    let line0Orientation = lines[0].orientation;
 
-                    // 
+                    for(let i = 0; i < lines.length - 1; i++){
+                        let current = lines[i];
+                        let next = lines[i + 1];
 
-                    // if left.y > right.y, plot new point as: left.x, right.y
-                    // if left.y < right.y, plot new point as: right.x, left.y
+                        if(current.orientation != line0Orientation && current.sharesPoint == false) break;
+
+                        if((current.sharesPoint == true && next.sharesPoint == true) &&
+                        (current.pointNum == next.pointNum)) {
+                            let temp = current;
+                            lines[i] = next;
+                            lines[i + 1] = temp;
+                        }
+                    }
+
+                    // for(let i = 0; i < lines.length; i++){
+                    //     let line = lines[i].el;
+                    //     let text = this.draw.text(i).fill('white').stroke({
+                    //         color: "black",
+                    //         width: 0.5,
+                    //     }).center(line.cx(), line.cy()).font({
+                    //         size: 12,
+                    //         family: "Arial",
+                    //     })
+                    // }
+
+                    testCircles.forEach(circle => circle.front());
+
+                    let newPoints = {}; 
+
+                    for(let i = 0; i < lines.length - 1; i++){
+                        let current = lines[i];
+                        let next = lines[i + 1];
 
 
+                        if((current.sharesPoint && !next.sharesPoint) || (!current.sharesPoint && next.sharesPoint)) {
+                            let midX = (current.pointCoords[0] + next.pointCoords[0]) / 2;
+                            let midY = (current.pointCoords[1] + next.pointCoords[1]) / 2;
+
+                            let point2MidX;
+                            let point2MidY;
+
+                        
+                            if(current.orientation == "vertical") {
+                                point2MidX = current.pointCoords[0];
+                                point2MidY = next.pointCoords[1];
+                            } else {
+                                point2MidX = next.pointCoords[0];
+                                point2MidY = current.pointCoords[1];
+                            }
+
+                            let finalMidpoint = this.draw.circle(5).fill('green').center((midX + point2MidX) / 2, (midY + point2MidY) / 2);
+                            newPoints[i] = [(midX + point2MidX) / 2, (midY + point2MidY) / 2];
+                        }
+                        
+                        if((current.sharesPoint == true && next.sharesPoint == true) &&
+                        (current.pointCoords[0] != next.pointCoords[0] && current.pointCoords[1] != next.pointCoords[1])) {
+                            if(current.orientation == "vertical") {
+                                let point = this.draw.circle(5).fill('blue').center(current.pointCoords[0], next.pointCoords[1]);
+                                newPoints[i] = [current.pointCoords[0], next.pointCoords[1]];
+                            } else {
+                                let point = this.draw.circle(5).fill('blue').center(next.pointCoords[0], current.pointCoords[1]);
+                                newPoints[i] = [next.pointCoords[0], current.pointCoords[1]];
+                            }
+                        }
+                    }
+
+                    
+
+                    Object.entries(newPoints)
+                        .sort((a, b) => b[0] - a[0]) // Sort descending to avoid index shift issues
+                        .forEach(([index, values]) => {
+                            marchedVertices.splice(+index -1, 0, values);
+                    });
+
+                    marchedVertices.forEach((point, i) => {
+                        let circle = this.draw.circle(5).fill('red').center(point[0], point[1]);
+                        marchedVertices[i][2] = circle.node
+                        let text = this.draw.text(i).fill('white').stroke({
+                            color: "black",
+                            width: 0.5,
+                        }).center(point[0], point[1]).font({
+                            size: 12,
+                            family: "Arial",
+                        })
+                    })
+
+                    // weird aah shit happening the order is WRONG and my code is SO FUCKING BAd i cant READ SHIT this shit SUCKS SO BAD HOLY FUCK
+
+                    console.log(marchedVertices);
+
+                    /*
+                    single -> single: skip
+                    single -> shared OR shared -> single: new point at {
+                        step 1: draw point at the midpoint from current POINT to next POINT
+                        step 2: draw point at 
+                            current is vertical:
+                                current.x, next.y
+                            current is horizontal:
+                                next.x, current.y
+                        step 3: final point is midpoint from step 1 to step 2
+                            current is vertical:
+                                current.x, next.y
+                            current is horizontal:
+                                next.x, current.y   
+                    }
+                    shared -> shared: 
+                        current is vertical:
+                            next.x, current.y
+                        current is horizontal:
+                            current.x, next.y
+                    */
                 }
 
-                // color the rooms based on group
+                //color the rooms based on group
                 // for(let i = 0; i < rooms.length; i++){
                 //     let color = `rgb(${rand(0, 255)}, ${rand(0, 255)}, ${rand(0, 255)})`;
                 //     rooms[i].forEach(room => {
@@ -525,7 +640,7 @@
                 //     });
                 // }
 
-                this.rects.forEach(rect => rect.forward());
+                // this.rects.forEach(rect => rect.backward());
 
             }
 
@@ -536,11 +651,11 @@
     const board = document.getElementById("board");
 
     let dungeon = new DungeonMaker(board)
-    .construct(100, 27, 27, {
-        clearance: 50,
+    .construct(100, 40, 40, {
+        clearance: 0,
         maximumRedrawAttempts: 1000,
         maxRandomAngle: 360,
-        roomMerging: true,
+        roomMerging: true  ,
         logging: false
     });
 
