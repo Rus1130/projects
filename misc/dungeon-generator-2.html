@@ -566,41 +566,38 @@
                             }
 
                             let finalMidpoint = this.draw.circle(5).fill('green').center((midX + point2MidX) / 2, (midY + point2MidY) / 2);
-                            newPoints[i] = [(midX + point2MidX) / 2, (midY + point2MidY) / 2];
-                            console.log(finalMidpoint)
-                        }
-                        
-                        if((current.sharesPoint == true && next.sharesPoint == true) &&
+                            newPoints[i] = [(midX + point2MidX) / 2, (midY + point2MidY) / 2, finalMidpoint];
+                        } else if((current.sharesPoint == true && next.sharesPoint == true) &&
                         (current.pointCoords[0] != next.pointCoords[0] && current.pointCoords[1] != next.pointCoords[1])) {
                             if(current.orientation == "vertical") {
                                 let point = this.draw.circle(5).fill('blue').center(current.pointCoords[0], next.pointCoords[1]);
-                                newPoints[i] = [current.pointCoords[0], next.pointCoords[1]];
+                                newPoints[i] = [current.pointCoords[0], next.pointCoords[1], point];
                             } else {
                                 let point = this.draw.circle(5).fill('blue').center(next.pointCoords[0], current.pointCoords[1]);
-                                newPoints[i] = [next.pointCoords[0], current.pointCoords[1]];
+                                newPoints[i] = [next.pointCoords[0], current.pointCoords[1], point];
                             }
                         }
                     }
 
+                    // this shit is so ass.... its so joever....
+                    newPoints = Object.values(newPoints).sort((a, b) => b[0] - a[0])
+
                     let pointsToPlot = [];
+                    let pointIndex = 0;
 
-                    let max = marchedVertices.length;
 
-
-                                        // weird aah shit happening the order is WRONG and my code is SO FUCKING BAd i cant READ SHIT this shit SUCKS SO BAD HOLY FUCK
+                    // weird aah shit happening the order is WRONG and my code is SO FUCKING BAd i cant READ SHIT this shit SUCKS SO BAD HOLY FUCK
                     // this shit is so bad
-                    for(let i = 0; i < max; i++){
+                    for(let i = 0; i < marchedVertices.length; i++){
                         pointsToPlot.push(marchedVertices[i]);
                         if(newPoints[i]) {
-                            pointsToPlot.push(newPoints[i]);
-                            max++;
+                            //pointsToPlot.push("insert")
                         }
                     }
                     
 
                     pointsToPlot.forEach((point, i) => {
                         let circle = this.draw.circle(5).fill('transparent').center(point[0], point[1]);
-                        pointsToPlot[i][2] = circle.node
                         let text = this.draw.text(i).fill('white').stroke({
                             color: "black",
                             width: 0.5,
@@ -609,8 +606,6 @@
                             family: "Arial",
                         })
                     })
-
-                    console.log(marchedVertices);
 
                     /*
                     single -> single: skip
