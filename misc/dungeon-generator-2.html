@@ -542,7 +542,7 @@
 
                     testCircles.forEach(circle => circle.front());
 
-                    let newPoints = {}; 
+                    let newPoints = []; 
 
                     for(let i = 0; i < lines.length - 1; i++){
                         let current = lines[i];
@@ -566,21 +566,20 @@
                             }
 
                             let finalMidpoint = this.draw.circle(5).fill('green').center((midX + point2MidX) / 2, (midY + point2MidY) / 2);
-                            newPoints[i] = [(midX + point2MidX) / 2, (midY + point2MidY) / 2, finalMidpoint];
+                            newPoints.push([(midX + point2MidX) / 2, (midY + point2MidY) / 2, "addedPoint"]);
                         } else if((current.sharesPoint == true && next.sharesPoint == true) &&
                         (current.pointCoords[0] != next.pointCoords[0] && current.pointCoords[1] != next.pointCoords[1])) {
                             if(current.orientation == "vertical") {
                                 let point = this.draw.circle(5).fill('blue').center(current.pointCoords[0], next.pointCoords[1]);
-                                newPoints[i] = [current.pointCoords[0], next.pointCoords[1], point];
+                                newPoints.push([current.pointCoords[0], next.pointCoords[1], "addedPoint"]);
                             } else {
                                 let point = this.draw.circle(5).fill('blue').center(next.pointCoords[0], current.pointCoords[1]);
-                                newPoints[i] = [next.pointCoords[0], current.pointCoords[1], point];
+                                newPoints.push([next.pointCoords[0], current.pointCoords[1], "addedPoint"]);
                             }
                         }
                     }
 
                     // this shit is so ass.... its so joever....
-                    newPoints = Object.values(newPoints).sort((a, b) => b[0] - a[0])
 
                     let pointsToPlot = [];
                     let pointIndex = 0;
@@ -591,9 +590,11 @@
                     for(let i = 0; i < marchedVertices.length; i++){
                         pointsToPlot.push(marchedVertices[i]);
                         if(newPoints[i]) {
-                            //pointsToPlot.push("insert")
+                            //pointsToPlot.push([...newPoints[i], "swap"])
                         }
                     }
+
+                    console.log(pointsToPlot, newPoints, polygon.node)
                     
 
                     pointsToPlot.forEach((point, i) => {
