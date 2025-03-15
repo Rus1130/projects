@@ -29,6 +29,8 @@
                 { pattern: "ü", value: "ü" },
 
                 { pattern: "ngg", value: "ᵑg" },
+                { pattern: "mbb", value: "m.b" },
+                { pattern: "ndd", value: "n.d" },
                 { pattern: ".", value: " ||"},
                 { pattern: ",", value: " |"}
             ],
@@ -106,6 +108,10 @@
             // fix s syllable boundaries
             result[i] = result[i].replaceAll(new RegExp(`(${V})\.s$`, "g"), "$1s.")
             result[i] = result[i].replaceAll(new RegExp(`(${V}).s‿`, "g"), "$1s‿")
+
+            // fix .m.b and .n.d
+            result[i] = result[i].replaceAll(".m.b", "m.b")
+            result[i] = result[i].replaceAll(".n.d", "n.d")
 
             // fix velar prenasalized syllable boundaries
             //result[i] = result[i].replaceAll(new RegExp(`\.ŋg`, "g"), "ᵑg\.");
