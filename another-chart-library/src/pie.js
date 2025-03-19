@@ -1,4 +1,4 @@
-import { Chart } from 'https://rus.1130.github.io/another-chart-library/main.js';
+import { Chart } from '../main.js';
 
 export class PieChart_ {
     constructor(chartTitle, data, options) {
