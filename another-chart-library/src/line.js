@@ -1,4 +1,4 @@
-import { Chart } from '../main.js';
+import { Chart } from 'https://rus.1130.github.io/another-chart-library/main.js';
 import { PathArray } from 'https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.1.2/svg.esm.js';
 
 export class LineChart_ {

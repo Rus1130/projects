@@ -1,7 +1,7 @@
 import { SVG, extend as SVGextend, Element as SVGElement, PathArray } from 'https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.1.2/svg.esm.js';
-import { BarChart_ } from './src/bar.js';
-import { PieChart_ } from './src/pie.js';
-import { LineChart_ } from './src/line.js';
+import { BarChart_ } from 'https://rus1130.github.io/another-chart-library/src/bar.js';
+import { PieChart_ } from 'https://rus1130.github.io/another-chart-library/src/pie.js';
+import { LineChart_ } from 'https://rus1130.github.io/another-chart-library/src/line.js';
 
 /**
  * @class Chart

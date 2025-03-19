@@ -1,4 +1,4 @@
-import { Chart } from '../main.js';
+import { Chart } from 'https://rus.1130.github.io/another-chart-library/main.js';
 
 export class BarChart_ {
     constructor(chartTitle, xAxisLabel, yAxisLabel, step, density, xAxisData, yAxisData, barColor) {
