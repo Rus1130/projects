@@ -19,7 +19,7 @@ export class BarChart_ {
         xLine.hide();
 
         // X Axis Label
-        draw.text(xAxisLabel).font({ family: 'Helvetica', size: 16 })
+        let xLabel = draw.text(xAxisLabel).font({ family: 'Helvetica', size: 16 })
         .cx(xLine.attr('x1') + (xLine.attr('x2') - xLine.attr('x1')) / 2)
         .cy(Chart.options.height - (Chart.options.height - xLine.attr('y1')) / 2)
 
@@ -56,17 +56,8 @@ export class BarChart_ {
             .cx(rect.attr('x') + rect.attr('width') / 2)
             .cy(rect.attr('y') - 10)
 
-            rect.on('mouseover', function() {
-                text.build(true)
-                text.fill('#000000')
-                text.build(false)
-            })
 
-            rect.on('mouseleave', function() {
-                setTimeout(() => {
-                    text.fill('transparent')
-                }, 1000)
-            })
+            text.fill('#000000')
         }   
 
         

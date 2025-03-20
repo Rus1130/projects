@@ -48,13 +48,13 @@ export class PieChart_ {
             totalArc += data[i].arc;
         }
         
-        if(totalArc > 100) {
-            return console.error(new Error('The total arc of the pie chart cannot exceed 100%'))
-        }
+        // if(totalArc > 100) {
+        //     return console.error(new Error('The total arc of the pie chart cannot exceed 100%'))
+        // }
 
-        this.data.sort((a, b) => {
-            return b.arc - a.arc;
-        })
+        // this.data.sort((a, b) => {
+        //     return b.arc - a.arc;
+        // })
 
         let circle = Chart.measureLines.circle;
         let arcs = [];
