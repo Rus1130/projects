@@ -10,7 +10,7 @@ export class PieChart_ {
         const sliceOutlineColor = opts.sliceOutlineColor || 'transparent';
 
         // WORK ON THIS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        const showLabelsOnHover = opts.showLabelsOnHover || false;
+        const removeOverlappingLabels = opts.removeOverlappingLabels || false;
 
         this.science = {};
 
@@ -138,11 +138,6 @@ export class PieChart_ {
 
             text.remember('originalX', text.x())
             text.remember('originalY', text.y())
-
-            if(showLabelsOnHover){
-                text.attr("display", "none")
-                text.opacity(1)
-            }
             
 
             arcList[i].on('mouseenter', function() {
@@ -158,11 +153,9 @@ export class PieChart_ {
                     .dy((circle.attr('cy') - Math.sin((angle + 90) * Math.PI / 180) * popAmount - halfR * 2) - circle.attr('r'))
                 }
 
-                //text.attr("display", "auto")
                 text.animate(100)
                 .dx(circle.attr('cx') - Math.cos((angle + 90) * Math.PI / 180) * popAmount - circle.attr('r') * 2)
                 .dy(circle.attr('cy') - Math.sin((angle + 90) * Math.PI / 180) * popAmount - circle.attr('r') * 2)
-                //.opacity(1)
             })
 
             arcList[i].on('mouseleave', function() {
@@ -182,6 +175,18 @@ export class PieChart_ {
             })
 
             labelElements.push(text)
+
+            // if text is overlapping any other text element
+            if(removeOverlappingLabels) {
+                for(let j = 0; j < labelElements.length; j++){
+                    if(j === i) continue;
+                    let labelElement = labelElements[j];
+                    console.log(labelElement, text)
+                    if(text.x() < labelElement.x() + labelElement.width() && text.x() + text.width() > labelElement.x() && text.y() < labelElement.y() + labelElement.height() && text.y() + text.height() > labelElement.y()) {
+                        text.hide();
+                    }
+                }
+            }
         }
 
         // title

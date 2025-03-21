@@ -55,9 +55,10 @@
         return gradient;
     }
 
+    let pieExampleData = [{"arc":4.699738903394255,"color":"#6043f1","label":"Pronouns"},{"arc":6.005221932114883,"color":"#69f3e3","label":"Tenses"},{"arc":2.8720626631853787,"color":"#4a6eea","label":"Numerals"},{"arc":26.89295039164491,"color":"#453686","label":"Nouns"},{"arc":16.710182767624023,"color":"#7fb9e4","label":"Verbs"},{"arc":7.049608355091384,"color":"#f7cf4e","label":"Adjectives"},{"arc":9.138381201044385,"color":"#8bd525","label":"'An Verbs"},{"arc":2.3498694516971277,"color":"#4c2c66","label":"Irregular Plural Nouns"},{"arc":12.793733681462141,"color":"#27f835","label":"Nouns about Bones, Limbs, Body Parts, and Death"},{"arc":4.699738903394255,"color":"#af0a96","label":"Miscellaneous"},{"arc":1.5665796344647518,"color":"#5d7415","label":"Interrogatives"},{"arc":1.8276762402088773,"color":"#429879","label":"Cannibals and Mutants"},{"arc":3.3942558746736298,"color":"#789956","label":"Religious Terms"}]
 
     let pie = new PieChart("#pie-chart")//.example()
-    .setData("Favorite Color", [
+    .setData("Favorite Color", pieExampleData/*[
         { arc: 42, color: 'blue', label: 'Blue' },
         { arc: 14, color: 'green', label: 'Green' },
         { arc: 14, color: 'purple', label: 'Purple' },
@@ -65,13 +66,13 @@
         { arc: 7, color: 'black', label: "Black"},
         { arc: 5, color: 'orange', label: 'Orange'},
         { arc: 10, color: 'grey', label: "Other"},
-    ], {
+    ]*/, {
         popAmount: 4,
         showPercentages: true,
         donut: true,
         sliceOutlineWidth: 1,
         sliceOutlineColor: 'white',
-        showLabelsOnHover: true,
+        removeOverlappingLabels: true,
     })
 
     let gradientPie = new PieChart("#gradient-pie-chart").setData("Funny Gradient Swirly waow", new Array(100).fill(null).map((_, index) => ({ 
