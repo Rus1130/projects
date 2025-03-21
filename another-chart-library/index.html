@@ -56,23 +56,23 @@
     }
 
 
-    let pie = new PieChart("#pie-chart")//.example()
-    .setData("Favorite Color", [
-        { arc: 42, color: 'blue', label: 'Blue' },
-        { arc: 14, color: 'green', label: 'Green' },
-        { arc: 14, color: 'purple', label: 'Purple' },
-        { arc: 8, color: 'red', label: "Red"},
-        { arc: 7, color: 'black', label: "Black"},
-        { arc: 5, color: 'orange', label: 'Orange'},
-        { arc: 10, color: 'grey', label: "Other"},
-    ], {
-        popAmount: 4,
-        showPercentages: true,
-        donut: true,
-        sliceOutlineWidth: 1,
-        sliceOutlineColor: 'white',
-        showLabelsOnHover: true,
-    })
+    let pie = new PieChart("#pie-chart").example()
+    // .setData("Favorite Color", [
+    //     { arc: 42, color: 'blue', label: 'Blue' },
+    //     { arc: 14, color: 'green', label: 'Green' },
+    //     { arc: 14, color: 'purple', label: 'Purple' },
+    //     { arc: 8, color: 'red', label: "Red"},
+    //     { arc: 7, color: 'black', label: "Black"},
+    //     { arc: 5, color: 'orange', label: 'Orange'},
+    //     { arc: 10, color: 'grey', label: "Other"},
+    // ], {
+    //     popAmount: 4,
+    //     showPercentages: true,
+    //     donut: true,
+    //     sliceOutlineWidth: 1,
+    //     sliceOutlineColor: 'white',
+    //     showLabelsOnHover: true,
+    // })
 
     let gradientPie = new PieChart("#gradient-pie-chart").setData("Funny Gradient Swirly waow", new Array(100).fill(null).map((_, index) => ({ 
         arc: 1, 
