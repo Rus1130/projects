@@ -218,6 +218,7 @@ export class PieChart extends Chart {
      * @param {boolean}  [options.donut=false]                   whether or not to make the pie chart a donut chart
      * @param {boolean}  [options.sliceOutlineWidth=1]           whether or not to show the percentages of the slices
      * @param {boolean}  [options.sliceOutlineColor=transparent] whether or not to show the percentages of the slices
+     * @param {boolean}  [options.showLabelsOnHover=false]       whether or not to show the labels on hover. If false, labels will always be shown
      * @example 
         let chart = new PieChart('#pie-chart')
         .setData("Favorite Color", [
@@ -233,7 +234,8 @@ export class PieChart extends Chart {
             showPercentages: true,
             donut: true,
             sliceOutlineWidth: 1,
-            sliceOutlineColor: 'white'
+            sliceOutlineColor: 'white',
+            showLabelsOnHover: true
     })
     */
     setData(chartTitle, data, options) {

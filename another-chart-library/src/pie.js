@@ -8,6 +8,7 @@ export class PieChart_ {
         const donut = opts.donut || false;
         const sliceOutlineWidth = opts.sliceOutlineWidth || 0;
         const sliceOutlineColor = opts.sliceOutlineColor || 'transparent';
+        const showLabelsOnHover = opts.showLabelsOnHover || false;
 
         this.science = {};
 
@@ -133,6 +134,10 @@ export class PieChart_ {
                 donutArcList[i].remember('originalY', donutArcList[i].y())
             }
 
+            if(showLabelsOnHover) {
+                text.opacity(0)
+            }
+
             text.remember('originalX', text.x())
             text.remember('originalY', text.y())
 
@@ -149,9 +154,8 @@ export class PieChart_ {
                     .dy((circle.attr('cy') - Math.sin((angle + 90) * Math.PI / 180) * popAmount - halfR * 2) - circle.attr('r'))
                 }
 
-
-
                 text.animate(100)
+                .opacity(1)
                 .dx(circle.attr('cx') - Math.cos((angle + 90) * Math.PI / 180) * popAmount - circle.attr('r') * 2)
                 .dy(circle.attr('cy') - Math.sin((angle + 90) * Math.PI / 180) * popAmount - circle.attr('r') * 2)
 
@@ -172,6 +176,7 @@ export class PieChart_ {
                 text.animate(100)
                 .x(text.remember('originalX'))
                 .y(text.remember('originalY'))
+                .opacity(0)
             })
 
             labelElements.push(text)
