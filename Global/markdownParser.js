@@ -101,7 +101,8 @@ class MarkdownParser {
             let xhr = new XMLHttpRequest();
             xhr.open('GET', input, false);
             xhr.send();
-            this.md = xhr.responseText;
+            if(xhr.status != 200) this.md = `\`\`\`\nurl "${url}" not found\n\`\`\``;
+            else this.md = xhr.responseText;
         }
 
         return this;
@@ -179,12 +180,8 @@ class MarkdownParser {
         
             elementsWithIds.forEach((element) => {
                 let level = parseInt(element.tagName.replace("H", ""));
-                let href = null;
 
-                if(["element", "thisTab", "text"].includes(this.inputType)) href = window.location.href;
-                else if (this.inputType == "url") href = "about:blank"
-
-                toc += `${"    ".repeat(level - 1)} * <a href="${href}#${element.id}">${element.innerText}</a>\n`;
+                toc += `${"    ".repeat(level - 1)} * <a href="¦¶¶¶¶HREF¶¶¶¶¦#${element.id}">${element.innerText}</a>\n`;
             });
 
             tocElement.innerHTML = converter.makeHtml(toc);
@@ -224,16 +221,20 @@ class MarkdownParser {
         }
 
         if(type == "element"){
+            this.html = this.html.replaceAll("¦¶¶¶¶HREF¶¶¶¶¦", window.location.href);
             this.element_.innerHTML += this.html;
         } else if (type == "thisTab"){
+            this.html = this.html.replaceAll("¦¶¶¶¶HREF¶¶¶¶¦", window.location.href);
             document.body.innerHTML = this.html;
         } else if (type == "newTab"){
             let newTab = window.open("", null);
+            this.html = this.html.replaceAll("¦¶¶¶¶HREF¶¶¶¶¦", newTab.location.href);
             newTab.document.body.innerHTML = this.html;
             windowToUse = newTab;
         } else if (type == "newWindow"){
             if(this.newWindowArgs_ == null) throw new Error("New window arguments must be defined");
             let newWindow = window.open("", null, this.newWindowArgs_);
+            this.html = this.html.replaceAll("¦¶¶¶¶HREF¶¶¶¶¦", newWindow.location.href);
             newWindow.document.body.innerHTML = this.html;
             windowToUse = newWindow;
         } else if (type == "text"){
