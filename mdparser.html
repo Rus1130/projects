@@ -1,0 +1,17 @@
+<head>
+
+</head>
+<body>
+    <script src="./Global/markdownParser.js"></script>
+</body>
+<script>
+    // get url params
+    const urlParams = new URLSearchParams(window.location.search);
+    const url = urlParams.get('url');
+    const toc = urlParams.get('toc') === 'true';
+
+    new MarkdownParser("url", url)
+        .toc(toc)
+        .generate()
+        .open("thisTab");
+</script>
