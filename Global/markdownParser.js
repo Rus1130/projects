@@ -217,7 +217,7 @@ class MarkdownParser {
                 let tocWidth = parent.document.querySelector(`mdparser[data-i="${MarkdownParser.i - 1}"] toc-container`).offsetWidth;
                 let parsed = parent.document.querySelector(`mdparser[data-i="${MarkdownParser.i - 1}"] parsed-container`);
                 parsed.style.width = `calc(100% - ${tocWidth}px)`;
-            }, parent == window ? 0 : 150)
+            }, 0)
         }
 
         if(type == "element"){
@@ -244,7 +244,7 @@ class MarkdownParser {
         if(this.toc_) {
             setInterval(() => {
                 setBodyOffset(windowToUse);
-            }, 100);
+            }, 0);
         }
 
         return this
