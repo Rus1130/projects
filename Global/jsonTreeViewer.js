@@ -6,7 +6,7 @@ li { margin: 3px 0; }
 .collapsible { cursor: pointer; user-select: none; }
 .collapsed > ul { display: none; }
 .closed::after { content: '…'; }
-.opened::after { content: ''; }`
+.opened::after { content: '↴'; }`
     static injectCSS() {
         if (document.getElementById('json-tree-style')) return; // only inject once
 
