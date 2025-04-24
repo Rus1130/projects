@@ -15,6 +15,7 @@ li { margin: 3px 0; }
         style.textContent = JsonTreeViewer.CSS;
         document.head.appendChild(style);
     }
+    
     constructor(container, data) {
         this.container = container;
         this.data = data;
