@@ -85,6 +85,8 @@ li { margin: 3px 0; }
     }
 
     setData(newData) {
+        // const same = JSON.stringify(newData) === JSON.stringify(this.data);
+        // if (same) return;
         this.data = newData;
         this.render();
     }
