@@ -15,7 +15,7 @@ li { margin: 3px 0; }
         style.textContent = JsonTreeViewer.CSS;
         document.head.appendChild(style);
     }
-    
+
     constructor(container, data) {
         this.container = container;
         this.data = data;
@@ -117,5 +117,24 @@ li { margin: 3px 0; }
                 }
             }
         });
+    }
+
+    uncollapseAll() {
+        const openAllPaths = (obj, path = []) => {
+            if (typeof obj === 'object' && obj !== null) {
+                for (const key in obj) {
+                    const newPath = [...path, key];
+                    this.openPaths.add(this.pathToString(newPath));
+                    openAllPaths(obj[key], newPath);
+                }
+            }
+        };
+        openAllPaths(this.data);
+        this.render();
+    }
+
+    collapseAll() {
+        this.openPaths.clear();
+        this.render();
     }
 }
