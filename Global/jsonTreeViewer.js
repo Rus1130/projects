@@ -8,18 +8,20 @@ li { margin: 3px 0; }
 .closed::after { content: '…'; }
 .opened::after { content: ''; }`
     constructor(container, data) {
+        this.container = container;
+        this.data = data;
+        this.openPaths = new Set();
+        this.initClickHandler();
+        this.render();
+    }
+
+    injectCSS(){
         if (document.getElementById('json-tree-style')) return; // only inject once
 
         const style = document.createElement('style');
         style.id = 'json-tree-style';
         style.textContent = JsonTreeViewer.CSS;
         document.head.appendChild(style);
-
-        this.container = container;
-        this.data = data;
-        this.openPaths = new Set();
-        this.initClickHandler();
-        this.render();
     }
 
     pathToString(path) {
