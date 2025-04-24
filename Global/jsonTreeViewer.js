@@ -7,21 +7,20 @@ li { margin: 3px 0; }
 .collapsed > ul { display: none; }
 .closed::after { content: '…'; }
 .opened::after { content: ''; }`
-    constructor(container, data) {
-        this.container = container;
-        this.data = data;
-        this.openPaths = new Set();
-        this.initClickHandler();
-        this.render();
-    }
-
-    injectCSS(){
+    static injectCSS() {
         if (document.getElementById('json-tree-style')) return; // only inject once
 
         const style = document.createElement('style');
         style.id = 'json-tree-style';
         style.textContent = JsonTreeViewer.CSS;
         document.head.appendChild(style);
+    }
+    constructor(container, data) {
+        this.container = container;
+        this.data = data;
+        this.openPaths = new Set();
+        this.initClickHandler();
+        this.render();
     }
 
     pathToString(path) {
