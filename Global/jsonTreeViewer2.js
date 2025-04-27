@@ -145,6 +145,11 @@ li { margin: 3px 0; font-family: monospace; }
         recurse(obj, path);
     }
 
+    /**
+    * Formats the value for display in the tree.
+    * @param {any} value The value to format.
+    * @returns {string} The formatted value.
+    */
     formatValue(value) {
         if (value === undefined) return '<i>undefined</i>';
         if (value === null) return '<i>null</i>';
@@ -160,6 +165,13 @@ li { margin: 3px 0; font-family: monospace; }
         return value;
     }
 
+    /**
+     * Creates a tree structure from the data.
+     * @param {Object} data The data to create the tree from.
+     * @param {Array} [path=[]] The current path in the tree.
+     * @param {string} [pathStr] The string representation of the path.
+     * @returns {HTMLElement} The created tree structure as an HTML element.
+    */
     createTree(data, path = []) {
         const ul = document.createElement('ul');
         const isObject = (val) => typeof val === 'object' && val !== null;
@@ -204,7 +216,10 @@ li { margin: 3px 0; font-family: monospace; }
         return ul;
     }
 
-
+    /**
+     * Renders the JSON tree in the iframe.
+     * @returns {Promise<void>}
+     * */
     async render() {
         if (this._isRendering) return;
         this._isRendering = true;
@@ -252,39 +267,28 @@ li { margin: 3px 0; font-family: monospace; }
      * @param {Object} data 
      * @returns {DeepProxy}
      */
-    dynamicUpdate(data) {
-        if(this._isRendering) return false;
-            // Deep comparison function to check if data has changed
-        function deepEqual(obj1, obj2) {
-
-            if(obj1 === obj2) // it's just the same object. No need to compare.
-                return true;
-        
-            if(isPrimitive(obj1) && isPrimitive(obj2)) // compare primitives
-                return obj1 === obj2;
-        
-            if(Object.keys(obj1).length !== Object.keys(obj2).length)
-                return false;
-        
-            // compare objects with same number of keys
-            for(let key in obj1)
-            {
-                if(!(key in obj2)) return false; //other object doesn't have this prop
-                if(!deepEqual(obj1[key], obj2[key])) return false;
+    dynamicUpdate(newData) {
+        if (this._isRendering) return false;
+    
+        function deepReplace(target, source) {
+            for (let key of Object.keys(target)) {
+                if (!(key in source)) {
+                    delete target[key];
+                }
             }
-        
-            return true;
+            for (let key of Object.keys(source)) {
+                if (typeof source[key] === 'object' && source[key] !== null) {
+                    if (typeof target[key] !== 'object' || target[key] === null) {
+                        target[key] = Array.isArray(source[key]) ? [] : {};
+                    }
+                    deepReplace(target[key], source[key]);
+                } else {
+                    target[key] = source[key];
+                }
+            }
         }
-        
-        //check if value is primitive
-        function isPrimitive(obj){
-            return (obj !== Object(obj));
-        }
-
-        // Check if the data has changed
-        if (deepEqual(data, this.data)) return false;
-
-        this.data = new DeepProxy(data, {});
+    
+        deepReplace(this.data, newData);
         this.render();
         this.render();
         return this.data;
