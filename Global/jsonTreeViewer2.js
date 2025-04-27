@@ -145,11 +145,6 @@ li { margin: 3px 0; font-family: monospace; }
         recurse(obj, path);
     }
 
-    /**
-    * Formats the value for display in the tree.
-    * @param {any} value The value to format.
-    * @returns {string} The formatted value.
-    */
     formatValue(value) {
         if (value === undefined) return '<i>undefined</i>';
         if (value === null) return '<i>null</i>';
@@ -165,13 +160,6 @@ li { margin: 3px 0; font-family: monospace; }
         return value;
     }
 
-    /**
-     * Creates a tree structure from the data.
-     * @param {Object} data The data to create the tree from.
-     * @param {Array} [path=[]] The current path in the tree.
-     * @param {string} [pathStr] The string representation of the path.
-     * @returns {HTMLElement} The created tree structure as an HTML element.
-    */
     createTree(data, path = []) {
         const ul = document.createElement('ul');
         const isObject = (val) => typeof val === 'object' && val !== null;
@@ -216,10 +204,7 @@ li { margin: 3px 0; font-family: monospace; }
         return ul;
     }
 
-    /**
-     * Renders the JSON tree in the iframe.
-     * @returns {Promise<void>}
-     * */
+
     async render() {
         if (this._isRendering) return;
         this._isRendering = true;
@@ -290,7 +275,6 @@ li { margin: 3px 0; font-family: monospace; }
     
         deepReplace(this.data, newData);
         this.render();
-        this.render();
         return this.data;
     }
 
@@ -302,22 +286,25 @@ li { margin: 3px 0; font-family: monospace; }
     
     bindIframeEvents() {
         const doc = this.iframe;
-    
-        // Remove old listeners if needed (optional enhancement)
-    
-        doc.addEventListener('click', (e) => {
+        
+        // Event delegation for click events on collapsible elements
+        doc.body.addEventListener('click', (e) => {
+            // Check if the clicked target is a collapsible node
             if (e.target.classList.contains('collapsible')) {
                 const parentLi = e.target.parentElement;
                 const path = e.target.getAttribute('data-path');
-    
+                
+                // Toggle open/close state
                 if (this.openPaths.has(path)) {
                     this.openPaths.delete(path);
                 } else {
                     this.openPaths.add(path);
                 }
     
+                // Toggle the 'collapsed' class to show/hide nested items
                 parentLi.classList.toggle('collapsed');
-    
+                
+                // Toggle the 'opened' or 'closed' state for the collapsible indicator
                 const affix = e.target.querySelector('.affix');
                 if (affix) {
                     affix.classList.toggle('opened');
@@ -326,20 +313,23 @@ li { margin: 3px 0; font-family: monospace; }
             }
         });
     
+        // Context menu to expand/collapse on right-click
         doc.addEventListener('contextmenu', (e) => {
             if (e.target.classList.contains('collapsible')) {
-                e.preventDefault();
+                e.preventDefault(); // Prevent the default context menu
                 const path = e.target.getAttribute('data-path');
-                const pathArray = path.split('.');
+                const pathArray = path.split('.'); // Convert path to array
                 const targetData = this.getDataByPath(this.data, pathArray);
     
+                // Recursively open or close the path
                 if (this.openPaths.has(path)) {
                     this.recursivelyClosePath(pathArray, targetData);
                 } else {
                     this.recursivelyOpenPath(pathArray, targetData);
                 }
     
-                this.render(); // After opening/closing, rerender
+                // Re-render after toggling
+                this.render();
             }
         });
     }
