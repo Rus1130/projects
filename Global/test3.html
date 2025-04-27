@@ -40,5 +40,7 @@
 
     let jtv2 = new JsonTreeViewer2(document.getElementById("tree"), {})
 
-    let proxy = jtv2.bindData(data)
+    data.fileSystem = []
+
+    jtv2.dynamicUpdate(data)
 </script>

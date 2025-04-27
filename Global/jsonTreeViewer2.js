@@ -1,3 +1,4 @@
+// i pulled this from a random stack overflow thread lol
 class DeepProxy {
     constructor(target, handler) {
         this._preproxy = new WeakMap();
@@ -91,8 +92,6 @@ li { margin: 3px 0; font-family: monospace; }
         iframe.style.height = '100%';
         iframe.style.width = '100%';
 
-        this.proxy = null;
-
         this.data = data;
         this.openPaths = new Set();
         this._isRendering = false;
@@ -149,7 +148,15 @@ li { margin: 3px 0; font-family: monospace; }
     formatValue(value) {
         if (value === undefined) return '<i>undefined</i>';
         if (value === null) return '<i>null</i>';
-        if (typeof value === 'string') return `"${value}"`;
+        if (typeof value === 'string') {
+            value = value.replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+
+            return `"${value}"`;
+        }
         return value;
     }
 
@@ -197,6 +204,7 @@ li { margin: 3px 0; font-family: monospace; }
         return ul;
     }
 
+
     async render() {
         if (this._isRendering) return;
         this._isRendering = true;
@@ -220,26 +228,66 @@ li { margin: 3px 0; font-family: monospace; }
         this._isRendering = false;
     }
 
-    update(newData) {
-        this.data = newData;
+    staticUpdate(data) {
+        this.data = data;
+        this.render();
         this.render();
     }
 
-    bindData(data) {
+    /**
+     * Dynamic update of the data with a new DeepProxy instance.
+     * @example
+     * const data = { key: 'value' };
+     * const viewer = new JsonTreeViewer2(container, data);
+     * const newData = { key: 'newValue' };
+     * viewer.dynamicUpdate(newData);
+     * 
+     * // or
+     * 
+     * const data = { key: 'value' };
+     * const viewer = new JsonTreeViewer2(container, data);
+     * const newData = { key: 'newValue' };
+     * let proxy = viewer.dynamicUpdate(newData);
+     * proxy.key = "anotherNewValue"; // This will also trigger a re-render
+     * @param {Object} data 
+     * @returns {DeepProxy}
+     */
+    dynamicUpdate(data) {
+        if(this._isRendering) return false;
+            // Deep comparison function to check if data has changed
+        function deepEqual(obj1, obj2) {
+
+            if(obj1 === obj2) // it's just the same object. No need to compare.
+                return true;
+        
+            if(isPrimitive(obj1) && isPrimitive(obj2)) // compare primitives
+                return obj1 === obj2;
+        
+            if(Object.keys(obj1).length !== Object.keys(obj2).length)
+                return false;
+        
+            // compare objects with same number of keys
+            for(let key in obj1)
+            {
+                if(!(key in obj2)) return false; //other object doesn't have this prop
+                if(!deepEqual(obj1[key], obj2[key])) return false;
+            }
+        
+            return true;
+        }
+        
+        //check if value is primitive
+        function isPrimitive(obj){
+            return (obj !== Object(obj));
+        }
+
+        // Check if the data has changed
+        if (deepEqual(data, this.data)) return false;
+
         this.data = new DeepProxy(data, {});
         this.render();
         this.render();
         return this.data;
-    }
-
-    makeReactive(obj, handler) {
-        if (typeof obj === 'object' && obj !== null) {
-            for (const key in obj) {
-                obj[key] = this.makeReactive(obj[key], handler);
-            }
-            return new Proxy(obj, handler);
-        }
-        return obj;
     }
 
     initClickHandler() {
