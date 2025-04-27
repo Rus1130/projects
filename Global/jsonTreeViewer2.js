@@ -236,6 +236,7 @@ li { margin: 3px 0; font-family: monospace; }
 
     /**
      * Dynamic update of the data with a new DeepProxy instance.
+     * @param {Object} newData
      * @example
      * const data = { key: 'value' };
      * const viewer = new JsonTreeViewer2(container, data);
@@ -249,7 +250,6 @@ li { margin: 3px 0; font-family: monospace; }
      * const newData = { key: 'newValue' };
      * let proxy = viewer.dynamicUpdate(newData);
      * proxy.key = "anotherNewValue"; // This will also trigger a re-render
-     * @param {Object} data 
      * @returns {DeepProxy}
      */
     dynamicUpdate(newData) {
