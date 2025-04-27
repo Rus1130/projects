@@ -18,8 +18,6 @@ class DeepProxy {
                 if (dp._handler.set) {
                     dp._handler.set(target, [...path, key], value, receiver);
                 }
-                jtv2.render();
-                jtv2.render();
                 return true;
             },
 
@@ -32,8 +30,6 @@ class DeepProxy {
                     }
                     return deleted;
                 }
-                jtv2.render();
-                jtv2.render();
                 return false;
             }
         }
@@ -96,7 +92,7 @@ li { margin: 3px 0; font-family: monospace; }
             JsonTreeViewer2.injectCSS(); // inject CSS on load only
             this.render(); // now safe to render
         });
-    
+        
         this.data = data;
         this.openPaths = new Set();
         this._isRendering = false;
@@ -163,6 +159,9 @@ li { margin: 3px 0; font-family: monospace; }
     }
 
     createTree(data, path = []) {
+        if(data.data != undefined && Object.keys(data).length == 1) {
+            data = data.data;
+        }
         const ul = document.createElement('ul');
         const isObject = (val) => typeof val === 'object' && val !== null;
 
@@ -233,7 +232,6 @@ li { margin: 3px 0; font-family: monospace; }
     staticUpdate(data) {
         this.data = data;
         this.render();
-        this.render();
     }
 
     /**
@@ -256,27 +254,29 @@ li { margin: 3px 0; font-family: monospace; }
      */
     dynamicUpdate(newData) {
         if (this._isRendering) return false;
+        
+        // get the render function
+        const render = this.render.bind(this);
     
-        function deepReplace(target, source) {
-            for (let key of Object.keys(target)) {
-                if (!(key in source)) {
-                    delete target[key];
-                }
+        // Create a new DeepProxy to the newData
+        const dp = new DeepProxy(newData, {
+            set(target, path, value, receiver) {
+                render(); 
+                return true;
+            },
+            deleteProperty(target, path) {
+                render();
+                return true; 
             }
-            for (let key of Object.keys(source)) {
-                if (typeof source[key] === 'object' && source[key] !== null) {
-                    if (typeof target[key] !== 'object' || target[key] === null) {
-                        target[key] = Array.isArray(source[key]) ? [] : {};
-                    }
-                    deepReplace(target[key], source[key]);
-                } else {
-                    target[key] = source[key];
-                }
-            }
-        }
+        });
+
     
-        deepReplace(this.data, newData);
+        // Use the DeepProxy for reactivity
+        this.data = dp;
+    
+        // Re-render the view with the updated data
         this.render();
+        
         return this.data;
     }
 
@@ -291,49 +291,77 @@ li { margin: 3px 0; font-family: monospace; }
         
         // Event delegation for click events on collapsible elements
         doc.body.addEventListener('click', (e) => {
-            // Check if the clicked target is a collapsible node
             if (e.target.classList.contains('collapsible')) {
-                const parentLi = e.target.parentElement;
+                e.preventDefault();
                 const path = e.target.getAttribute('data-path');
-                
-                // Toggle open/close state
+                const pathArray = path.split('.');
+                const targetData = this.getDataByPath(this.data, pathArray);
+        
                 if (this.openPaths.has(path)) {
                     this.openPaths.delete(path);
                 } else {
                     this.openPaths.add(path);
                 }
-    
-                // Toggle the 'collapsed' class to show/hide nested items
-                parentLi.classList.toggle('collapsed');
-                
-                // Toggle the 'opened' or 'closed' state for the collapsible indicator
-                const affix = e.target.querySelector('.affix');
-                if (affix) {
-                    affix.classList.toggle('opened');
-                    affix.classList.toggle('closed');
-                }
+        
+                // Instead of render(), manually toggle classes
+                this.updateTreeClasses();
             }
+            // if (e.target.classList.contains('collapsible')) {
+            //     const path = e.target.getAttribute('data-path');
+        
+            //     if (this.openPaths.has(path)) {
+            //         this.openPaths.delete(path);
+            //     } else {
+            //         this.openPaths.add(path);
+            //     }
+        
+            //     this.updateTreeClasses(); // Always reapply classes after changing openPaths
+            // }
         });
     
         // Context menu to expand/collapse on right-click
-        doc.addEventListener('contextmenu', (e) => {
+        doc.body.addEventListener('contextmenu', (e) => {
             if (e.target.classList.contains('collapsible')) {
-                e.preventDefault(); // Prevent the default context menu
+                e.preventDefault();
                 const path = e.target.getAttribute('data-path');
-                const pathArray = path.split('.'); // Convert path to array
+                const pathArray = path.split('.');
                 const targetData = this.getDataByPath(this.data, pathArray);
-    
-                // Recursively open or close the path
+        
                 if (this.openPaths.has(path)) {
                     this.recursivelyClosePath(pathArray, targetData);
                 } else {
                     this.recursivelyOpenPath(pathArray, targetData);
                 }
-    
-                // Re-render after toggling
-                this.render();
+        
+                // Instead of render(), manually toggle classes
+                this.updateTreeClasses();
             }
         });
+    }
+
+    updateTreeClasses() {
+        const doc = this.iframe;
+        const allCollapsibles = doc.querySelectorAll('.collapsible');
+    
+        for (let el of allCollapsibles) {
+            const path = el.getAttribute('data-path');
+            const parentLi = el.parentElement;
+            const affix = el.querySelector('.affix');
+    
+            if (this.openPaths.has(path)) {
+                parentLi.classList.remove('collapsed');
+                if (affix) {
+                    affix.classList.add('opened');
+                    affix.classList.remove('closed');
+                }
+            } else {
+                parentLi.classList.add('collapsed');
+                if (affix) {
+                    affix.classList.remove('opened');
+                    affix.classList.add('closed');
+                }
+            }
+        }
     }
 
     openAll() {
