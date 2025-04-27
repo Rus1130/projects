@@ -88,16 +88,18 @@ li { margin: 3px 0; font-family: monospace; }
         let iframe = document.createElement('iframe');
         container.appendChild(iframe);
         this.container = iframe;
-
+    
         iframe.style.height = '100%';
         iframe.style.width = '100%';
-
+    
+        iframe.addEventListener('load', () => {
+            JsonTreeViewer2.injectCSS(); // inject CSS on load only
+            this.render(); // now safe to render
+        });
+    
         this.data = data;
         this.openPaths = new Set();
         this._isRendering = false;
-        this.initClickHandler();
-        JsonTreeViewer2.injectCSS();
-        this.render();
     }
 
     get iframe() {
