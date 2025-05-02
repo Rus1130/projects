@@ -190,7 +190,7 @@ li { margin: 3px 0; font-family: monospace; }
             } else {
                 const span = document.createElement('span');
                 span.innerHTML = this.formatValue(value);
-                span.style.cursor = 'copy';
+                span.style.cursor = 'pointer';
                 span.addEventListener('click', () => {
                   navigator.clipboard.writeText(value);
                 });
