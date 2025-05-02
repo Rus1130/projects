@@ -188,7 +188,14 @@ li { margin: 3px 0; font-family: monospace; }
                     li.appendChild(this.createTree(value, fullPath));
                 }
             } else {
-                li.innerHTML = `<span class="key">${key}</span>: ${this.formatValue(value)}`;
+                const span = document.createElement('span');
+                span.innerHTML = this.formatValue(value);
+                span.style.cursor = 'copy';
+                span.addEventListener('click', () => {
+                  navigator.clipboard.writeText(value);
+                });
+                li.innerHTML = `<span class="key">${key}</span>: `;
+                li.appendChild(span);
             }
 
             ul.appendChild(li);
