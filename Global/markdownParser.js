@@ -199,6 +199,11 @@ class MarkdownParser {
         return this;
     }
 
+    rendered() {
+        if(this.html == null) throw new Error("HTML must be generated before getting rendered HTML");
+        return this.html.replaceAll("¦¶¶¶¶HREF¶¶¶¶¦", window.location.href);
+    }
+
     /**
      * Opens the HTML in the specified way.
      * 

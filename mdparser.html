@@ -10,8 +10,10 @@
     const url = urlParams.get('url');
     const toc = urlParams.get('toc') === 'true';
 
-    new MarkdownParser("url", url)
+    let mdp = new MarkdownParser("url", url)
         .toc(toc)
         .generate()
         .open("thisTab");
+    
+    console.log(mdp.rendered());
 </script>
