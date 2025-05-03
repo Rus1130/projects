@@ -50,7 +50,6 @@ class MarkdownParser {
             height: 100%;
             overflow-y: auto;
             margin-left: 0;
-            width: max(calc(auto + 100px), auto);
         }
 
         .toc > ul {
