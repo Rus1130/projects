@@ -46,6 +46,7 @@ class MarkdownParser {
             background-color: #f9f9f9;
             margin: 8px;
             padding: 5px;
+            padding-right: 100px;
             font-size: 0.9em;
             height: 100%;
             overflow-y: auto;
