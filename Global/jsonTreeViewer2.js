@@ -371,17 +371,17 @@ li { margin: 3px 0; font-family: monospace; }
         }
     }
 
-    openAll() {
-        const openAllPaths = (obj, path = []) => {
+    expandAll() {
+        const expandAllPaths = (obj, path = []) => {
             if (typeof obj === 'object' && obj !== null) {
                 for (const key in obj) {
                     const newPath = [...path, key];
                     this.openPaths.add(this.pathToString(newPath));
-                    openAllPaths(obj[key], newPath);
+                    expandAllPaths(obj[key], newPath);
                 }
             }
         };
-        openAllPaths(this.data);
+        expandAllPaths(this.data);
         this.render();
     }
 
