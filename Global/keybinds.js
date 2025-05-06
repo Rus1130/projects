@@ -22,7 +22,7 @@ class Keybinds {
     }
 
     /**
-     * @returns {Object.<string, number>} the current mouse position
+     * @returns {{x: Number, y: Number}} the current mouse position
      */
     get mousePos() {
         return {x: Keybinds.mouseX, y: Keybinds.mouseY};
