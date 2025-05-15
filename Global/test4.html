@@ -1,0 +1,30 @@
+<style>
+    #pie-chart {
+        width: 400px;
+        height: 400px;
+        border: 1px solid black;
+    }
+</style>
+<head>
+</head>
+<body>
+    <div id="pie-chart"></div>
+</body>
+<script type="module">
+    import { PieChart } from './another-chart-library-2.js'
+    let pc = new PieChart(document.getElementById("pie-chart"))
+
+    let data = [];
+
+    for(let i = 0; i < 360; i += 1) {
+        data.push({
+            arc: 1,
+            color: `hsl(${i}, 100%, 50%)`,
+            label: `hsl(${i}, 100%, 50%)`,
+            edgeColor: `hsl(${i}, 100%, 50%)`,
+            amount: 10,
+        })
+    }
+
+    pc.create({title: 'meow', useDegrees: true, data: data});
+</script>
