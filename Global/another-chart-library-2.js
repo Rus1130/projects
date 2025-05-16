@@ -125,7 +125,7 @@ export class PieChart {
         }
 
 
-        const hoverLength = 150;
+        const hoverLength = 800;
 
         for (let i = 0; i < arcList.length; i++) {
             const arc = arcList[i];
