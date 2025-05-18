@@ -26,5 +26,14 @@
         })
     }
 
-    pc.create({title: 'meow', useDegrees: true, data: data});
+    pc.create({title: 'meow', useDegrees: true, data: [
+        { arc: 10, color: 'red',    label: 'red',    edgeColor: 'red',    amount: 20, type: "grow"},
+        { arc: 20, color: 'blue',   label: 'blue',   edgeColor: 'blue',   amount: 20, type: "grow"},
+        { arc: 30, color: 'green',  label: 'green',  edgeColor: 'green',  amount: 20, type: "pop"},
+        { arc: 40, color: 'yellow', label: 'yellow', edgeColor: 'yellow', amount: 20, type: "grow"},
+        { arc: 50, color: 'purple', label: 'purple', edgeColor: 'purple', amount: 20, type: "grow"},
+        { arc: 60, color: 'orange', label: 'orange', edgeColor: 'orange', amount: 20, type: "pop"},
+        { arc: 70, color: 'pink',   label: 'pink',   edgeColor: 'pink',   amount: 20, type: "pop"},
+        { arc: 80, color: 'cyan',   label: 'cyan',   edgeColor: 'cyan',   amount: 20, type: "grow"},
+    ]});
 </script>

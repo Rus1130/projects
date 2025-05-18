@@ -31,7 +31,7 @@ export class PieChart {
      * @param {number} [options.popAmount=5] - The amount of pixels a slice pops out from the center when hovered.
      * @param {boolean} [options.showPercentages=false] - Whether to show percentage values on the chart.
      * @param {boolean} [options.donut=false] - Whether to render the chart as a donut instead of a full pie.
-     * @param {Array<{arc: number, color: string, label: string}>} [options.data={}] - The data used to generate the pie chart.
+     * @param {Array<{arc: number, color: string, label: string, edgeColor: string, type: string, amount: number}>} [options.data={}] - The data used to generate the pie chart.
      *      Each data item should include:
      *        - `arc`: The portion of the circle (as a percentage or degrees, depending on `useDegrees`)
      *        - `color`: The fill color for the chart slice.
@@ -120,12 +120,12 @@ export class PieChart {
             arc.remember('midAngle', (startAngle + endAngle) / 2);
             arc.remember('startAngle', startAngle);
             arc.remember('endAngle', endAngle);
-            arc.scale(0.98, 0.98)
+            arc.remember('originalD', arc.attr('d'));
             arcList.push(arc);
         }
 
 
-        const hoverLength = 800;
+        const hoverLength = 150;
 
         for (let i = 0; i < arcList.length; i++) {
             const arc = arcList[i];
@@ -156,7 +156,21 @@ export class PieChart {
                         .y(arc.remember('originalY'));
                 });
             } else if(type == "grow"){
+                let growArc = this.draw.path(getD(this.chart.circle.attr('r') + actionNumbers[i], arc.remember('startAngle'), arc.remember('endAngle')))
+                    .dx(this.centerX/2 - actionNumbers[i])
+                    .dy(this.centerY/2 - actionNumbers[i])
+                
+                growArc.hide();
 
+                arc.on('mouseenter', function () {
+                    arc.animate(hoverLength)
+                        .attr({ d: growArc.attr('d') })
+                });
+
+                arc.on('mouseleave', function () {
+                    arc.animate(hoverLength)
+                        .attr({ d: arc.remember('originalD') })
+                });
             }
         }
     }
