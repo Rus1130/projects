@@ -28,50 +28,51 @@ export class PieChart {
      * @param {boolean} [options.useDegrees=false] - If true, `data[].arc` values are treated as degrees (0–360).
      *                                               If false, they are treated as percentages (0–100) and converted to degrees.
      * @param {string} [options.title="Pie Chart"] - The title of the chart.
-     * @param {number} [options.popAmount=5] - The amount of pixels a slice pops out from the center when hovered.
      * @param {boolean} [options.showPercentages=false] - Whether to show percentage values on the chart.
      * @param {boolean} [options.donut=false] - Whether to render the chart as a donut instead of a full pie.
-     * @param {Array<{arc: number, color: string, label: string, edgeColor: string, type: string, amount: number}>} [options.data={}] - The data used to generate the pie chart.
+     * @param {number} [options.borderWidth=0] - The width of the border around each pie slice.
+     * @param {Array<{arc: number, color: string, label: string, borderWidth: number, type: string, amount: number}>} [options.data={}] - The data used to generate the pie chart.
      *      Each data item should include:
      *        - `arc`: The portion of the circle (as a percentage or degrees, depending on `useDegrees`)
      *        - `color`: The fill color for the chart slice.
      *        - `label`: The label for the slice.
-     *       - `edgeColor`: The color of the stroke outlining the slice (optional, default 'transparent').
+     *       - `borderColor`: The color of the stroke of the outer edge of the slice (optional, default 'transparent').
      *       - `type`: The type of action to perform on hover (optional, default 'pop'). Valid options are 'static', 'pop', and 'grow'.
      *       - `amount`: The amount of pixels to pop out from the center when hovered (optional, default 10).
-     * @param {number} [options.sliceOutlineWidth=1] - The width of the stroke outlining each pie slice.
      * @param {number} [options.size=this.chartHeight/2] - The radius of the pie chart.
      */
     create(options = {}){
         if(this.draw == null) throw new Error('No SVG element found. Please create a new PieChart instance with a valid element.');
         this.draw.clear();
 
-        const {useDegrees = false, title = "Pie Chart", showPercentages = false, donut = false, data = {}, sliceOutlineWidth = 1, size = this.chartHeight/2 } = options;
+        const {useDegrees = false, title = "Pie Chart", borderWidth = 1, showPercentages = false, donut = false, data = {}, size = this.chartHeight/2 } = options;
 
         this.chart.title = title
         this.chart.showPercentages = showPercentages
         this.chart.usePercent = useDegrees
         this.chart.donut = useDegrees
         this.chart.data = data
+        this.chart.size = size
+        this.chart.borderWidth = borderWidth
 
         this.chart.circle = this.draw.circle(size).fill('transparent').stroke({ width: 0, color: 'black' }).center(this.centerX, this.centerY)
 
         let arcs = [];
         let colors = [];
         let labels = [];
-        let edgeColors = [];
         let hoverActions = [];
         let actionNumbers = [];
+        let borderColors = [];
 
         data.forEach((item) => {
             arcs.push(item.arc * (useDegrees ? 1 : 3.6));
             colors.push(item.color);
             labels.push(item.label);
-            edgeColors.push(item.edgeColor || "transparent"); 
             let validHoverActions = ["static", "pop", "grow"]
             if(!validHoverActions.includes((item.type || "static"))) throw new Error(`Invalid hoverAction: ${item.hoverAction}. Valid options are: ${validHoverActions.join(", ")}`);
             hoverActions.push(item.type || "pop");
             actionNumbers.push(item.amount || 10);
+            borderColors.push(item.borderColor || 'transparent');
         })
 
         function getD(radius, startAngle, endAngle) {
@@ -106,6 +107,7 @@ export class PieChart {
         let totalArc = 0;
 
         let arcList = [];
+        let borderArcs = []
 
         for(let i = 0; i < arcs.length; i++){
             let startAngle = structuredClone(totalArc);
@@ -114,14 +116,29 @@ export class PieChart {
 
             let arc = this.draw.path(getD(this.chart.circle.attr('r'), startAngle, endAngle))
                 .fill(colors[i])
-                .dx(this.centerX/2)
-                .dy(this.centerY/2)
-                .stroke({ width: sliceOutlineWidth, color: edgeColors[i] });
+                .dx(this.centerX - this.chart.size/2)
+                .dy(this.centerY - this.chart.size/2)
+                .stroke({ width: 0, color: 'transparent'});
             arc.remember('midAngle', (startAngle + endAngle) / 2);
             arc.remember('startAngle', startAngle);
             arc.remember('endAngle', endAngle);
             arc.remember('originalD', arc.attr('d'));
             arcList.push(arc);
+
+            let borderArc = arc.clone()
+                .attr({ d: getD(this.chart.circle.attr('r') + this.chart.borderWidth, startAngle, endAngle) })
+                .dx(this.centerX - this.chart.size/2 - this.chart.borderWidth)
+                .dy(this.centerY - this.chart.size/2 - this.chart.borderWidth)
+                .fill(borderColors[i])
+
+            this.draw.add(borderArc);
+
+            borderArc.remember('originalX', borderArc.x());
+            borderArc.remember('originalY', borderArc.y());
+            borderArc.remember('originalD', borderArc.attr('d'));
+
+            borderArc.back()
+            borderArcs.push(borderArc);
         }
 
 
@@ -148,31 +165,50 @@ export class PieChart {
                     arc.animate(hoverLength)
                         .dx(-dx)
                         .dy(-dy);
-                });
+
+                    borderArcs[i].animate(hoverLength)
+                        .dx(-dx)
+                        .dy(-dy);
+                }.bind(this));
 
                 arc.on('mouseleave', function () {
                     arc.animate(hoverLength)
                         .x(arc.remember('originalX'))
                         .y(arc.remember('originalY'));
-                });
+
+                    borderArcs[i].animate(hoverLength)
+                        .x(borderArcs[i].remember('originalX'))
+                        .y(borderArcs[i].remember('originalY'));
+                }.bind(this));
             } else if(type == "grow"){
                 let growArc = this.draw.path(getD(this.chart.circle.attr('r') + actionNumbers[i], arc.remember('startAngle'), arc.remember('endAngle')))
-                    .dx(this.centerX/2 - actionNumbers[i])
-                    .dy(this.centerY/2 - actionNumbers[i])
+                    .dx(this.centerX - this.chart.size/2 - actionNumbers[i])
+                    .dy(this.centerY - this.chart.size/2 - actionNumbers[i])
                 
                 growArc.hide();
 
                 arc.on('mouseenter', function () {
                     arc.animate(hoverLength)
                         .attr({ d: growArc.attr('d') })
-                });
+
+                    borderArcs[i].animate(hoverLength)
+                        .attr({ d: growArc.attr('d') })
+                }.bind(this));
 
                 arc.on('mouseleave', function () {
                     arc.animate(hoverLength)
                         .attr({ d: arc.remember('originalD') })
-                });
+                    
+                    borderArcs[i].animate(hoverLength)
+                        .attr({ d: borderArcs[i].remember('originalD') })
+                }.bind(this));
             }
         }
+
+        const lightenColor = (hex, p = 10) => '#' + hex.replace(/^#/, '').match(/.{2}/g)
+            .map(c => ((1 - p / 100) * parseInt(c, 16) + 255 * (p / 100)) | 0)
+            .map(c => c.toString(16).padStart(2, '0')).join('');
+
     }
 
     /*
