@@ -112,6 +112,7 @@ export class PieChart {
         for(let i = 0; i < arcs.length; i++){
             let startAngle = structuredClone(totalArc);
             totalArc += arcs[i];
+
             let endAngle = structuredClone(totalArc);
 
             let arc = this.draw.path(getD(this.chart.circle.attr('r'), startAngle, endAngle))
