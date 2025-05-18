@@ -30,6 +30,7 @@ export class PieChart {
      * @param {string} [options.title="Pie Chart"] - The title of the chart.
      * @param {boolean} [options.showPercentages=false] - Whether to show percentage values on the chart.
      * @param {boolean} [options.donut=false] - Whether to render the chart as a donut instead of a full pie.
+     * @param {boolean} [options.donutRadius=this.chartHeight/4] - The radius of the donut hole. (default is a quarter of the chart height)
      * @param {number} [options.borderWidth=0] - The width of the border around each pie slice.
      * @param {Array<{arc: number, color: string, label: string, borderWidth: number, type: string, amount: number}>} [options.data={}] - The data used to generate the pie chart.
      *      Each data item should include:
@@ -39,61 +40,88 @@ export class PieChart {
      *       - `borderColor`: The color of the stroke of the outer edge of the slice (optional, default 'transparent').
      *       - `type`: The type of action to perform on hover (optional, default 'pop'). Valid options are 'static', 'pop', and 'grow'.
      *       - `amount`: The amount of pixels to pop out from the center when hovered (optional, default 10).
-     * @param {number} [options.size=this.chartHeight/2] - The radius of the pie chart.
+     * @param {number} [options.size=this.chartHeight/2] - The radius of the pie chart. (default is half the height of the chart container)
      */
     create(options = {}){
         if(this.draw == null) throw new Error('No SVG element found. Please create a new PieChart instance with a valid element.');
         this.draw.clear();
 
-        const {useDegrees = false, title = "Pie Chart", borderWidth = 1, showPercentages = false, donut = false, data = {}, size = this.chartHeight/2 } = options;
+        const {useDegrees = false, title = "Pie Chart", borderWidth = 1, showPercentages = false, donut = false, data = {}, size = this.chartHeight/2, donutRadius = size/4 } = options;
 
         this.chart.title = title
         this.chart.showPercentages = showPercentages
-        this.chart.usePercent = useDegrees
+        this.chart.useDegrees = useDegrees
         this.chart.donut = useDegrees
         this.chart.data = data
         this.chart.size = size
         this.chart.borderWidth = borderWidth
+        this.chart.donutRadius = donut ? donutRadius : 0
+        this.options = options
 
-        this.chart.circle = this.draw.circle(size).fill('transparent').stroke({ width: 0, color: 'black' }).center(this.centerX, this.centerY)
+        this.chart.measures = {
+            centerCircle: this.draw.circle(size).fill('transparent').stroke({ width: 0, color: 'black' }).center(this.centerX, this.centerY)
+        }
 
-        let arcs = [];
-        let colors = [];
-        let labels = [];
-        let hoverActions = [];
-        let actionNumbers = [];
-        let borderColors = [];
+        const lists = {
+            arcs: [],
+            colors: [],
+            labels: [],
+            hoverTypes: [],
+            hoverNumbers: [],
+            borderColors: [],
+            arcElements: [],
+            borderArcElements: [],
+        }
+
+        this.lists = lists;
 
         data.forEach((item) => {
-            arcs.push(item.arc * (useDegrees ? 1 : 3.6));
-            colors.push(item.color);
-            labels.push(item.label);
+            lists.arcs.push(item.arc * (useDegrees ? 1 : 3.6));
+            lists.colors.push(item.color);
+            lists.labels.push(item.label);
             let validHoverActions = ["static", "pop", "grow"]
             if(!validHoverActions.includes((item.type || "static"))) throw new Error(`Invalid hoverAction: ${item.hoverAction}. Valid options are: ${validHoverActions.join(", ")}`);
-            hoverActions.push(item.type || "pop");
-            actionNumbers.push(item.amount || 10);
-            borderColors.push(item.borderColor || 'transparent');
+            lists.hoverTypes.push(item.type || "pop");
+            lists.hoverNumbers.push(item.amount || 10);
+            lists.borderColors.push(item.borderColor || 'transparent');
         })
 
-        function getD(radius, startAngle, endAngle) {
-            const isCircle = endAngle - startAngle === 360;
-            if (isCircle) {
-                endAngle--;
-            }
-            const start = polarToCartesian(radius, startAngle);
-            const end = polarToCartesian(radius, endAngle);
-            const largeArcFlag = endAngle - startAngle <= 180 ? 0 : 1;
-            const d = [
-                "M", start.x, start.y,
-                "A", radius, radius, 0, largeArcFlag, 1, end.x, end.y
-            ];
+        function getD(outerRadius, startAngle, endAngle, innerRadius = 0) {
+            const startRad = (startAngle - 90) * Math.PI / 180;
+            const endRad = (endAngle - 90) * Math.PI / 180;
 
-            if (isCircle) {
-                d.push("Z");
-            } else {
-                d.push("L", radius, radius, "L", start.x, start.y, "Z");
+            const largeArc = (endAngle - startAngle) > 180 ? 1 : 0;
+
+            // Outer arc points
+            const x1 = Math.cos(startRad) * outerRadius;
+            const y1 = Math.sin(startRad) * outerRadius;
+            const x2 = Math.cos(endRad) * outerRadius;
+            const y2 = Math.sin(endRad) * outerRadius;
+
+            if (innerRadius === 0) {
+                // Standard pie slice — from center
+                return [
+                    `M 0 0`,
+                    `L ${x1} ${y1}`,
+                    `A ${outerRadius} ${outerRadius} 0 ${largeArc} 1 ${x2} ${y2}`,
+                    `Z`
+                ].join(' ');
             }
-            return d.join(" ");
+
+            // Inner arc points (reversed direction)
+            const x3 = Math.cos(endRad) * innerRadius;
+            const y3 = Math.sin(endRad) * innerRadius;
+            const x4 = Math.cos(startRad) * innerRadius;
+            const y4 = Math.sin(startRad) * innerRadius;
+
+            // Donut slice (annular sector)
+            return [
+                `M ${x1} ${y1}`,
+                `A ${outerRadius} ${outerRadius} 0 ${largeArc} 1 ${x2} ${y2}`,
+                `L ${x3} ${y3}`,
+                `A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${x4} ${y4}`,
+                `Z`
+            ].join(' ');
         }
 
         function polarToCartesian(radius, angleInDegrees) {
@@ -106,31 +134,30 @@ export class PieChart {
 
         let totalArc = 0;
 
-        let arcList = [];
-        let borderArcs = []
+        let centerCircleR = this.chart.measures.centerCircle.attr('r');
 
-        for(let i = 0; i < arcs.length; i++){
+        for(let i = 0; i < lists.arcs.length; i++){
             let startAngle = structuredClone(totalArc);
-            totalArc += arcs[i];
+            totalArc += lists.arcs[i];
 
             let endAngle = structuredClone(totalArc);
 
-            let arc = this.draw.path(getD(this.chart.circle.attr('r'), startAngle, endAngle))
-                .fill(colors[i])
-                .dx(this.centerX - this.chart.size/2)
-                .dy(this.centerY - this.chart.size/2)
+            let arc = this.draw.path(getD(centerCircleR, startAngle, endAngle, this.chart.donutRadius))
+                .fill(lists.colors[i])
+                .dx(this.chartWidth/2)
+                .dy(this.chartHeight/2)
                 .stroke({ width: 0, color: 'transparent'});
             arc.remember('midAngle', (startAngle + endAngle) / 2);
             arc.remember('startAngle', startAngle);
             arc.remember('endAngle', endAngle);
             arc.remember('originalD', arc.attr('d'));
-            arcList.push(arc);
+            lists.arcElements.push(arc);
 
             let borderArc = arc.clone()
-                .attr({ d: getD(this.chart.circle.attr('r') + this.chart.borderWidth, startAngle, endAngle) })
-                .dx(this.centerX - this.chart.size/2 - this.chart.borderWidth)
-                .dy(this.centerY - this.chart.size/2 - this.chart.borderWidth)
-                .fill(borderColors[i])
+                .attr({ d: getD(centerCircleR, startAngle, endAngle, this.chart.size/2 + this.chart.borderWidth) })
+                .dx(this.chartWidth/2)
+                .dy(this.chartHeight/2)
+                .fill(lists.borderColors[i])
 
             this.draw.add(borderArc);
 
@@ -139,19 +166,19 @@ export class PieChart {
             borderArc.remember('originalD', borderArc.attr('d'));
 
             borderArc.back()
-            borderArcs.push(borderArc);
+            lists.borderArcElements.push(borderArc);
         }
 
 
         const hoverLength = 150;
 
-        for (let i = 0; i < arcList.length; i++) {
-            const arc = arcList[i];
+        for (let i = 0; i < lists.arcElements.length; i++) {
+            const arc = lists.arcElements[i];
 
-            let type = hoverActions[i];
+            let type = lists.hoverTypes[i];
 
             if(type == "pop"){
-                const popAmount = actionNumbers[i];
+                const popAmount = lists.hoverNumbers[i];
 
                 arc.remember('originalX', arc.x());
                 arc.remember('originalY', arc.y());
@@ -167,7 +194,7 @@ export class PieChart {
                         .dx(-dx)
                         .dy(-dy);
 
-                    borderArcs[i].animate(hoverLength)
+                    lists.borderArcElements[i].animate(hoverLength)
                         .dx(-dx)
                         .dy(-dy);
                 }.bind(this));
@@ -177,31 +204,26 @@ export class PieChart {
                         .x(arc.remember('originalX'))
                         .y(arc.remember('originalY'));
 
-                    borderArcs[i].animate(hoverLength)
-                        .x(borderArcs[i].remember('originalX'))
-                        .y(borderArcs[i].remember('originalY'));
+                    lists.borderArcElements[i].animate(hoverLength)
+                        .x(lists.borderArcElements[i].remember('originalX'))
+                        .y(lists.borderArcElements[i].remember('originalY'));
                 }.bind(this));
+
             } else if(type == "grow"){
-                let growArc = this.draw.path(getD(this.chart.circle.attr('r') + actionNumbers[i], arc.remember('startAngle'), arc.remember('endAngle')))
-                    .dx(this.centerX - this.chart.size/2 - actionNumbers[i])
-                    .dy(this.centerY - this.chart.size/2 - actionNumbers[i])
+                let growArc = this.draw.path(getD(centerCircleR + lists.hoverNumbers[i], arc.remember('startAngle'), arc.remember('endAngle'), this.chart.donutRadius))
+                    .dx(this.centerX)
+                    .dy(this.centerY)
                 
-                growArc.hide();
+                growArc.remove();
 
                 arc.on('mouseenter', function () {
                     arc.animate(hoverLength)
-                        .attr({ d: growArc.attr('d') })
-
-                    borderArcs[i].animate(hoverLength)
                         .attr({ d: growArc.attr('d') })
                 }.bind(this));
 
                 arc.on('mouseleave', function () {
                     arc.animate(hoverLength)
                         .attr({ d: arc.remember('originalD') })
-                    
-                    borderArcs[i].animate(hoverLength)
-                        .attr({ d: borderArcs[i].remember('originalD') })
                 }.bind(this));
             }
         }
