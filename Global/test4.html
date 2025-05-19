@@ -1,7 +1,7 @@
 <style>
     #pie-chart {
-        width: 400px;
-        height: 400px;
+        width: 500px;
+        height: 500px;
         border: 1px solid black;
     }
 </style>
@@ -27,7 +27,7 @@
         })
     }
 
-    pc.create({title: 'meow', useDegrees: true, borderWidth: 10, donut: false, donutRadius: 60, data: [
+    pc.create({title: 'meow', useDegrees: true, borderWidth: 5, donut: false, showPercentages: true, donutRadius: 60, data: [
         { arc: 10, color: 'red',    label: 'red',    borderColor: 'black', amount: 20, type: "pop"},
         { arc: 20, color: 'blue',   label: 'blue',   borderColor: 'black', amount: 20, type: "pop"},
         { arc: 30, color: 'green',  label: 'green',  borderColor: 'black', amount: 20, type: "pop"},

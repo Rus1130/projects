@@ -21,6 +21,23 @@ export class PieChart {
         this.chart = {};
     }
 
+    centroid(start, end, circle_r) {
+        let midAngle = (start + end) / 2;
+        let averageRadius = (circle_r + this.chart.donutRadius) / 2;
+        let radians = (midAngle - 90) * Math.PI / 180;
+
+        let sliceCenter = {
+            x: this.centerX + averageRadius * Math.cos(radians),
+            y: this.centerY + averageRadius * Math.sin(radians)
+        };
+
+        return sliceCenter;
+    }
+
+    lightenColor = (hex, p = 10) => '#' + hex.replace(/^#/, '').match(/.{2}/g)
+        .map(c => ((1 - p / 100) * parseInt(c, 16) + 255 * (p / 100)) | 0)
+        .map(c => c.toString(16).padStart(2, '0')).join('');
+
     /**
      * Creates and renders a pie chart using the provided options.
      *
@@ -71,6 +88,7 @@ export class PieChart {
             borderColors: [],
             arcElements: [],
             borderArcElements: [],
+            textGroups: [],
         }
 
         this.lists = lists;
@@ -167,6 +185,68 @@ export class PieChart {
 
             borderArc.back()
             lists.borderArcElements.push(borderArc);
+
+            let innerPoint = this.centroid(startAngle, endAngle, centerCircleR);
+
+            let midAngle = (startAngle + endAngle) / 2;
+            let radians = (midAngle - 90) * Math.PI / 180;
+            let extendedRadius = centerCircleR + 15;
+
+            let outerPoint = {
+                x: this.centerX + extendedRadius * Math.cos(radians),
+                y: this.centerY + extendedRadius * Math.sin(radians)
+            };
+
+            let textGroup = this.draw.group();
+            
+
+            let line = this.draw.line(innerPoint.x, innerPoint.y, outerPoint.x, outerPoint.y)
+                .stroke({ width: 1, color: 'black' })
+                .attr("pointer-events", "none");
+
+            let text = this.draw.text(lists.labels[i])
+                .font({ size: 12, anchor: 'middle', fill: 'black' })
+                .dx(outerPoint.x)
+                .dy(outerPoint.y - 1)
+                .attr('text-decoration', 'underline')
+
+            if(this.chart.showPercentages){
+                function roundToPlace(num, place) {
+                    const factor = Math.pow(10, place);
+                    return Math.round(num * factor) / factor;
+                }
+
+                let percentage = roundToPlace(lists.arcs[i] / 360 * 100, 2);
+                text.text(text.text() + ` (${percentage}%)`);
+            }
+
+            let textBBox = text.bbox();
+        
+            text.dx(textBBox.w/2)
+
+            // get the angle between outerPoint and centerPoint
+            let angle = Math.atan2(outerPoint.y - this.centerY, outerPoint.x - this.centerX) * 180 / Math.PI;
+
+            if(angle < 0) angle += 360;
+
+            if(angle > 90 && angle < 270){
+                text.dx(-textBBox.w)
+            }
+
+            if(angle == 90) {
+                text.dx(2)
+            }
+
+            textGroup.add(line);
+            textGroup.add(text);
+
+
+            textGroup.remember('originalX', textGroup.x());
+            textGroup.remember('originalY', textGroup.y());
+
+            textGroup.attr('pointer-events', 'none');
+
+            this.lists.textGroups.push(textGroup);
         }
 
 
@@ -197,6 +277,12 @@ export class PieChart {
                     lists.borderArcElements[i].animate(hoverLength)
                         .dx(-dx)
                         .dy(-dy);
+
+                    lists.textGroups[i].animate(hoverLength)
+                        .dx(-dx)
+                        .dy(-dy);
+
+                    
                 }.bind(this));
 
                 arc.on('mouseleave', function () {
@@ -207,6 +293,10 @@ export class PieChart {
                     lists.borderArcElements[i].animate(hoverLength)
                         .x(lists.borderArcElements[i].remember('originalX'))
                         .y(lists.borderArcElements[i].remember('originalY'));
+
+                    lists.textGroups[i].animate(hoverLength)
+                        .x(lists.textGroups[i].remember('originalX'))
+                        .y(lists.textGroups[i].remember('originalY'));
                 }.bind(this));
 
             } else if(type == "grow"){
@@ -219,37 +309,27 @@ export class PieChart {
                 arc.on('mouseenter', function () {
                     arc.animate(hoverLength)
                         .attr({ d: growArc.attr('d') })
+
+                    const angle = arc.remember('midAngle');
+
+                    const angleRad = (angle + 90) * Math.PI / 180;
+                    const dx = Math.cos(angleRad) * lists.hoverNumbers[i];
+                    const dy = Math.sin(angleRad) * lists.hoverNumbers[i];
+
+                    lists.textGroups[i].animate(hoverLength)
+                        .dx(-dx)
+                        .dy(-dy);
                 }.bind(this));
 
                 arc.on('mouseleave', function () {
                     arc.animate(hoverLength)
                         .attr({ d: arc.remember('originalD') })
+
+                    lists.textGroups[i].animate(hoverLength)
+                        .x(lists.textGroups[i].remember('originalX'))
+                        .y(lists.textGroups[i].remember('originalY'));
                 }.bind(this));
             }
         }
-
-        const lightenColor = (hex, p = 10) => '#' + hex.replace(/^#/, '').match(/.{2}/g)
-            .map(c => ((1 - p / 100) * parseInt(c, 16) + 255 * (p / 100)) | 0)
-            .map(c => c.toString(16).padStart(2, '0')).join('');
-
-    }
-
-    /*
-    data = [
-        {
-            arc: Number,
-            color: String,
-            label: String,
-        }
-    ]
-    */
-    /**
-     * @param {Array<{arc: number, color: string, label: string}>} data The data to render the chart
-     * Each object should have the following properties:
-     *   - `arc` {number} - The arc size or angle for the chart segment.
-     *   - `color` {string} - The color of the chart segment.
-     *   - `label` {string} - The label associated with the segment.
-     */
-    render(data = []) {
     }
 }
