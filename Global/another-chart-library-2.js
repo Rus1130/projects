@@ -34,10 +34,6 @@ export class PieChart {
         return sliceCenter;
     }
 
-    lightenColor = (hex, p = 10) => '#' + hex.replace(/^#/, '').match(/.{2}/g)
-        .map(c => ((1 - p / 100) * parseInt(c, 16) + 255 * (p / 100)) | 0)
-        .map(c => c.toString(16).padStart(2, '0')).join('');
-
     /**
      * Creates and renders a pie chart using the provided options.
      *
@@ -190,7 +186,7 @@ export class PieChart {
 
             let midAngle = (startAngle + endAngle) / 2;
             let radians = (midAngle - 90) * Math.PI / 180;
-            let extendedRadius = centerCircleR + 15;
+            let extendedRadius = centerCircleR + this.chart.borderWidth + 15;
 
             let outerPoint = {
                 x: this.centerX + extendedRadius * Math.cos(radians),
@@ -331,5 +327,11 @@ export class PieChart {
                 }.bind(this));
             }
         }
+
+        this.draw.text().tspan(title).fill('#8e8e8e')
+        .y(5)
+        .x(9)
+        .font({ family: 'Helvetica' })
+
     }
 }
