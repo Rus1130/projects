@@ -256,8 +256,6 @@ class Typewriter {
         this.options.customDelays[char] = delay;
     }
 }
-
-
 class Typewriter2 {
     /*
     bold: *text*
@@ -520,6 +518,211 @@ class Typewriter2 {
         this.control.isFinished = false;
         this.control.index = 0;
         this.outputEl.innerHTML = "";
+    }
+}
+
+class Typewriter3 {
+    /**
+     * @param {String} text - The text to be typed.
+     * @param {HTMLElement} outputElement - The HTML element where the text will be displayed.
+     * @param {Object} options - Options for the typewriter effect.
+     * @param {Number} [options.charDelay=100] - Delay between typing each character in milliseconds.
+     * @param {Number} [options.newlineDelay=0] - Delay after typing a newline character in milliseconds.
+     * @param {Object} [options.styles] - Object defining style characters.
+     * @param {String} [options.styles.italic="/"] - Character to italicize text.
+     * @param {String} [options.styles.bold="*"] - Character to bold text
+     * @param {String} [options.styles.underline="_"] - Character to underline text.
+     * @param {String} [options.styles.strikethrough="-"] - Character to strikethrough text.
+     * @param {String} [options.styles.escape="\\"] - Character to escape special characters.
+     * @param {Object<string, number>} [options.customDelays] - Custom delays for specific characters.
+     * @param {Function} [options.onCharacterDisplayed] - Callback function that is called after each character is displayed.
+     * @param {Function} [options.onFinish] - Callback function that is called after the typing is finished.
+     */
+    constructor(text, outputElement, options = {}) {
+        const defaultOptions = {
+            charDelay: 100,
+            newlineDelay: 200,
+            styles: {
+                italic: "/",
+                bold: "*",
+                underline: "_",
+                strikethrough: "-",
+                escape: "\\",
+            },
+            accuracy: 1,
+            customDelays: {},
+            onCharacterDisplayed: function() {}, // Callback function for when a character is displayed
+            onFinish: function() {}, // Callback function for when typing is finished
+        };
+
+        options = {
+            charDelay: options?.charDelay || defaultOptions.charDelay,
+            newlineDelay: options?.newlineDelay || defaultOptions.newlineDelay,
+            styles: {
+                italic: options?.styles?.italic || defaultOptions.styles.italic,
+                bold: options?.styles?.bold || defaultOptions.styles.bold,
+                underline: options?.styles?.underline || defaultOptions.styles.underline,
+                strikethrough: options?.styles?.strikethrough || defaultOptions.styles.strikethrough,
+                escape: options?.styles?.escape || defaultOptions.styles.escape,
+            },
+            accuracy: options?.accuracy || defaultOptions.accuracy,
+            customDelays: options?.customDelays || defaultOptions.customDelays,
+            onCharacterDisplayed: options?.onCharacterDisplayed || defaultOptions.onCharacterDisplayed,
+            onFinish: options?.onFinish || defaultOptions.onFinish,
+        };
+
+        this.text = text;
+        this.elem = outputElement;
+        this.options = options;
+        this.playing = false;
+        this.index = 0;
+        this.timeoutID = null;
+
+
+        class Token {
+            constructor(content, type, delay, styles) {
+                this.content = content;
+                this.type = type;
+                this.delay = delay;
+                this.styles = styles;
+                this.color = "#000000";
+            }
+        }
+
+        let preQueue = [...this.text].map((char, index) => new Token(char, "undecided", options.charDelay, []));
+
+        let currentStyles = {
+            italic: false,
+            bold: false,
+            underline: false,
+            strikethrough: false,
+        };
+
+        let controlCharacters = Object.values(options.styles).filter(x => x !== options.styles.escape);
+
+        let escaping = false;
+
+        preQueue.forEach((token, i) => {
+            if (escaping) {
+                token.type = "display"; // force next character to display
+                escaping = false;
+                return;
+            }
+
+            if (token.content === options.styles.escape) {
+                token.type = "delete"; // this will be removed later
+                escaping = true;
+            } else if (controlCharacters.includes(token.content)) {
+                token.type = "control";
+            } else {
+                token.type = "display";
+            }
+        });
+
+        preQueue = preQueue.filter(token => token.type !== "delete");
+
+        preQueue.forEach((token, i) => {
+            if(token.type === "control") {
+                if(token.content === options.styles.italic) {
+                    currentStyles.italic = !currentStyles.italic;
+                    token.type = "delete";
+                } else if(token.content === options.styles.bold) {
+                    currentStyles.bold = !currentStyles.bold;
+                    token.type = "delete";
+                } else if(token.content === options.styles.underline) {
+                    currentStyles.underline = !currentStyles.underline;
+                    token.type = "delete";
+                } else if(token.content === options.styles.strikethrough) {
+                    currentStyles.strikethrough = !currentStyles.strikethrough;
+                    token.type = "delete";
+                }
+            }
+
+            token.styles = Object.keys(currentStyles).filter(key => currentStyles[key]);
+        });
+
+        preQueue = preQueue.filter(token => token.type !== "delete");
+
+        this.queue = structuredClone(preQueue);
+
+        this.queue.forEach((token, i) => {
+            if(token.content === "\n") token.delay = options.newlineDelay;
+
+            if(options.customDelays[token.content]) {
+                token.delay = options.customDelays[token.content];
+            }
+        });
+    }
+
+    setColor(start, end, color){
+        for(let i = start; i <= end; i++) {
+            if(this.queue[i]) {
+                this.queue[i].color = color;
+            }
+        }
+    }
+
+    start() {
+        this.playing = true;
+        if(this.index == 0) this.elem.innerHTML = "";
+
+        if(this.timeoutID) clearTimeout(this.timeoutID);
+
+        let typeNext = () => {
+            if (this.index >= this.queue.length || !this.playing) {
+                this.playing = false;
+                this.options.onFinish?.();
+                return;
+            }
+
+            let token = this.queue[this.index];
+            let content = token.content;
+
+            let accurate = Math.random() < this.options.accuracy;
+
+            if(!accurate){
+                let lowerEnd = -(100 - this.options.accuracy * 100)
+                let higherEnd = 100 - this.options.accuracy * 100;
+                
+                // get a random number between lowerEnd and higherEnd, inclusive
+                let random = Math.floor(Math.random() * (higherEnd - lowerEnd + 1)) + lowerEnd;
+
+                content = String.fromCharCode(content.charCodeAt(0) + random)
+
+            }
+
+            if (token.styles.includes("italic")) content = `<i>${content}</i>`;
+            if (token.styles.includes("bold")) content = `<b>${content}</b>`;
+            if (token.styles.includes("underline")) content = `<u>${content}</u>`;
+            if (token.styles.includes("strikethrough")) content = `<s>${content}</s>`;
+
+            if (token.type === "display") {
+                this.elem.innerHTML += `<span style="color: ${token.color};">${content}</span>`;
+                this.options.onCharacterDisplayed?.(token);
+            }
+
+            this.index++;
+            this.timeoutID = setTimeout(typeNext, token.delay);
+        }
+
+        typeNext();
+    }
+
+    pause(){
+        this.playing = false;
+    }
+
+    resume(){
+        if (this.index < this.queue.length) {
+            this.playing = true;
+            this.start();
+        }
+    }
+
+    restart() {
+        this.playing = false;
+        this.index = 0;
+        this.start();
     }
 }
 

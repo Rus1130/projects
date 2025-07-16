@@ -12,37 +12,19 @@
     <script src="./math.js"></script>
 </head>
 <body>
-    <div id="in">/Lorem ipsum dolor sit amet/, _consectetur adipiscing elit_, -*sed do eiusmod tempor incididunt ut labore et dolore magna aliqua*-. Ut enim ad minim veniam, quis nostru/d exercitation ullamco la/boris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit *in voluptate velit esse cillum* dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui */officia deserunt mollit anim id e/*st laborum.|the- quick brown fox ju-mps over the lazy dog|new line~line break|/italic/ *bold* _underline_ -strikethrough-~escaped characters: \~\|\/\*\_\-\«\!</div> 
     <div id="out-tw"></div>
     <div id="out-ste" style="font-family: monospace"></div>
 </body>
 <script>
-    // new TimerSniffer({
-    //     enableAllOptions: true,
-    //     intervalIDsToExclude: [1]
-    // });
 
-    new AllSniffer();
+    let tw = new Typewriter3(`I must not fear. Fear is the mind\\-killer. Fear is the little\\-death that brings total obliteration. I will face my fear. I will permit it to pass over me and through me. And when it has gone past, I will turn the inner eye to see its path. Where the fear has gone there will be nothing. Only I will remain.`, document.getElementById("out-tw"), {
+        charDelay: 35,
+        customDelays: {
+            ".": 500,
+        },
+    });
 
-    let inputText = "Hello, world!";
-    let inputTextLength = inputText.length;
-    let outputElement = document.getElementById("out");
-
-    // document.addEventListener("keydown", function(e){
-    //     let key = e.key;
-    // });
-
-    //EventSniffer.removeEventListenerByEventID(0);
-
-
-    let ste = new ScrambleTextEffect("Hello, world!", document.getElementById("out-ste"), 80, 10);
-    ste.start();
-
-
-    let tw = new Typewriter2("in", "out-tw");
-    
-    tw.setSpeed(1);
-    tw.start();
+    tw.start()
     
 
     // let sc = new StepCreator(document.body);
