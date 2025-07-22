@@ -1,0 +1,26 @@
+{
+    "0": {
+        "name": "Dirt",
+        "rarity": "common",
+        "description": "literally just a pile of dirt",
+        "value": 1,
+        "crafted": false,
+        "recipe": null
+    },
+    "1": {
+        "name": "Stone",
+        "rarity": "common",
+        "description": "useful for throwing",
+        "value": 2,
+        "crafted": false,
+        "recipe": null
+    },
+    "2": {
+        "name": "Sand",
+        "rarity": "common",
+        "description": "POCKET SAND!",
+        "value": 3,
+        "crafted": false,
+        "recipe": null
+    }
+}

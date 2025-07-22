@@ -1,0 +1,36 @@
+<style>
+
+</style>
+<head>
+    <script src="main.js" type="module"></script>
+</head>
+<body>
+
+</body>
+<script type="module">
+    console.log("page load")
+    import { GamblerFramework } from './main.js';
+
+    fetch("items.json")
+        .then(response => response.json())
+        .then(data => {
+            const items = data;
+
+            const gfw = new GamblerFramework(
+                ['common', 'uncommon', 'rare', 'ultra rare', 'epic', 'legendary', 'mythic', 'unique', 'exotic', 'divine', 'celestial', 'transcendent'],
+                [ 0.75,     0.15,       0.05,   0.02,         0.01,   0.005,       0.0025,   0.00125,  0.000625, 0.0003125, 0.00015625, 0.000001],
+                [ false,    false,      false,  false,        false,  false,       true,     true,     true,     true,      true,       true]
+            , items);
+
+            gfw.createGambler("1");
+
+            for(let i = 0; i < 100; i++) {
+                console.log(gfw.gamblerProxy("1").getRandomItem())
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching items:', error);
+        });
+
+
+</script>
