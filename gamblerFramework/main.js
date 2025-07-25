@@ -1,7 +1,7 @@
 export class GamblerFramework {
     
-    static MIN_LUCK = 0.0009
-    static MAX_LUCK = 0.95
+    static MIN_LUCK = 0.0005 //0.001
+    static MAX_LUCK = 0.995
     static OBJECT_BANK = {}
     static gamblers = new Map();
 
