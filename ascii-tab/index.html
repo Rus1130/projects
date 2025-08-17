@@ -1,0 +1,47 @@
+<style>
+
+</style>
+<body>
+
+</body>
+<script>
+    class Note {
+        static TUNING = {
+            "E": 82.41,
+            "A": 110.00,
+            "D": 146.83,
+            "G": 196.00,
+            "B": 246.94,
+            "e": 329.63,
+        }
+    }
+
+    function playNote(base_note, fret) {
+        // Calculate frequency for the fret
+        const frequency = Note.TUNING[base_note] * Math.pow(2, fret / 12);
+
+        // Create audio context
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+
+        oscillator.type = "sine"; // could be "square", "triangle", etc.
+        oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+
+        // Control volume
+        gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime); // not too loud
+
+        // Connect nodes
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        // Play for 1 second
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 1);
+    }
+
+
+    document.body.addEventListener("click", function() {
+        playNote("E", 1);
+    });
+</script>
