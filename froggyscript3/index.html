@@ -1,0 +1,38 @@
+<style>
+    #in {
+        width: 500px;
+        height: 500px;
+        resize: none;
+    }
+
+    #in:focus {
+        outline: none;
+    }
+</style>
+<head>
+
+</head>
+<body>
+    <textarea id="in"></textarea>
+</body>
+<script src="./main.js"></script>
+<script>
+    const input = document.getElementById("in");
+    input.textContent = `num x = 10\nstr y = "Hello, World!"`;
+
+    input.addEventListener("keydown", (e) => {
+        if(e.key === "Tab"){
+            e.preventDefault();
+            let start = input.selectionStart;
+            let end = input.selectionEnd;
+
+            input.value = input.value.substring(0, start) + "    " + input.value.substring(end);
+            input.selectionStart = input.selectionEnd = start + 4;
+        }
+    });
+
+    const fs3 = new FroggyScript3();
+
+    fs3.tokenize(input.textContent)
+
+</script>
