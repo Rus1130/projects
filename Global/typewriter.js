@@ -523,6 +523,7 @@ class Typewriter2 {
 
 class Typewriter3 {
     /**
+     * @description tags: [newline], [linebreak], [newpage], [speedoverrideslow], [speeddefault], [speedoverridefast]
      * @param {String} text - The text to be typed.
      * @param {HTMLElement} outputElement - The HTML element where the text will be displayed.
      * @param {Object} options - Options for the typewriter effect.
@@ -537,6 +538,11 @@ class Typewriter3 {
      * @param {Object<string, number>} [options.customDelays] - Custom delays for specific characters.
      * @param {Function} [options.onCharacterDisplayed] - Callback function that is called after each character is displayed.
      * @param {Function} [options.onFinish] - Callback function that is called after the typing is finished.
+     * @param {String} [options.newpageText="New Page"] - Text to display for new page breaks.
+     * @param {String} [options.defaultTextColor="#000000"] - Default text color.
+     * @param {Number} [options.overrideSlowDelay=1000] - Delay for [speedoverrideslow] tag.
+     * @param {Number} [options.overrideFastDelay=10] - Delay for [speedoverridefast] tag.
+     * @param {Number} [options.sleepDelay=1000] - Delay for [sleep] tag.
      */
     constructor(text, outputElement, options = {}) {
         const defaultOptions = {
@@ -549,10 +555,14 @@ class Typewriter3 {
                 strikethrough: "-",
                 escape: "\\",
             },
-            accuracy: 1,
             customDelays: {},
             onCharacterDisplayed: function() {}, // Callback function for when a character is displayed
             onFinish: function() {}, // Callback function for when typing is finished
+            newpageText: "New Page",
+            defaultTextColor: "#000000",
+            overrideSlowDelay: 1000,
+            overrideFastDelay: 10,
+            sleepDelay: 1000,
         };
 
         options = {
@@ -565,10 +575,14 @@ class Typewriter3 {
                 strikethrough: options?.styles?.strikethrough || defaultOptions.styles.strikethrough,
                 escape: options?.styles?.escape || defaultOptions.styles.escape,
             },
-            accuracy: options?.accuracy || defaultOptions.accuracy,
             customDelays: options?.customDelays || defaultOptions.customDelays,
             onCharacterDisplayed: options?.onCharacterDisplayed || defaultOptions.onCharacterDisplayed,
             onFinish: options?.onFinish || defaultOptions.onFinish,
+            newpageText: options?.newpageText || defaultOptions.newpageText,
+            defaultTextColor: options?.defaultTextColor || defaultOptions.defaultTextColor,
+            overrideSlowDelay: options?.overrideSlowDelay || defaultOptions.overrideSlowDelay,
+            overrideFastDelay: options?.overrideFastDelay || defaultOptions.overrideFastDelay,
+            sleepDelay: options?.sleepDelay || 1000,
         };
 
         this.text = text;
@@ -577,6 +591,7 @@ class Typewriter3 {
         this.playing = false;
         this.index = 0;
         this.timeoutID = null;
+        this.speedType = 'default'
 
 
         class Token {
@@ -585,11 +600,20 @@ class Typewriter3 {
                 this.type = type;
                 this.delay = delay;
                 this.styles = styles;
-                this.color = "#000000";
+                this.color = options.defaultTextColor;
             }
         }
 
-        let preQueue = [...this.text].map((char, index) => new Token(char, "undecided", options.charDelay, []));
+        let controlTagReplacements = this.text
+        .replaceAll("[newline]", "\x00")
+        .replaceAll("[linebreak]", "\x01")
+        .replaceAll("[newpage]", "\x02")
+        .replaceAll("[speedoverrideslow]", "\x03")
+        .replaceAll("[speeddefault]", "\x04")
+        .replaceAll("[speedoverridefast]", "\x05")
+        .replaceAll("[sleep]", "\x06");
+
+        let preQueue = [...controlTagReplacements].map((char, index) => new Token(char, "undecided", options.charDelay, []));
 
         let currentStyles = {
             italic: false,
@@ -599,6 +623,16 @@ class Typewriter3 {
         };
 
         let controlCharacters = Object.values(options.styles).filter(x => x !== options.styles.escape);
+        
+        controlCharacters.concat([
+            "\x00", // newline
+            "\x01", // line break
+            "\x02", // new page
+            "\x03", // speed override slow
+            "\x04", // speed default
+            "\x05", // speed override fast
+            "\x06", // sleep
+        ]);
 
         let escaping = false;
 
@@ -625,7 +659,6 @@ class Typewriter3 {
             if(token.type === "control") {
                 if(token.content === options.styles.italic) {
                     currentStyles.italic = !currentStyles.italic;
-                    token.type = "delete";
                 } else if(token.content === options.styles.bold) {
                     currentStyles.bold = !currentStyles.bold;
                     token.type = "delete";
@@ -664,49 +697,134 @@ class Typewriter3 {
 
     start() {
         this.playing = true;
-        if(this.index == 0) this.elem.innerHTML = "";
+        if (this.index === 0) this.elem.innerHTML = "";
 
-        if(this.timeoutID) clearTimeout(this.timeoutID);
+        if (this.timeoutID) clearTimeout(this.timeoutID);
 
-        let typeNext = () => {
-            if (this.index >= this.queue.length || !this.playing) {
+        let processNext = () => {
+            if (!this.playing || this.index >= this.queue.length) {
                 this.playing = false;
                 this.options.onFinish?.();
                 return;
             }
 
             let token = this.queue[this.index];
-            let content = token.content;
+            this.renderToken(token);
+            this.index++;
 
-            let accurate = Math.random() < this.options.accuracy;
+            // schedule next after delay
+            if(this.speedType === 'overrideslow') token.delay = this.options.overrideSlowDelay;
+            if(this.speedType === 'overridefast') token.delay = this.options.overrideFastDelay;
+            this.timeoutID = setTimeout(processNext, token.delay);
+        };
 
-            if(!accurate){
-                let lowerEnd = -(100 - this.options.accuracy * 100)
-                let higherEnd = 100 - this.options.accuracy * 100;
-                
-                // get a random number between lowerEnd and higherEnd, inclusive
-                let random = Math.floor(Math.random() * (higherEnd - lowerEnd + 1)) + lowerEnd;
+        processNext();
+    }
 
-                content = String.fromCharCode(content.charCodeAt(0) + random)
+    renderToken(token) {
+        let content = token.content;
 
-            }
+        if (content === "\x00") {
+            this.elem.appendChild(document.createElement("br"));
+            token.delay = this.options.newlineDelay;
+        } else if (content === "\x01") {
+            this.elem.appendChild(document.createElement("br"));
+            this.elem.appendChild(document.createElement("br"));
+            token.delay = this.options.newlineDelay;
+        } else if (content === "\x02") {
+            this.pause();
+            let pageBreak = document.createElement("div");
+            pageBreak.textContent = this.options.newpageText;
+            pageBreak.style.cursor = "pointer";
+            pageBreak.classList.add("typewriter3-newpage");
+            pageBreak.addEventListener("click", () => {
+                this.elem.innerHTML = "";
+                this.resume();
+            });
+            this.elem.appendChild(pageBreak);
+            return;
+        } else if (content === "\x03") {
+            this.speedType = 'overrideslow';
+        } else if (content === "\x04") {
+            this.speedType = 'default';
+        } else if( content === "\x05") {
+            this.speedType = 'overridefast';
+        } else if( content === "\x06") {
+            token.delay = this.options.sleepDelay;
+        } else {
+            if(token.type === "display") {
+                let content = token.content;
+                if (token.styles.includes("italic")) content = `<i>${content}</i>`;
+                if (token.styles.includes("bold")) content = `<b>${content}</b>`;
+                if (token.styles.includes("underline")) content = `<u>${content}</u>`;
+                if (token.styles.includes("strikethrough")) content = `<s>${content}</s>`;
 
-            if (token.styles.includes("italic")) content = `<i>${content}</i>`;
-            if (token.styles.includes("bold")) content = `<b>${content}</b>`;
-            if (token.styles.includes("underline")) content = `<u>${content}</u>`;
-            if (token.styles.includes("strikethrough")) content = `<s>${content}</s>`;
+                let span = document.createElement("span");
+                span.style.color = token.color;
+                span.innerHTML = content;
+                this.elem.appendChild(span);
 
-            if (token.type === "display") {
-                this.elem.innerHTML += `<span style="color: ${token.color};">${content}</span>`;
                 this.options.onCharacterDisplayed?.(token);
             }
-
-            this.index++;
-            this.timeoutID = setTimeout(typeNext, token.delay);
         }
 
-        typeNext();
+        return token;
     }
+
+    // start() {
+    //     this.playing = true;
+    //     if(this.index == 0) this.elem.innerHTML = "";
+
+    //     if(this.timeoutID) clearTimeout(this.timeoutID);
+
+    //     let typeNext = () => {
+    //         if (this.index >= this.queue.length || !this.playing) {
+    //             this.playing = false;
+    //             this.options.onFinish?.();
+    //             return;
+    //         }
+
+    //         let token = this.queue[this.index];
+    //         let content = token.content;
+
+    //         if(content == "\x00"){
+    //             token.delay = this.options.newlineDelay;
+    //             this.elem.innerHTML += `<br>`;
+    //         } else if(content == "\x01"){
+    //             token.delay = this.options.newlineDelay;
+    //             this.elem.innerHTML += `<br><br>`;
+    //         } else if(content == "\x02"){
+    //             this.pause();
+    //             // append an element to this.elem
+    //             let pageBreak = document.createElement("div");
+    //             pageBreak.textContent = this.options.newpageText;
+    //             pageBreak.style.cursor = "pointer";
+    //             pageBreak.classList.add("typewriter3-newpage");
+    //             this.elem.appendChild(pageBreak);
+
+    //             pageBreak.addEventListener("click", () => {
+    //                 this.elem.innerHTML = "";
+    //                 this.resume();
+    //             })
+
+    //         } else {
+    //             if (token.styles.includes("italic")) content = `<i>${content}</i>`;
+    //             if (token.styles.includes("bold")) content = `<b>${content}</b>`;
+    //             if (token.styles.includes("underline")) content = `<u>${content}</u>`;
+    //             if (token.styles.includes("strikethrough")) content = `<s>${content}</s>`;
+
+    //             if (token.type === "display") {
+    //                 this.elem.innerHTML += `<span style="color: ${token.color};">${content}</span>`;
+    //                 this.options.onCharacterDisplayed?.(token);
+    //             }
+    //         }
+
+    //         this.index++;
+    //         this.timeoutID = setTimeout(typeNext, token.delay);
+    //     }
+
+    //     typeNext();
+    // }
 
     pause(){
         this.playing = false;

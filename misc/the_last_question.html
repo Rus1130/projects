@@ -1,0 +1,50 @@
+<style>
+    body {
+        overflow-y: auto;
+        scrollbar-width: none;
+    }
+
+    * {
+        font-family: monospace;
+        background-color: black;
+        color: white;
+    }
+    .typewriter3-newpage:hover {
+        background-color: white;
+        color: black;
+    }
+</style>
+<head>
+    <script src="../Global/typewriter.js"></script>
+</head>
+<body>
+
+</body>
+<script>
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const THE_LAST_QUESTION = fetch('./tlq.txt')
+        .then(response => response.text())
+        .then(text => {
+            const tw3 = new Typewriter3(text, document.body, {
+                loop: false,
+                charDelay: 25,
+                newlineDelay: 500,
+                customDelays: {
+                    ",": 280,
+                    ".": 300,
+                    "?": 300,
+                    "!": 300,
+                    "—": 750,
+                },
+                newpageText: "▌Next >",
+                defaultTextColor: "#ffffff",
+                overrideSlowDelay: 350,
+                overrideFastDelay: 10,
+                sleepDelay: 800,
+            });
+
+            console.log(tw3)
+            tw3.start()
+            return text;
+        });
+</script>
