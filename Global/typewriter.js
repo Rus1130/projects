@@ -585,7 +585,7 @@ class Typewriter3 {
             sleepDelay: options?.sleepDelay || 1000,
         };
 
-        this.text = text;
+        this.text = text.replaceAll("\n", "").replaceAll("\r", "");
         this.elem = outputElement;
         this.options = options;
         this.playing = false;
@@ -733,6 +733,7 @@ class Typewriter3 {
             token.delay = this.options.newlineDelay;
         } else if (content === "\x02") {
             this.pause();
+            // scroll to the bottom of the page
             let pageBreak = document.createElement("div");
             pageBreak.textContent = this.options.newpageText;
             pageBreak.style.cursor = "pointer";
@@ -742,7 +743,7 @@ class Typewriter3 {
                 this.resume();
             });
             this.elem.appendChild(pageBreak);
-            return;
+            window.scrollTo(window.scrollX, document.body.scrollHeight);
         } else if (content === "\x03") {
             this.speedType = 'overrideslow';
         } else if (content === "\x04") {
@@ -763,6 +764,8 @@ class Typewriter3 {
                 span.style.color = token.color;
                 span.innerHTML = content;
                 this.elem.appendChild(span);
+
+                window.scrollTo(window.scrollX, document.body.scrollHeight);
 
                 this.options.onCharacterDisplayed?.(token);
             }
