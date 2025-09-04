@@ -524,6 +524,7 @@ class Typewriter2 {
 class Typewriter3 {
     /**
      * @description tags: [newline], [linebreak], [newpage], [speedoverrideslow], [speeddefault], [speedoverridefast]
+     * comments can be added with {{comment ... comment}}, allows newlines inside of comment
      * @param {String} text - The text to be typed.
      * @param {HTMLElement} outputElement - The HTML element where the text will be displayed.
      * @param {Object} options - Options for the typewriter effect.
@@ -537,11 +538,14 @@ class Typewriter3 {
      * @param {String} [options.styles.escape="\\"] - Character to escape special characters.
      * @param {Object<string, number>} [options.customDelays] - Custom delays for specific characters.
      * @param {Function} [options.onCharacterDisplayed] - Callback function that is called after each character is displayed.
-     * @param {Function} [options.onFinish] - Callback function that is called after the typing is finished.
+     * @param {Function} [options.onFinish] - Callback function that is called after the typing is finished. use the [typewriter-complete] tag to trigger
      * @param {String} [options.newpageText="New Page"] - Text to display for new page breaks.
      * @param {String} [options.defaultTextColor="#000000"] - Default text color.
-     * @param {Number} [options.overrideSlowDelay=1000] - Delay for [speedoverrideslow] tag.
-     * @param {Number} [options.overrideFastDelay=10] - Delay for [speedoverridefast] tag.
+     * @param {Number} [options.speed1Delay=1000] - Delay for [speed1] tag.
+     * @param {Number} [options.speed2Delay=500] - Delay for [speed2] tag.
+     * @param {Number} [options.speed3Delay=250] - Delay for [speed3] tag.
+     * @param {Number} [options.speed4Delay=50] - Delay for [speed4] tag.
+     * @param {Number} [options.speed5Delay=10] - Delay for [speed5] tag.
      * @param {Number} [options.sleepDelay=1000] - Delay for [sleep] tag.
      */
     constructor(text, outputElement, options = {}) {
@@ -560,8 +564,11 @@ class Typewriter3 {
             onFinish: function() {}, // Callback function for when typing is finished
             newpageText: "New Page",
             defaultTextColor: "#000000",
-            overrideSlowDelay: 1000,
-            overrideFastDelay: 10,
+            speed1Delay: 1000,
+            speed2Delay: 500,
+            speed3Delay: 250,
+            speed4Delay: 50,
+            speed5Delay: 10,
             sleepDelay: 1000,
         };
 
@@ -580,12 +587,18 @@ class Typewriter3 {
             onFinish: options?.onFinish || defaultOptions.onFinish,
             newpageText: options?.newpageText || defaultOptions.newpageText,
             defaultTextColor: options?.defaultTextColor || defaultOptions.defaultTextColor,
-            overrideSlowDelay: options?.overrideSlowDelay || defaultOptions.overrideSlowDelay,
-            overrideFastDelay: options?.overrideFastDelay || defaultOptions.overrideFastDelay,
+            speed1Delay: options?.speed1Delay || defaultOptions.speed1Delay,
+            speed2Delay: options?.speed2Delay || defaultOptions.speed2Delay,
+            speed3Delay: options?.speed3Delay || defaultOptions.speed3Delay,
+            speed4Delay: options?.speed4Delay || defaultOptions.speed4Delay,
+            speed5Delay: options?.speed5Delay || defaultOptions.speed5Delay,
             sleepDelay: options?.sleepDelay || 1000,
         };
 
         this.text = text.replaceAll("\n", "").replaceAll("\r", "");
+
+        // remove {{comment ... comment}}
+        this.text = this.text.replace(/\{\{comment[\s\S]*?comment\}\}/g, "");
         this.elem = outputElement;
         this.options = options;
         this.playing = false;
@@ -608,10 +621,14 @@ class Typewriter3 {
         .replaceAll("[newline]", "\x00")
         .replaceAll("[linebreak]", "\x01")
         .replaceAll("[newpage]", "\x02")
-        .replaceAll("[speedoverrideslow]", "\x03")
-        .replaceAll("[speeddefault]", "\x04")
-        .replaceAll("[speedoverridefast]", "\x05")
-        .replaceAll("[sleep]", "\x06");
+        .replaceAll("[speeddefault]", "\x03")
+        .replaceAll("[speed1]", "\x04")
+        .replaceAll("[speed2]", "\x05")
+        .replaceAll("[speed3]", "\x06")
+        .replaceAll("[speed4]", "\x07")
+        .replaceAll("[speed5]", "\x08")
+        .replaceAll("[sleep]", "\x09")
+        .replaceAll("[typewriter-complete]", "\x0A")
 
         let preQueue = [...controlTagReplacements].map((char, index) => new Token(char, "undecided", options.charDelay, []));
 
@@ -628,10 +645,14 @@ class Typewriter3 {
             "\x00", // newline
             "\x01", // line break
             "\x02", // new page
-            "\x03", // speed override slow
-            "\x04", // speed default
-            "\x05", // speed override fast
-            "\x06", // sleep
+            "\x03", // speed default
+            "\x04", // speed 1
+            "\x05", // speed 2
+            "\x06", // speed 3
+            "\x07", // speed 4
+            "\x08", // speed 5
+            "\x09", // sleep
+            "\x0A"  // typewriter complete
         ]);
 
         let escaping = false;
@@ -704,7 +725,6 @@ class Typewriter3 {
         let processNext = () => {
             if (!this.playing || this.index >= this.queue.length) {
                 this.playing = false;
-                this.options.onFinish?.();
                 return;
             }
 
@@ -712,9 +732,11 @@ class Typewriter3 {
             this.renderToken(token);
             this.index++;
 
-            // schedule next after delay
-            if(this.speedType === 'overrideslow') token.delay = this.options.overrideSlowDelay;
-            if(this.speedType === 'overridefast') token.delay = this.options.overrideFastDelay;
+            if(this.speedType === 'speed1') token.delay = this.options.speed1Delay;
+            else if(this.speedType === 'speed2') token.delay = this.options.speed2Delay;
+            else if(this.speedType === 'speed3') token.delay = this.options.speed3Delay;
+            else if(this.speedType === 'speed4') token.delay = this.options.speed4Delay;
+            else if(this.speedType === 'speed5') token.delay = this.options.speed5Delay;
             this.timeoutID = setTimeout(processNext, token.delay);
         };
 
@@ -744,14 +766,18 @@ class Typewriter3 {
             });
             this.elem.appendChild(pageBreak);
             window.scrollTo(window.scrollX, document.body.scrollHeight);
-        } else if (content === "\x03") {
-            this.speedType = 'overrideslow';
-        } else if (content === "\x04") {
-            this.speedType = 'default';
-        } else if( content === "\x05") {
-            this.speedType = 'overridefast';
-        } else if( content === "\x06") {
-            token.delay = this.options.sleepDelay;
+
+        } else if (content === "\x03") this.speedType = 'default';
+        else if (content === "\x04") this.speedType = 'speed1';
+        else if( content === "\x05") this.speedType = 'speed2';
+        else if( content === "\x06") this.speedType = 'speed3';
+        else if( content === "\x07") this.speedType = 'speed4';
+        else if( content === "\x08") this.speedType = 'speed5';
+        else if( content === "\x09") token.delay = this.options.sleepDelay;
+        else if( content === "\x0A") {
+            if(this.playing){
+                this.options.onFinish?.();
+            }
         } else {
             if(token.type === "display") {
                 let content = token.content;
@@ -774,63 +800,13 @@ class Typewriter3 {
         return token;
     }
 
-    // start() {
-    //     this.playing = true;
-    //     if(this.index == 0) this.elem.innerHTML = "";
-
-    //     if(this.timeoutID) clearTimeout(this.timeoutID);
-
-    //     let typeNext = () => {
-    //         if (this.index >= this.queue.length || !this.playing) {
-    //             this.playing = false;
-    //             this.options.onFinish?.();
-    //             return;
-    //         }
-
-    //         let token = this.queue[this.index];
-    //         let content = token.content;
-
-    //         if(content == "\x00"){
-    //             token.delay = this.options.newlineDelay;
-    //             this.elem.innerHTML += `<br>`;
-    //         } else if(content == "\x01"){
-    //             token.delay = this.options.newlineDelay;
-    //             this.elem.innerHTML += `<br><br>`;
-    //         } else if(content == "\x02"){
-    //             this.pause();
-    //             // append an element to this.elem
-    //             let pageBreak = document.createElement("div");
-    //             pageBreak.textContent = this.options.newpageText;
-    //             pageBreak.style.cursor = "pointer";
-    //             pageBreak.classList.add("typewriter3-newpage");
-    //             this.elem.appendChild(pageBreak);
-
-    //             pageBreak.addEventListener("click", () => {
-    //                 this.elem.innerHTML = "";
-    //                 this.resume();
-    //             })
-
-    //         } else {
-    //             if (token.styles.includes("italic")) content = `<i>${content}</i>`;
-    //             if (token.styles.includes("bold")) content = `<b>${content}</b>`;
-    //             if (token.styles.includes("underline")) content = `<u>${content}</u>`;
-    //             if (token.styles.includes("strikethrough")) content = `<s>${content}</s>`;
-
-    //             if (token.type === "display") {
-    //                 this.elem.innerHTML += `<span style="color: ${token.color};">${content}</span>`;
-    //                 this.options.onCharacterDisplayed?.(token);
-    //             }
-    //         }
-
-    //         this.index++;
-    //         this.timeoutID = setTimeout(typeNext, token.delay);
-    //     }
-
-    //     typeNext();
-    // }
-
     pause(){
         this.playing = false;
+    }
+
+    togglePause(){
+        this.playing = !this.playing;
+        if(this.playing) this.resume();
     }
 
     resume(){

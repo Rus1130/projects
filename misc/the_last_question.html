@@ -2,16 +2,25 @@
     body {
         overflow-y: hidden;
         scrollbar-width: none;
+        background-color: black;
+        color: white;
     }
 
     * {
         font-family: monospace;
-        background-color: black;
-        color: white;
     }
     .typewriter3-newpage:hover {
         background-color: white;
         color: black;
+    }
+
+    @keyframes background-change {
+        0% {
+            background-color: black;
+        }
+        100% {
+            background-color: white;
+        }
     }
 </style>
 <head>
@@ -21,31 +30,44 @@
 
 </body>
 <script>
+    let tw3;
     const sleep = ms => new Promise(r => setTimeout(r, ms));
     const THE_LAST_QUESTION = fetch('./tlq.txt')
         .then(response => response.text())
         .then(text => {
-            const tw3 = new Typewriter3(text, document.body, {
+            tw3 = new Typewriter3(text, document.body, {
                 loop: false,
                 charDelay: 40,
-                newlineDelay: 500,
+                newlineDelay: 700,
                 customDelays: {
                     ",": 280,
-                    ".": 300,
-                    "?": 300,
-                    "!": 300,
+                    ".": 370,
+                    "?": 370,
+                    "!": 370,
                     "—": 750,
                     ";": 200,
                 },
                 newpageText: "▌Next >",
                 defaultTextColor: "#ffffff",
-                overrideSlowDelay: 350,
-                overrideFastDelay: 10,
+                speed1Delay: 320,
+                speed2Delay: 195,
+                speed3Delay: 205,
                 sleepDelay: 800,
+                onFinish: () => {
+                    // animate the background of the body to white
+                    document.body.style.animation = "background-change 6s forwards ease-out";
+                    setTimeout(() => {
+                        window.location.href = "https://rus1130.github.io/projects/";
+                    }, 8000);
+                }
             });
 
+            document.body.addEventListener('keydown', (event) => {
+                if (event.code === 'Space') tw3.togglePause();
+            });
+
+            tw3.start();
             console.log(tw3)
-            tw3.start()
             return text;
         });
 </script>
