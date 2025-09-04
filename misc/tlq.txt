@@ -38,7 +38,7 @@ Lupov put his fingers through his thinning hair as though to reassure himself th
 
 "Then stop running down what Multivac's done for us," said Adell, blazing up, "It did all right."[linebreak]
 
-"Who says it didn't? What I say is that a sun won't last forever. That's all I'm saying. We're safe for ten billion years, but then what?" Lupow pointed a slightly shaky finger at the other. "And don't say we'll switch to another sun."[linebreak]
+"Who says it didn't? What I say is that a sun won't last forever. That's all I'm saying. We're safe for ten billion years, but then what?" Lupov pointed a slightly shaky finger at the other. "And don't say we'll switch to another sun."[linebreak]
 
 There was silence for a while. Adell put his glass to his lips only occasionally, and Lupov's eyes slowly closed. They rested.[linebreak]
 
@@ -108,7 +108,7 @@ The little Jerrodettes, both girls, had experienced the hyperspace passage for t
 
 Jerrodd scarcely knew a thing about the thick rod of metal except that it was called a Microvac, that one asked it questions if one wished; that if one did not it still had its task of guiding the ship to a preordered destination; of feeding on energies from the various Sub\-galactic Power Stations; of computing the equations for the hyperspatial jumps.[linebreak]
 
-Jerrodd and his family had only to wait and live in the comfortable residence quarters of the ship. Someone had once told Jerrodd that the "ac" at the end of "Microvac" stood for ''automatic computer" in ancient English, but he was on the edge of forgetting even that.[linebreak]
+Jerrodd and his family had only to wait and live in the comfortable residence quarters of the ship. Someone had once told Jerrodd that the "ac" at the end of "Microvac" stood for "automatic computer" in ancient English, but he was on the edge of forgetting even that.[linebreak]
 
 Jerrodine's eyes were moist as she watched the visiplate. "I can't help it. I feel funny about leaving Earth."[linebreak]
 
@@ -134,7 +134,7 @@ Jerrodd felt uplifted, as he always did when he thought that his own personal Mi
 
 "Can't you just put in a new power\-unit, like with my robot?"[linebreak]
 
-"The stars are the power\-units. dear. Once they're gone, there are no more power\-units."[linebreak]
+"The stars are the power\-units, dear. Once they're gone, there are no more power\-units."[linebreak]
 
 Jerrodette I at once set up a howl. "Don't let them, daddy. Don't let the stars run down."[linebreak]
 
@@ -190,7 +190,7 @@ VJ\-23X interrupted. "We can thank immortality for that."[linebreak]
 
 "Two hundred twenty\-three. And you?"[linebreak]
 
-"I'm still under two hundred. —But to get back to my point. Population doubles every ten years. Once this GaIaxy is filled, we'll have filled another in ten years. Another ten years and we'll have filled two more. Another decade, four more. In a hundred years, we'll have filled a thousand Galaxies. In a thousand years, a million Galaxies. In ten thousand years, the entire known universe. Then what?"[linebreak]
+"I'm still under two hundred. —But to get back to my point. Population doubles every ten years. Once this Galaxy is filled, we'll have filled another in ten years. Another ten years and we'll have filled two more. Another decade, four more. In a hundred years, we'll have filled a thousand Galaxies. In a thousand years, a million Galaxies. In ten thousand years, the entire known universe. Then what?"[linebreak]
 
 VJ\-23X said, "As a side issue, there's a problem of transportation. I wonder how many sunpower units it will take to move Galaxies of individuals from one Galaxy to the next."[linebreak]
 
@@ -278,7 +278,7 @@ Nor could anyone, for the day had long since passed, Zee Prime knew, when any ma
 
 The Universal AC interrupted Zee Prime's wandering thoughts, not with words, but with guidance. Zee Prime's mentality was guided into the dim sea of Galaxies and one in particular enlarged into stars.[linebreak]
 
-A thought came, infinitely distant, but infinitely clear. "THIS IS THE ORIGINAL GALAXY OF MAN."[linebreak]
+A thought came, infinitely distant, but infinitely clear. [speed2]"THIS IS THE ORIGINAL GALAXY OF MAN."[linebreak]
 
 But it was the same after all, the same as any other, and Zee Prime stifled his disappointment.[linebreak]
 
@@ -308,7 +308,7 @@ Dee Sub Wun said in amusement, "You're asking how entropy might be reversed in d
 
 And the Universal AC answered:[linebreak]
 
-[speed1]"THERE IS AS YET INSUFFICIENT DATA FOR A MEANINGFUL ANSWER."[speeddefault][linebreak][sleep]
+[speed1]THERE IS AS YET INSUFFICIENT DATA FOR A MEANINGFUL ANSWER.[speeddefault][linebreak][sleep]
 
 Zee Prime's thoughts fled back to his own Galaxy. He gave no further thought to Dee Sub Wun, whose body might be waiting on a Galaxy a trillion light\-years away, or on the star next to Zee Prime's own. It didn't matter.[linebreak]
 
@@ -340,7 +340,7 @@ The Cosmic AC surrounded them but not in space. Not a fragment of it was in spac
 
 The Cosmic AC said,[linebreak]
 
-[speed1]"THERE IS AS YET INSUFFICIENT DATA FOR A MEANINGFUL ANSWER."[speeddefault][linebreak]
+[speed1]THERE IS AS YET INSUFFICIENT DATA FOR A MEANINGFUL ANSWER.[speeddefault][linebreak]
 
 Man said, "Collect additional data."[linebreak]
 
@@ -354,7 +354,7 @@ Man said, "When will you have enough data to answer the question?"[linebreak]
 
 The Cosmic AC said,[linebreak]
 
-[speed1]"THERE IS AS YET INSUFFICIENT DATA FOR A MEANINGFUL ANSWER."[speeddefault][linebreak]
+[speed1]THERE IS AS YET INSUFFICIENT DATA FOR A MEANINGFUL ANSWER.[speeddefault][linebreak]
 
 "Will you keep working on it?" asked Man.[linebreak]
 
@@ -378,7 +378,7 @@ Man said, "AC, is this the end? Can this chaos not be reversed into the Universe
 
 AC said,[linebreak]
 
-[speed1]"THERE IS AS YET INSUFFICIENT DATA FOR A MEANINGFUL ANSWER."[speeddefault][linebreak]
+[speed1]THERE IS AS YET INSUFFICIENT DATA FOR A MEANINGFUL ANSWER.[speeddefault][linebreak]
 
 Man's last mind fused and only AC existed — and that in hyperspace.
 
@@ -408,6 +408,6 @@ The consciousness of AC encompassed all of what had once been a Universe and bro
 
 And AC said,[linebreak]
 
-[speed3]"LET THERE BE LIGHT!"[linebreak][sleep][sleep][sleep][sleep][sleep]
+[speed3]LET THERE BE LIGHT![linebreak][sleep][sleep][sleep][sleep][sleep]
 
 [speed3]And there [typewriter-complete]was light [sleep][sleep]—[sleep][sleep]
