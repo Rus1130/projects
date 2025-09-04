@@ -31,7 +31,6 @@
 </body>
 <script>
     let tw3;
-    const sleep = ms => new Promise(r => setTimeout(r, ms));
     const THE_LAST_QUESTION = fetch('./tlq.txt')
         .then(response => response.text())
         .then(text => {
