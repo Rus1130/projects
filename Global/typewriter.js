@@ -789,6 +789,7 @@ class Typewriter3 {
                 let span = document.createElement("span");
                 span.style.color = token.color;
                 span.innerHTML = content;
+                span.setAttribute("data-index", this.index);
                 this.elem.appendChild(span);
 
                 window.scrollTo(window.scrollX, document.body.scrollHeight);
