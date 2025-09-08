@@ -8,7 +8,7 @@
     #in:focus {
         outline: none;
     }
-</style>
+</style> 
 <head>
 
 </head>
@@ -18,7 +18,7 @@
 <script src="./main.js"></script>
 <script>
     const input = document.getElementById("in");
-    input.textContent = `num x = 10\nstr y = "Hello, World! $|x|"\nout y`;
+    input.textContent = `num x = 10\nstr y = "Hello," . x . 'World!'\nout y`;
 
     input.addEventListener("keydown", (e) => {
         if(e.key === "Tab"){
@@ -33,6 +33,8 @@
 
     const fs3 = new FroggyScript3();
 
-    fs3.tokenize(input.textContent)
+    const lines = input.textContent.split("\n");
+
+    console.log(fs3.tokenize(lines));
 
 </script>
