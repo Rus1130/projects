@@ -69,50 +69,6 @@ class FroggyScript3 {
                     }
                 }
             }
-
-            for(let i = 0; i < lineTokens.length; i++){
-                let current = lineTokens[i];
-                let previous = lineTokens[i-1];
-
-                if(!previous) continue;
-
-                // if the previous type is string1Word_inprogress and the current type is anything, append the current value to the previous value
-                if(previous.type == "string1Word_inprogress" && current.type != "string1"){
-                    previous.value += current.value;
-                    lineTokens.splice(i, 1);
-                    i--;
-                }
-
-                if(previous.type == "string1" && current.type == "character"){
-                    previous.value += current.value;
-                    previous.type = "string1Word_inprogress";
-                    lineTokens.splice(i, 1);
-                    i--;
-                }
-
-
-                if(previous.type == "string1Word_inprogress" && current.type == "string1"){
-                    previous.type = "string1Word";
-                    lineTokens.splice(i, 1);
-                    i--;
-                }
-
-                // if((previous.type === "character" || previous.type === "identifier") && current.type === "character"){
-                //     previous.value += current.value;
-                //     previous.type = "identifier";
-                //     lineTokens.splice(i, 1);
-                //     i--;
-                // }
-
-                if((previous.type === "digit" || previous.type === "number") && current.type === "digit"){
-                    previous.value += current.value;
-                    previous.type = "number";
-                    lineTokens.splice(i, 1);
-                    i--;
-                }
-            }
-
-            tokens.push(lineTokens);
         })
 
         return tokens;
