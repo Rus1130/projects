@@ -1,36 +1,38 @@
-// async function runLoop() {
-//     for (let i = 0; i < 5; i++) {
-//         await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1 sec
-//         console.log("Step", i);
-//     }
-//     console.log("Done!");
-// }
-
 class FroggyScript3 {
     static matches = [
+        ["comment", /#.*/],                                    // rest of line
+        ["number", /[0-9]+(?:\.[0-9]+)?/],                     // ints and floats
+        ["variable", /[A-Za-z_][A-Za-z0-9_]*/],              // names
+        ["string", /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/],     // "..." or '...' with escapes
         ["str_concat", / \. /],
-        ["digit", /[0-9]/],
-        ["string1", /"/],
-        ["string2", /'/],
         ["mathStart", /\{/],
         ["mathEnd", /\}/],
         ["parenStart", /\(/],
         ["parenEnd", /\)/],
         ["bracketStart", /\[/],
         ["bracketEnd", /\]/],
-        ["comment", /#/],
         ["assignment", / = /],
-        ["character", /[A-Za-z_]/],
         ["comma", /,/],
-        ["method", / > /],
-        ["whitespace", /[ \t]/],
-        ["other", /.{1}/]
+        ["method", />/],
+        ["whitespace", /\s+/],
     ]
     
     constructor(options) {
         options = options || {};
         this.setOutputFunction(options.out);
         this.setErrorOutputFunction(options.errout);
+        this.setWarnOutputFunction(options.warnout);
+
+        /*
+            scope: {
+                name: {
+                    value: ...,
+                    type: "num" | "str" | "arr",
+                    mutable: true | false
+                }
+            } 
+        */
+        this.variables = {};
     }
 
     setOutputFunction(fn) {
@@ -41,38 +43,53 @@ class FroggyScript3 {
         this.errout = fn || console.error;
     }
 
-    tokenize(lines){
+    setWarnOutputFunction(fn) {
+        this.warnout = fn || console.warn;
+    }
+
+    tokenize(lines) {
         const tokens = [];
 
-        lines.forEach(line => {
+        lines.forEach((line, lineNo) => {
             let pos = 0;
-            let iterations = 0;
-            let matched = false;
-            let lineTokens = [];
+            const lineTokens = [];
 
-            while(pos < line.length){
-                for (const [type, base] of FroggyScript3.matches){
-                    const regex = new RegExp(base.source, 'y');
+            while (pos < line.length) {
+                let matched = false;
+
+                for (const [type, base] of FroggyScript3.matches) {
+                    const regex = new RegExp(base.source, 'y'); // sticky
                     regex.lastIndex = pos;
-                    const match = regex.exec(line);
+                    const m = regex.exec(line);
 
-                    if(match){
-                        pos += match[0].length;
-                        lineTokens.push({type, value: match[0], position: pos});
+                    if (m) {
                         matched = true;
+                        const value = m[0];
+                        // skip whitespace tokens by default
+                        if (type !== "whitespace") {
+                            lineTokens.push({
+                                type,
+                                value,
+                                line: lineNo,
+                                start: pos,
+                                end: pos + value.length
+                            });
+                        }
+                        pos += value.length;
                         break;
                     }
+                }
 
-                    if(iterations++ > 100_000){
-                        this.errout("Infinite loop detected during tokenization at position " + pos);
-                        return null;
-                    }
+                if (!matched) {
+                    this.errout(`Unrecognized token at line ${lineNo+1} pos ${pos}: "${line.slice(pos)}". Token will be ignored.`);
+                    // break the line's scanning to avoid infinite loop
+                    break;
                 }
             }
-        })
+
+            tokens.push(lineTokens);
+        });
 
         return tokens;
     }
 }
-
-// runLoop();
