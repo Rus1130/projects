@@ -81,7 +81,7 @@ class FroggyScript3 {
                 }
 
                 if (!matched) {
-                    this.errout(`Unrecognized token at line ${lineNo+1} pos ${pos}: "${line.slice(pos)}". Token will be ignored.`);
+                    this.warnout(`Unrecognized token at line ${lineNo+1} pos ${pos}: "${line.slice(pos)}". Token will be ignored.`);
                     // break the line's scanning to avoid infinite loop
                     break;
                 }
@@ -89,6 +89,13 @@ class FroggyScript3 {
 
             tokens.push(lineTokens);
         });
+
+        tokens.forEach((tokens, lineNo) => {
+            // if the first token is a type variable, change it to type keyword
+            if(tokens[0] && tokens[0].type === "variable"){
+                tokens[0].type = "keyword"; 
+            }
+        })
 
         return tokens;
     }
