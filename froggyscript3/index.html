@@ -16,9 +16,11 @@
     <textarea id="in"></textarea>
 </body> 
 <script src="./main.js"></script>
+<script src="../Global/math.js"></script>
 <script>
     const input = document.getElementById("in");
-    input.textContent = `num x = 10203@\nstr y = "Hello," . x . 'World!'>length\nout y>index(3)`;
+    // input.textContent = `num x = 10203@\nstr y = "Hello," . x . 'World!'>length\nout y>index(3)`;
+    input.textContent = `out !"hello"\nout "goodbye">length>type\nout "meow">replace(3>type, hello)`;
 
     input.addEventListener("keydown", (e) => {
         if(e.key === "Tab"){
@@ -31,7 +33,11 @@
         }
     });
 
-    const fs3 = new FroggyScript3();
+    const fs3 = new FroggyScript3({
+        warnout: (warn) => {
+            console.warn(`${warn.type}\n\n${warn.message}\n    at line ${warn.line+1}\n    at column ${warn.col+1}`)
+        }
+    });
 
     const lines = input.textContent.split("\n");
 
