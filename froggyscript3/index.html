@@ -20,7 +20,7 @@
 <script>
     const input = document.getElementById("in");
     // input.textContent = `num x = 10203@\nstr y = "Hello," . x . 'World!'>length\nout y>index(3)`;
-    input.textContent = `out !"hello"\nout "goodbye">length>type\nout "meow">replace(3>type, hello)`;
+    input.textContent = `out "meow">type\nout "hello"\nout "goodbye">length>type\nout "meow">replace(3>replace("hello", "goodbye"), hello)`;
 
     input.addEventListener("keydown", (e) => {
         if(e.key === "Tab"){
@@ -36,11 +36,12 @@
     const fs3 = new FroggyScript3({
         warnout: (warn) => {
             console.warn(`${warn.type}\n\n${warn.message}\n    at line ${warn.line+1}\n    at column ${warn.col+1}`)
+        },
+        errout: (err) => {
+            console.error(`${err.type}\n\n${err.message}\n    at line ${err.line+1}\n    at column ${err.col+1}`)
         }
     });
 
-    const lines = input.textContent.split("\n");
-
-    console.log(fs3.tokenize(lines));
+    fs3.interpret(input.value);
 
 </script>

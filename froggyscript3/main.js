@@ -65,6 +65,26 @@ class FroggyScript3 {
         this.warnout = fn || console.warn;
     }
 
+    interpret(code) {
+        const lines = code.split('\n');
+        const tokens = this.tokenize(lines);
+
+        if(tokens instanceof FS3Error) return this.errout(tokens);
+
+        let compacted = this.compact(tokens);
+
+        console.log(compacted)
+    }
+
+    compact(tokens){
+        // if tokens includes a token with type method_indicator
+        
+        for(let lineNo = 0; lineNo < tokens.length; lineNo++){
+        }
+        return tokens;
+    }
+
+
     tokenize(lines) {
         const tokens = [];
 
@@ -100,8 +120,7 @@ class FroggyScript3 {
                 }
 
                 if (!matched) {
-                    let warn = new FS3Warn("TokenizationError", `Unrecognized token ->${line[pos]}<-. Token will be ignored.`, lineNo, pos);
-                    tokens.push(warn);
+                    tokens.push(new FS3Error("TokenizationError", `Unrecognized token ->${line[pos]}<-.`, lineNo, pos));
                     break;
                 }
             }
@@ -109,11 +128,20 @@ class FroggyScript3 {
             tokens.push(lineTokens);
         });
 
-        tokens.forEach((_tokens, lineNo) => {
+        for(let lineNo = 0; lineNo < tokens.length; lineNo++){
+            let _tokens = tokens[lineNo];
+            if(_tokens instanceof FS3Error) break;
+
+            // if _tokens is the type of FS3Error or FS3Warn
+            if(_tokens instanceof FS3Warn) {
+                this.warnout(_tokens);
+            }
+
             // if the first token is a type variable, change it to type keyword
             if(_tokens[0] && _tokens[0].type === "variable"){
                 _tokens[0].type = "keyword"; 
             }
+
 
             _tokens.forEach((token, i) => {
                 let prev = _tokens[i-1];
@@ -124,26 +152,26 @@ class FroggyScript3 {
                     tokens[lineNo][i].type = "method"
                 }
             })
+        }
 
-            for(let i = 0; i < _tokens.length; i++){
-                let token = _tokens[i];
-                if(token.type == "method_indicator"){
-
-                    let target = _tokens[i-1];
-                    let methodName = _tokens[i+1];
-                    let hasArguments = _tokens[i+2] ? _tokens[i+2].type == "paren_start" ? true : false : false
-
-                    if(hasArguments == false){
-                        // tokens[lineNo][i-1].methods.push({name: methodName.value, arguments: "none"})
-                        // remove this and next index
-                        // tokens[lineNo]
-                    }
-                }
+        // filter out FS3Warn tokens
+        tokens.forEach((t, i) => {
+            if(t instanceof FS3Warn){
+                tokens.splice(i, 1);
             }
-        })
+        }); 
 
-        console.log(tokens)
+        let error = null;
 
-        return tokens;
+       // if fs3error, return it
+        for(let i = 0; i < tokens.length; i++){
+            if(tokens[i] instanceof FS3Error){
+                error = tokens[i];
+                break;
+            }
+        }
+        
+
+        return error == null ? tokens : error;
     }
 }
