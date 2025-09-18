@@ -78,8 +78,37 @@ class FroggyScript3 {
 
     compact(tokens){
         // if tokens includes a token with type method_indicator
-        
         for(let lineNo = 0; lineNo < tokens.length; lineNo++){
+            let line = tokens[lineNo];
+
+            for(let i = 0; i < line.length; i++){
+                let token = line[i];
+
+                if(token.type == "method_indicator"){
+                    let target = line[i-1];
+                    let methodName = line[i+1];
+                    let args = [];
+
+                    if(line[i+2] && line[i+2].type == "paren_start"){
+                        let j = i + 3;
+                        while(j < line.length && line[j].type != "paren_end"){
+                            args.push(line[j]);
+                            j++;
+                        }
+                    }
+
+                    if(args.length == 0){
+                        target.methods.push(methodName.value);
+
+                        line.splice(i, 2);
+                        i--;
+                    }
+                    
+
+
+                    console.log(target, methodName, args)
+                }
+            }
         }
         return tokens;
     }
