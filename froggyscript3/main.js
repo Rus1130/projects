@@ -67,7 +67,7 @@ class FroggyScript3 {
 
     interpret(code) {
         const lines = code.split('\n');
-        const tokens = this.tokenize(lines);// bleee
+        const tokens = this.tokenize(lines);
 
         if(tokens instanceof FS3Error) return this.errout(tokens);
 
@@ -77,131 +77,116 @@ class FroggyScript3 {
             compacted.push(this.compact(tokens[i]))
         }
 
+        // if any of the compacted lines is an FS3Error, return it
+        for(let i = 0; i < compacted.length; i++){
+            if(compacted[i] instanceof FS3Error){
+                return this.errout(compacted[i]);
+            }
+        }
+
         console.log(compacted)
     }
-
+//i mean, detect if >methodname(
     // its like SUUUPER fucked
-    compact(line) {
-        // parseExpression(tokens, start, inArgs)
-        // returns [nodesArray, nextIndex, error]
-        function parseExpression(tokens, start = 0, inArgs = false) {
-            const expr = [];
-            let i = start;
+compact(line) {
+    function parseExpression(tokens, i, inArgMethod = false) {
+        let expr = [];
 
-            while (i < tokens.length) {
-                const token = tokens[i];
-                if (!token) break;
+        while (i < tokens.length) {
+            let token = tokens[i];
+            if (!token) break;
 
-                if (token.type === "method_indicator") {
-                    const target = expr.pop();
-                    const methodNameIndex = i + 1;
-                    const methodName = tokens[methodNameIndex];
+            if (token.type === "method_indicator") {
+                let target = expr.pop();
+                let methodName = tokens[i + 1];
+                if (!target || !methodName) break;
 
-                    if (!target || !methodName) {
-                        return [null, null, new FS3Error(
-                            "ParseError",
-                            'Missing target or method name after ">"',
-                            token.line || 0,
-                            token.col || 0
-                        )];
-                    }
+                let [args, newI, err] = parseArgs(tokens, i + 2);
+                if (err) return [null, null, err];
 
-                    // parseArgs consumes the method name and any "(...)" and returns [args, nextIndex, err]
-                    const [args, newPos, parseErr] = parseArgs(tokens, methodNameIndex);
-                    if (parseErr) return [null, null, parseErr];
-
-                    // if we're inside an argument list and the nested method has args -> error
-                    if (inArgs && args.length > 0) {
-                        return [null, null, new FS3Error(
-                            "InvalidNestedMethod",
-                            `Nested method '${methodName.value}' with arguments is not allowed inside arguments`,
-                            token.line || 0,
-                            token.col || 0
-                        )];
-                    }
-
-                    expr.push({
-                        type: "methodCall",
-                        target,
-                        name: methodName.value,
-                        args
-                    });
-
-                    i = newPos; // position after method name and its args (if any)
-                    continue;
+                // Rule: if we are inside a method with arguments, and this method has arguments, it's invalid
+                if (args.length > 0) {
+                    return [null, null, new FS3Error(
+                        "InvalidNestedMethod",
+                        `Method '${methodName.value}' with arguments cannot be inside another method with arguments`,
+                        methodName.line,
+                        methodName.col
+                    )];
                 }
 
-                // end of grouped expression
-                if (token.type === "paren_end" || token.type === "bracket_end") {
-                    break;
-                }
+                if (!target.methods) target.methods = [];
+                target.methods.push({
+                    name: methodName.value,
+                    args
+                });
 
-                expr.push(token);
-                i++;
+                expr.push(target);
+                i = newI;
+                continue;
             }
 
-            return [expr, i, null];
+            if (token.type === "paren_end" || token.type === "bracket_end") {
+                break;
+            }
+
+            expr.push(token);
+            i++;
         }
 
-        // parseArgs(tokens, methodNameIndex)
-        // methodNameIndex points at the method-name token
-        // returns [ argsArray, nextIndex, error ]
-        function parseArgs(tokens, methodNameIndex) {
-            const args = [];
-            const afterMethod = methodNameIndex + 1;
-
-            // no "(" -> no args; consume method name only
-            if (!tokens[afterMethod] || tokens[afterMethod].type !== "paren_start") {
-                return [[], afterMethod, null];
-            }
-
-            // there is a "(" -> parse until matching ')'
-            let i = afterMethod + 1; // inside parens
-            let current = [];
-
-            while (i < tokens.length) {
-                const token = tokens[i];
-                if (!token) break;
-
-                // closing paren -> finalize the final current chunk
-                if (token.type === "paren_end") {
-                    if (current.length > 0) {
-                        const [parsedNodes, , err] = parseExpression(current, 0, true);
-                        if (err) return [null, null, err];
-                        if (parsedNodes.length === 1) args.push(parsedNodes[0]);
-                        else args.push(...parsedNodes);
-                    }
-                    i++; // consume ')'
-                    break;
-                }
-
-                // comma -> end current arg
-                if (token.type === "comma") {
-                    if (current.length > 0) {
-                        const [parsedNodes, , err] = parseExpression(current, 0, true);
-                        if (err) return [null, null, err];
-                        if (parsedNodes.length === 1) args.push(parsedNodes[0]);
-                        else args.push(...parsedNodes);
-                        current = [];
-                    } else {
-                        // empty argument between commas — ignore or push placeholder if you want
-                    }
-                    i++; // consume ','
-                    continue;
-                }
-
-                current.push(token);
-                i++;
-            }
-
-            // i is now index after ')'
-            return [args, i, null];
-        }
-
-        const [parsed, , err] = parseExpression(line, 0, false);
-        if (err) return err;   // return the FS3Error instead of throwing
-        return parsed;
+        return [expr, i, null];
     }
+
+    function parseArgs(tokens, i) {
+        let args = [];
+
+        if (!tokens[i] || tokens[i].type !== "paren_start") {
+            return [[], i, null]; // no arguments
+        }
+        i++; // skip "("
+
+        let current = [];
+        let hasComma = false;
+
+        while (i < tokens.length) {
+            let token = tokens[i];
+            if (!token) break;
+
+            if (token.type === "paren_end") {
+                if (current.length > 0) {
+                    let [parsed, , err] = parseExpression(current, 0, true); // mark inArgMethod = true
+                    if (err) return [null, null, err];
+                    args.push(...parsed);
+                }
+                i++;
+                break;
+            }
+
+            if (token.type === "comma") {
+                hasComma = true;
+                if (current.length > 0) {
+                    let [parsed, , err] = parseExpression(current, 0, true); // mark inArgMethod = true
+                    if (err) return [null, null, err];
+                    args.push(...parsed);
+                    current = [];
+                }
+                i++;
+                continue;
+            }
+
+            current.push(token);
+            i++;
+        }
+
+        return [args, i, null];
+    }
+
+    const [parsed, , err] = parseExpression(line, 0, false);
+    if (err) return err;
+    return parsed;
+}
+
+
+
 
 
     tokenize(lines) {
@@ -228,8 +213,7 @@ class FroggyScript3 {
                                 type,
                                 value,
                                 line: lineNo,
-                                // start: pos,
-                                // end: pos + value.length,
+                                col: pos,
                                 methods: []
                             });
                         }
