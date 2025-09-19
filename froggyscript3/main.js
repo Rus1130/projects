@@ -67,7 +67,7 @@ class FroggyScript3 {
 
     interpret(code) {
         const lines = code.split('\n');
-        const tokens = this.tokenize(lines);
+        const tokens = this.tokenize(lines);// bleee
 
         if(tokens instanceof FS3Error) return this.errout(tokens);
 
