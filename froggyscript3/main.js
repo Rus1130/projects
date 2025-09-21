@@ -61,6 +61,12 @@ new Method("type", ["any"], [], (parent, args, interpreter) => {
     return parent;
 });
 
+new Method("length", ["string"], [], (parent, args, interpreter) => {
+    parent.value = parent.value.length;
+    parent.type = "number";
+    return parent;
+});
+
 // ["string", "string|number", "any?"]
 new Keyword("out", ["string|number"], (args, interpreter) => {
     interpreter.out(args[0].value);
@@ -83,8 +89,7 @@ new Keyword("call", ["functionName"], (args, interpreter) => {
     if(!functionBody){
         throw new FS3Error("ReferenceError", `Function [${functionName}] is not defined`, args[0].line, args[0].col, args);
     }
-
-    interpreter.keywordExecutor(functionBody);
+    interpreter.executeBlock(functionBody);
 })
 
 new Keyword("var", ["variable_reference", "assignment", "string|number|array|math_equation"], (args, interpreter) => {
@@ -191,149 +196,211 @@ class FroggyScript3 {
         return null;
     }
 
-    interpret(code) {
-        try {
-            const lines = code.split('\n');
-            let tokens = this.tokenize(lines);
-
-            let compacted = [];
-
-            for(let i = 0; i < tokens.length; i++){
-                compacted.push(this.compact(tokens[i]))
-            }
+    executeBlock(block){
+        for(let i = 0; i < block.length; i++){
+            const line = block[i];
 
 
-            let coalescedTokens = this.methodCoalescer(compacted);
+            const compacted = this.compact(line);
+            const resolvedMethods = this.methodResolver(compacted);
 
-            if(coalescedTokens == undefined) return;
 
-            let parsedTokens = this.blockCompressor(coalescedTokens);
-
-            this.keywordExecutor(parsedTokens);
-        } catch (e) {
-            if (e instanceof FS3Error) {
-                this.errout(e);
-            }
+            this.keywordExecutor(resolvedMethods);
         }
-
     }
 
+    interpret(code) {
+        try {
+            // Step 1: Tokenize all lines
+            let tokens = this.tokenize(code.split('\n'));
 
-    async keywordExecutor(parsedTokens) {
-        for (let lineNo = 0; lineNo < parsedTokens.length; lineNo++) {
-            const line = parsedTokens[lineNo];
+            // Step 2: Add start_of_line token for each line
+            let lines = tokens.map(line => [{ type: "start_of_line", value: "" }, ...line]);
+            let flattened = lines.flat();
 
-            // Resolve variables
-            line.forEach((t, i) => {
-                if (t.type === "variable") {
-                    if (this.variables[t.value]) {
-                        line[i].type = this.variables[t.value].type;
-                        line[i].value = this.variables[t.value].value;
-                    } else {
-                        throw new FS3Error(
-                            "ReferenceError",
-                            `Variable [${t.value}] is not defined`,
-                            t.line,
-                            t.col,
-                            line
-                        );
+            // Step 3: Preprocess arrays (resolve methods inside array elements)
+            for (let i = 0; i < flattened.length; i++) {
+                const token = flattened[i];
+
+                if (token.type === "array_start") {
+                    let depth = 1;
+                    let arrayTokens = [];
+                    let j = i + 1;
+
+                    while (j < flattened.length && depth > 0) {
+                        const t = flattened[j];
+                        if (t.type === "array_start") depth++;
+                        else if (t.type === "array_end") depth--;
+
+                        if (depth > 0) arrayTokens.push(t);
+                        j++;
                     }
+
+                    if (depth !== 0) {
+                        throw new FS3Error("SyntaxError", "Unclosed array literal", token.line, token.col, flattened);
+                    }
+
+                    // Split arrayTokens into elements by top-level commas
+                    let elements = [];
+                    let currentElement = [];
+                    let elementDepth = 0;
+
+                    for (let k = 0; k < arrayTokens.length; k++) {
+                        const t = arrayTokens[k];
+                        if (t.type === "array_start") elementDepth++;
+                        if (t.type === "array_end") elementDepth--;
+
+                        if (t.type === "comma" && elementDepth === 0) {
+                            elements.push(currentElement);
+                            currentElement = [];
+                        } else {
+                            currentElement.push(t);
+                        }
+                    }
+                    if (currentElement.length) elements.push(currentElement);
+
+                    // Compact & resolve methods for each array element
+                    elements = elements.map(el => {
+                        let compacted = this.compact(el);
+                        return this.methodResolver(compacted);
+                    });
+
+                    elements = elements.flat()
+
+                    console.log(elements)
+
+                    flattened.splice(i, j - i, {
+                        type: "array",
+                        value: elements,
+                        line: token.line,
+                        col: token.col,
+                        methods: []
+                    });
                 }
-            });
-
-            let keyword = line[0]?.type === "keyword" ? line[0].value : null;
-            if (!keyword) continue;
-
-            const lineArgs = line.slice(1);
-            const keywordDef = Keyword.get(keyword);
-
-            if (!keywordDef) {
-                throw new FS3Error(
-                    "ReferenceError",
-                    `Unknown keyword [${keyword}]`,
-                    line[0].line,
-                    line[0].col,
-                    line
-                );
             }
 
-            // Validate arguments
-            if (keywordDef.scheme) {
-                for (let i = 0; i < keywordDef.scheme.length; i++) {
-                    const expected = keywordDef.scheme[i].split("|");
-                    const actual = lineArgs[i];
-                    const expectedOptional = expected.some(e => e.endsWith("?"));
+            // Step 4: Compress blocks (includes arrays)
+            let compressed = this.blockCompressor(flattened);
 
-                    if (!actual) {
-                        if (!expectedOptional) {
+            // Step 5: Process each line
+            for (let i = 0; i < compressed.length; i++) {
+                let line = compressed[i];
+
+                // Handle variable assignment immediately
+                const firstToken = line[1]; // line[0] is start_of_line
+                if (firstToken?.type === "keyword" && firstToken.value === "var") {
+                    this.keywordExecutor(line);
+                }
+
+                // Resolve variables recursively
+                const resolvedLine = line.map((t, idx) => {
+                    if (t.type === "variable") {
+                        const variable = this.variables[t.value];
+                        if (variable) {
+                            line[idx].type = variable.type;
+                            line[idx].value = variable.value;
+                            return variable.value;
+                        } else {
                             throw new FS3Error(
-                                "ArgumentError",
-                                `Expected arg [${i + 1}] for keyword [${keyword}] to be of type [${expected.map(e => e.replace("?", "")).join(" or ")}], but found none`,
-                                line[0].line,
-                                line[0].col,
+                                "ReferenceError",
+                                `Variable [${t.value}] is not defined`,
+                                t.line,
+                                t.col,
                                 line
                             );
                         }
-                        continue;
                     }
-                    if (!expected.includes(actual.type) && !expected.includes("any")) {
+                    // Recursively resolve array elements
+                    if (t.type === "array") {
+                        t.value = t.value.map(el => {
+                            return this.methodResolver(el);
+                        });
+                    }
+
+                    return t.value;
+                });
+
+                // Step 6: Compact line & resolve methods
+                // If the first token is a literal (number/string/array), ensure it has start_of_line
+
+                const compacted = this.compact(line);
+                const resolvedMethods = this.methodResolver(compacted);
+
+                // Step 7: Execute keywords if present
+                this.keywordExecutor(resolvedMethods);
+            }
+
+        } catch (e) {
+            if (e instanceof FS3Error) this.errout(e);
+            else throw e;
+        }
+    }
+
+
+
+    keywordExecutor(line) {
+        // Resolve variables
+        let keyword = line[0]?.type === "keyword" ? line[0].value : null;
+        if (!keyword) return;
+
+        const lineArgs = line.slice(1);
+        const keywordDef = Keyword.get(keyword);
+
+        if (!keywordDef) {
+            throw new FS3Error(
+                "ReferenceError",
+                `Unknown keyword [${keyword}]`,
+                line[0].line,
+                line[0].col,
+                line
+            );
+        }
+
+        // Validate arguments
+        if (keywordDef.scheme) {
+            for (let i = 0; i < keywordDef.scheme.length; i++) {
+                const expected = keywordDef.scheme[i].split("|");
+                const actual = lineArgs[i];
+                const expectedOptional = expected.some(e => e.endsWith("?"));
+
+                if (!actual) {
+                    if (!expectedOptional) {
                         throw new FS3Error(
-                            "TypeError",
-                            `Invalid type for arg [${i + 1}] for keyword [${keyword}]: expected [${expected.map(e => e.replace("?", "")).join(" or ")}], got [${actual.type}]`,
-                            actual.line,
-                            actual.col,
+                            "ArgumentError",
+                            `Expected arg [${i + 1}] for keyword [${keyword}] to be of type [${expected.map(e => e.replace("?", "")).join(" or ")}], but found none`,
+                            line[0].line,
+                            line[0].col,
                             line
                         );
                     }
+                    continue;
+                }
+                if (!expected.includes(actual.type) && !expected.includes("any")) {
+                    throw new FS3Error(
+                        "TypeError",
+                        `Invalid type for arg [${i + 1}] for keyword [${keyword}]: expected [${expected.map(e => e.replace("?", "")).join(" or ")}], got [${actual.type}]`,
+                        actual.line,
+                        actual.col,
+                        line
+                    );
                 }
             }
+        }
 
-            // 👉 Pause here in debug mode
-            if (this.debug) {
-                console.log(`Debug step [${lineNo}]:`, line);
-                await this.waitForStep(lineNo, line); // waits until user continues
-            }
-
-            try {
-                await keywordDef.fn(lineArgs, this);
-            } catch (e) {
-                throw new FS3Error(
-                    "InternalJavaScriptError",
-                    `Error executing keyword [${keyword}]: ${e.message}`,
-                    line[0].line,
-                    line[0].col,
-                    line
-                );
-            }
+        try {
+            keywordDef.fn(lineArgs, this);
+        } catch (e) {
+            throw new FS3Error(
+                "InternalJavaScriptError",
+                `Error executing keyword [${keyword}]: ${e.message}`,
+                line[0].line,
+                line[0].col,
+                line
+            );
         }
     }
 
-    // Helper: waits for an external "continue" signal
-    waitForStep(lineNo, line) {
-        return new Promise(resolve => {
-            // Store resolver to be triggered externally, e.g. by UI or console command
-            this._stepResolver = resolve;
-
-            // Optionally expose state
-            this._currentStep = { lineNo, line };
-        });
-    }
-
-    // External method to continue execution
-    continueStep() {
-        if (this._stepResolver) {
-            this._stepResolver();
-            this._stepResolver = null;
-        }
-    }
-
-    blockCompressor(coalesced){
-        coalesced.forEach((line, i) => {
-            coalesced[i] = [{ type: "start_of_line", value: "" }].concat(line);
-        });
-
-        coalesced = coalesced.flat()
-
+    blockCompressor(flattened){
         function compressBlocks(tokens) {
             const result = [];
             const stack = [];
@@ -405,7 +472,7 @@ class FroggyScript3 {
         }
 
 
-        let tokens = compressBlocks(coalesced);
+        let tokens = compressBlocks(flattened);
 
         for(let i = 0; i < tokens.length; i++){
             if(tokens[i][0].type == "block" && tokens[i].length == 1){
@@ -417,71 +484,100 @@ class FroggyScript3 {
         return tokens;
     }
 
-    methodCoalescer(compacted){
-            const err = this.walkMethods(compacted, (method, parent) => {
-            // Validate method exists
-            if(Method.get(method.name) === null){
-                throw new FS3Error("ReferenceError",
-                    `Unknown method [${method.name}]`,
-                    parent.line, parent.col, method);
-            }
+    methodResolver(compacted) {
+        const resolveLine = (lineTokens) => {
+            // Ensure lineTokens is always an array
+            const tokensArray = Array.isArray(lineTokens) ? lineTokens : [lineTokens];
 
-            let methodDef = Method.get(method.name);
-            
-            // Validate method arguments
-            if (methodDef.args) {
-                for (let i = 0; i < methodDef.args.length; i++) {
-                    const expected = methodDef.args[i];
-                    const actual = method.args[i];
+            this.walkMethods(tokensArray, (method, parent) => {
+                const def = Method.get(method.name);
+                if (!def) {
+                    throw new FS3Error(
+                        "ReferenceError",
+                        `Unknown method [${method.name}]`,
+                        parent.line, parent.col, method
+                    );
+                }
 
-                    if (!actual) {
-                        if (!expected.optional) {
-                            throw new FS3Error("ArgumentError",
-                                `Expected argument [${i+1}] for method [${method.name}] to be of type [${expected.type.join(" or ")}], but found none`,
-                                method.line, method.col, method);
+                // Recursively resolve methods inside arguments first
+                method.args = method.args.map(argLine => {
+                    const resolved = this.methodResolver(argLine);
+                    // If resolved is an array of length 1, unwrap it
+                    if (Array.isArray(resolved) && resolved.length === 1) return resolved[0];
+                    return resolved;
+                });
+
+                // Validate arguments
+                if (def.args) {
+                    def.args.forEach((expected, idx) => {
+                        const actual = method.args[idx];
+                        if (!actual) {
+                            if (!expected.optional) {
+                                throw new FS3Error(
+                                    "ArgumentError",
+                                    `Expected argument [${idx + 1}] for method [${method.name}] of type [${expected.type.join(" or ")}], but found none`,
+                                    method.line, method.col, method
+                                );
+                            }
+                            return;
                         }
-                        continue; // skip further checks for this arg
+                        if (!expected.type.includes(actual.type) && !expected.type.includes("any")) {
+                            throw new FS3Error(
+                                "TypeError",
+                                `Invalid type for argument [${idx + 1}] for method [${method.name}]: expected [${expected.type.join(" or ")}], got [${actual.type}]`,
+                                actual.line, actual.col, method
+                            );
+                        }
+                    });
+                }
+
+                // Validate parent type
+                if (def.parentType && !def.parentType.includes(parent.type)) {
+                    throw new FS3Error(
+                        "TypeError",
+                        `Invalid parent type for method [${method.name}]: expected [${def.parentType.join(" or ")}], got [${parent.type}]`,
+                        parent.line, parent.col, method
+                    );
+                }
+
+                // Execute method
+                try {
+                    const result = def.fn(parent, method.args, this);
+                    if (result instanceof FS3Error) {
+                        result.message = `In method [${method.name}]: ${result.message}`;
+                        throw result;
                     }
-                    if (expected.type && !expected.type.includes(actual.type) && !(expected.type.includes("any"))) {
-                        throw new FS3Error("TypeError",
-                            `Invalid type for argument [${i+1}] for method [${method.name}]: expected [${expected.type.join(" or ")}], got [${actual.type}]`,
-                            actual.line, actual.col, method);
+                    if (result) {
+                        parent.type = result.type;
+                        parent.value = result.value;
                     }
+                } catch (e) {
+                    throw new FS3Error(
+                        "InternalJavaScriptError",
+                        `Error executing method [${method.name}]: ${e.message}`,
+                        method.line, method.col, method
+                    );
                 }
-            }
+            });
 
-            // Validate parent type
-            if (methodDef.parentType && !methodDef.parentType.includes(parent.type)) {
-                throw new FS3Error("TypeError",
-                    `Invalid parent type for method [${method.name}]: expected [${methodDef.parentType.join(" or ")}], got [${parent.type}]`,
-                    parent.line, parent.col, method);
-            }
-
-            // Call the method
-            try {
-                let returnValue = methodDef.fn(parent, method.args, this);
-                if(returnValue instanceof FS3Error) {
-                    returnValue.message = `In method [${method.name}]: ${returnValue.message}`;
-                    return returnValue;
+            // Recursively resolve methods inside blocks
+            tokensArray.forEach((t) => {
+                if (t.type === "block" && Array.isArray(t.body)) {
+                    t.body = t.body.map(innerLine => this.methodResolver(innerLine));
                 }
-                if (returnValue) {
-                    // Replace parent with returnValue in place
-                    parent.type = returnValue.type;
-                    parent.value = returnValue.value;
-                }
-            } catch (e) {
-                throw new FS3Error("InternalJavaScriptError",
-                    `Error executing method [${method.name}]: ${e.message}`,
-                    method.line, method.col, method);
-            }
-        });
+            });
 
-        compacted.forEach((line, i) => {
-            if(!Array.isArray(line)) compacted[i] = [line];
-        })
+            return tokensArray;
+        };
 
-        return compacted;
+        // Handle single line vs multiple lines
+        if (!Array.isArray(compacted[0]) || (compacted[0] && !Array.isArray(compacted[0][0]))) {
+            return resolveLine(compacted);
+        } else {
+            return compacted.map(lineTokens => resolveLine(lineTokens));
+        }
     }
+
 
     compact(lineTokens) {
         // Helper to parse arguments inside parentheses
@@ -681,26 +777,26 @@ class FroggyScript3 {
         }
 
         // handle math equations
-        for(let i = 0; i < tokens.length; i++){
-            for(let j = 0; j < tokens[i].length; j++){
-                let token = tokens[i][j];
+        // for(let i = 0; i < tokens.length; i++){
+        //     for(let j = 0; j < tokens[i].length; j++){
+        //         let token = tokens[i][j];
 
-                if(token.type === "math_equation"){
-                    let eq = token.value.slice(2, -2);
-                    try {
-                        let result = math.evaluate(eq);
+        //         if(token.type === "math_equation"){
+        //             let eq = token.value.slice(2, -2);
+        //             try {
+        //                 let result = math.evaluate(eq);
 
-                        token.type = "number";
-                        token.value = result;
+        //                 token.type = "number";
+        //                 token.value = result;
 
-                        if(result === true) token.value = 1;
-                        if(result === false) token.value = 0;
-                    } catch (e) {
-                        throw new FS3Error("MathError", `Error evaluating math equation: ${e.message}`, token.line, token.col);
-                    }
-                }
-            }
-        }
+        //                 if(result === true) token.value = 1;
+        //                 if(result === false) token.value = 0;
+        //             } catch (e) {
+        //                 throw new FS3Error("MathError", `Error evaluating math equation: ${e.message}`, token.line, token.col);
+        //             }
+        //         }
+        //     }
+        // }
 
         for(let i = 0; i < tokens.length; i++){
             for(let j = 0; j < tokens[i].length; j++){
