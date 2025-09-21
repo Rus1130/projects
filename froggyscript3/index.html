@@ -20,7 +20,8 @@
 <script>
     const input = document.getElementById("in");
     //input.textContent = `out "string1">noArg1\nout "string2"\nout "string3">noArg2>noArg3\nout "string4">twoArg1("string5">noArg6('ga'>be)>bga, variable>noArg4)`;
-    input.textContent = `out "hello">concat(", world")`;
+    //input.textContent = `func @funky {\n    out 'hello!'\n    out 'goodbye!'>type\n}\nout 'meow!'\ncall @funky\nout {{1+2}}>type`;
+    input.textContent = `var hello = "world"\nout hello\nfunc @funky {\nout hello\n}\ncall @funky`;
 
     input.addEventListener("keydown", (e) => {
         if(e.key === "Tab"){
