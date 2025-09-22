@@ -61,10 +61,18 @@ new Method("type", ["any"], [], (parent, args, interpreter) => {
     return parent;
 });
 
-new Method("length", ["string"], [], (parent, args, interpreter) => {
+new Method("length", ["string", "array"], [], (parent, args, interpreter) => {
     parent.value = parent.value.length;
     parent.type = "number";
     return parent;
+});
+
+new Method("index", ["array"], [{type: ["number"], optional: false}], (parent, args, interpreter) => {
+    let index = args[0].value;
+    if(index < 0 || index >= parent.value.length){
+        throw new FS3Error("RangeError", `Index [${index}] is out of bounds for array of length [${parent.value.length}]`, args[0].line, args[0].col, args);
+    }
+    return parent.value.flat()[args[0].value]
 });
 
 // ["string", "string|number", "any?"]
@@ -106,6 +114,14 @@ new Keyword("var", ["variable_reference", "assignment", "string|number|array|mat
         type: type,
     }
 })
+
+// new Keyword("if", ["condition_statement", "block"], (args, interpreter) => {
+//     console.log(args)
+// });
+
+// new Keyword("else", ["block"], (args, interpreter) => {
+//     console.log(args)
+// });
 
 class FroggyScript3 {
     static matches = [
@@ -267,8 +283,6 @@ class FroggyScript3 {
 
                     elements = elements.flat()
 
-                    console.log(elements)
-
                     flattened.splice(i, j - i, {
                         type: "array",
                         value: elements,
@@ -313,6 +327,21 @@ class FroggyScript3 {
                     // Recursively resolve array elements
                     if (t.type === "array") {
                         t.value = t.value.map(el => {
+                            if(el.type == "variable"){
+                                const variable = this.variables[el.value];
+                                if (variable) {
+                                    el.type = variable.type;
+                                    el.value = variable.value;
+                                } else {
+                                    throw new FS3Error(
+                                        "ReferenceError",
+                                        `Variable [${el.value}] is not defined`,
+                                        el.line,
+                                        el.col,
+                                        line
+                                    );
+                                }
+                            }
                             return this.methodResolver(el);
                         });
                     }
@@ -543,20 +572,21 @@ class FroggyScript3 {
                 // Execute method
                 try {
                     const result = def.fn(parent, method.args, this);
-                    if (result instanceof FS3Error) {
-                        result.message = `In method [${method.name}]: ${result.message}`;
-                        throw result;
-                    }
                     if (result) {
                         parent.type = result.type;
                         parent.value = result.value;
                     }
                 } catch (e) {
-                    throw new FS3Error(
-                        "InternalJavaScriptError",
-                        `Error executing method [${method.name}]: ${e.message}`,
-                        method.line, method.col, method
-                    );
+                    if (e instanceof FS3Error) {
+                        e.message = `In method [${method.name}]: ${e.message}`;
+                        throw e;
+                    } else {
+                        throw new FS3Error(
+                            "InternalJavaScriptError",
+                            `Error executing method [${method.name}]: ${e.message}`,
+                            method.line, method.col, method
+                        );
+                    }
                 }
             });
 
