@@ -22,10 +22,12 @@
     //input.textContent = `out "string1">noArg1\nout "string2"\nout "string3">noArg2>noArg3\nout "string4">twoArg1("string5">noArg6('ga'>be)>bga, variable>noArg4)`;
     //input.textContent = `func @funky {\n    out 'hello!'\n    out 'goodbye!'>type>length\n}\nout 'meow!'\ncall @funky`;
     //input.textContent = `var hello = "world">type\nout hello>concat('hello!'>type)>length`;
-    //input.textContent = `out "hello!">type`;
+    //input.textContent = `out 'hello'>index(\{{1+3}})`;
     //input.textContent = `var meow = 'woof'\nvar array = [meow>type, 2, 3, 4, 5]\nout array`;
-    input.textContent = `var meow = 'woof'\nvar bee = [meow, 2, 3, 4, 5]\nout bee>index(7)`;
-    //input.textContent = `if <<1>>{\n    out 'hello!'\nelse {\n    out 'goodbye!'\n}}`;
+    //input.textContent = `var meow = 'woof'\nvar bee = [meow, 2, 3, 4, 5]\nout bee>index(7)`;
+    //input.textContent = `var number = 1\nif <<number > 3>>{\n    out 'five is bigger'\n}\nelse {\n    out 'nope.'\n}`;
+    //input.textContent = `var number = 0\nset number = 1>add(2)\nout number`;
+    input.textContent = `var number = 0\nloop <<number < 5>> {\n    out number\n    set number = number>add(1)\n}\nout 'done!'`;
 
     input.addEventListener("keydown", (e) => {
         if(e.key === "Tab"){

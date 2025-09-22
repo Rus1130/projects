@@ -67,12 +67,77 @@ new Method("length", ["string", "array"], [], (parent, args, interpreter) => {
     return parent;
 });
 
-new Method("index", ["array"], [{type: ["number"], optional: false}], (parent, args, interpreter) => {
-    let index = args[0].value;
-    if(index < 0 || index >= parent.value.length){
-        throw new FS3Error("RangeError", `Index [${index}] is out of bounds for array of length [${parent.value.length}]`, args[0].line, args[0].col, args);
+new Method("inc", ["number"], [], (parent, args, interpreter) => {
+    parent.value = parent.value + 1;
+    return parent;
+});
+
+new Method("dec", ["number"], [], (parent, args, interpreter) => {
+    parent.value = parent.value - 1;
+    return parent;
+});
+
+new Method("add", ["number"], [{type: ["number"], optional: false}], (parent, args, interpreter) => {
+    parent.value = parent.value + args[0].value;
+    return parent;
+});
+
+new Method("sub", ["number"], [{type: ["number"], optional: false}], (parent, args, interpreter) => {
+    parent.value = parent.value - args[0].value;
+    return parent;
+});
+
+new Method("mul", ["number"], [{type: ["number"], optional: false}], (parent, args, interpreter) => {
+    parent.value = parent.value * args[0].value;
+    return parent;
+});
+
+new Method("div", ["number"], [{type: ["number"], optional: false}], (parent, args, interpreter) => {
+    if(args[0].value === 0){
+        throw new FS3Error("MathError", "Division by zero is not permitted", args[0].line, args[0].col, args);
     }
-    return parent.value.flat()[args[0].value]
+    parent.value = parent.value / args[0].value;
+    return parent;
+});
+
+
+new Method("index", ["array", "string"], [{type: ["number"], optional: false}], (parent, args, interpreter) => {
+    if(parent.type === "array"){
+        let index = args[0].value;
+        if(index < 0 || index >= parent.value.length){
+            throw new FS3Error("RangeError", `Index [${index}] is out of bounds for array of length [${parent.value.length}]`, args[0].line, args[0].col, args);
+        }
+
+        return parent.value[args[0].value]
+    } else {
+        let str = parent.value;
+        let index = args[0].value;
+        if(index < 0 || index >= str.length){
+            throw new FS3Error("RangeError", `Index [${index}] is out of bounds for string of length [${str.length}]`, args[0].line, args[0].col, args);
+        }
+
+        return {
+            type: "string",
+            value: str.charAt(index),
+            line: parent.line,
+            col: parent.col,
+            methods: []
+        }
+    }
+});
+
+new Keyword("set", ["variable_reference", "assignment", "string|number|array"], (args, interpreter) => {
+    let variableName = args[0].value;
+    let variableValue = args[2].value;
+
+    if(!interpreter.variables[variableName]){
+        throw new FS3Error("ReferenceError", `Variable [${variableName}] is not defined`, args[0].line, args[0].col, args);
+    } 
+
+    if(interpreter.variables[variableName].type !== args[2].type){
+        throw new FS3Error("TypeError", `Cannot set variable [${variableName}] of type [${interpreter.variables[variableName].type}] to value of type [${args[2].type}]`, args[0].line, args[0].col, args);
+    }
+    interpreter.variables[variableName].value = variableValue;
 });
 
 // ["string", "string|number", "any?"]
@@ -100,7 +165,7 @@ new Keyword("call", ["functionName"], (args, interpreter) => {
     interpreter.executeBlock(functionBody);
 })
 
-new Keyword("var", ["variable_reference", "assignment", "string|number|array|math_equation"], (args, interpreter) => {
+new Keyword("var", ["variable_reference", "assignment", "string|number|array"], (args, interpreter) => {
     let name = args[0].value;
     let value = args[2].value;
     let type = args[2].type;
@@ -115,13 +180,46 @@ new Keyword("var", ["variable_reference", "assignment", "string|number|array|mat
     }
 })
 
-// new Keyword("if", ["condition_statement", "block"], (args, interpreter) => {
-//     console.log(args)
-// });
+new Keyword("if", ["condition_statement", "block"], (args, interpreter) => {
+    let conditionResult = interpreter.evaluateMathExpression(args[0].value)
 
-// new Keyword("else", ["block"], (args, interpreter) => {
-//     console.log(args)
-// });
+    if(conditionResult){
+        interpreter.executeBlock(args[1].body);
+        interpreter.lastIfExecuted = true;
+    } else {
+        interpreter.lastIfExecuted = false;
+    }
+});
+
+new Keyword("else", ["block"], (args, interpreter) => {
+    if(!interpreter.lastIfExecuted){
+        interpreter.executeBlock(args[0].body);
+    }
+    interpreter.lastIfExecuted = false;
+});
+
+new Keyword("loop", ["number|condition_statement", "block"], (args, interpreter) => {
+    let cond = args[0];
+    let block = args[1].body;
+
+    if(cond.type === "number"){
+        let count = cond.value;
+        for(let i = 0; i < count; i++){
+            interpreter.executeBlock(block);
+        }
+    } else if(cond.type === "condition_statement"){
+        let breaker = 10000;
+        let i = 0;
+        while(interpreter.evaluateMathExpression(cond.value)){
+            interpreter.executeBlock(block);
+            i++;
+
+            if(i >= breaker){
+                throw new FS3Error("InfiniteLoopError", `Possible infinite loop detected after ${breaker} iterations. Aborting.`, cond.line, cond.col, args);
+            }
+        }
+    }
+});
 
 class FroggyScript3 {
     static matches = [
@@ -130,7 +228,6 @@ class FroggyScript3 {
         ["variable", /[A-Za-z_][A-Za-z0-9_]*/],
         ["functionName", /@[A-Za-z_][A-Za-z0-9_]*/],
         ["string", /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/],
-        ["math_equation", /\{\{[^\r\n]*?\}\}/],
         ["condition_statement", /<<[^\r\n]*?>>/],
         ["block_start", /\{/],
         ["block_end", /\}/],
@@ -162,6 +259,30 @@ class FroggyScript3 {
         this.variables = {};
         this.functions = {};
         this.debug = false;
+        this.lastIfExecuted = false;
+    }
+
+    evaluateMathExpression(expression){
+        expression = expression.slice(2, -2).trim();
+
+        let scope = {};
+        for(const [key, val] of Object.entries(this.variables)){
+            if(val.type === "number"){
+                scope[key] = val.value;
+            }
+        }
+
+        try {
+            let result = math.evaluate(expression, scope);
+            if(typeof result === "boolean"){
+                result = result ? 1 : 0;
+            } else if(typeof result !== "number"){
+                throw new FS3Error("MathError", `Math expression did not evaluate to a number`, null, null);
+            }
+            return result;
+        } catch (e) {
+            throw new FS3Error("MathError", `Error evaluating math expression: ${e.message}`, null, null);
+        }
     }
 
     setOutputFunction(fn) {
@@ -220,9 +341,36 @@ class FroggyScript3 {
             const compacted = this.compact(line);
             const resolvedMethods = this.methodResolver(compacted);
 
-
             this.keywordExecutor(resolvedMethods);
         }
+    }
+
+    resolveExpressions(node) {
+        if (Array.isArray(node)) {
+            return node.map(n => this.resolveExpressions(n));
+        }
+
+        if (!node || typeof node !== "object") return node;
+
+        // Recurse into method args
+        if (node.methods && node.methods.length) {
+            node.methods = node.methods.map(m => {
+                m.args = m.args.map(arg => this.resolveExpressions(arg));
+                return m;
+            });
+        }
+
+        // Recurse into array elements
+        if (node.type === "array" && Array.isArray(node.value)) {
+            node.value = node.value.map(el => this.resolveExpressions(el));
+        }
+
+        // Recurse into blocks
+        if (node.type === "block" && Array.isArray(node.body)) {
+            node.body = node.body.map(line => this.resolveExpressions(line));
+        }
+
+        return node;
     }
 
     interpret(code) {
@@ -353,10 +501,14 @@ class FroggyScript3 {
                 // If the first token is a literal (number/string/array), ensure it has start_of_line
 
                 const compacted = this.compact(line);
+
+                // here, recursively resolve math equations with interpreter.evaluateMathExpression, make sure to check methods parameters and arrays
                 const resolvedMethods = this.methodResolver(compacted);
 
+                const resolvedMathEquations = this.resolveExpressions(resolvedMethods);
+
                 // Step 7: Execute keywords if present
-                this.keywordExecutor(resolvedMethods);
+                this.keywordExecutor(resolvedMathEquations);
             }
 
         } catch (e) {
@@ -419,7 +571,8 @@ class FroggyScript3 {
         try {
             keywordDef.fn(lineArgs, this);
         } catch (e) {
-            throw new FS3Error(
+            if(e instanceof FS3Error) throw e;
+            else throw new FS3Error(
                 "InternalJavaScriptError",
                 `Error executing keyword [${keyword}]: ${e.message}`,
                 line[0].line,
@@ -538,8 +691,40 @@ class FroggyScript3 {
 
                 // Validate arguments
                 if (def.args) {
-                    def.args.forEach((expected, idx) => {
-                        const actual = method.args[idx];
+                    // 1) resolve expressions for every arg (deeply)
+                    method.args = method.args.map(arg => {
+                        let resolved = this.resolveExpressions(arg);
+                        // unwrap single-line arrays that represent a single token/expr
+                        if (Array.isArray(resolved) && resolved.length === 1) resolved = resolved[0];
+                        return resolved;
+                    });
+
+                    if (this.debug) console.log("method.args after resolveExpressions:", JSON.parse(JSON.stringify(method.args)));
+
+                    // helper: produce a token-like {type, value, line, col}
+                    const normalize = (a) => {
+                        if (a == null) return null;
+                        if (Array.isArray(a)) return { type: "array", value: a, line: a[0]?.line, col: a[0]?.col };
+                        if (typeof a === "number") return { type: "number", value: a };
+                        if (typeof a === "string") return { type: "string", value: a };
+                        if (typeof a === "boolean") return { type: "number", value: a ? 1 : 0 };
+                        if (typeof a === "object") {
+                            // already token-like
+                            if (a.type) return a;
+                            // object with .value that's an array => treat as array literal
+                            if (a.value !== undefined && Array.isArray(a.value)) return { type: "array", value: a.value, line: a.line, col: a.col };
+                            // fallback
+                            return { type: typeof a, value: a };
+                        }
+                        return { type: typeof a, value: a };
+                    };
+
+                    // 2) validate each expected arg against normalized actual
+                    for (let idx = 0; idx < def.args.length; idx++) {
+                        const expected = def.args[idx];
+                        let actualRaw = method.args[idx];
+                        let actual = normalize(actualRaw);
+
                         if (!actual) {
                             if (!expected.optional) {
                                 throw new FS3Error(
@@ -548,23 +733,36 @@ class FroggyScript3 {
                                     method.line, method.col, method
                                 );
                             }
-                            return;
+                            continue;
                         }
+
+                        // 3) If it's still a math/condition token, evaluate it now (fallback)
+                        if (actual.type === "math_equation" || actual.type === "condition_statement") {
+                            // strip delimiters if necessary and evaluate
+                            let expr = actual.value;
+                            if (typeof expr === "string") expr = expr.replace(/^\{\{|\}\}$|^<<|>>$/g, "");
+                            const evalResult = this.evaluateMathExpression(expr);
+                            actual.type = (typeof evalResult === "number") ? "number" : (typeof evalResult === "boolean" ? "number" : typeof evalResult);
+                            actual.value = evalResult;
+                            method.args[idx] = actual; // write back the evaluated token
+                        }
+
+                        // 4) final type check (expected.type is an array of allowed types)
                         if (!expected.type.includes(actual.type) && !expected.type.includes("any")) {
                             throw new FS3Error(
                                 "TypeError",
                                 `Invalid type for argument [${idx + 1}] for method [${method.name}]: expected [${expected.type.join(" or ")}], got [${actual.type}]`,
-                                actual.line, actual.col, method
+                                actual.line ?? method.line, actual.col ?? method.col, method
                             );
                         }
-                    });
+                    }
                 }
 
                 // Validate parent type
-                if (def.parentType && !def.parentType.includes(parent.type)) {
+                if (def.parentTypes && !def.parentTypes.includes(parent.type)) {
                     throw new FS3Error(
                         "TypeError",
-                        `Invalid parent type for method [${method.name}]: expected [${def.parentType.join(" or ")}], got [${parent.type}]`,
+                        `Invalid parent type for method [${method.name}]: expected [${def.parentTypes.join(" or ")}], got [${parent.type}]`,
                         parent.line, parent.col, method
                     );
                 }
@@ -805,28 +1003,6 @@ class FroggyScript3 {
                 }
             }
         }
-
-        // handle math equations
-        // for(let i = 0; i < tokens.length; i++){
-        //     for(let j = 0; j < tokens[i].length; j++){
-        //         let token = tokens[i][j];
-
-        //         if(token.type === "math_equation"){
-        //             let eq = token.value.slice(2, -2);
-        //             try {
-        //                 let result = math.evaluate(eq);
-
-        //                 token.type = "number";
-        //                 token.value = result;
-
-        //                 if(result === true) token.value = 1;
-        //                 if(result === false) token.value = 0;
-        //             } catch (e) {
-        //                 throw new FS3Error("MathError", `Error evaluating math equation: ${e.message}`, token.line, token.col);
-        //             }
-        //         }
-        //     }
-        // }
 
         for(let i = 0; i < tokens.length; i++){
             for(let j = 0; j < tokens[i].length; j++){
