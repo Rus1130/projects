@@ -149,7 +149,7 @@ new Keyword("out", ["string|number"], (args, interpreter) => {
     interpreter.out(args[0].value);
 });
 
-new Keyword("func", ["function_reference", "array?", "block"], (args, interpreter) => {
+new Keyword("func", ["function_reference", "block"], (args, interpreter) => {
     let functionName = args[0].value;
     let functionBody = args[1].body;
 
@@ -158,6 +158,14 @@ new Keyword("func", ["function_reference", "array?", "block"], (args, interprete
     }
     interpreter.functions[functionName] = functionBody;
 })
+
+new Keyword("pfunc", ["function_reference", "array", "block"], (args, interpreter) => {
+    let functionName = args[0].value;
+    let functionParams = args[1].value.flat();
+    let functionBody = args[2].body;
+
+    console.log(functionParams)
+});
 
 new Keyword("call", ["function_reference"], (args, interpreter) => {
     let functionName = args[0].value;
@@ -168,6 +176,9 @@ new Keyword("call", ["function_reference"], (args, interpreter) => {
     }
     interpreter.executeBlock(functionBody);
 })
+
+new Keyword("pcall", ["function_reference", "array"], (args, interpreter) => {
+});
 
 new Keyword("var", ["variable_reference", "assignment", "string|number|array"], (args, interpreter) => {
     let name = args[0].value;
@@ -305,6 +316,7 @@ class FroggyScript3 {
             "fReturn": { value: "", type: "string", mut: true, freeable: false },
             "MAX_LOOP_ITERATIONS": { value: 10000, type: "number", mut: true, freeable: false }
         };
+        this.temporaryVariables = {};
         this.functions = {};
         this.debug = false;
         this.lastIfExecuted = false;
