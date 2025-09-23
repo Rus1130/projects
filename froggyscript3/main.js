@@ -200,9 +200,13 @@ new Keyword("pfunc", ["function_reference", "array", "block"], (args, interprete
 new Keyword("pcall", ["function_reference", "array"], (args, interpreter) => {
     let functionName = args[0].value;
     let functionArgs = args[1].value.flat();
+    
+    if(!interpreter.functions[functionName]){
+        throw new FS3Error("ReferenceError", `Function [${functionName}] is not defined`, args[0].line, args[0].col, args);
+    }
 
     if(!interpreter.functions[functionName].body){
-        throw new FS3Error("ReferenceError", `Function [${functionName}] is not a parameterized function and must be called with 'call'`, args[0].line, args[0].col, args);
+        throw new FS3Error("AccessError", `Function [${functionName}] is not a parameterized function and must be called with the [call] keyword`, args[0].line, args[0].col, args);
     }
 
     let expectedFunctionArgs = interpreter.functions[functionName].params;
@@ -239,7 +243,7 @@ new Keyword("call", ["function_reference"], (args, interpreter) => {
         throw new FS3Error("ReferenceError", `Function [${functionName}] is not defined`, args[0].line, args[0].col, args);
     }
     if(functionBody.body){
-        throw new FS3Error("ArgumentError", `Function [${functionName}] is a parameterized function and must be called with 'pcall'`, args[0].line, args[0].col, args);
+        throw new FS3Error("AccessError", `Function [${functionName}] is a parameterized function and must be called with the [pcall] keyword`, args[0].line, args[0].col, args);
     }
 
     interpreter.executeBlock(functionBody);
@@ -335,7 +339,7 @@ new Keyword("loop", ["number|condition_statement", "block"], (args, interpreter)
             i++;
 
             if(i >= breaker){
-                throw new FS3Error("InfiniteLoopError", `Possible infinite loop detected after ${breaker} iterations.`, cond.line, cond.col, args);
+                throw new FS3Error("RuntimeError", `Possible infinite loop detected after ${breaker} iterations.`, cond.line, cond.col, args);
             }
         }
     }
@@ -343,7 +347,7 @@ new Keyword("loop", ["number|condition_statement", "block"], (args, interpreter)
 
 class FroggyScript3 {
     static matches = [
-        ["comment", /#.*/],
+        ["comment", /# .*/],
         ["number", /[0-9]+(?:\.[0-9]+)?/],
         ["variable", /[A-Za-z_][A-Za-z0-9_]*/],
         ["function_reference", /@[A-Za-z_][A-Za-z0-9_]*/],
@@ -518,17 +522,13 @@ class FroggyScript3 {
 
     interpret(code) {
         try {
-            // Step 1: Tokenize all lines
             let tokens = this.tokenize(code.split('\n'));
-
-            // Step 2: Add start_of_line token for each line
             let lines = tokens.map(line => [{ type: "start_of_line", value: "" }, ...line]);
             let flattened = lines.flat();
 
-            // Step 3: Preprocess arrays (resolve methods inside array elements)
+            // 🔹 Collapse array literals and resolve their methods once
             for (let i = 0; i < flattened.length; i++) {
                 const token = flattened[i];
-
                 if (token.type === "array_start") {
                     let depth = 1;
                     let arrayTokens = [];
@@ -538,7 +538,6 @@ class FroggyScript3 {
                         const t = flattened[j];
                         if (t.type === "array_start") depth++;
                         else if (t.type === "array_end") depth--;
-
                         if (depth > 0) arrayTokens.push(t);
                         j++;
                     }
@@ -547,36 +546,33 @@ class FroggyScript3 {
                         throw new FS3Error("SyntaxError", "Unclosed array literal", token.line, token.col, flattened);
                     }
 
-                    // Split arrayTokens into elements by top-level commas
+                    // Split into elements by commas at top level
                     let elements = [];
-                    let currentElement = [];
-                    let elementDepth = 0;
-
+                    let current = [];
+                    let elDepth = 0;
                     for (let k = 0; k < arrayTokens.length; k++) {
                         const t = arrayTokens[k];
-                        if (t.type === "array_start") elementDepth++;
-                        if (t.type === "array_end") elementDepth--;
-
-                        if (t.type === "comma" && elementDepth === 0) {
-                            elements.push(currentElement);
-                            currentElement = [];
-                        } else {
-                            currentElement.push(t);
-                        }
+                        if (t.type === "array_start") elDepth++;
+                        if (t.type === "array_end") elDepth--;
+                        if (t.type === "comma" && elDepth === 0) {
+                            elements.push(current);
+                            current = [];
+                        } else current.push(t);
                     }
-                    if (currentElement.length) elements.push(currentElement);
+                    if (current.length) elements.push(current);
 
-                    // Compact & resolve methods for each array element
+                    // 🔸 Compact and resolve methods for each element just once
                     elements = elements.map(el => {
-                        let compacted = this.compact(el);
-                        return this.methodResolver(compacted);
+                        const compacted = this.compact(el);
+                        let resolved = this.methodResolver(compacted);
+                        if (Array.isArray(resolved) && resolved.length === 1) resolved = resolved[0];
+                        return resolved;
                     });
 
-                    elements = elements.flat()
-
+                    // Replace tokens with a single array token
                     flattened.splice(i, j - i, {
                         type: "array",
-                        value: elements,
+                        value: elements, // final token objects
                         line: token.line,
                         col: token.col,
                         methods: []
@@ -584,27 +580,20 @@ class FroggyScript3 {
                 }
             }
 
-            // Step 4: Compress blocks (includes arrays)
+            // Compress blocks after arrays are collapsed
             let compressed = this.blockCompressor(flattened);
 
-            // Step 5: Process each line
+            // 🔹 Execute each line
             for (let i = 0; i < compressed.length; i++) {
-                let line = compressed[i];
+                const line = compressed[i];
 
-                // Handle variable assignment immediately
-                const firstToken = line[1]; // line[0] is start_of_line
-                if (firstToken?.type === "keyword" && firstToken.value === "var") {
-                    this.keywordExecutor(line);
-                }
-
-                // Resolve variables recursively
-                const resolvedLine = line.map((t, idx) => {
+                // Replace variables inline
+                line.forEach((t, idx) => {
                     if (t.type === "variable") {
-                        const variable = this.variables[t.value];
-                        if (variable) {
-                            line[idx].type = variable.type;
-                            line[idx].value = variable.value;
-                            return variable.value;
+                        const v = this.variables[t.value];
+                        if (v) {
+                            line[idx].type = v.type;
+                            line[idx].value = v.value;
                         } else {
                             throw new FS3Error(
                                 "ReferenceError",
@@ -615,15 +604,14 @@ class FroggyScript3 {
                             );
                         }
                     }
-                    // Recursively resolve array elements
+
+                    // 🔸 Resolve variables inside arrays, but don’t rerun methodResolver
                     if (t.type === "array") {
                         t.value = t.value.map(el => {
-                            if(el.type == "variable"){
-                                const variable = this.variables[el.value];
-                                if (variable) {
-                                    el.type = variable.type;
-                                    el.value = variable.value;
-                                } else {
+                            if (Array.isArray(el) && el.length === 1) el = el[0];
+                            if (el && el.type === "variable") {
+                                const v = this.variables[el.value];
+                                if (!v) {
                                     throw new FS3Error(
                                         "ReferenceError",
                                         `Variable [${el.value}] is not defined`,
@@ -632,35 +620,25 @@ class FroggyScript3 {
                                         line
                                     );
                                 }
+                                return { ...el, type: v.type, value: v.value };
                             }
-                            return this.methodResolver(el);
+                            return el;
                         });
                     }
-
-                    return t.value;
                 });
 
-                // Step 6: Compact line & resolve methods
-                // If the first token is a literal (number/string/array), ensure it has start_of_line
-
+                // Compact the line and resolve methods (outside arrays)
                 const compacted = this.compact(line);
-
-                // here, recursively resolve math equations with interpreter.evaluateMathExpression, make sure to check methods parameters and arrays
                 const resolvedMethods = this.methodResolver(compacted);
 
-                const resolvedMathEquations = this.resolveExpressions(resolvedMethods);
-
-                // Step 7: Execute keywords if present
-                this.keywordExecutor(resolvedMathEquations);
+                // Execute keyword
+                this.keywordExecutor(resolvedMethods);
             }
-
         } catch (e) {
             if (e instanceof FS3Error) this.errout(e);
             else throw e;
         }
     }
-
-
 
     keywordExecutor(line) {
         // Resolve variables
@@ -891,6 +869,20 @@ class FroggyScript3 {
                             }
 
                             // 4) final type check (expected.type is an array of allowed types)
+                            if(actual.type == "variable"){
+                                const variable = this.variables[actual.value];
+                                if(variable){
+                                    actual.type = variable.type;
+                                    actual.value = variable.value;
+                                    method.args[idx] = actual; // write back the resolved token
+                                } else {
+                                    throw new FS3Error(
+                                        "ReferenceError",
+                                        `Variable [${actual.value}] is not defined`,
+                                        actual.line ?? method.line, actual.col ?? method.col, method
+                                    );
+                                }
+                            }
                             if (!expected.type.includes(actual.type) && !expected.type.includes("any")) {
                                 throw new FS3Error(
                                     "TypeError",
