@@ -149,7 +149,7 @@ new Keyword("out", ["string|number"], (args, interpreter) => {
     interpreter.out(args[0].value);
 });
 
-new Keyword("func", ["function_reference", "block"], (args, interpreter) => {
+new Keyword("func", ["function_reference", "array?", "block"], (args, interpreter) => {
     let functionName = args[0].value;
     let functionBody = args[1].body;
 
