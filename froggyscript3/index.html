@@ -29,8 +29,9 @@
     //input.textContent = `var number = 0\nset number = 1>add(2)\nout number`;
     //input.textContent = `var number = 0\nloop <<true>> {\n    out number\n    set number = number>add(1)\n}\nout 'done!'`;
     //input.textContent = `var hello = ['h', 'e', 'l', 'l', 'o']\nout hello>index(0)`;
-   // input.textContent = `var hello = 'world'\nfree true\nout hello`;
-   input.textContent = `pfunc @funky ["meow:S"] {\n    out meow\n}\npcall @funky ['hello!']`;
+    //input.textContent = `var hello = 'world'\nfree true\nout hello`;
+    input.textContent = `pfunc @funky ["meow:S"] {\n    out meow\n}\npcall @funky ['hello!']`;
+    //input.textContent = `pfunc @funky ["meow:S"] {\n    out meow\n}\ncall @funky ['hello!']`;
 
     input.addEventListener("keydown", (e) => {
         if(e.key === "Tab"){

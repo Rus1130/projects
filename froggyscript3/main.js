@@ -164,7 +164,71 @@ new Keyword("pfunc", ["function_reference", "array", "block"], (args, interprete
     let functionParams = args[1].value.flat();
     let functionBody = args[2].body;
 
-    console.log(functionParams)
+    let params = [];
+
+    functionParams.forEach(p => {
+        if(p.type != "string"){
+            throw new FS3Error("TypeError", `Parameter declaration [${p.value}] in function [${functionName}] must be a string`, p.line, p.col, args);
+        }
+
+        let value = p.value.split(":")[0];
+        let type = p.value.split(":")[1];
+
+        if(type == "S") type = "string";
+        else if(type == "N") type = "number";
+        else if(type == "A") type = "array";
+        else if(type == "" || type == undefined){
+            throw new FS3Error("SyntaxError", `Parameter [${value}] in function [${functionName}] is missing a type declaration. Must be S (string), N (number), or A (array)`, p.line, p.col, args);
+        } else {
+            throw new FS3Error("TypeError", `Invalid parameter type [${type}] for parameter [${value}] in function [${functionName}]. Must be S (string), N (number), or A (array)`, p.line, p.col, args);
+        }
+
+        params.push({value, type});
+    });
+
+
+    if(interpreter.functions[functionName]){
+        throw new FS3Error("ReferenceError", `Function [${functionName}] is already defined`, args[0].line, args[0].col, args);
+    }
+
+    interpreter.functions[functionName] = {
+        body: functionBody.flat(),
+        params: params.flat()
+    };
+});
+
+new Keyword("pcall", ["function_reference", "array"], (args, interpreter) => {
+    let functionName = args[0].value;
+    let functionArgs = args[1].value.flat();
+
+    if(!interpreter.functions[functionName].body){
+        throw new FS3Error("ReferenceError", `Function [${functionName}] is not a parameterized function and must be called with 'call'`, args[0].line, args[0].col, args);
+    }
+
+    let expectedFunctionArgs = interpreter.functions[functionName].params;
+    let functionBody = interpreter.functions[functionName].body;
+
+    expectedFunctionArgs.forEach((param, idx) => {
+        let arg = functionArgs[idx];
+        if(!arg){
+            throw new FS3Error("ArgumentError", `Missing argument [${param.value}] of type [${param.type}] for function [${functionName}]`, args[0].line, args[0].col, args);
+        }
+        if(arg.type !== param.type){
+            throw new FS3Error("TypeError", `Invalid type for argument [${param.value}] in function [${functionName}]: expected [${param.type}], got [${arg.type}]`, arg.line, arg.col, args);
+        }
+        // create a temporary variable for this arg
+        if(interpreter.variables[param.value]){
+            throw new FS3Error("ReferenceError", `Cannot use parameter name [${param.value}] for function [${functionName}] because a variable with that name already exists`, arg.line, arg.col, args);
+        }
+        interpreter.variables[param.value] = {
+            value: arg.value,
+            type: arg.type,
+            mut: false,
+            freeable: false
+        }
+    });
+
+    interpreter.executeBlock([functionBody])
 });
 
 new Keyword("call", ["function_reference"], (args, interpreter) => {
@@ -174,11 +238,12 @@ new Keyword("call", ["function_reference"], (args, interpreter) => {
     if(!functionBody){
         throw new FS3Error("ReferenceError", `Function [${functionName}] is not defined`, args[0].line, args[0].col, args);
     }
+    if(functionBody.body){
+        throw new FS3Error("ArgumentError", `Function [${functionName}] is a parameterized function and must be called with 'pcall'`, args[0].line, args[0].col, args);
+    }
+
     interpreter.executeBlock(functionBody);
 })
-
-new Keyword("pcall", ["function_reference", "array"], (args, interpreter) => {
-});
 
 new Keyword("var", ["variable_reference", "assignment", "string|number|array"], (args, interpreter) => {
     let name = args[0].value;
