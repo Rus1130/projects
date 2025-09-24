@@ -152,6 +152,17 @@ new Method("index", ["array", "string"], [{type: ["number"], optional: false}], 
     }
 });
 
+new Method("join", ["array"], [{type: ["string"], optional: true}], (parent, args, interpreter) => {
+    let separator = args[0] ? args[0].value : ",";
+
+    parent.value = parent.value.map(el => {
+        if(Array.isArray(el)) throw new FS3Error("TypeError", "Nested arrays are not supported in join()", el[0]?.line, el[0]?.col, el);
+        return String(el.value);
+    }).join(separator);
+    parent.type = "string";
+    return parent;
+});
+
 new Keyword("set", ["variable_reference", "assignment", "string|number|array"], (args, interpreter) => {
     let variableName = args[0].value;
     let variableValue = args[2].value;

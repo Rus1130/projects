@@ -234,6 +234,10 @@ Methods are functions that are called on a value using the `>` operator. The val
 ```
 [parent_type]>[method_name]([arg1, arg2, ...]) => [return_type]
 ```
+`?` indicates an optional argument, and `= default_value` indicates a default value for an optional argument.
+```
+string>stringMethod(string? = "default") => string
+```
 ### Multi-type Methods
 #### type
 Returns the type of the parent as a string: `string`, `number`, or `array`.
@@ -321,6 +325,16 @@ number>div(number) => number
 
 10>div(2) # 5
 10>div(0) # MathError
+```
+### Array Methods
+#### join
+Joins all elements of the array into a single string, with an optional separator.
+```
+array>join([string? = ","]) => string
+
+[1, 2, 3]>join                # '1,2,3'
+[1, 2, 3]>join(", ")          # '1, 2, 3'
+['a', 'b', 'c']>join(" and ") # 'a and b and c'
 ```
 ## Types of Errors
 | Error                     | Description                                                                                                                                                                                                                |
