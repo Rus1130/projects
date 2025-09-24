@@ -44,6 +44,7 @@ There are also two other types: `function_reference` and `condition_statement`.
 Keywords can specify the types of arguments they accept. This is how it is notated:
 ```
 keyword [arg1_type] [arg2_type] ...
+
 # Example:
 out [string|number] # accepts either a string or number
 ```
@@ -64,6 +65,7 @@ This is a block:
 When a keyword specifies in documentation it requires a block like this:
 ```
 func [function_reference] [block]
+
 if [condition_statement] [block]
 ```
 It should be done like so:
