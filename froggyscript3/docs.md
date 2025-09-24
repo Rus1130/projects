@@ -125,9 +125,20 @@ out myString  # ReferenceError
 ```
 
 ## Output
+### Standard Output
 The `out` keyword outputs a value to the console.
 ```
 out [string|number]
+
+out 'Hello, World!'
+```
+
+### Warnings
+The `warn` keyword outputs a value to the console as a warning.
+```
+warn [string|number]
+
+warn 'This is a warning!'
 ```
 
 ## Control Flow

@@ -186,6 +186,10 @@ new Keyword("out", ["string|number"], (args, interpreter) => {
     interpreter.out(args[0].value);
 });
 
+new Keyword("warn", ["string|number"], (args, interpreter) => {
+    interpreter.warnout(args[0].value);
+});
+
 new Keyword("func", ["function_reference", "block"], (args, interpreter) => {
     let functionName = args[0].value;
     let functionBody = args[1].body;
