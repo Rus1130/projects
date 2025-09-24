@@ -78,7 +78,7 @@ new Method("neq", ["string"], [{type: ["string"], optional: false}], (parent, ar
     }
 });
 
-new Method("type", ["any"], [], (parent, args, interpreter) => {
+new Method("type", ["string", "number", "array"], [], (parent, args, interpreter) => {
     let type = structuredClone(parent.type);
     
     parent.value = type;

@@ -198,7 +198,7 @@ Functions with parameters are defined with the `pfunc` keyword and called with t
 - `N` = `number`
 - `A` = `array`
 
-If the type is missing, `SyntaxError` is raised. `AccessError` will be raised if a parameterized function is called with `call`, and vice versa. Parameter variables are scoped to the entire program, so treat them as any other variable. They are automatically freed when the function ends.
+If the type is missing, `SyntaxError` is raised. `AccessError` will be raised if a parameterized function is called with `call`, and vice versa. Parameter variables are scoped to the entire program, so treat them as any other variable. They are automatically freed when the function ends. Its good practice to prefix parameter names with the function name to avoid naming collisions.
 ```
 pfunc [function_reference] [array] [block]
 pcall [function_reference] [array]

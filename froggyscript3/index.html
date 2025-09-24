@@ -33,7 +33,7 @@
     //input.textContent = `var hello = 'world'\nfree true\nout hello`;
     //input.textContent = `pfunc @addTwo ["at_one:N", "at_two:N"] {\n    out at_one>add(at_two)\n}\npcall @addTwo [1>add(7), 3]`;
     //input.textContent = `pfunc @funky ["meow:S"] {\n    out meow\n}\ncall @funky ['hello!']`;
-    input.textContent = 'out [1, 2, 3, 4, 5]>concat(" and ")'
+    input.textContent = 'out [1, 2, 3, 4, 5]>join(" and ")>type'
 
     input.addEventListener("keydown", (e) => {
         if(e.key === "Tab"){
