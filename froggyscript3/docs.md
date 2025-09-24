@@ -208,14 +208,18 @@ pfunc @addTwo ['addTwo_num1:N', 'addTwo_num2:N'] {
 }
 
 pcall @addTwo [3, 5]
+
+-----
+
+8
 ```
 ### Return Values
 Functions can return values with the `return` keyword. The return value is stored in the default variable `fReturn`. `return` does NOT end the function early.
 ```
 return [string|number|array]
 
-pfunc @getGreeting ['name:S'] {
-    return 'Hello, '>concat(name)>concat('!')
+pfunc @getGreeting ['getGreeting_name:S'] {
+    return 'Hello, '>concat(getGreeting_name)>concat('!')
 }
 pcall @getGreeting ['Alice']
 out fReturn
