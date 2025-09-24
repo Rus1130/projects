@@ -105,7 +105,7 @@ free myConstant  # AccessError
 set myConstant = "Try to change me."  # AccessError
 ```
 ### Reassignment
-Variables can be reassigned with the `set` keyword. The type cannot be changed.
+Variable values can be reassigned with the `set` keyword. The type will not be changed.
 ```
 set [variable] = [string|number|array]
 
