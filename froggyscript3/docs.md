@@ -41,7 +41,7 @@ There are also two other types: `function_reference` and `condition_statement`.
 <<'hello'>eq('world')>>
 ```
 ### Keyword Type Annotations
-Keywords can specify the types of arguments they accept. This is how it is notated:
+Keywords can take only specific types as arguments. In documentation, this is how it is notated:
 ```
 keyword [arg1_type] [arg2_type] ...
 
