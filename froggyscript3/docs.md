@@ -27,7 +27,7 @@ There are also two other types: `function_reference` and `condition_statement`.
 @myFunction
 
 # condition_statement
-if <<true>>
+<< 1 > 2 >>
 ```
 ### Keyword Type Annotations
 Keywords can specify the types of arguments they accept. This is how it is notated:
