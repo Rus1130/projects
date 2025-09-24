@@ -169,7 +169,7 @@ If given a condition statement, the loop will execute until the condition is fal
 var count = 0
 loop <<count < 5>> {
     out count
-    set count = count>add(1)
+    set count = count>inc
 }
 
 -----
