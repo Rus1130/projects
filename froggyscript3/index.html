@@ -25,11 +25,11 @@
     //input.textContent = `out 'hello'>index(\{{1+3}})`;
     //input.textContent = `var meow = 'woof'\nvar array = [meow>type, 2, 3, 4, 5]\nout array`;
     //input.textContent = `var meow = 'woof'\nvar bee = [meow, 2, 3, 4, 5]\nout bee>index(7)`;
-    //input.textContent = `var number = 1\nif <<number > 3>>{\n    out 'five is bigger'\n}\nelse {\n    out 'nope.'\n}`;
+    input.textContent = `pfunc @getGreeting ['name:S'] {\nreturn 'Hello, '>concat(name)>concat('!')\n}\npcall @getGreeting ['Alice']\nout fReturn`;
     //input.textContent = `var number = 0\nset number = 1>add(2)\nout number`;
     //input.textContent = `var number = 0\nloop <<true>> {\n    out number\n    set number = number>add(1)\n}\nout 'done!'`;
     //input.textContent = `var hello = ['h', 'e', 'l', 'l', 'o']\nout hello>index(0)`;
-    input.textContent = `cvar myConstant = "hi!"\nset myConstant = "Try to change me."`;
+    //input.textContent = `cvar myConstant = "hi!"\nset myConstant = "Try to change me."`;
     //input.textContent = `var hello = 'world'\nfree true\nout hello`;
     //input.textContent = `pfunc @addTwo ["at_one:N", "at_two:N"] {\n    out at_one>add(at_two)\n}\npcall @addTwo [1>add(7), 3]`;
     //input.textContent = `pfunc @funky ["meow:S"] {\n    out meow\n}\ncall @funky ['hello!']`;

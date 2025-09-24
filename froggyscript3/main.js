@@ -52,6 +52,32 @@ new Method('concat', ['string'], [{type: ['string'], optional: false}], (parent,
     return parent;
 });
 
+new Method("eq", ["string"], [{type: ["string"], optional: false}], (parent, args, interpreter) => {
+    let parentValue = parent.value;
+    let argValue = args[0].value;
+
+    return {
+        type: "condition_statement",
+        value: `<<${parentValue === argValue ? 1 : 0}>>`,
+        line: parent.line,
+        col: parent.col,
+        methods: parent.methods
+    }
+});
+
+new Method("neq", ["string"], [{type: ["string"], optional: false}], (parent, args, interpreter) => {
+    let parentValue = parent.value;
+    let argValue = args[0].value;
+
+    return {
+        type: "condition_statement",
+        value: `<<${parentValue !== argValue ? 1 : 0}>>`,
+        line: parent.line,
+        col: parent.col,
+        methods: parent.methods
+    }
+});
+
 new Method("type", ["any"], [], (parent, args, interpreter) => {
     let type = structuredClone(parent.type);
     

@@ -1,4 +1,12 @@
 ## General Utilities & Info
+Five hyphens (`-----`) inside of documentation denotes that below is the output of the code above.
+```
+out 'Hello, World!'
+
+-----
+
+Hello, World!
+```
 ### Comments
 ```
 # Comment!
@@ -28,6 +36,7 @@ There are also two other types: `function_reference` and `condition_statement`.
 
 # condition_statement
 << 1 > 2 >>
+<<variable == 'value'>>
 ```
 ### Keyword Type Annotations
 Keywords can specify the types of arguments they accept. This is how it is notated:
@@ -117,6 +126,194 @@ The `out` keyword outputs a value to the console.
 out [string|number]
 ```
 
+## Control Flow
+### Conditionals
+The `if` keyword executes a block of code if a condition is true. An optional `else` block can be provided to execute if the condition is false.
+```
+if [condition_statement] [block]
+else [block]
+
+var number = 5
+if <<number > 3>> {
+    out 'Number is greater than 3'
+}
+# note: this CANNOT be on the same line as the closing brace of the if block
+else {
+    out 'Number is 3 or less'
+}
+```
+### Loops
+```
+loop [number|condition_statement] [block]
+```
+If given a number, the loop will execute that many times.
+```
+loop 5 {
+    out 'Hello, World!'
+}
+
+-----
+
+Hello, World!
+Hello, World!
+Hello, World!
+Hello, World!
+Hello, World!
+```
+If given a condition statement, the loop will execute until the condition is false.
+```
+var count = 0
+loop <<count < 5>> {
+    out count
+    set count = count>add(1)
+}
+
+-----
+
+0
+1
+2
+3
+4
+```
+## Functions
+### No Parameters
+Functions without parameters are defined with the `func` keyword and called with the `call` keyword.
+```
+func [function_reference] [block]
+call [function_reference]
+
+func @greet {
+    out 'Hello there!'
+}
+call @greet
+```
+### 1 or More Parameters
+Functions with parameters are defined with the `pfunc` keyword and called with the `pcall` keyword. Parameters are defined inside of the array, with their name and type separated by a colon. Types are abbreviated as follows:
+- `S` = `string`
+- `N` = `number`
+- `A` = `array`
+
+If the type is missing, `SyntaxError` is raised. If the type is incorrect, `TypeError` is raised. `AccessError` will be raised if a parameterized function is called with `call`, and vice versa. Parameter variables are scoped to the entire program, so treat them as any other variable. They are automatically freed when the function ends.
+```
+pfunc [function_reference] [array] [block]
+pcall [function_reference] [array]
+
+pfunc @addTwo ['addTwo_num1:N', 'addTwo_num2:N'] {
+    out addTwo_num1>add(addTwo_num2)
+}
+
+pcall @addTwo [3, 5]
+```
+### Return Values
+Functions can return values with the `return` keyword. The return value is stored in the default variable `fReturn`. `return` does NOT end the function early.
+```
+return [string|number|array]
+
+pfunc @getGreeting ['name:S'] {
+    return 'Hello, '>concat(name)>concat('!')
+}
+pcall @getGreeting ['Alice']
+out fReturn
+
+-----
+
+Hello, Alice!
+```
+
+## Methods
+Methods are functions that are called on a value using the `>` operator. The value to the left of the `>` is called the `parent`. If the method has no arguments, parentheses can be omitted. If the method has arguments, parentheses are required. Methods can be chained together. Method parameters can be optional, which is denoted by `?`. In documentation, `=> return_type` indicates what type the method returns.
+```
+[parent_type]>[method_name]([arg1, arg2, ...]) => [return_type]
+```
+### Multi-type Methods
+#### type
+Returns the type of the parent as a string: `string`, `number`, or `array`.
+```
+string|number|array>type => string
+```
+#### length
+Returns the length of the parent. For strings, this is the number of characters. For arrays, this is the number of elements.
+```
+string|array>length => number
+
+'Hello, World!'>length # 13
+[1, 2, 3, 4, 5]>length # 5
+```
+#### index
+Returns the element at the specified index in an array or string. Indexing is zero-based. If the index is out of bounds, `RangeError` is raised.
+```
+string>index(number) => string
+array>index(number) => string|number|array (whatever is in that index)
+```
+### String Methods
+#### concat
+Concatenates two strings.
+```
+string>concat(string) => string
+
+'Hello, '>concat('World!') # 'Hello, World!'
+```
+#### eq
+Compares if two strings are equal. Returns `<<1>>` if true, `<<0>>` if false.
+```
+string>eq(string) => condition_statement
+
+"foo">eq("foo") # <<1>>
+"foo">eq("bar") # <<0>>
+```
+#### neq
+Compares if two strings are not equal. Returns `<<1>>` if true, `<<0>>` if false.
+```
+string>neq(string) => condition_statement
+
+"foo">neq("bar") # <<1>>
+"foo">neq("foo") # <<0>>
+```
+### Number Methods
+#### inc
+Increments the parent by 1.
+```
+number>inc => number
+
+1>inc # 2
+```
+#### dec
+Decrements the parent by 1.
+```
+number>dec => number
+
+5>dec # 4
+```
+#### add
+Adds two numbers together.
+```
+number>add(number) => number
+
+1>add(2) # 3
+```
+#### sub
+Subtracts the argument from the parent.
+```
+number>sub(number) => number
+
+5>sub(3) # 2
+```
+#### mul
+Multiplies two numbers together.
+```
+number>mul(number) => number
+
+3>mul(4) # 12
+```
+#### div
+Divides the parent by the argument. If dividing by zero, `MathError` is raised.
+```
+number>div(number) => number
+
+10>div(2) # 5
+10>div(0) # MathError
+```
 ## Types of Errors
 | Error                     | Description                                                                                                                                                                                                                |
 | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
