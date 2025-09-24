@@ -592,7 +592,6 @@ class FroggyScript3 {
         return lines;
     }
 
-
     async interpret(code) {
         try {
             let tokens = this.tokenize(code.split('\n'));

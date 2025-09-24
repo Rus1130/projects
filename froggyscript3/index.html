@@ -19,13 +19,14 @@
 <script src="../Global/math.js"></script>
 <script>
     const input = document.getElementById("in");
-    //input.textContent = `out "string1">noArg1\nout "string2"\nout "string3">noArg2>noArg3\nout "string4">twoArg1("string5">noArg6('ga'>be)>bga, variable>noArg4)`;
-    //input.textContent = `func @funky {\n    out 'hello!'\n    return 10\n}\nout 'meow!'\ncall @funky\nout fReturn`;
+    // function return value
+    // input.textContent = `func @funky {\n    out 'hello!'\n    return 10\n}\nout 'meow!'\ncall @funky\nout fReturn`;
+
+    // method testing
     //input.textContent = `var hello = "world">type\nout hello>concat('hello!'>type)>length`;
-    //input.textContent = `out 'hello'>index(\{{1+3}})`;
-    
+
     // !!! ERROR: variables in array
-    input.textContent = `var meow = 'woof'\nvar array = [meow>type, 2, 3, 4, 5]\nout array`;
+    input.textContent = `var meow = 'woof'\nout meow\nvar array = [meow>type, 2, 3, 4, 5]\nout array>index(0)`;
 
     // out of bounds access
     //input.textContent = `var meow = 'woof'\nvar bee = [meow, 2, 3, 4, 5]\nout bee>index(7)`;
