@@ -27,6 +27,7 @@ There are 3 main types in FroggyScript3: `string`, `number`, `array`.
 # array
 [1, 2, 3]
 ['h', 'e', 'l', 'l', 'o']
+[1, 'two', 3.0, 'four', variable]
 ```
 
 There are also two other types: `function_reference` and `condition_statement`.
