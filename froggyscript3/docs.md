@@ -14,7 +14,7 @@ Hello, World!
 ```
 
 ### Types
-There are 3 main types in FroggyScript3: `string`, `number`, `array`.
+There are 3 main types in FroggyScript3: `string`, `number`, and `array`.
 ```
 # string
 'Hello, World!'
