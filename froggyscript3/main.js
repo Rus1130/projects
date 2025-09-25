@@ -381,16 +381,20 @@ new Keyword("loop", ["number|condition_statement", "block"], async (args, interp
     if(cond.type === "number"){
         let count = cond.value;
         for(let i = 0; i < count; i++){
-            await interpreter.executeBlock(block);
+            let blockCopy = structuredClone(block);
+            await interpreter.executeBlock(blockCopy);
         }
     } else if(cond.type === "condition_statement"){
         let breaker = interpreter.variables["MAX_LOOP_ITERATIONS"].value;
         let i = 0;
+
         while(interpreter.evaluateMathExpression(cond.value)){
-            await interpreter.executeBlock(block);
+            let blockCopy = structuredClone(block);
+            await interpreter.executeBlock(blockCopy);
             i++;
 
             if(i >= breaker){
+                // error not closing program
                 throw new FS3Error("RuntimeError", `Possible infinite loop detected after ${breaker} iterations.`, cond.line, cond.col, args);
             }
         }
@@ -660,7 +664,7 @@ class FroggyScript3 {
                         }
                     }
 
-                    // 🔸 Resolve variables inside arrays, but don’t rerun methodResolver
+                    // Resolve variables inside arrays, but don’t rerun methodResolver
                     if (t.type === "array") {
                         t.value = t.value.map(el => {
                             if (Array.isArray(el) && el.length === 1) el = el[0];
@@ -702,70 +706,71 @@ class FroggyScript3 {
     }
 
     async keywordExecutor(line) {
-        // Resolve variables
+        try {
+            // Resolve variables
 
-        let keyword = line[0]?.type === "keyword" ? line[0].value : null;
-        if (!keyword) return;
-        
-        let executedMethodTokens = this.executeMethods(line)
+            let keyword = line[0]?.type === "keyword" ? line[0].value : null;
+            if (!keyword) return;
+            
+            let executedMethodTokens = this.executeMethods(line)
 
-        const lineArgs = executedMethodTokens.slice(1);
+            const lineArgs = executedMethodTokens.slice(1);
 
-        const keywordDef = Keyword.get(keyword);
+            const keywordDef = Keyword.get(keyword);
 
-        if (!keywordDef) {
-            throw new FS3Error(
-                "ReferenceError",
-                `Unknown keyword [${keyword}]`,
-                line[0].line,
-                line[0].col,
-                line
-            );
-        }
+            if (!keywordDef) {
+                throw new FS3Error(
+                    "ReferenceError",
+                    `Unknown keyword [${keyword}]`,
+                    line[0].line,
+                    line[0].col,
+                    line
+                );
+            }
 
-        // Validate arguments
-        if (keywordDef.scheme) {
-            for (let i = 0; i < keywordDef.scheme.length; i++) {
-                const expected = keywordDef.scheme[i].split("|");
-                const actual = lineArgs[i];
-                const expectedOptional = expected.some(e => e.endsWith("?"));
+            // Validate arguments
+            if (keywordDef.scheme) {
+                for (let i = 0; i < keywordDef.scheme.length; i++) {
+                    const expected = keywordDef.scheme[i].split("|");
+                    const actual = lineArgs[i];
+                    const expectedOptional = expected.some(e => e.endsWith("?"));
 
-                if (!actual) {
-                    if (!expectedOptional) {
+                    if (!actual) {
+                        if (!expectedOptional) {
+                            throw new FS3Error(
+                                "ArgumentError",
+                                `Expected arg [${i + 1}] for keyword [${keyword}] to be of type [${expected.map(e => e.replace("?", "")).join(" or ")}], but found none`,
+                                line[0].line,
+                                line[0].col,
+                                line
+                            );
+                        }
+                        continue;
+                    }
+
+                    if (!expected.includes(actual.type) && !expected.includes("any")) {
                         throw new FS3Error(
-                            "ArgumentError",
-                            `Expected arg [${i + 1}] for keyword [${keyword}] to be of type [${expected.map(e => e.replace("?", "")).join(" or ")}], but found none`,
-                            line[0].line,
-                            line[0].col,
+                            "TypeError",
+                            `Invalid type for arg [${i + 1}] for keyword [${keyword}]: expected [${expected.map(e => e.replace("?", "")).join(" or ")}], got [${actual.type}]`,
+                            actual.line,
+                            actual.col,
                             line
                         );
                     }
-                    continue;
-                }
-
-                if (!expected.includes(actual.type) && !expected.includes("any")) {
-                    throw new FS3Error(
-                        "TypeError",
-                        `Invalid type for arg [${i + 1}] for keyword [${keyword}]: expected [${expected.map(e => e.replace("?", "")).join(" or ")}], got [${actual.type}]`,
-                        actual.line,
-                        actual.col,
-                        line
-                    );
                 }
             }
-        }
 
-        try {
+
             await keywordDef.fn(lineArgs, this);
         } catch (e) {
-            if(e instanceof FS3Error) throw e;
-            else throw new FS3Error(
+            if(e instanceof FS3Error) this.errout(e);
+            else this.errout(new FS3Error(
                 "InternalJavaScriptError",
                 `Error executing keyword [${keyword}]: ${e.message}`,
                 line[0].line,
                 line[0].col,
                 line
-            );
+            ));
         }
     }
 
@@ -893,7 +898,7 @@ class FroggyScript3 {
                 if (!variable) {
                     throw new FS3Error(
                         "ReferenceError",
-                        `Variable [${token.value}] is not defined (905)`,
+                        `Variable [${token.value}] is not defined`,
                         token.line,
                         token.col,
                         line
@@ -929,6 +934,7 @@ class FroggyScript3 {
 
             // --- Execute attached methods on this token ---
             if (token.methods && token.methods.length > 0) {
+                let methodIndex = 0;
                 for (const method of token.methods) {
                     const def = Method.get(method.name);
                     if (!def) {
@@ -973,6 +979,7 @@ class FroggyScript3 {
                             // math/condition tokens → evaluate
 
                             if (!expected.type.includes(actual.type) && !expected.type.includes("any")) {
+                                // doesnt get caught
                                 throw new FS3Error(
                                     "TypeError",
                                     `Invalid type for argument [${idx + 1}] for method [${method.name}]: expected [${expected.type.join(" or ")}], got [${actual.type}] ga`,
@@ -1016,10 +1023,14 @@ class FroggyScript3 {
                             );
                         }
                     }
+                
+                    methodIndex++;
                 }
             }
 
             tokens[i] = token;
+
+            tokens[i].methods = [];
         }
 
         return tokens;
