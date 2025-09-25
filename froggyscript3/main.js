@@ -581,7 +581,7 @@ class FroggyScript3 {
             let lines = tokens.map(line => [{ type: "start_of_line", value: "" }, ...line]);
             let flattened = lines.flat();
 
-            // 🔹 Collapse array literals and resolve their methods once
+            // Collapse array literals and resolve their methods once
             for (let i = 0; i < flattened.length; i++) {
                 const token = flattened[i];
                 if (token.type === "array_start") {
@@ -616,7 +616,7 @@ class FroggyScript3 {
                     }
                     if (current.length) elements.push(current);
 
-                    // 🔸 Compact and resolve methods for each element just once
+                    // Compact and resolve methods for each element just once
                     elements = elements.map(el => {
                         const compacted = this.compact(el);
                         let resolved = this.methodResolver(compacted);
@@ -638,7 +638,7 @@ class FroggyScript3 {
             // Compress blocks after arrays are collapsed
             let compressed = this.blockCompressor(flattened);
 
-            // 🔹 Execute each line
+            // Execute each line
             for (let i = 0; i < compressed.length; i++) {
                 const line = compressed[i];
 
