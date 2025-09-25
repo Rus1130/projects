@@ -695,13 +695,14 @@ class FroggyScript3 {
             }
         } catch (e) {
             if (e instanceof FS3Error) this.errout(e);
-            else throw new FS3Error(
+            else throw this.errout(new FS3Error(
                 "InternalJavaScriptError",
                 `Internal JavaScript error: ${e.message}`,
                 null,
                 null,
                 null
-            );
+            ));
+            throw e;
         }
     }
 
@@ -763,14 +764,7 @@ class FroggyScript3 {
 
             await keywordDef.fn(lineArgs, this);
         } catch (e) {
-            if(e instanceof FS3Error) this.errout(e);
-            else this.errout(new FS3Error(
-                "InternalJavaScriptError",
-                `Error executing keyword [${keyword}]: ${e.message}`,
-                line[0].line,
-                line[0].col,
-                line
-            ));
+            throw e;
         }
     }
 

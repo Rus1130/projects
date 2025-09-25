@@ -38,7 +38,7 @@
     //input.textContent = `var number = 0\nset number = 1>add(2)\nout number`;
 
     // inf loop
-    input.textContent = `var number = 0\nloop <<true>> {\n    set number = number>add(1)\n}\nout 'done!'`;
+    //input.textContent = `var number = 0\nloop <<true>> {\n    set number = number>add(1)\n}\nout 'done!'`;
 
     // constant check
     //input.textContent = `cvar myConstant = "hi!"\nset myConstant = "Try to change me."`;
@@ -48,7 +48,7 @@
     //input.textContent = `pfunc @addTwo ["at_one:N", "at_two:N"] {\n    out at_one>add(at_two)\n}\npcall @addTwo [1>add(7>add(2)), 3>mul(2)]`;
 
     // if inside of function
-    //input.textContent = `pfunc @funky ["funky_num:N"] {\n    out 'hi'\n    if <<funky_num > 5>> {\n        out 'bigger than 5'\n    }\n    else {\n        out '5 or smaller'\n    }\n}\npcall @funky [10]`;
+    input.textContent = `pfunc @funky ["funky_num:N"] {\n    if <<funky_num > 5>> {\n        out 'bigger than 5'\n    }\n    else {\n        out '5 or smaller'\n    }\n}\npcall @funky [10]`;
 
     // array methods
     //input.textContent = 'out [1, 2, 3, 4, 5]>join(" and ")>type'
