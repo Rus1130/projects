@@ -25,14 +25,14 @@
     // method testing
     //input.textContent = `var hello = "world">type\nout hello>concat('hello!'>type)>length`;
 
-    // !!! ERROR: variables in array
-    input.textContent = `var meow = 'woof'\nout meow\nvar array = [meow>type, 2, 3, 4, 5]\nout array>index(0)`;
+    // variable in array
+    //input.textContent = `var meow = 'woof'\nout meow\nvar array = [meow>type, 2, 3, 4, 5]\nout array>index(0)`;
 
     // out of bounds access
     //input.textContent = `var meow = 'woof'\nvar bee = [meow, 2, 3, 4, 5]\nout bee>index(7)`;
     
-    // function with parameters
-    //input.textContent = `pfunc @getGreeting ['name:S'] {\nreturn 'Hello, '>concat(name)>concat('!')\n}\npcall @getGreeting ['Alice']\nout fReturn`;
+    // function with parameters ERROR! name not defined?
+    //input.textContent = `pfunc @getGreeting ['name:S'] {\nreturn 'Hello, '>concat(namea)>concat('!')\n}\npcall @getGreeting ['Alice']\nout fReturn`;
     
     // set
     //input.textContent = `var number = 0\nset number = 1>add(2)\nout number`;
@@ -44,8 +44,8 @@
     //input.textContent = `cvar myConstant = "hi!"\nset myConstant = "Try to change me."`;
     //input.textContent = `var hello = 'world'\nfree true\nout hello`;
 
-    // function with parameters with methods
-    //input.textContent = `pfunc @addTwo ["at_one:N", "at_two:N"] {\n    out at_one>add(at_two)\n}\npcall @addTwo [1>add(7), 3]`;
+    // function with parameters with methods ERROR! at_one not defined???
+    input.textContent = `pfunc @addTwo ["at_one:N", "at_two:N"] {\n    out at_one>add(at_two)\n}\npcall @addTwo [1>add(7), 3]`;
 
     // if inside of function
     //input.textContent = `pfunc @funky ["funky_num:N"] {\nout 'hi'\nif <<funky_num > 5>> {\nout 'bigger than 5'\n}\nelse {\nout '5 or smaller'\n}\n}\npcall @funky [10]`;
@@ -54,8 +54,9 @@
     //input.textContent = 'out [1, 2, 3, 4, 5]>join(" and ")>type'
     //input.textContent = `var hello = ['h', 'e', 'l', 'l', 'o']\nout hello>index(0)`;
 
-    // fibonacci
-    //input.textContent = `var a = 0\nvar b = 1\nvar temp = 0\n\nloop 20 {\nout a\nset b = a>add(b)\nset a = temp\nset temp = b\nwait 100}`
+    // fibonacci ERROR! something with loop and executing blocks
+    //input.textContent = `var a = 0\nvar b = 1\nvar temp = 0\n\nloop 20 {\nout a\nset b = a>add(b)\nset a = temp\nset temp = b\n}`
+    //input.textContent = `var a = 0\nvar b = 1\nvar temp = 0\n\nout a\nset b = a>add(b)\nset a = temp\nset temp = b\n\nout a\nset b = a>add(b)\nset a = temp\nset temp = b\n\nout a\nset b = a>add(b)\nset a = temp\nset temp = b\n\nout a\nset b = a>add(b)\nset a = temp\nset temp = b\n\nout a\nset b = a>add(b)\nset a = temp\nset temp = b\n\nout a\nset b = a>add(b)\nset a = temp\nset temp = b\n\nout a\nset b = a>add(b)\nset a = temp\nset temp = b\n\nout a\nset b = a>add(b)\nset a = temp\nset temp = b\n\nout a\nset b = a>add(b)\nset a = temp\nset temp = b\n\nout a\nset b = a>add(b)\nset a = temp\nset temp = b\n\nout a\nset b = a>add(b)\nset a = temp\nset temp = b\n\nout a\nset b = a>add(b)\nset a = temp\nset temp = b\n\n`
 
     input.addEventListener("keydown", (e) => {
         if(e.key === "Tab"){

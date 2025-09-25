@@ -134,7 +134,7 @@ new Method("index", ["array", "string"], [{type: ["number"], optional: false}], 
             throw new FS3Error("RangeError", `Index [${index}] is out of bounds for array of length [${parent.value.length}]`, args[0].line, args[0].col, args);
         }
 
-        return parent.value[index][0]
+        return parent.value[index]
     } else {
         let str = parent.value;
         let index = args[0].value;
@@ -178,6 +178,7 @@ new Keyword("set", ["variable_reference", "assignment", "string|number|array"], 
     if(!interpreter.variables[variableName].mut){
         throw new FS3Error("AccessError", `Variable [${variableName}] is immutable and cannot be changed`, args[0].line, args[0].col, args);
     }
+    
     interpreter.variables[variableName].value = variableValue;
 });
 
@@ -521,24 +522,6 @@ class FroggyScript3 {
             const compacted = this.compact(line);
             const resolvedMethods = this.methodResolver(compacted);
 
-            resolvedMethods.forEach((t, idx) => {
-                if(t.type === "variable"){
-                    const variable = this.variables[t.value];
-                    if(variable){
-                        resolvedMethods[idx].type = variable.type;
-                        resolvedMethods[idx].value = variable.value;
-                    } else {
-                        throw new FS3Error(
-                            "ReferenceError",
-                            `Variable [${t.value}] is not defined`,
-                            t.line,
-                            t.col,
-                            line
-                        );
-                    }
-                }
-            });
-
             await this.keywordExecutor(resolvedMethods);
         }
     }
@@ -720,10 +703,14 @@ class FroggyScript3 {
 
     async keywordExecutor(line) {
         // Resolve variables
+
         let keyword = line[0]?.type === "keyword" ? line[0].value : null;
         if (!keyword) return;
+        
+        let executedMethodTokens = this.executeMethods(line)
 
-        const lineArgs = line.slice(1);
+        const lineArgs = executedMethodTokens.slice(1);
+
         const keywordDef = Keyword.get(keyword);
 
         if (!keywordDef) {
@@ -755,6 +742,7 @@ class FroggyScript3 {
                     }
                     continue;
                 }
+
                 if (!expected.includes(actual.type) && !expected.includes("any")) {
                     throw new FS3Error(
                         "TypeError",
@@ -768,7 +756,6 @@ class FroggyScript3 {
         }
 
         try {
-
             await keywordDef.fn(lineArgs, this);
         } catch (e) {
             if(e instanceof FS3Error) throw e;
@@ -893,6 +880,150 @@ class FroggyScript3 {
         return tokens;
     }
 
+    executeMethods(line) {
+        // Ensure we always work on an array of tokens
+        const tokens = Array.isArray(line) ? line : [line];
+
+        for (let i = 0; i < tokens.length; i++) {
+            let token = tokens[i];
+
+            // --- Variable resolution ---
+            if (token.type === "variable") {
+                const variable = this.variables[token.value];
+                if (!variable) {
+                    throw new FS3Error(
+                        "ReferenceError",
+                        `Variable [${token.value}] is not defined (905)`,
+                        token.line,
+                        token.col,
+                        line
+                    );
+                }
+                token.type = variable.type;
+                token.value = variable.value;
+            }
+
+            // --- Recursively process arrays ---
+            if (token.type === "array" && Array.isArray(token.value)) {
+                token.value = token.value.map(el => {
+                    let resolved = this.executeMethods(el);
+
+                    // unwrap single-element arrays
+                    if (Array.isArray(resolved) && resolved.length === 1) {
+                        resolved = resolved[0];
+                    }
+
+                    // ⚡ NEW: if element still has methods, execute them too
+                    if (resolved && resolved.methods && resolved.methods.length > 0) {
+                        let executed = this.executeMethods([resolved]);
+                        if (Array.isArray(executed) && executed.length === 1) {
+                            resolved = executed[0];
+                        } else {
+                            resolved = executed;
+                        }
+                    }
+
+                    return resolved;
+                });
+            }
+
+            // --- Execute attached methods on this token ---
+            if (token.methods && token.methods.length > 0) {
+                for (const method of token.methods) {
+                    const def = Method.get(method.name);
+                    if (!def) {
+                        throw new FS3Error(
+                            "ReferenceError",
+                            `Unknown method [${method.name}]`,
+                            method.line,
+                            method.col,
+                            line
+                        );
+                    }
+
+                    // Resolve args recursively
+                    method.args = method.args.map(arg => this.executeMethods(arg));
+
+                    // unwrap method args
+                    method.args = method.args.map(arg => {
+                        if (Array.isArray(arg) && arg.length === 1) return arg[0];
+                        return arg;
+                    });
+
+                    // Validate args
+                    if (def.args) {
+                        for (let idx = 0; idx < def.args.length; idx++) {
+                            const expected = def.args[idx];
+                            let actual = method.args[idx];
+
+                            // optional missing argument
+                            if (!actual) {
+                                if (!expected.optional) {
+                                    throw new FS3Error(
+                                        "ArgumentError",
+                                        `Expected argument [${idx + 1}] for method [${method.name}] of type [${expected.type.join(" or ")}], but found none`,
+                                        method.line,
+                                        method.col,
+                                        method
+                                    );
+                                }
+                                continue;
+                            }
+
+                            // math/condition tokens → evaluate
+
+                            if (!expected.type.includes(actual.type) && !expected.type.includes("any")) {
+                                throw new FS3Error(
+                                    "TypeError",
+                                    `Invalid type for argument [${idx + 1}] for method [${method.name}]: expected [${expected.type.join(" or ")}], got [${actual.type}] ga`,
+                                    actual.line ?? method.line,
+                                    actual.col ?? method.col,
+                                    method
+                                );
+                            }
+                        }
+                    }
+
+                    // Validate parent type
+                    if (def.parentTypes && !def.parentTypes.includes(token.type)) {
+                        throw new FS3Error(
+                            "TypeError",
+                            `Invalid parent type for method [${method.name}]: expected [${def.parentTypes.join(" or ")}], got [${token.type}]`,
+                            token.line,
+                            token.col,
+                            method
+                        );
+                    }
+
+                    // Execute method
+                    try {
+                        const result = def.fn(token, method.args, this);
+                        if (result) {
+                            token.type = result.type;
+                            token.value = result.value;
+                        }
+                    } catch (e) {
+                        if (e instanceof FS3Error) {
+                            e.message = `In method [${method.name}]: ${e.message}`;
+                            throw e;
+                        } else {
+                            throw new FS3Error(
+                                "InternalJavaScriptError",
+                                `Error executing method [${method.name}]: ${e.message}`,
+                                method.line,
+                                method.col,
+                                method
+                            );
+                        }
+                    }
+                }
+            }
+
+            tokens[i] = token;
+        }
+
+        return tokens;
+    }
 
     methodResolver(compacted) {
         const resolveLine = (lineTokens) => {
@@ -916,135 +1047,6 @@ class FroggyScript3 {
                     if (Array.isArray(resolved) && resolved.length === 1) return resolved[0];
                     return resolved;
                 });
-
-                // Validate arguments
-                if (def.args) {
-                    // 1) resolve expressions for every arg (deeply)
-                    method.args = method.args.map(arg => {
-                        let resolved = this.resolveExpressions(arg);
-                        // unwrap single-line arrays that represent a single token/expr
-                        if (Array.isArray(resolved) && resolved.length === 1) resolved = resolved[0];
-                        return resolved;
-                    });
-
-                    if (this.debug) console.log("method.args after resolveExpressions:", JSON.parse(JSON.stringify(method.args)));
-
-                    // helper: produce a token-like {type, value, line, col}
-                    const normalize = (a) => {
-                        if (a == null) return null;
-                        if (Array.isArray(a)) return { type: "array", value: a, line: a[0]?.line, col: a[0]?.col };
-                        if (typeof a === "number") return { type: "number", value: a };
-                        if (typeof a === "string") return { type: "string", value: a };
-                        if (typeof a === "boolean") return { type: "number", value: a ? 1 : 0 };
-                        if (typeof a === "object") {
-                            // already token-like
-                            if (a.type) return a;
-                            // object with .value that's an array => treat as array literal
-                            if (a.value !== undefined && Array.isArray(a.value)) return { type: "array", value: a.value, line: a.line, col: a.col };
-                            // fallback
-                            return { type: typeof a, value: a };
-                        }
-                        return { type: typeof a, value: a };
-                    };
-
-                    // 2) validate each expected arg against normalized actual
-                    for (let idx = 0; idx < def.args.length; idx++) {
-                        const expected = def.args[idx];
-                        let actualRaw = method.args[idx];
-                        let actual = normalize(actualRaw);
-
-                        if (!actual) {
-                            if (!expected.optional) {
-                                throw new FS3Error(
-                                    "ArgumentError",
-                                    `Expected argument [${idx + 1}] for method [${method.name}] of type [${expected.type.join(" or ")}], but found none`,
-                                    method.line, method.col, method
-                                );
-                            }
-                            continue;
-                        }
-
-                        // 3) If it's still a math/condition token, evaluate it now (fallback)
-                        if (actual.type === "math_equation" || actual.type === "condition_statement") {
-                            // strip delimiters if necessary and evaluate
-                            let expr = actual.value;
-                            if (typeof expr === "string") expr = expr.replace(/^\{\{|\}\}$|^<<|>>$/g, "");
-                            const evalResult = this.evaluateMathExpression(expr);
-                            actual.type = (typeof evalResult === "number") ? "number" : (typeof evalResult === "boolean" ? "number" : typeof evalResult);
-                            actual.value = evalResult;
-                            method.args[idx] = actual; // write back the evaluated token
-                        }
-
-                        // 4) final type check (expected.type is an array of allowed types)
-                        if(actual.type == "variable"){
-                            const variable = this.variables[actual.value];
-                            if(variable){
-                                actual.type = variable.type;
-                                actual.value = variable.value;
-                                method.args[idx] = actual; // write back the resolved token
-                            } else {
-                                throw new FS3Error(
-                                    "ReferenceError",
-                                    `Variable [${actual.value}] is not defined`,
-                                    actual.line ?? method.line, actual.col ?? method.col, method
-                                );
-                            }
-                        }
-                        if (!expected.type.includes(actual.type) && !expected.type.includes("any")) {
-                            throw new FS3Error(
-                                "TypeError",
-                                `Invalid type for argument [${idx + 1}] for method [${method.name}]: expected [${expected.type.join(" or ")}], got [${actual.type}] (996)`,
-                                actual.line ?? method.line, actual.col ?? method.col, method
-                            );
-                        }
-                    }
-                }
-
-                // Validate parent type
-                // for some reason the variable hasnt been resolved by the time the method resolver runs?
-                if(parent.type == "variable"){
-                    const variable = this.variables[parent.value];
-                    if(variable){
-                        parent.type = variable.type;
-                        parent.value = variable.value;
-                    } else {
-                        throw new FS3Error(
-                            "ReferenceError",
-                            `Variable [${parent.value}] is not defined`,
-                            parent.line,
-                            parent.col,
-                            lineTokens
-                        );
-                    }
-                }
-
-                if (def.parentTypes && !def.parentTypes.includes(parent.type)) {
-                    throw new FS3Error(
-                        "TypeError",
-                        `Invalid parent type for method [${method.name}]: expected [${def.parentTypes.join(" or ")}], got [${parent.type}]`,
-                        parent.line, parent.col, method
-                    );
-                }
-
-                // Execute method
-                try {
-                    const result = def.fn(parent, method.args, this);
-                    if (result) {
-                        parent.type = result.type;
-                        parent.value = result.value;
-                    }
-                } catch (e) {
-                    if (e instanceof FS3Error) {
-                        e.message = `In method [${method.name}]: ${e.message}`;
-                        throw e;
-                    } else {
-                        throw new FS3Error(
-                            "InternalJavaScriptError",
-                            `Error executing method [${method.name}]: ${e.message}`,
-                            method.line, method.col, method
-                        );
-                    }
-                }
             });
 
             // Recursively resolve methods inside blocks
