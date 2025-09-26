@@ -66,6 +66,8 @@
     // kill testing
     input.textContent = `var i = 0\nloop 50 {\n    set i = i>inc\n    if<<i > 25>>{\n        kill\n    }\n    out i\n}\nout 'This will not be printed'`;
 
+    // ble
+
     input.addEventListener("keydown", (e) => {
         if(e.key === "Tab"){
             e.preventDefault();
