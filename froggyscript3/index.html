@@ -40,7 +40,7 @@
     // inf loop
     //input.textContent = `var number = 0\nloop <<true>> {\n    set number = number>add(1)\n}\nout 'done!'`;
 
-    // constant check
+    // constant check 
     //input.textContent = `cvar myConstant = "hi!"\nset myConstant = "Try to change me."`;
     //input.textContent = `var hello = 'world'\nfree true\nout hello`;
 
@@ -48,14 +48,20 @@
     //input.textContent = `pfunc @addTwo ["at_one:N", "at_two:N"] {\n    out at_one>add(at_two)\n}\npcall @addTwo [1>add(7>add(2)), 3>mul(2)]`;
 
     // if inside of function
-    input.textContent = `pfunc @funky ["funky_num:N"] {\n    if <<funky_num > 5>> {\n        out 'bigger than 5'\n    }\n    else {\n        out '5 or smaller'\n    }\n}\npcall @funky [10]`;
+    //input.textContent = `pfunc @funky ["funky_num:N"] {\n    if <<funky_num > 5>> {\n        out 'bigger than 5'\n    }\n    else {\n        out '5 or smaller'\n    }\n}\npcall @funky [10]`;
 
     // array methods
     //input.textContent = 'out [1, 2, 3, 4, 5]>join(" and ")>type'
     //input.textContent = `var hello = ['h', 'e', 'l', 'l', 'o']\nout hello>index(0)`;
 
-    // fibonacci ERROR! something with loop and executing blocks
-    //input.textContent = `var a = 0\nvar b = 1\nvar temp = 0\n\nloop 20 {\nout a\nset b = a>add(b)\nset a = temp\nset temp = b\n}`
+    // fibonacci
+    //input.textContent = `var a = 0\nvar b = 1\nvar temp = 0\n\nloop 20 {\n    out a\n    set b = a>add(b)\n    set a = temp\n    set temp = b\n}`
+
+    // user input
+    //input.textContent = `var userInput = ""\nask "userInput" "string"\nout userInput`;
+
+    // warn + err + longerr testing
+    input.textContent = `warn "This is a warning message"\nerror "This is an error message"\nlongwarn "This is a long warning message with details"`;
 
     input.addEventListener("keydown", (e) => {
         if(e.key === "Tab"){
@@ -74,6 +80,12 @@
         },
         errout: (err) => {
             console.error(`${err.type}\n\n${err.message}\n    at line ${err.line+1}\n    at column ${err.col+1}`)
+        },
+        smallwarnout: (msg) => {
+            console.warn(msg);
+        },
+        smallerrout: (msg) => {
+            console.error(msg);
         }
     });
 

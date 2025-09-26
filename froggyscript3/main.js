@@ -19,10 +19,11 @@ class FS3Warn {
 
 class Method {
     static table = {};
-    constructor(name, parentTypes, args, fn){
+    constructor(name, parentTypes, args, fn, defaultMethod = true){
         this.parentTypes = parentTypes;
         this.args = args;
         this.fn = fn;
+        this.defaultMethod = defaultMethod;
 
         Method.table[name] = this;
     }
@@ -44,7 +45,6 @@ class Keyword {
         return Keyword.table[name] || null;
     }
 }
-
 
 // {type: ['number'], optional: false}
 new Method('concat', ['string'], [{type: ['string'], optional: false}], (parent, args, interpreter) => {
@@ -188,7 +188,15 @@ new Keyword("out", ["string|number"], (args, interpreter) => {
 });
 
 new Keyword("warn", ["string|number"], (args, interpreter) => {
-    interpreter.warnout(args[0].value);
+    interpreter.smallwarnout(args[0].value);
+});
+
+new Keyword("error", ["string|number"], (args, interpreter) => {
+    interpreter.smallerrout(args[0].value);
+});
+
+new Keyword("longwarn", ["string|number"], (args, interpreter) => {
+    interpreter.warnout(new FS3Warn("UserWarning", args[0].value, args[0].line, args[0].col));
 });
 
 new Keyword("func", ["function_reference", "block"], (args, interpreter) => {
@@ -239,7 +247,7 @@ new Keyword("pfunc", ["function_reference", "array", "block"], (args, interprete
     };
 });
 
-new Keyword("pcall", ["function_reference", "array"], (args, interpreter) => {
+new Keyword("pcall", ["function_reference", "array"], async (args, interpreter) => {
     let functionName = args[0].value;
     let functionArgs = args[1].value;
     
@@ -274,7 +282,7 @@ new Keyword("pcall", ["function_reference", "array"], (args, interpreter) => {
         }
     });
 
-    interpreter.executeBlock(functionBody)
+    await interpreter.executeBlock(functionBody)
 });
 
 new Keyword("wait", ["number"], async (args, interpreter) => {
@@ -318,14 +326,48 @@ new Keyword("var", ["variable_reference", "assignment", "string|number|array"], 
     }
 })
 
+// variable name, input type (string or number)
+new Keyword("ask", ["string"], async (args, interpreter) => {
+    let variableName = args[0].value;
+
+    if(!interpreter.variables[variableName]) throw new FS3Error("ReferenceError", `Variable [${variableName}] is not defined`, args[0].line, args[0].col, args);
+    if(!interpreter.variables[variableName].mut) throw new FS3Error("AccessError", `Variable [${variableName}] is immutable and cannot be changed`, args[0].line, args[0].col, args);
+
+    textinput = document.createElement("textarea");
+    textinput.style.position = "fixed";
+    textinput.style.top = "25%";
+    textinput.style.width = "50%";
+    textinput.style.height = "50%";
+    textinput.style.left = "25%";
+    document.body.appendChild(textinput);
+
+    textinput.focus();
+
+    return new Promise((resolve) => {
+        textinput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                let value = textinput.value.trim();
+
+                // store result in variable
+                interpreter.variables[variableName].value = value;
+                interpreter.variables[variableName].type = "string";
+
+                // cleanup
+                document.body.removeChild(textinput);
+
+                resolve();
+            }
+        });
+    });
+});
+
 new Keyword("cvar", ["variable_reference", "assignment", "string|number|array"], (args, interpreter) => {
     let name = args[0].value;
     let value = args[2].value;
     let type = args[2].type;
 
-    if(interpreter.variables[name]){
-        throw new FS3Error("ReferenceError", `Variable [${name}] is already defined`, args[0].line, args[0].col, args);
-    }
+    if(interpreter.variables[name]) throw new FS3Error("ReferenceError", `Variable [${name}] is already defined`, args[0].line, args[0].col, args);
 
     interpreter.variables[name] = {
         value: value,
@@ -419,13 +461,16 @@ class FroggyScript3 {
         ["whitespace", /\s+/],
         ["array_start", /\[/],
         ["array_end", /\]/],
-    ]
+    ];
     
     constructor(options) {
         options = options || {};
         this.setOutputFunction(options.out);
         this.setErrorOutputFunction(options.errout);
         this.setWarnOutputFunction(options.warnout);
+        this.setSmallWarnOutputFunction(options.smallwarnout);
+        this.setSmallErrorOutputFunction(options.smallerrout);
+
         /*
             scope: {
                 name: {
@@ -439,7 +484,7 @@ class FroggyScript3 {
             "true": { value: 1, type: "number", mut: false, freeable: false },
             "false": { value: 0, type: "number", mut: false, freeable: false },
             "fReturn": { value: "", type: "string", mut: true, freeable: false },
-            "MAX_LOOP_ITERATIONS": { value: 10000, type: "number", mut: true, freeable: false }
+            "MAX_LOOP_ITERATIONS": { value: 10000, type: "number", mut: true, freeable: false },
         };
         this.temporaryVariables = {};
         this.functions = {};
@@ -480,6 +525,14 @@ class FroggyScript3 {
 
     setWarnOutputFunction(fn) {
         this.warnout = fn || console.warn;
+    }
+
+    setSmallWarnOutputFunction(fn) {
+        this.smallwarnout = fn || console.warn;
+    }
+
+    setSmallErrorOutputFunction(fn) {
+        this.smallerrout = fn || console.error;
     }
 
     /**
@@ -580,6 +633,10 @@ class FroggyScript3 {
     }
 
     async interpret(code) {
+        for(let method in Method.table){
+            let def = Method.table[method];
+            if(!def.defaultMethod) delete Method.table[method];
+        }
         try {
             let tokens = this.tokenize(code.split('\n'));
             let lines = tokens.map(line => [{ type: "start_of_line", value: "" }, ...line]);
@@ -934,7 +991,7 @@ class FroggyScript3 {
                     if (!def) {
                         throw new FS3Error(
                             "ReferenceError",
-                            `Unknown method [${method.name}]`,
+                            `Unknown method [${method.name}] for type [${token.type}]`,
                             method.line,
                             method.col,
                             line
@@ -1040,7 +1097,7 @@ class FroggyScript3 {
                 if (!def) {
                     throw new FS3Error(
                         "ReferenceError",
-                        `Unknown method [${method.name}]`,
+                        `Unknown method [${method.name}] for type [${parent.type}]`,
                         parent.line, parent.col, method
                     );
                 }
