@@ -206,8 +206,7 @@ new Keyword("longerr", ["string", "string|number"], (args, interpreter) => {
 });
 
 new Keyword("kill", [], (args, interpreter, keywordInfo) => {
-    console.log()
-    throw new FS3Error("RuntimeError", "Program terminated with [kill] command", keywordInfo[0].line, keywordInfo[0].col, args);
+    throw new FS3Error("RuntimeError", "Program terminated with [kill] keyword", keywordInfo[0].line, keywordInfo[0].col, args);
 });
 
 new Keyword("func", ["function_reference", "block"], (args, interpreter) => {
@@ -774,8 +773,13 @@ class FroggyScript3 {
         }
     }
 
+    interrupt() {
+        throw new FS3Error("Interrupt", "Program execution was interrupted", null, null, null);
+    }
+
     async keywordExecutor(line) {
         try {
+            console.log(line)
             // Resolve variables
 
             let keyword = line[0]?.type === "keyword" ? line[0].value : null;
