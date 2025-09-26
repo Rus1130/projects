@@ -124,7 +124,7 @@ free myString
 out myString  # ReferenceError
 ```
 
-## Output
+## Output & Program Termination
 ### Standard Output
 The `out` keyword outputs a value to the console.
 ```
@@ -136,11 +136,54 @@ out 'Hello, World!'
 ### Warnings
 The `warn` keyword outputs a value to the console as a warning.
 ```
-warn [string|number]
+warn [string]
 
 warn 'This is a warning!'
 ```
 
+The `longwarn` keyword outputs a value to the console as a warning, with additional details.
+```
+longwarn [string] [string]
+
+longwarn "Warning!" "This is a detailed warning message."
+
+-----
+
+Warning!
+This is a detailed warning message.
+    at line (line number)
+    at col (column number)
+```
+
+### Errors
+The `error` keyword raises an error but does not stop program execution. Follow with `kill` to stop execution.
+```
+error [string]
+
+error 'This is an error!'
+```
+
+The `longerr` keyword raises an error with additional details but does not stop program execution.
+```
+longerr [string] [string]
+longerr "Error!" "This is a detailed error message."
+
+-----
+
+Error!
+This is a detailed error message.
+    at line (line number)
+    at col (column number)
+```
+### Program Termination
+The `kill` keyword immediately stops program execution by raising a `RuntimeError`.
+```
+kill
+```
+the `quietkill` keyword immediately stops program execution without any error message or output.
+```
+quietkill
+```
 ## Control Flow
 ### Conditionals
 The `if` keyword executes a block of code if a condition is true. An optional `else` block can be provided to execute if the condition is false.

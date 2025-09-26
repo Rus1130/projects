@@ -187,19 +187,21 @@ new Keyword("out", ["string|number"], (args, interpreter) => {
     interpreter.out(args[0].value);
 });
 
-new Keyword("warn", ["string|number"], (args, interpreter) => {
+new Keyword("warn", ["string"], (args, interpreter) => {
     interpreter.smallwarnout(args[0].value);
 });
 
-new Keyword("error", ["string|number"], (args, interpreter) => {
+new Keyword("error", ["string"], (args, interpreter) => {
     interpreter.smallerrout(args[0].value);
 });
 
-new Keyword("longwarn", ["string|number"], (args, interpreter) => {
-    interpreter.warnout(new FS3Warn("UserWarning", args[0].value, args[0].line, args[0].col));
+new Keyword("longwarn", ["string", "string"], (args, interpreter) => {
+    let warningName = args[0].value;
+    let warningMessage = args[1].value;
+    interpreter.warnout(new FS3Warn(warningName, warningMessage, args[0].line, args[0].col));
 });
 
-new Keyword("longerr", ["string", "string|number"], (args, interpreter) => {
+new Keyword("longerr", ["string", "string"], (args, interpreter) => {
     let errorName = args[0].value; 
     let errorMessage = args[1].value;
     interpreter.errout(new FS3Error(errorName, errorMessage, args[1].line, args[1].col, args));
@@ -207,6 +209,10 @@ new Keyword("longerr", ["string", "string|number"], (args, interpreter) => {
 
 new Keyword("kill", [], (args, interpreter, keywordInfo) => {
     throw new FS3Error("RuntimeError", "Program terminated with [kill] keyword", keywordInfo[0].line, keywordInfo[0].col, args);
+});
+
+new Keyword("quietkill", [], (args, interpreter, keywordInfo) => {
+    throw new FS3Error("quietKill", "", 0, 0, args);
 });
 
 new Keyword("func", ["function_reference", "block"], (args, interpreter) => {
@@ -761,8 +767,10 @@ class FroggyScript3 {
                 await this.keywordExecutor(resolvedMethods);
             }
         } catch (e) {
-            if (e instanceof FS3Error) this.errout(e);
-            else throw this.errout(new FS3Error(
+            if (e instanceof FS3Error) {
+                if(e.type === "quietKill") return;
+                this.errout(e);
+            } else throw this.errout(new FS3Error(
                 "InternalJavaScriptError",
                 `Internal JavaScript error: ${e.message}`,
                 null,
@@ -773,13 +781,8 @@ class FroggyScript3 {
         }
     }
 
-    interrupt() {
-        throw new FS3Error("Interrupt", "Program execution was interrupted", null, null, null);
-    }
-
     async keywordExecutor(line) {
         try {
-            console.log(line)
             // Resolve variables
 
             let keyword = line[0]?.type === "keyword" ? line[0].value : null;

@@ -61,13 +61,13 @@
     //input.textContent = `var userInput = ""\nask "userInput" "string"\nout userInput`;
 
     // warn + err + longerr testing
-    //input.textContent = `warn "This is a warning message"\nerror "This is an error message"\nlongwarn "This is a long warning message with details"\nlongerr "benis" "This is a long error message with details"`;
+    input.textContent = `warn "This is a warning message"\nquietkill\nerror "This is an error message"\nlongwarn "long warning!" "This is a long warning message with details"\nlongerr "long error!" "This is a long error message with details"`;
 
     // kill testing
     //input.textContent = `var i = 0\nloop 50 {\n    set i = i>inc\n    if<<i > 25>>{\n        kill\n    }\n    out i\n}\nout 'This will not be printed'`;
 
     // user interrupt
-    input.textContent = `wait 10000\nout 'This will not be printed'`;
+    //input.textContent = `wait 10000\nout 'This will not be printed'`;
 
     input.addEventListener("keydown", (e) => {
         if(e.key === "Tab"){
