@@ -211,7 +211,7 @@ new Keyword("kill", [], (args, interpreter, keywordInfo) => {
     throw new FS3Error("RuntimeError", "Program terminated with [kill] keyword", keywordInfo[0].line, keywordInfo[0].col, args);
 });
 
-new Keyword("quietkill", [], (args, interpreter, keywordInfo) => {
+new Keyword("quietkill", [], (args, interpreter) => {
     throw new FS3Error("quietKill", "", 0, 0, args);
 });
 
