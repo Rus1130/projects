@@ -1,24 +1,18 @@
 class FunctionGuard {
-    /**
-     * @param {Array<Function>} functions An array of function references
-     * @param {Object} scope The scope to search in (default: globalThis)
-     */
-    constructor(functions, scope = globalThis) {
-        functions.forEach(fn => {
-            if (typeof fn !== 'function') {
-                throw new TypeError('All elements in the array must be functions');
-            }
+    #allowDevConsole = false;
 
-            // Find the property name(s) in the scope that point to this function
-            for (let key of Object.keys(scope)) {
-                if (scope[key] === fn) {
-                    const original = fn;
-                    scope[key] = (...args) => {
-                        console.log(`Function "${key}" called with arguments:`, args);
-                        return original(...args);
-                    };
-                }
-            }
-        });
+    getStack(){
+        return new Error().stack.split('\n').slice(2).map(line => line.trim().split("at ")[1].split(" (")[0]);
+    }
+
+    check(){
+        let stack = this.getStack();
+        if(!this.#allowDevConsole){
+            if(stack[stack.length-1].includes("<anonymous>")) throw new Error("Attempt to call a guarded function from the console.");
+        }
+    }
+
+    constructor(options = {}) {
+        this.#allowDevConsole = options.allowDevConsole || false;
     }
 }

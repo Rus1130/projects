@@ -6,12 +6,17 @@
 </body>
 <script>
     function meow(){
+        fg.check();
         console.log('meow!');
     }
 
-    let fg = new FunctionGuard([meow]);
+    let fg = new FunctionGuard({
+        allowDevConsole: true,
+    });
 
     function disallowed(){
         meow()
     }
+
+    disallowed();
 </script>
