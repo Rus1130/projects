@@ -199,6 +199,17 @@ new Keyword("longwarn", ["string|number"], (args, interpreter) => {
     interpreter.warnout(new FS3Warn("UserWarning", args[0].value, args[0].line, args[0].col));
 });
 
+new Keyword("longerr", ["string", "string|number"], (args, interpreter) => {
+    let errorName = args[0].value; 
+    let errorMessage = args[1].value;
+    interpreter.errout(new FS3Error(errorName, errorMessage, args[1].line, args[1].col, args));
+});
+
+new Keyword("kill", [], (args, interpreter, keywordInfo) => {
+    console.log()
+    throw new FS3Error("RuntimeError", "Program terminated with [kill] command", keywordInfo[0].line, keywordInfo[0].col, args);
+});
+
 new Keyword("func", ["function_reference", "block"], (args, interpreter) => {
     let functionName = args[0].value;
     let functionBody = args[1].body;
@@ -819,7 +830,7 @@ class FroggyScript3 {
             }
 
 
-            await keywordDef.fn(lineArgs, this);
+            await keywordDef.fn(lineArgs, this, line);
         } catch (e) {
             throw e;
         }
