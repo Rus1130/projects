@@ -13,7 +13,7 @@
 
 </head>
 <body>
-    <textarea id="in"></textarea>
+    <textarea id="in" spellcheck="false"></textarea>
 </body>
 <script src="./main.js"></script>
 <script src="../Global/math.js"></script>
@@ -38,7 +38,7 @@
     //input.textContent = `var number = 0\nset number = 1>add(2)\nout number`;
 
     // inf loop
-    //input.textContent = `var number = 0\nloop <<true>> {\n    set number = number>add(1)\n}\nout 'done!'`;
+    //input.textContent = `var number = 0\nloop <<true>> {\n    set number = number>add(1)\nout number\n}\nout 'done!'`;
 
     // constant check 
     //input.textContent = `cvar myConstant = "hi!"\nset myConstant = "Try to change me."`;
@@ -58,10 +58,10 @@
     //input.textContent = `var a = 0\nvar b = 1\nvar temp = 0\n\nloop 20 {\n    out a\n    set b = a>add(b)\n    set a = temp\n    set temp = b\n}`
 
     // user input
-    //input.textContent = `var userInput = ""\nask "userInput" "string"\nout userInput`;
+    input.textContent = `var userInput = ""\nask "userInput" "string"\nout userInput`;
 
     // warn + err + longerr testing
-    input.textContent = `warn "This is a warning message"\nquietkill\nerror "This is an error message"\nlongwarn "long warning!" "This is a long warning message with details"\nlongerr "long error!" "This is a long error message with details"`;
+    //input.textContent = `warn "This is a warning message"\nquietkill\nerror "This is an error message"\nlongwarn "long warning!" "This is a long warning message with details"\nlongerr "long error!" "This is a long error message with details"`;
 
     // kill testing
     //input.textContent = `var i = 0\nloop 50 {\n    set i = i>inc\n    if<<i > 25>>{\n        kill\n    }\n    out i\n}\nout 'This will not be printed'`;
@@ -92,6 +92,12 @@
         },
         smallerrout: (msg) => {
             console.error(msg);
+        }
+    });
+
+    window.addEventListener("keydown", e => {
+        if (e.ctrlKey && e.key.toLowerCase() === "c") {
+            fs3.interrupt();
         }
     });
 

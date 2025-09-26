@@ -212,7 +212,7 @@ new Keyword("kill", [], (args, interpreter, keywordInfo) => {
 });
 
 new Keyword("quietkill", [], (args, interpreter) => {
-    throw new FS3Error("quietKill", "", 0, 0, args);
+    throw new FS3Error("quietKill", "", -1, -1, args);
 });
 
 new Keyword("func", ["function_reference", "block"], (args, interpreter) => {
@@ -307,7 +307,31 @@ new Keyword("wait", ["number"], async (args, interpreter) => {
     if(duration < 0){
         throw new FS3Error("RangeError", `Cannot wait for a negative duration`, args[0].line, args[0].col, args);
     }
-    await new Promise(resolve => setTimeout(resolve, duration));
+    await new Promise((resolve, reject) => {
+        // Start the timer
+        const id = setTimeout(() => {
+            // When timer finishes, check for interrupt
+            if (interpreter.interrupted) {
+                reject(new FS3Error("RuntimeError", "Program interrupted by user", -1, -1, args));
+            } else {
+                resolve();
+            }
+        }, duration);
+
+        // If user interrupts DURING the wait, clear the timeout and reject immediately
+        const interruptCheck = () => {
+            clearTimeout(id);
+            reject(new FS3Error("RuntimeError", "Program interrupted by user", -1, -1, args));
+        };
+
+        // Register a hook
+        interpreter._onInterrupt = interruptCheck;
+    }).finally(() => {
+        // Cleanup hook so future waits aren't affected
+        if (interpreter._onInterrupt) {
+            interpreter._onInterrupt = null;
+        }
+    });
 });
 
 
@@ -346,10 +370,14 @@ new Keyword("var", ["variable_reference", "assignment", "string|number|array"], 
 new Keyword("ask", ["string"], async (args, interpreter) => {
     let variableName = args[0].value;
 
-    if(!interpreter.variables[variableName]) throw new FS3Error("ReferenceError", `Variable [${variableName}] is not defined`, args[0].line, args[0].col, args);
-    if(!interpreter.variables[variableName].mut) throw new FS3Error("AccessError", `Variable [${variableName}] is immutable and cannot be changed`, args[0].line, args[0].col, args);
+    if (!interpreter.variables[variableName]) {
+        throw new FS3Error("ReferenceError", `Variable [${variableName}] is not defined`, args[0].line, args[0].col, args);
+    }
+    if (!interpreter.variables[variableName].mut) {
+        throw new FS3Error("AccessError", `Variable [${variableName}] is immutable and cannot be changed`, args[0].line, args[0].col, args);
+    }
 
-    textinput = document.createElement("textarea");
+    const textinput = document.createElement("textarea");
     textinput.style.position = "fixed";
     textinput.style.top = "25%";
     textinput.style.width = "50%";
@@ -359,20 +387,35 @@ new Keyword("ask", ["string"], async (args, interpreter) => {
 
     textinput.focus();
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
+        const cleanup = () => {
+            if (document.body.contains(textinput)) {
+                document.body.removeChild(textinput);
+            }
+            if (interpreter._onInterrupt === interruptCheck) {
+                interpreter._onInterrupt = null;
+            }
+        };
+
+        const finish = (value) => {
+            interpreter.variables[variableName].value = value;
+            interpreter.variables[variableName].type = "string";
+            cleanup();
+            resolve();
+        };
+
+        const interruptCheck = () => {
+            cleanup();
+            reject(new FS3Error("RuntimeError", "Program interrupted by user", -1, -1, args));
+        };
+
+        // hook for interrupt
+        interpreter._onInterrupt = interruptCheck;
+
         textinput.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
                 e.preventDefault();
-                let value = textinput.value.trim();
-
-                // store result in variable
-                interpreter.variables[variableName].value = value;
-                interpreter.variables[variableName].type = "string";
-
-                // cleanup
-                document.body.removeChild(textinput);
-
-                resolve();
+                finish(textinput.value.trim());
             }
         });
     });
@@ -506,6 +549,26 @@ class FroggyScript3 {
         this.functions = {};
         this.debug = false;
         this.lastIfExecuted = false;
+        this._interrupt = false;
+        this.clockLengthMs = 1;
+        this._onInterrupt = null;
+    }
+
+    clockLength(ms){
+        this.clockLengthMs = ms;
+    }
+
+    interrupt(){
+        this._interrupt = true;
+        if (typeof this._onInterrupt === "function") {
+            this._onInterrupt();
+        }
+    }
+
+    checkInterrupt(){
+        if(this._interrupt){
+            throw new FS3Error("RuntimeError", "Program interrupted by user", -1, -1);
+        }
     }
 
     evaluateMathExpression(expression){
@@ -523,11 +586,11 @@ class FroggyScript3 {
             if(typeof result === "boolean"){
                 result = result ? 1 : 0;
             } else if(typeof result !== "number"){
-                throw new FS3Error("MathError", `Math expression did not evaluate to a number`, null, null);
+                throw new FS3Error("MathError", `Math expression did not evaluate to a number`, -1, -1);
             }
             return result;
         } catch (e) {
-            throw new FS3Error("MathError", `Error evaluating math expression: ${e.message}`, null, null);
+            throw new FS3Error("MathError", `Error evaluating math expression: ${e.message}`, -1, -1);
         }
     }
 
@@ -589,6 +652,7 @@ class FroggyScript3 {
 
     async executeBlock(block){
         for(let i = 0; i < block.length; i++){
+            this.checkInterrupt();
             const line = block[i];
 
 
@@ -649,6 +713,7 @@ class FroggyScript3 {
     }
 
     async interpret(code) {
+        this._interrupt = false;
         for(let method in Method.table){
             let def = Method.table[method];
             if(!def.defaultMethod) delete Method.table[method];
@@ -727,12 +792,7 @@ class FroggyScript3 {
                             line[idx].type = v.type;
                             line[idx].value = v.value;
                         } else {
-                            throw new FS3Error(
-                                "ReferenceError",
-                                `Variable [${t.value}] is not defined`,
-                                t.line,
-                                t.col,
-                                line
+                            throw new FS3Error( "ReferenceError", `Variable [${t.value}] is not defined`, t.line, t.col, line
                             );
                         }
                     }
@@ -744,13 +804,7 @@ class FroggyScript3 {
                             if (el && el.type === "variable") {
                                 const v = this.variables[el.value];
                                 if (!v) {
-                                    throw new FS3Error(
-                                        "ReferenceError",
-                                        `Variable [${el.value}] is not defined`,
-                                        el.line,
-                                        el.col,
-                                        line
-                                    );
+                                    throw new FS3Error("ReferenceError", `Variable [${el.value}] is not defined`, el.line, el.col, line);
                                 }
                                 return { ...el, type: v.type, value: v.value };
                             }
@@ -770,13 +824,7 @@ class FroggyScript3 {
             if (e instanceof FS3Error) {
                 if(e.type === "quietKill") return;
                 this.errout(e);
-            } else throw this.errout(new FS3Error(
-                "InternalJavaScriptError",
-                `Internal JavaScript error: ${e.message}`,
-                null,
-                null,
-                null
-            ));
+            } else this.errout(new FS3Error("InternalJavaScriptError", `Internal JavaScript error: ${e.message}`, -1, -1));
             throw e;
         }
     }
@@ -784,7 +832,8 @@ class FroggyScript3 {
     async keywordExecutor(line) {
         try {
             // Resolve variables
-
+            this.checkInterrupt();
+            if(this.clockLengthMs != 0) await new Promise(resolve => setTimeout(resolve, this.clockLengthMs));
             let keyword = line[0]?.type === "keyword" ? line[0].value : null;
             if (!keyword) return;
             
