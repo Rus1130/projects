@@ -373,8 +373,13 @@ new Keyword("ask", ["string"], async (args, interpreter) => {
     if (!interpreter.variables[variableName]) {
         throw new FS3Error("ReferenceError", `Variable [${variableName}] is not defined`, args[0].line, args[0].col, args);
     }
+
     if (!interpreter.variables[variableName].mut) {
         throw new FS3Error("AccessError", `Variable [${variableName}] is immutable and cannot be changed`, args[0].line, args[0].col, args);
+    }
+
+    if(interpreter.variables[variableName].type !== "string"){
+        throw new FS3Error("TypeError", `Variable [${variableName}] must be of type [string] to store user input`, args[0].line, args[0].col, args);
     }
 
     const textinput = document.createElement("textarea");
@@ -508,6 +513,7 @@ class FroggyScript3 {
         ["number", /[0-9]+(?:\.[0-9]+)?/],
         ["variable", /[A-Za-z_][A-Za-z0-9_]*/],
         ["function_reference", /@[A-Za-z_][A-Za-z0-9_]*/],
+        ["variable_reference", /\$[A-Za-z_][A-Za-z0-9_]*/],
         ["string", /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/],
         ["condition_statement", /<<[^\r\n]*?>>/],
         ["block_start", /\{/],

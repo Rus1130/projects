@@ -30,7 +30,7 @@ There are 3 main types in FroggyScript3: `string`, `number`, and `array`.
 [1, 'two', 3.0, 'four', variable]
 ```
 
-There are also two other types: `function_reference` and `condition_statement`.
+There are also three other types: `function_reference`, `condition_statement`, and `variable_reference`.
 ```
 # function_reference
 @myFunction
@@ -39,7 +39,12 @@ There are also two other types: `function_reference` and `condition_statement`.
 << 1 > 2 >>
 <<true>>
 <<'hello'>eq('world')>>
+
+# variable_reference
+$myVariable
 ```
+Variable references are used to reference a variable without resolving the variable itself. This is used to pass variables as arguments to keywords.
+
 ### Keyword Type Annotations
 Keywords can take only specific types as arguments. In documentation, this is how it is notated:
 ```
@@ -54,8 +59,13 @@ keyword [variable]
 
 # Example:
 set [variable] = [string|number|array]
+set myVar = 'Hello, World!'
 ```
-#### Blocks
+If there is something that requires a variable reference, it is notated like so:
+```
+keyword [$variable]
+```
+### Blocks
 This is a block:
 ```
 {
@@ -78,6 +88,9 @@ if <<true>> {
     out 'This is true!'
 }
 ```
+### User Interrupt
+A user interrupt can be triggered by pressing `Ctrl+C` while the program is running. This will immediately stop execution and raise a `RuntimeError`.
+
 ## Variables
 ### Default Variables
 There are a few default variables that exist in every FroggyScript3 program:
@@ -89,7 +102,7 @@ There are a few default variables that exist in every FroggyScript3 program:
 ### Creation
 Variables are created with the `var` keyword and do not need a type to be specifically declared. Instead, the type is assigned based on the value given to the variable. This cannot be changed later.
 ```
-var [variable_name] = [string|number|array]
+var [variable] = [string|number|array]
 
 var myString = 'Hello, World!' # string
 var myNumber = 10              # number
@@ -124,7 +137,7 @@ free myString
 out myString  # ReferenceError
 ```
 
-## Output & Program Termination
+## Output
 ### Standard Output
 The `out` keyword outputs a value to the console.
 ```
@@ -175,7 +188,12 @@ This is a detailed error message.
     at line (line number)
     at col (column number)
 ```
-### Program Termination
+## User Input
+The `ask` keyword prompts the user for input and stores the result in a variable. The variable must be of type `string`. Put the name of the variable into the string.
+```
+ask [string]
+```
+## Program Termination
 The `kill` keyword immediately stops program execution by raising a `RuntimeError`.
 ```
 kill
