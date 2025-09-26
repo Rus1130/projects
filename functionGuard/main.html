@@ -1,0 +1,17 @@
+<head>
+    <script src="main.js"></script>
+</head>
+<body>
+
+</body>
+<script>
+    function meow(){
+        console.log('meow!');
+    }
+
+    let fg = new FunctionGuard([meow]);
+
+    function disallowed(){
+        meow()
+    }
+</script>
