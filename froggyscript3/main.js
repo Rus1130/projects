@@ -535,6 +535,7 @@ class FroggyScript3 {
         this.setWarnOutputFunction(options.warnout);
         this.setSmallWarnOutputFunction(options.smallwarnout);
         this.setSmallErrorOutputFunction(options.smallerrout);
+        this.setOnComplete(options.onComplete);
 
         /*
             scope: {
@@ -618,6 +619,10 @@ class FroggyScript3 {
 
     setSmallErrorOutputFunction(fn) {
         this.smallerrout = fn || console.error;
+    }
+
+    setOnComplete(fn) {
+        this.onComplete = fn || function() {};
     }
 
     /**
@@ -725,7 +730,7 @@ class FroggyScript3 {
             if(!def.defaultMethod) delete Method.table[method];
         }
         try {
-            let tokens = this.tokenize(code.split('\n'));
+            let tokens = this.tokenize(code.split("\n"));
             let lines = tokens.map(line => [{ type: "start_of_line", value: "" }, ...line]);
             let flattened = lines.flat();
 
@@ -825,6 +830,11 @@ class FroggyScript3 {
 
                 // Execute keyword
                 await this.keywordExecutor(resolvedMethods);
+
+                // if its the last line, call onComplete
+                if (i === compressed.length - 1) {
+                    this.onComplete();
+                }
             }
         } catch (e) {
             if (e instanceof FS3Error) {
