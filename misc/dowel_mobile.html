@@ -1,0 +1,34 @@
+<style>
+    body {
+        margin: 0;
+    }
+
+    .main-body {
+        width: calc(100% - 10px);
+        height: 2px;
+        background-color: black;
+        position: absolute;
+        left: 5px;
+        top: 150px;
+    }
+
+    #length {
+        position: absolute;
+        left: 50%;
+    }
+</style>
+<head>
+
+</head>
+<body>
+    <input type="number" id="length" placeholder="length"></input>
+    <input type="range" class="main-body"></input>
+    <div id="length_1">10cm</div>
+    <div id="length_2">12cm</div>
+</body>
+<script>
+
+    document.body.onchange = function() {
+
+    }
+</script>

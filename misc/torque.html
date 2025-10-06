@@ -1,0 +1,36 @@
+<head>
+
+</head>
+<body>
+    <input type="number" id="force_2" placeholder="left force (# of washers)">
+    <input type="number" id="distance_2" placeholder="left distance (cm)">
+    <input type="number" id="force_1" placeholder="right force (# of washers)">
+    <input type="number" id="distance_1" placeholder="right distance (cm)">
+    <input type="number" id="weight" placeholder="dowel weight (g)">
+    <input type="number" id="total_length" placeholder="total length (cm)">
+    <div id="result"></div>
+</body>
+<script>
+
+
+    // on document body change
+    document.body.oninput = function() {
+        let F_2 = document.getElementById("force_2").value;
+        let d_2 = document.getElementById("distance_2").value;
+        let F_1 = document.getElementById("force_1").value;
+        let d_1 = document.getElementById("distance_1").value;
+
+        let w_D = document.getElementById("weight").value;
+
+        let total_length = document.getElementById("total_length").value;
+
+        // r_w = total length/2 - distance to edge
+        let r_w = total_length/2 - d_1;
+
+        console.log(r_w, "cm");
+
+        let divResult = document.getElementById("result");
+        divResult.innerHTML = `left: ${(F_2 * 5.3) * d_2}<br>right: ${((F_1 * 5.3) * d_1) + (w_D * r_w)}<br>`;
+    }
+
+</script>
