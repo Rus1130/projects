@@ -27,6 +27,7 @@
     <meta property="og:title"       content="The Machine"                                                  />
     <meta property="og:description" content="After a long day's work, I finally return to my home."        />
     <meta property="og:url"         content="https://rus1130.github.io/projects/my-poems/the-machine.html" />
+    <title>The Machine</title>
 </head>
 <body>
     <div id="out"></div>
@@ -50,6 +51,7 @@
                 speed1Delay: 500,
                 speed2Delay: 150,
                 speed3Delay: 205,
+                speed4Delay: 38,
                 sleepDelay: 700,
                 onFinish: () => {
                     document.getElementById('return').style.display = 'block';
@@ -60,7 +62,6 @@
                 if (event.code === 'Space') tw3.togglePause();
             });
 
-            //tw3.index = 1400;
             tw3.start();
         });
 </script>
