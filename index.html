@@ -125,6 +125,7 @@
     <div id="start"><span id="press-key-start">press any key to start</span><span id="dot-dot-dot">.</span></div>
 </body>
 <script>
+    updateTime();
     let animationFinished = false;
     function start(){
         let titleAnim = ["/", "-", "\\", "|"];
@@ -160,8 +161,7 @@
         }, 200)
     }
 
-    setInterval(() => {
-        // get the years, months, days, hours, minutes, and seconds until 1780408800
+    function updateTime(){
         const TIME = 1780408800;
         let timeUntil = TIME - Math.floor(Date.now() / 1000);
         let years = Math.floor(timeUntil / 31536000);
@@ -188,7 +188,13 @@
         if(TIME - Math.floor(Date.now() / 1000) <= 0){
             display = "The time has passed.";
         }
+
         document.getElementById("counter").textContent = display.replaceAll("\n", "");
+    }
+
+    setInterval(() => {
+        // get the years, months, days, hours, minutes, and seconds until 1780408800
+        updateTime();
     }, 200)
 
     let typewriter3 = new Typewriter3(document.getElementById("typewriter-in").innerText, document.getElementById("typewriter-out"), {
@@ -225,6 +231,7 @@
         animationFinished = true;
         document.getElementById("wrapper").style.display = "block";
         document.getElementById("start").remove();
+        document.title = "Welcome!";
     } else {
         document.addEventListener("keydown", () => {
             if(firstKeyPress) return;
