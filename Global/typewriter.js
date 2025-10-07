@@ -523,19 +523,19 @@ class Typewriter2 {
 
 class Typewriter3 {
     /**
-     * @description tags: [newline], [linebreak], [newpage], [speedoverrideslow], [speeddefault], [speedoverridefast]
+     * @description tags: [newline], [linebreak], [newpage], [speed1] to [speed5], [speeddefault], [sleep], [typewriter-complete]
      * comments can be added with {{comment ... comment}}, allows newlines inside of comment
      * @param {String} text - The text to be typed.
      * @param {HTMLElement} outputElement - The HTML element where the text will be displayed.
      * @param {Object} options - Options for the typewriter effect.
      * @param {Number} [options.charDelay=100] - Delay between typing each character in milliseconds.
-     * @param {Number} [options.newlineDelay=0] - Delay after typing a newline character in milliseconds.
+     * @param {Number} [options.newlineDelay=0] - Delay after typing a newline character in milliseconds. The [linebreak] tag uses the same delay as [newline].
      * @param {Object} [options.styles] - Object defining style characters.
-     * @param {String} [options.styles.italic="/"] - Character to italicize text.
-     * @param {String} [options.styles.bold="*"] - Character to bold text
-     * @param {String} [options.styles.underline="_"] - Character to underline text.
-     * @param {String} [options.styles.strikethrough="-"] - Character to strikethrough text.
-     * @param {String} [options.styles.escape="\\"] - Character to escape special characters.
+     * @param {String} [options.styles.italic="/"] - Character to italicize text. Default is "/text/".
+     * @param {String} [options.styles.bold="*"] - Character to bold text. Default is "*text*".
+     * @param {String} [options.styles.underline="_"] - Character to underline text. Default is "_text_".
+     * @param {String} [options.styles.strikethrough="-"] - Character to strikethrough text. Default is "-text-".
+     * @param {String} [options.styles.escape="\\"] - Character to escape special characters. Default is "\text".
      * @param {Object<string, number>} [options.customDelays] - Custom delays for specific characters.
      * @param {Function} [options.onCharacterDisplayed] - Callback function that is called after each character is displayed.
      * @param {Function} [options.onFinish] - Callback function that is called after the typing is finished. use the [typewriter-complete] tag to trigger
