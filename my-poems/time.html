@@ -1,0 +1,66 @@
+<style>
+    #in, body {
+        overflow-y: hidden;
+        scrollbar-width: none;
+        background-color: black;
+        color: white;
+        margin-right: 0;
+    }
+
+    * {
+        font-family: monospace;
+    }
+
+    buttondiv {
+        margin-bottom: 1px;
+        display: block;
+        cursor: pointer;
+    }
+    buttondiv:hover {
+        background-color: white;
+        color: black;
+    }
+</style>
+<head>
+    <script src="../Global/typewriter.js"></script>
+    <meta property="og:title"       content="Time"                                                  />
+    <meta property="og:description" content="It runs around the track of Time."                     />
+    <meta property="og:url"         content="https://rus1130.github.io/projects/my-poems/time.html" />
+</head>
+<body>
+    <div id="in"></div>
+    <buttondiv id="return" onclick="location.href = 'https://rus1130.github.io/projects/index.html'" style="display: none;">▌< Return</buttondiv>
+</body>
+<script>
+    const TIME = fetch('./src/time.txt')
+        .then(response => response.text())
+        .then(text => {
+            let tw3 = new Typewriter3(text, document.getElementById("in"), {
+                charDelay: 38,
+                newlineDelay: 300,
+                customDelays: {
+                    ",": 350,
+                    ".": 500,
+                    "?": 370,
+                    "!": 370,
+                    "—": 750,
+                    ";": 200,
+                },
+                newpageText: "▌Next >",
+                defaultTextColor: "#ffffff",
+                speed1Delay: 25,
+                speed2Delay: 75,
+                speed3Delay: 205,
+                sleepDelay: 700,
+                onFinish: () => {
+                    document.getElementById('return').style.display = 'block';
+                }
+            });
+
+            document.body.addEventListener('keydown', (event) => {
+                if (event.code === 'Space') tw3.togglePause();
+            });
+
+            tw3.start();
+        });
+</script>

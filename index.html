@@ -56,7 +56,7 @@
 </head>
 <body>
     <div id="wrapper" style="display: none">
-        <div id="scrambleTextDisplay">&nbsp;</div>
+        <div>rus1130/projects/index.html</div>
         <div id="counter"><br></div>
         <div id="-">--------------</div>
         <div id="cat-main">
@@ -67,6 +67,7 @@
             <buttondiv onclick="window.location.replace('https://froggyos.github.io/')">▌froggyOS</buttondiv>
             <buttondiv onclick="show('cat-js-libraries')">▌JavaScript Libraries ></buttondiv>
             <buttondiv onclick="show('cat-typewriters')">▌Typewriters ></buttondiv>
+            <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/my-poems/homepage.html'">▌My Poems</buttondiv>
         </div>
         <div id="cat-typewriters" class='cat'>
             <buttondiv onclick="location.href = 'https://rus1130.github.io/projects/misc/dataghost.html'">▌d̶̼̤̀a̸̠̬̐͝t̵̩̻̀a̶̘͉̐g̸̦̝͝h̸̡͕̿ő̸͉s̷͇͗t̷̰̱̏̍ ></buttondiv>
@@ -98,7 +99,7 @@
             <buttondiv onclick="show('cat-main')">▌< Return</buttondiv>
         </div>
         <div id="cat-about-me" class="cat">
-            <div id="typewriter-in">Hi, I'm Rus|I make a lot of (not very good) stuff|I live in ▓▓▓▓▓▓▓▓▓ Maryland|I like linguistics and conlanging|My favorite color is !orange!|Don't worry about the counter (:</div>
+            <div id="typewriter-in" style="display: none;">Hi, I'm Rus[newline]I make a lot of (not very good) stuff[newline]I like linguistics and conlanging[newline]My favorite color is orange.</div>
             <div id="typewriter-out"></div>
             <br>
             <buttondiv onclick="show('cat-main')">▌< Return</buttondiv>
@@ -120,10 +121,6 @@
     <div id="start"><span id="press-key-start">press any key to start</span><span id="dot-dot-dot">.</span></div>
 </body>
 <script>
-    new AllSniffer();
-
-    let ste = new ScrambleTextEffect("rus1130/projects/index.html", document.getElementById("scrambleTextDisplay"), 50, 10)
-
     let animationFinished = false;
     function start(){
         let titleAnim = ["/", "-", "\\", "|"];
@@ -137,7 +134,6 @@
             if(animationFinished){
                 clearInterval(anim);
                 document.title = "Welcome!";
-                ste.start();
             }
         }, 80)
     }
@@ -191,8 +187,9 @@
         document.getElementById("counter").textContent = display.replaceAll("\n", "");
     }, 200)
 
-    let typewriter2 = new Typewriter2("typewriter-in", "typewriter-out", {
-        charDelay: 80,
+    let typewriter3 = new Typewriter3(document.getElementById("typewriter-in").innerText, document.getElementById("typewriter-out"), {
+        charDelay: 50,
+        defaultTextColor: "#ffffff",
     });
 
     function show(id){
@@ -203,10 +200,10 @@
             if(elements[i].id === id){
                 elements[i].style.display = "block";
                 if(id == "cat-about-me"){
-                    typewriter2.resume();
-                    typewriter2.start();
+                    typewriter3.resume();
+                    typewriter3.start();
                 } else {
-                    typewriter2.pause();
+                    typewriter3.pause();
                 }
             } else {
                 elements[i].style.display = "none";
