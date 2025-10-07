@@ -7,20 +7,20 @@ It makes that familiar sound, the sound it always makes when it turns on. I run 
 The number "6" prints to the screen. All is well. I run my program again.[newline]
 "66".[sleep] As it should. This is expected.[newline]
 I run it again. "666". Wonderful.[newline]
-Again. "6 666". Excellent.[newline]
-/Again./ "66 666". /Perfect/.[newline]
-*/Again!/* "666 666".[linebreak]
+Again. "6[speed4],[speeddefault]666". Excellent.[newline]
+/Again./ "66[speed4],[speeddefault]666". /Perfect/.[newline]
+*/Again!/* "666[speed4],[speeddefault]666".[linebreak]
 
 [sleep].[sleep].[sleep].[linebreak]
 
 [sleep]No.[sleep] This is wrong. I run it again.[linebreak]
 
-[speed1]6 666 666[speeddefault][linebreak]
+[speed1]6,666,666[speeddefault][linebreak]
 
 No. It is still wrong. Why? Why is it wrong? Did I make a mistake?[newline]
 I run it a final time.[linebreak]
 
-[speed1]66 666 666[speeddefault][linebreak]
+[speed1]66,666,666[speeddefault][linebreak]
 
 [sleep][sleep]It is correct.[linebreak]
 
