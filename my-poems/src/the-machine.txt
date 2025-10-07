@@ -27,5 +27,4 @@ The day passes, and night falls. I am tired. I go to bed.[linebreak]
 As I stare into the darkness of my room, I see a faint light coming from the direction of my desk.[linebreak]
 I get up, and I walk to it. The machine is on.[linebreak]
 The screen glows a faint white, from where it says:[linebreak]
-
 [sleep][speed2]"What is your favorite vegetable?"[speeddefault][sleep][sleep][typewriter-complete]
