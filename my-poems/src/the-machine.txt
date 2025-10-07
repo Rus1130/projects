@@ -18,10 +18,12 @@ Again. "6 666". Excellent.[newline]
 [speed1]6 666 666[speeddefault][linebreak]
 
 No. It is still wrong. Why? Why is it wrong? Did I make a mistake?[newline]
-
 I run it a final time.[linebreak]
+
 [speed1]66 666 666[speeddefault][linebreak]
+
 [sleep][sleep]It is correct.[linebreak]
+
 I had forgotten. It is always wrong those two times. Why? Why was I worried?[newline]
 I sigh, close the program, and shut down the machine.[newline]
 I see the spider. It's still in the corner. Why? Why is it still there? I should have caught it earlier.[newline]
@@ -30,9 +32,9 @@ I return into my room, and sit at my desk. The machine is off.[linebreak][sleep]
 
 "Carrot"[linebreak][sleep][sleep]
 
-That word echoes through my mind. I am not sure why. I am scared. Confused.[linebreak]
+That word echoes through my mind. I do not know sure why. I am scared. Confused.[linebreak]
 
-I look at the machine. It is off. It is silent. It is still.[linebreak]
+I look at the machine. It is off. It is silent.[linebreak]
 
 The day passes, and night falls. I am tired. I go to bed.[linebreak]
 
