@@ -12,12 +12,12 @@
         font-family: monospace;
     }
 
-    buttondiv {
+    .button {
         margin-bottom: 1px;
         display: block;
         cursor: pointer;
     }
-    buttondiv:hover {
+    .button:hover {
         background-color: white;
         color: black;
     }
@@ -31,7 +31,7 @@
 </head>
 <body>
     <div id="out"></div>
-    <buttondiv id="return" onclick="location.href = './homepage.html'" style="display: none;">▌< Return</buttondiv>
+    <div class="button" id="return" onclick="location.href = './homepage.html'" style="display: none;">▌< Return</div>
 </body>
 <script>
     const MACHINE = fetch('./src/the-machine.txt')
