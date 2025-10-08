@@ -30,7 +30,7 @@
         width: 2px;
         left: 0;
         background-color: white;
-        transition: width 0.07s linear;
+        transition: width 0.1s linear;
     }
 </style>
 <head>
@@ -50,20 +50,14 @@
         .then(response => response.text())
         .then(text => {
             let tw3 = new Typewriter3(text, document.getElementById("out"), {
-                charDelay: 60,
-                newlineDelay: 300,
+                charDelay: 48,
+                newlineDelay: 400,
                 customDelays: {
                     ",": 350,
-                    ".": 600,
-                    "?": 600,
-                    "!": 370,
+                    ".": 700,
                 },
                 newpageText: "▌Next >",
                 defaultTextColor: "#ffffff",
-                speed1Delay: 500,
-                speed2Delay: 150,
-                speed3Delay: 205,
-                speed4Delay: 38,
                 sleepDelay: 700,
                 onFinish: () => {
                     document.getElementById('return').style.display = 'block';
