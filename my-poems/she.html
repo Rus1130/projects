@@ -17,10 +17,12 @@
         display: block;
         cursor: pointer;
     }
+
     .button:hover {
         background-color: white;
         color: black;
     }
+
     #completion {
         position: fixed;
         top: 0;
@@ -28,6 +30,7 @@
         width: 2px;
         left: 0;
         background-color: white;
+        transition: width 0.07s linear;
     }
 </style>
 <head>
@@ -35,7 +38,7 @@
     <meta property="og:title"       content="She"                                                  />
     <meta property="og:description" content="She does not wish to fly away."                       />
     <meta property="og:url"         content="https://rus1130.github.io/projects/my-poems/she.html" />
-    <title>The Machine</title>
+    <title>She</title>
 </head>
 <body>
     <div id="completion"></div>
@@ -47,7 +50,7 @@
         .then(response => response.text())
         .then(text => {
             let tw3 = new Typewriter3(text, document.getElementById("out"), {
-                charDelay: 38,
+                charDelay: 60,
                 newlineDelay: 300,
                 customDelays: {
                     ",": 350,
@@ -66,7 +69,7 @@
                     document.getElementById('return').style.display = 'block';
                 },
                 onToken: (token) => {
-                    document.getElementById('completion').style.width = `${tw3.index / tw3.queue.length * 100}%`;
+                    document.getElementById('completion').style.width = `${(tw3.index + 1) / tw3.queue.length * 100}%`;
                 }
             });
 

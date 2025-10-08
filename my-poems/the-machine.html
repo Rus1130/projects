@@ -66,7 +66,7 @@
                     document.getElementById('return').style.display = 'block';
                 },
                 onToken: (token) => {
-                    document.getElementById('completion').style.width = `${tw3.index / tw3.queue.length * 100}%`;
+                    document.getElementById('completion').style.width = `${(tw3.index + 1) / tw3.queue.length * 100}%`;
                 }
             });
 
