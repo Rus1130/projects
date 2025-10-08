@@ -604,7 +604,8 @@ class Typewriter3 {
         this.playing = false;
         this.index = 0;
         this.timeoutID = null;
-        this.speedType = 'default'
+        this.speedType = 'default';
+        this._speedOverride = null;
 
 
         class Token {
@@ -716,6 +717,10 @@ class Typewriter3 {
         }
     }
 
+    speedOverride(number){
+        this._speedOverride = number;
+    }
+
     start() {
         this.playing = true;
         if (this.index === 0) this.elem.innerHTML = "";
@@ -737,7 +742,7 @@ class Typewriter3 {
             else if(this.speedType === 'speed3') token.delay = this.options.speed3Delay;
             else if(this.speedType === 'speed4') token.delay = this.options.speed4Delay;
             else if(this.speedType === 'speed5') token.delay = this.options.speed5Delay;
-            this.timeoutID = setTimeout(processNext, token.delay);
+            this.timeoutID = setTimeout(processNext, this._speedOverride ?? token.delay);
         };
 
         processNext();
