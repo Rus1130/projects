@@ -524,7 +524,7 @@ class Typewriter2 {
 class Typewriter3 {
     /**
      * @description tags: [newline], [linebreak], [newpage], [speed1] to [speed5], [speeddefault], [sleep], [typewriter-complete]
-     * comments can be added with {{comment ... comment}}, allows newlines inside of comment
+     * comments can be added with {{# ... #}}, allows newlines inside of comment
      * @param {String} text - The text to be typed.
      * @param {HTMLElement} outputElement - The HTML element where the text will be displayed.
      * @param {Object} options - Options for the typewriter effect.
@@ -600,8 +600,8 @@ class Typewriter3 {
 
         this.text = text.replaceAll("\n", "").replaceAll("\r", "");
 
-        // remove {{comment ... comment}}
-        this.text = this.text.replace(/\{\{comment[\s\S]*?comment\}\}/g, "");
+        // remove {{# ... #}}
+        this.text = this.text.replace(/\{\{#[\s\S]*?#\}\}/g, "");
         this.elem = outputElement;
         this.options = options;
         this.playing = false;

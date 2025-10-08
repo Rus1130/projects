@@ -1,3 +1,4 @@
+{{# written 6 oct, 2025 #}}
 [sleep][sleep]After a long day's work, I finally return to my home. My desk.[newline]
 The machine stares at me. Blankly. I boot it up.[newline]
 I have been working on a certain program for a while now.[newline]
