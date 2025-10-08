@@ -548,6 +548,7 @@ class Typewriter3 {
      * @param {Number} [options.speed4Delay=50] - Delay for [speed4] tag.
      * @param {Number} [options.speed5Delay=10] - Delay for [speed5] tag.
      * @param {Number} [options.sleepDelay=1000] - Delay for [sleep] tag.
+     * @param {Boolean} [options.completionBar=false] - Whether to show a completion bar at the bottom of the screen.
      */
     constructor(text, outputElement, options = {}) {
         const defaultOptions = {
@@ -572,6 +573,7 @@ class Typewriter3 {
             speed4Delay: 50,
             speed5Delay: 10,
             sleepDelay: 1000,
+            completionBar: false,
         };
 
         options = {
@@ -596,6 +598,7 @@ class Typewriter3 {
             speed4Delay: options?.speed4Delay || defaultOptions.speed4Delay,
             speed5Delay: options?.speed5Delay || defaultOptions.speed5Delay,
             sleepDelay: options?.sleepDelay || 1000,
+            completionBar: options?.completionBar || defaultOptions.completionBar,
         };
 
         this.text = text.replaceAll("\n", "").replaceAll("\r", "");
@@ -610,6 +613,18 @@ class Typewriter3 {
         this.timeoutID = null;
         this.speedType = 'default';
         this._speedOverride = null;
+
+        if(this.options.completionBar) {
+            this.completionBarElement = document.createElement("div");
+            this.completionBarElement.style.position = "fixed";
+            this.completionBarElement.style.left = "0";
+            this.completionBarElement.style.top = "0";
+            this.completionBarElement.style.width = "0%";
+            this.completionBarElement.style.height = "5px";
+            this.completionBarElement.style.backgroundColor = "white";
+            this.completionBarElement.style.zIndex = "9999";
+            document.body.appendChild(this.completionBarElement);
+        }
 
         class Token {
             constructor(content, type, delay, styles) {
@@ -754,6 +769,7 @@ class Typewriter3 {
     renderToken(token) {
         let content = token.content;
 
+        if(this.options.completionBar) this.completionBarElement.style.width = `${(this.index + 1) / this.queue.length * 100}%`;
         this.options.onToken?.(token);
 
         if (content === "\x00") {

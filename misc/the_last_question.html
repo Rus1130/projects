@@ -22,20 +22,11 @@
             background-color: white;
         }
     }
-    #completion {
-        position: fixed;
-        top: 0;
-        height: 5px;
-        width: 2px;
-        left: 0;
-        background-color: white;
-    }
 </style>
 <head>
     <script src="../Global/typewriter.js"></script>
 </head>
 <body>
-<div id="completion"></div>
 <div id="out"></div>
 </body>
 <script>
@@ -62,6 +53,7 @@
                 speed2Delay: 195,
                 speed3Delay: 205,
                 sleepDelay: 800,
+                completionBar: true,
                 onFinish: () => {
                     document.body.style.animation = "background-change 6s forwards ease-out";
                     setTimeout(() => {

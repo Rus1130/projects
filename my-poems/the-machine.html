@@ -21,14 +21,6 @@
         background-color: white;
         color: black;
     }
-    #completion {
-        position: fixed;
-        top: 0;
-        height: 5px;
-        width: 2px;
-        left: 0;
-        background-color: white;
-    }
 </style>
 <head>
     <script src="../Global/typewriter.js"></script>
@@ -38,7 +30,6 @@
     <title>The Machine</title>
 </head>
 <body>
-    <div id="completion"></div>
     <div id="out"></div>
     <div class="button" id="return" onclick="location.href = './homepage.html'" style="display: none;">▌< Return</div>
 </body>
@@ -62,11 +53,9 @@
                 speed3Delay: 205,
                 speed4Delay: 38,
                 sleepDelay: 700,
+                completionBar: true,
                 onFinish: () => {
                     document.getElementById('return').style.display = 'block';
-                },
-                onToken: (token) => {
-                    document.getElementById('completion').style.width = `${(tw3.index + 1) / tw3.queue.length * 100}%`;
                 }
             });
 
