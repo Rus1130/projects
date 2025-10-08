@@ -538,6 +538,7 @@ class Typewriter3 {
      * @param {String} [options.styles.escape="\\"] - Character to escape special characters. Default is "\text".
      * @param {Object<string, number>} [options.customDelays] - Custom delays for specific characters.
      * @param {Function} [options.onCharacterDisplayed] - Callback function that is called after each character is displayed.
+     * @param {Function} [options.onToken] - Callback function that is called after each token is processed.
      * @param {Function} [options.onFinish] - Callback function that is called after the typing is finished. use the [typewriter-complete] tag to trigger
      * @param {String} [options.newpageText="New Page"] - Text to display for new page breaks.
      * @param {String} [options.defaultTextColor="#000000"] - Default text color.
@@ -562,6 +563,7 @@ class Typewriter3 {
             customDelays: {},
             onCharacterDisplayed: function() {}, // Callback function for when a character is displayed
             onFinish: function() {}, // Callback function for when typing is finished
+            onToken: function() {}, // Callback function for when a token is processed
             newpageText: "New Page",
             defaultTextColor: "#000000",
             speed1Delay: 1000,
@@ -585,6 +587,7 @@ class Typewriter3 {
             customDelays: options?.customDelays || defaultOptions.customDelays,
             onCharacterDisplayed: options?.onCharacterDisplayed || defaultOptions.onCharacterDisplayed,
             onFinish: options?.onFinish || defaultOptions.onFinish,
+            onToken: options?.onToken || defaultOptions.onToken,
             newpageText: options?.newpageText || defaultOptions.newpageText,
             defaultTextColor: options?.defaultTextColor || defaultOptions.defaultTextColor,
             speed1Delay: options?.speed1Delay || defaultOptions.speed1Delay,
@@ -602,11 +605,11 @@ class Typewriter3 {
         this.elem = outputElement;
         this.options = options;
         this.playing = false;
+        this.pageDone = false;
         this.index = 0;
         this.timeoutID = null;
         this.speedType = 'default';
         this._speedOverride = null;
-
 
         class Token {
             constructor(content, type, delay, styles) {
@@ -751,6 +754,8 @@ class Typewriter3 {
     renderToken(token) {
         let content = token.content;
 
+        this.options.onToken?.(token);
+
         if (content === "\x00") {
             this.elem.appendChild(document.createElement("br"));
             token.delay = this.options.newlineDelay;
@@ -765,8 +770,10 @@ class Typewriter3 {
             pageBreak.textContent = this.options.newpageText;
             pageBreak.style.cursor = "pointer";
             pageBreak.classList.add("typewriter3-newpage");
+            this.pageDone = true;
             pageBreak.addEventListener("click", () => {
                 this.elem.innerHTML = "";
+                this.pageDone = false;
                 this.resume();
             });
             this.elem.appendChild(pageBreak);
@@ -807,15 +814,18 @@ class Typewriter3 {
     }
 
     pause(){
+        if(this.pageDone) return;
         this.playing = false;
     }
 
     togglePause(){
+        if(this.pageDone) return;
         this.playing = !this.playing;
         if(this.playing) this.resume();
     }
 
     resume(){
+        if(this.pageDone) return;
         if (this.index < this.queue.length) {
             this.playing = true;
             this.start();
@@ -823,6 +833,7 @@ class Typewriter3 {
     }
 
     restart() {
+        if(this.pageDone) return;
         this.playing = false;
         this.index = 0;
         this.start();

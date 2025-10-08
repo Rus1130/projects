@@ -12,14 +12,22 @@
         font-family: monospace;
     }
 
-    buttondiv {
+    .button {
         margin-bottom: 1px;
         display: block;
         cursor: pointer;
     }
-    buttondiv:hover {
+    .button:hover {
         background-color: white;
         color: black;
+    }
+    #completion {
+        position: fixed;
+        top: 0;
+        height: 5px;
+        width: 2px;
+        left: 0;
+        background-color: white;
     }
 </style>
 <head>
@@ -30,8 +38,9 @@
     <title>Time</title>
 </head>
 <body>
+    <div id="completion"></div>
     <div id="out"></div>
-    <buttondiv id="return" onclick="location.href = './homepage.html'" style="display: none;">▌< Return</buttondiv>
+    <div class="button" id="return" onclick="location.href = './homepage.html'" style="display: none;">▌< Return</div>
 </body>
 <script>
     const TIME = fetch('./src/time.txt')
@@ -47,6 +56,7 @@
                     "!": 370,
                     "—": 750,
                     ";": 200,
+                    ":": 350
                 },
                 newpageText: "▌Next >",
                 defaultTextColor: "#ffffff",
@@ -56,6 +66,9 @@
                 sleepDelay: 700,
                 onFinish: () => {
                     document.getElementById('return').style.display = 'block';
+                },
+                onToken: (token) => {
+                    document.getElementById('completion').style.width = `${(tw3.index+1) / tw3.queue.length * 100}%`;
                 }
             });
 
