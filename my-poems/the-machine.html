@@ -34,7 +34,7 @@
     <buttondiv id="return" onclick="location.href = './homepage.html'" style="display: none;">▌< Return</buttondiv>
 </body>
 <script>
-    const TIME = fetch('./src/the-machine.txt')
+    const MACHINE = fetch('./src/the-machine.txt')
         .then(response => response.text())
         .then(text => {
             let tw3 = new Typewriter3(text, document.getElementById("out"), {
