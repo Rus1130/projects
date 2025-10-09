@@ -540,7 +540,7 @@ class Typewriter3 {
      * @param {Function} [options.onCharacterDisplayed] - Callback function that is called after each character is displayed.
      * @param {Function} [options.onToken] - Callback function that is called after each token is processed.
      * @param {Function} [options.onFinish] - Callback function that is called after the typing is finished. use the [typewriter-complete] tag to trigger
-     * @param {String} [options.newpageText="New Page"] - Text to display for new page breaks.
+     * @param {String} [options.newpageText="New Page"] - Text to display for new page breaks. can be styled by editing the CSS class "typewriter-newpage"
      * @param {String} [options.defaultTextColor="#000000"] - Default text color.
      * @param {Number} [options.speed1Delay=1000] - Delay for [speed1] tag.
      * @param {Number} [options.speed2Delay=500] - Delay for [speed2] tag.
