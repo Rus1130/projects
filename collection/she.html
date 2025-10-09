@@ -1,4 +1,4 @@
-<!-- written 6 oct, 2025 -->
+<!-- written 8 oct, 2025 -->
 <style>
     #out, body {
         overflow-y: hidden;
@@ -17,6 +17,7 @@
         display: block;
         cursor: pointer;
     }
+
     .button:hover {
         background-color: white;
         color: black;
@@ -24,36 +25,29 @@
 </style>
 <head>
     <script src="../Global/typewriter.js"></script>
-    <meta property="og:title"       content="The Machine"                                                  />
-    <meta property="og:description" content="After a long day's work, I finally return to my home."        />
-    <meta property="og:url"         content="https://rus1130.github.io/projects/my-poems/the-machine.html" />
-    <title>The Machine</title>
+    <meta property="og:title"       content="She"                                                  />
+    <meta property="og:description" content="She does not wish to fly away."                       />
+    <meta property="og:url"         content="https://rus1130.github.io/projects/collection/she.html" />
+    <title>She</title>
 </head>
 <body>
     <div id="out"></div>
     <div class="button" id="return" onclick="location.href = './homepage.html'" style="display: none;">▌< Return</div>
 </body>
 <script>
-    const MACHINE = fetch('./src/the-machine.txt')
+    const MACHINE = fetch('./src/she.txt')
         .then(response => response.text())
         .then(text => {
             let tw3 = new Typewriter3(text, document.getElementById("out"), {
-                charDelay: 38,
-                newlineDelay: 300,
+                charDelay: 48,
+                newlineDelay: 400,
                 customDelays: {
                     ",": 350,
-                    ".": 600,
-                    "?": 600,
-                    "!": 370,
+                    ".": 700,
                 },
                 newpageText: "▌Next >",
                 defaultTextColor: "#ffffff",
-                speed1Delay: 500,
-                speed2Delay: 150,
-                speed3Delay: 205,
-                speed4Delay: 38,
                 sleepDelay: 700,
-                completionBar: true,
                 onFinish: () => {
                     document.getElementById('return').style.display = 'block';
                 }
