@@ -1,0 +1,86 @@
+// get file arguments
+const fs = require('fs');
+const path = require('path');
+const name = process.argv.slice(2).join(' ');
+
+if(!name) {
+    console.error("Please provide a name for the new project.");
+    process.exit(1);
+}
+
+const nameNormalized = name.replaceAll(" ", "-").toLowerCase();
+
+let day = new Date().getDate();
+let month = new Date().getMonth() + 1;
+
+const months = ["jan", "feb", "march", "april", "may", "june", "july", "aug", "sept", "oct", "nov", "dec"];
+
+let year = new Date().getFullYear();
+const date = `${day} ${months[month-1]}, ${year}`;
+
+let metaTitle = `<meta property="og:title"       content="${name}"`
+let metaDesc  = `<meta property="og:description" content=""`
+let metaURL   = `<meta property="og:url"         content="https://rus1130.github.io/projects/collection/${nameNormalized}.html"`
+
+// find the longest of the three strings, and pad the others with spaces to match
+let maxLength = Math.max(metaTitle.length, metaDesc.length, metaURL.length);
+metaTitle = metaTitle.padEnd(maxLength, ' ') + " />";
+metaDesc  = metaDesc.padEnd(maxLength, ' ') + " />";
+metaURL   = metaURL.padEnd(maxLength, ' ') + " />";
+
+
+const HTML_TEMPLATE = 
+`<!-- written ${date} -->
+<head>
+    <link rel="stylesheet" href="./src/css.css">
+    <script src="../Global/typewriter.js"></script>
+    ${metaTitle}
+    ${metaDesc}
+    ${metaURL}
+    <title>${name}</title>
+</head>
+<body>
+    <div id="out"></div>
+    <div class="button" id="return" onclick="location.href = './homepage.html'" style="display: none;">▌< Return</div>
+</body>
+<script>
+    const MACHINE = fetch('./src/${nameNormalized}.txt')
+        .then(response => response.text())
+        .then(text => {
+            let tw3 = new Typewriter3(text, document.getElementById("out"), {
+                charDelay: 100,
+                newlineDelay: 500,
+                customDelays: {
+
+                },
+                newpageText: "▌Next >",
+                defaultTextColor: "#ffffff",
+                sleepDelay: 700,
+                onFinish: () => {
+                    document.getElementById('return').style.display = 'block';
+                }
+            });
+
+            document.body.addEventListener('keydown', (event) => {
+                if (event.code === 'Space') tw3.togglePause();
+                if (event.code === 'ArrowRight') tw3.speedOverride(1);
+                if (event.code === 'ArrowLeft') tw3.speedOverride(null);
+            });
+
+            tw3.start();
+        });
+</script>`
+
+const txt_TEMPLATE = `{{# written ${date} #}}\n`
+
+// create a new html file with the name of name in the file path ./collection
+fs.writeFileSync(path.join('collection', `${nameNormalized}.html`), HTML_TEMPLATE);
+fs.writeFileSync(path.join('collection', 'src', `${nameNormalized}.txt`), txt_TEMPLATE);
+
+// edit collection/homepage.html to add something before <div class="button" onclick="location.href = 'https://rus1130.github.io/projects/index.html?bypass=true'">▌< Return to main page</div>
+let homepage = fs.readFileSync(path.join('collection', 'homepage.html'), 'utf8');
+let insertIndex = homepage.indexOf('<div class="button" onclick="location.href = \'https://rus1130.github.io/projects/index.html?bypass=true\'">▌< Return to main page</div>') - 4;
+let newLink = `    <div class="button" onclick="location.href = './${nameNormalized}.html'">▌${name}</div>`;
+
+homepage = homepage.slice(0, insertIndex) + newLink + '\n' + homepage.slice(insertIndex);
+fs.writeFileSync(path.join('collection', 'homepage.html'), homepage);

@@ -1,0 +1,8 @@
+{{# written 10 oct, 2025 #}}
+A
+B
+C
+D
+C
+B
+A
