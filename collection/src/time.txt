@@ -25,4 +25,4 @@ But that minute of revolution is far more fulfilling than watching falling sand.
 
 The six on the outside. The two on the inside. The inside is governed[speed1][linebreak]
 
-[speeddefault]by the wheel of Time. But the wheel of Time is governed by you.[linebreak][sleep][sleep][typewriter-complete]
+[speeddefault]by the wheel of Time. But the wheel of Time is governed by you.[linebreak][sleep][sleep][function]

@@ -539,7 +539,7 @@ class Typewriter3 {
      * @param {Object<string, number>} [options.customDelays] - Custom delays for specific characters.
      * @param {Function} [options.onCharacterDisplayed] - Callback function that is called after each character is displayed.
      * @param {Function} [options.onToken] - Callback function that is called after each token is processed.
-     * @param {Function} [options.onFinish] - Callback function that is called after the typing is finished. use the [typewriter-complete] tag to trigger
+     * @param {Function} [options.onFunctionTag] - Callback function that is triggered when the [function] tag is encountered.
      * @param {String} [options.newpageText="New Page"] - Text to display for new page breaks. can be styled by editing the CSS class "typewriter-newpage"
      * @param {String} [options.defaultTextColor="#000000"] - Default text color.
      * @param {Number} [options.speed1Delay=1000] - Delay for [speed1] tag.
@@ -563,7 +563,7 @@ class Typewriter3 {
             },
             customDelays: {},
             onCharacterDisplayed: function() {}, // Callback function for when a character is displayed
-            onFinish: function() {}, // Callback function for when typing is finished
+            onFunctionTag: function() {}, // Callback function for when a function tag is encountered
             onToken: function() {}, // Callback function for when a token is processed
             newpageText: "New Page",
             defaultTextColor: "#000000",
@@ -588,7 +588,7 @@ class Typewriter3 {
             },
             customDelays: options?.customDelays || defaultOptions.customDelays,
             onCharacterDisplayed: options?.onCharacterDisplayed || defaultOptions.onCharacterDisplayed,
-            onFinish: options?.onFinish || defaultOptions.onFinish,
+            onFunctionTag: options?.onFunctionTag || defaultOptions.onFunctionTag,
             onToken: options?.onToken || defaultOptions.onToken,
             newpageText: options?.newpageText || defaultOptions.newpageText,
             defaultTextColor: options?.defaultTextColor || defaultOptions.defaultTextColor,
@@ -647,7 +647,7 @@ class Typewriter3 {
         .replaceAll("[speed4]", "\x07")
         .replaceAll("[speed5]", "\x08")
         .replaceAll("[sleep]", "\x09")
-        .replaceAll("[typewriter-complete]", "\x0A")
+        .replaceAll("[function]", "\x0A")
 
         let preQueue = [...controlTagReplacements].map((char, index) => new Token(char, "undecided", options.charDelay, []));
 
@@ -671,7 +671,7 @@ class Typewriter3 {
             "\x07", // speed 4
             "\x08", // speed 5
             "\x09", // sleep
-            "\x0A"  // typewriter complete
+            "\x0A"  // function
         ]);
 
         let escaping = false;
@@ -804,7 +804,7 @@ class Typewriter3 {
         else if( content === "\x09") token.delay = this.options.sleepDelay;
         else if( content === "\x0A") {
             if(this.playing){
-                this.options.onFinish?.();
+                this.options.onFunctionTag?.();
             }
         } else {
             if(token.type === "display") {
