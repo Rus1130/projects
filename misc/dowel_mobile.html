@@ -1,34 +1,227 @@
+<!doctype html>
+<html lang="en">
 <style>
-    body {
-        margin: 0;
-    }
-
-    .main-body {
-        width: calc(100% - 10px);
-        height: 2px;
-        background-color: black;
-        position: absolute;
-        left: 5px;
-        top: 150px;
-    }
-
-    #length {
-        position: absolute;
-        left: 50%;
-    }
+    body { font-family: system-ui, -apple-system, Roboto, 'Segoe UI', Arial; margin: 18px; color:#111 }
+    h1 { font-size:18px; margin:0 0 8px 0 }
+    .row { display:flex; gap:12px; align-items:center; margin-bottom:8px }
+    label { font-size:13px; min-width:140px }
+    input[type=number] { width:100px }
+    #controls { max-width:760px; margin-bottom:12px }
+    #sim { border:1px solid #ddd; background:#fafafa; width:760px; height:420px; }
+    .panel { padding:10px; border:1px solid #eee; margin-bottom:12px; border-radius:6px; background:white }
+    button { padding:6px 10px; cursor:pointer }
+    small { color:#555 }
+    .status { font-weight:600 }
+    .torque { font-family:monospace }
+    .muted { color:#666 }
 </style>
 <head>
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mobile Balance Simulator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.2.5/svg.js" integrity="sha512-hzbwtdiXXPJaWzLQTK/BRon0Kjash5KOnckgwJC1afTiDK5yYy3ZQWv43Y+HzqVoVe4eMjyrb95DwaXGXOdFHg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
-    <input type="number" id="length" placeholder="length"></input>
-    <input type="range" class="main-body"></input>
-    <div id="length_1">10cm</div>
-    <div id="length_2">12cm</div>
-</body>
+  <h1>Mobile Balance Simulator</h1>
+  <p class="muted">Adjust lengths, masses and washer counts.</p>
+
+  <div id="controls" class="panel">
+    <div class="row"><label>Mass per cm (g/cm)</label><input id="massPerCm" type="number" step="0.01" value="0.41"/></div>
+    <div class="row"><label>Washer mass (g)</label><input id="washerMass" type="number" step="0.01" value="5.3"/></div>
+
+    <hr/>
+    <h3 style="margin:6px 0">Dowel length</h3>
+    <div class="row"><label>length</label><input id="dowel_length" type="number" step="0.01" value="62.00"/></div>
+
+    <hr/>
+    <h3 style="margin:6px 0">hang points (cm)</h3>
+    <div class="row"><label>Left offset from edge (cm)</label><input id="offset_left" type="number" min="0" value="2"/></div>
+    <div class="row"><label>Right offset from edge (cm)</label><input id="offset_right" type="number" min="0" value="2"/></div>
+    <div class="row"><label>Hanging point (cm from left side)</label><input id="dowel_point" type="number" step="0.01" value="31"/></div>
+    <!-- <div class="row"><label>L1 hanger offset (r) — right of L1 center</label><input id="r" type="number" step="0.01" value="1.48"/></div>
+    <div class="row"><label>Hang L2 from L1 at (use end)</label><input id="d1_end" type="checkbox" checked disabled/><small style="margin-left:6px">(hang at left end)</small></div>
+    <div class="row"><label>Hang L3 from L1 at (use end)</label><input id="d2_end" type="checkbox" checked disabled/><small style="margin-left:6px">(hang at right end)</small></div> -->
+
+    <hr/>
+    <h3 style="margin:6px 0">Weights</h3>
+    <div class="row">
+        <label>Left Amount</label><input id="L_washers" type="number" step="1" value="1" min="0"/>
+        <label>Input type</label><select id="L_input_type">
+            <option value="count" selected># of Washers</option>
+            <option value="mass">Mass (g)</option>
+        </select>
+    </div>
+    <div class="row">
+        <label>Right Amount</label><input id="R_washers" type="number" step="1" value="1" min="0"/>
+        <label>Input type</label><select id="R_input_type">
+            <option value="count" selected># of Washers</option>
+            <option value="mass">Mass (g)</option>
+        </select>
+    </div>
+
+    <div style="margin-top:10px" class="row"><button id="update">Update simulation</button><button id="reset">Reset example</button></div>
+  </div>
+
+  <div id="sim" class="panel">
+    <svg id="svg" width="760" height="420" viewBox="0 0 760 420" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+
+  <div class="panel">
+    <div class="row"><strong>Definitions</strong></div>
+    <div class="row"><label class="muted">f<sub>1</sub></label><div id="def_f1" class="torque">—</div></div>
+    <div class="row"><label class="muted">f<sub>2</sub></label><div id="def_f2" class="torque">—</div></div>
+    <div class="row"><label class="muted">d<sub>1</sub></label><div id="def_d1" class="torque">—</div></div>
+    <div class="row"><label class="muted">d<sub>2</sub></label><div id="def_d2" class="torque">—</div></div>
+    <div class="row"><label class="muted">d<sub>w</sub></label><div id="d_w" class="torque">—</div></div>
+
+    <div class="row"><div><strong>Computations</strong></div></div>
+    <div class="row"><label class="muted">Left (f<sub>1</sub> × d<sub>1</sub>)</label><div id="leftTorque" class="torque">—</div></div>
+    <div class="row"><label class="muted">Right (f<sub>2</sub> × d<sub>2</sub>)</label><div id="rightTorque" class="torque">—</div></div>
+
+    <div class="row"><div><strong>Results</strong></div></div>
+    <span id="equations">
+        <div class="row"><label class="muted">—</label></div>
+    </span>
+  </div>
+
 <script>
+const $ = id => parseFloat(document.getElementById(id).value) || 0;
 
-    document.body.onchange = function() {
+function compute() {
+    const massPerCm = $("massPerCm");
+    const washerMass = $("washerMass");
+    const dowel_length = $("dowel_length");
+    const offset_left = $("offset_left");
+    const offset_right = $("offset_right");
+    const dowel_point = $("dowel_point");
 
-    }
+    const L_input = $("L_washers");
+    const L_input_type = document.getElementById("L_input_type").value;
+    const R_input = $("R_washers");
+    const R_input_type = document.getElementById("R_input_type").value;
+
+    const L_grams = L_input_type === "count" ? L_input * washerMass : L_input;
+    const R_grams = R_input_type === "count" ? R_input * washerMass : R_input;
+
+    drawMobile({
+        massPerCm, washerMass, dowel_length, offset_left, offset_right,
+        L_grams, R_grams, dowel_point
+    })
+}
+
+let draw;
+
+
+const d_w_element = document.getElementById("d_w");
+const f1_element = document.getElementById("def_f1");
+const f2_element = document.getElementById("def_f2");
+const d1_element = document.getElementById("def_d1");
+const d2_element = document.getElementById("def_d2");
+
+const leftTorque_element = document.getElementById("leftTorque");
+const rightTorque_element = document.getElementById("rightTorque");
+
+function drawMobile(obj) {
+    if (!draw) draw = SVG().addTo("#svg").size(760, 420);
+    draw.clear(); // completely reset the SVG
+
+    const cx = 380, cy = 200, scale = 5;
+    const L1 = obj.dowel_length;
+    const x1 = cx - (L1 / 2) * scale;
+    const x2 = cx + (L1 / 2) * scale;
+    const y = cy;
+
+    // --- compute hang points ---
+    const hangerX_left = cx - (L1 / 2 - obj.offset_left) * scale;
+    const hangerX_right = cx + (L1 / 2 - obj.offset_right) * scale;
+    const hangerX = cx - (L1 / 2 - obj.dowel_point) * scale;
+
+    // --- vertical string ---
+    draw.line(hangerX, y - 60, hangerX, y)
+        .stroke({ width: 2, color: "#444" });
+
+    // --- dowel ---
+    draw.line(x1, y, x2, y)
+        .stroke({ width: 5, color: "#333" })
+
+    // --- left/right hanging lines ---
+    const hangerY = y + 5;
+    draw.line(hangerX_left, hangerY, hangerX_left, hangerY + 50)
+        .stroke({ width: 2, color: "#666" });
+    draw.line(hangerX_right, hangerY, hangerX_right, hangerY + 50)
+        .stroke({ width: 2, color: "#666" });
+
+    // --- weights (circles) ---
+    const L_radius = 5 + Math.sqrt(obj.L_grams) * 0.8;
+    const R_radius = 5 + Math.sqrt(obj.R_grams) * 0.8;
+    const circle_left = draw.circle(L_radius * 2).center(hangerX_left, hangerY + 70).fill("#1976d2");
+    const circle_right = draw.circle(R_radius * 2).center(hangerX_right, hangerY + 70).fill("#d32f2f");
+
+    // --- hang point marker ---
+    const pivot_point = draw.circle(8).center(hangerX, y).fill("red");
+
+    const center_of_mass_arrow = draw.line(pivot_point.cx(), pivot_point.cy() + 2, pivot_point.cx(), pivot_point.cy() + 200)
+        .stroke({ width: 2, color: "#555", dasharray: "5,5" });
+
+    const dowel_weight = L1 * obj.massPerCm + 0.9 + 0.9;
+
+    // --- labels ---
+    const label_left = draw.text(`${obj.L_grams} g`)
+        .font({ size: 11, family: "system-ui" });
+
+    label_left.move(circle_left.cx() - label_left.bbox().width / 2 + 2, circle_left.cy() + 12)
+
+    const label_right = draw.text(`${obj.R_grams} g`)
+        .font({ size: 11, family: "system-ui" });
+
+    label_right.move(circle_right.cx() - label_right.bbox().width / 2 + 2, circle_right.cy() + 12)
+
+    draw.text("pivot point")
+        .move(pivot_point.cx() + 5, pivot_point.cy() - 24)
+        .font({ size: 11, family: "system-ui", fill: "#555" });
+
+    draw.text(`${dowel_weight} g`)
+        .move(center_of_mass_arrow.attr("x2") + 2, center_of_mass_arrow.attr("y2") - 10)
+        .font({ size: 11, family: "system-ui", fill: "#555" });
+
+    const d1 = Math.abs((obj.dowel_point) - obj.offset_left);
+    const d2 = Math.abs((obj.dowel_length - obj.dowel_point) - obj.offset_right);
+
+    const d_w = (obj.dowel_length / 2) - d2;
+
+    f1_element.textContent = `${obj.L_grams} g`;
+    f2_element.textContent = `${obj.R_grams} g`;
+    d1_element.textContent = `${d1} cm`;
+    d2_element.textContent = `${d2} cm`;
+    d_w_element.textContent = `${d_w} cm`;
+
+    const leftTorque = obj.L_grams * d1;
+    const rightTorque = obj.R_grams * d2;
+
+    leftTorque_element.textContent = `${leftTorque} g·cm`;
+    rightTorque_element.textContent = `${rightTorque} g·cm`;
+
+    // --- equations ---
+    const equations_element = document.getElementById("equations");
+    equations_element.innerHTML = `
+        <div class="row"><label class="muted">Left torque</label><div class="torque">${obj.L_grams} g × ${d1} cm = ${leftTorque} g·cm</div></div>
+        <div class="row"><label class="muted">Right torque</label><div class="torque">${obj.R_grams} g × ${d2} cm = ${rightTorque} g·cm</div></div>
+        <div class="row"><label class="muted">Total</label><div class="torque">(${obj.L_grams} × ${d1}) = (${obj.R_grams} × ${d2}) + (${dowel_weight} × ${d_w})</div></div>
+        <div class="row"><label class="muted"></label><div class="torque">${obj.L_grams * d1} = ${obj.R_grams * d2} + ${dowel_weight * d_w}</div></div>
+        <div class="row"><label class="muted"></label><div class="torque">${obj.L_grams * d1} = ${(obj.R_grams * d2) + (dowel_weight * d_w)}</div></div>
+    `;
+
+}
+
+// event handlers
+window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("update").addEventListener("click", compute);
+    document.getElementById("reset").addEventListener("click", () => location.reload());
+    document.querySelectorAll("input, select").forEach(el => el.addEventListener("input", compute));
+    compute();
+});
 </script>
+
+
+</body>
+</html>
