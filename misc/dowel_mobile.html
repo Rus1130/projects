@@ -59,7 +59,6 @@
         </select>
     </div>
 
-    <div style="margin-top:10px" class="row"><button id="update">Update simulation</button><button id="reset">Reset example</button></div>
   </div>
 
   <div id="sim" class="panel">
@@ -187,7 +186,7 @@ function drawMobile(obj) {
     const d1 = Math.abs((obj.dowel_point) - obj.offset_left);
     const d2 = Math.abs((obj.dowel_length - obj.dowel_point) - obj.offset_right);
 
-    const d_w = (obj.dowel_length / 2) - d2;
+    const d_w = Math.abs((obj.dowel_length / 2) - d2);
 
     f1_element.textContent = `${obj.L_grams} g`;
     f2_element.textContent = `${obj.R_grams} g`;
@@ -215,8 +214,6 @@ function drawMobile(obj) {
 
 // event handlers
 window.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("update").addEventListener("click", compute);
-    document.getElementById("reset").addEventListener("click", () => location.reload());
     document.querySelectorAll("input, select").forEach(el => el.addEventListener("input", compute));
     compute();
 });
