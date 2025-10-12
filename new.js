@@ -44,7 +44,7 @@ const HTML_TEMPLATE =
     <div class="button" id="return" onclick="location.href = './homepage.html'" style="display: none;">▌< Return</div>
 </body>
 <script>
-    const MACHINE = fetch('./src/${nameNormalized}.txt')
+    const MACHINE = fetch('./src/${nameNormalized}.tw')
         .then(response => response.text())
         .then(text => {
             let tw3 = new Typewriter3(text, document.getElementById("out"), {
@@ -75,7 +75,7 @@ const txt_TEMPLATE = `{{# written ${date} #}}\n`
 
 // create a new html file with the name of name in the file path ./collection
 fs.writeFileSync(path.join('collection', `${nameNormalized}.html`), HTML_TEMPLATE);
-fs.writeFileSync(path.join('collection', 'src', `${nameNormalized}.txt`), txt_TEMPLATE);
+fs.writeFileSync(path.join('collection', 'src', `${nameNormalized}.tw`), txt_TEMPLATE);
 
 // edit collection/homepage.html to add something before <div class="button" onclick="location.href = 'https://rus1130.github.io/projects/index.html?bypass=true'">▌< Return to main page</div>
 let homepage = fs.readFileSync(path.join('collection', 'homepage.html'), 'utf8');

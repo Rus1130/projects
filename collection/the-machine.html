@@ -2,8 +2,8 @@
 <head>
     <link rel="stylesheet" href="./src/css.css">
     <script src="../Global/typewriter.js"></script>
-    <meta property="og:title"       content="The Machine"                                                  />
-    <meta property="og:description" content="After a long day's work, I finally return to my home."        />
+    <meta property="og:title"       content="The Machine"                                                    />
+    <meta property="og:description" content="After a long day's work, I finally return to my home."          />
     <meta property="og:url"         content="https://rus1130.github.io/projects/collection/the-machine.html" />
     <title>The Machine</title>
 </head>
@@ -12,7 +12,7 @@
     <div class="button" id="return" onclick="location.href = './homepage.html'" style="display: none;">▌< Return</div>
 </body>
 <script>
-    const MACHINE = fetch('./src/the-machine.txt')
+    const MACHINE = fetch('./src/the-machine.tw')
         .then(response => response.text())
         .then(text => {
             let tw3 = new Typewriter3(text, document.getElementById("out"), {

@@ -12,7 +12,7 @@
     <div class="button" id="return" onclick="location.href = './homepage.html'" style="display: none;">▌< Return</div>
 </body>
 <script>
-    const MACHINE = fetch('./src/gears.txt')
+    const MACHINE = fetch('./src/gears.tw')
         .then(response => response.text())
         .then(text => {
             let tw3 = new Typewriter3(text, document.getElementById("out"), {
