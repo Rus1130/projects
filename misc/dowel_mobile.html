@@ -203,8 +203,6 @@ function drawMobile(obj) {
     // --- equations ---
     const equations_element = document.getElementById("equations");
     equations_element.innerHTML = `
-        <div class="row"><label class="muted">Left torque</label><div class="torque">${obj.L_grams} g × ${d1} cm = ${leftTorque} g·cm</div></div>
-        <div class="row"><label class="muted">Right torque</label><div class="torque">${obj.R_grams} g × ${d2} cm = ${rightTorque} g·cm</div></div>
         <div class="row"><label class="muted">Total</label><div class="torque">(${obj.L_grams} × ${d1}) = (${obj.R_grams} × ${d2}) + (${dowel_weight} × ${d_w})</div></div>
         <div class="row"><label class="muted"></label><div class="torque">${obj.L_grams * d1} = ${obj.R_grams * d2} + ${dowel_weight * d_w}</div></div>
         <div class="row"><label class="muted"></label><div class="torque">${obj.L_grams * d1} = ${(obj.R_grams * d2) + (dowel_weight * d_w)}</div></div>
