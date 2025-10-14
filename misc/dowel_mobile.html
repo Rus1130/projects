@@ -72,12 +72,15 @@
     <div class="row"><label class="muted">d<sub>1</sub></label><div id="def_d1" class="torque">—</div></div>
     <div class="row"><label class="muted">d<sub>2</sub></label><div id="def_d2" class="torque">—</div></div>
     <div class="row"><label class="muted">d<sub>w</sub></label><div id="d_w" class="torque">—</div></div>
+    <div class="row"><label class="muted">left<sub>length</sub></label><div id="left_length" class="torque">—</div></div>
+    <div class="row"><label class="muted">right<sub>length</sub></label><div id="right_length" class="torque">—</div></div>
 
     <div class="row"><div><strong>Computations</strong></div></div>
-    <div class="row"><label class="muted">Left (f<sub>1</sub> × d<sub>1</sub>)</label><div id="leftTorque" class="torque">—</div></div>
-    <div class="row"><label class="muted">Right (f<sub>2</sub> × d<sub>2</sub>)</label><div id="rightTorque" class="torque">—</div></div>
+    <div class="row"><label class="muted">Left</label><div id="leftTorque" class="torque">—</div></div>
+    <div class="row"><label class="muted">Right</label><div id="rightTorque" class="torque">—</div></div>
+    <div class="row"><label class="muted">Total Weight</label><div id="total-weight" class="torque">—</div></div>
 
-    <div class="row"><div><strong>Results</strong></div></div>
+    <div class="row"><div><strong>Equations</strong></div></div>
     <span id="equations">
         <div class="row"><label class="muted">—</label></div>
     </span>
@@ -99,13 +102,17 @@ function compute() {
     const R_input = $("R_washers");
     const R_input_type = document.getElementById("R_input_type").value;
 
-    const L_grams = L_input_type === "count" ? L_input * washerMass : L_input;
-    const R_grams = R_input_type === "count" ? R_input * washerMass : R_input;
+    const L_grams = L_input_type === "count" ? rfpe(L_input * washerMass) : L_input;
+    const R_grams = R_input_type === "count" ? rfpe(R_input * washerMass) : R_input;
 
     drawMobile({
         massPerCm, washerMass, dowel_length, offset_left, offset_right,
         L_grams, R_grams, dowel_point
     })
+}
+
+function rfpe(num) {
+    return Math.round((num + Number.EPSILON) * 10000) / 10000;
 }
 
 let draw;
@@ -119,6 +126,11 @@ const d2_element = document.getElementById("def_d2");
 
 const leftTorque_element = document.getElementById("leftTorque");
 const rightTorque_element = document.getElementById("rightTorque");
+
+const total_weight_element = document.getElementById("total-weight");
+
+const left_length_element = document.getElementById("left_length");
+const right_length_element = document.getElementById("right_length");
 
 function drawMobile(obj) {
     if (!draw) draw = SVG().addTo("#svg").size(760, 420);
@@ -140,7 +152,7 @@ function drawMobile(obj) {
         .stroke({ width: 2, color: "#444" });
 
     // --- dowel ---
-    draw.line(x1, y, x2, y)
+    const dowel = draw.line(x1, y, x2, y)
         .stroke({ width: 5, color: "#333" })
 
     // --- left/right hanging lines ---
@@ -159,7 +171,7 @@ function drawMobile(obj) {
     // --- hang point marker ---
     const pivot_point = draw.circle(8).center(hangerX, y).fill("red");
 
-    const center_of_mass_arrow = draw.line(pivot_point.cx(), pivot_point.cy() + 2, pivot_point.cx(), pivot_point.cy() + 200)
+    const center_of_mass_arrow = draw.line(dowel.cx(), dowel.cy(), dowel.cx(), dowel.cy() + 200)
         .stroke({ width: 2, color: "#555", dasharray: "5,5" });
 
     const dowel_weight = L1 * obj.massPerCm + 0.9 + 0.9;
@@ -179,23 +191,27 @@ function drawMobile(obj) {
         .move(pivot_point.cx() + 5, pivot_point.cy() - 24)
         .font({ size: 11, family: "system-ui", fill: "#555" });
 
-    draw.text(`${dowel_weight} g`)
+    draw.text(`${rfpe(dowel_weight)} g`)
         .move(center_of_mass_arrow.attr("x2") + 2, center_of_mass_arrow.attr("y2") - 10)
         .font({ size: 11, family: "system-ui", fill: "#555" });
 
     const d1 = Math.abs((obj.dowel_point) - obj.offset_left);
     const d2 = Math.abs((obj.dowel_length - obj.dowel_point) - obj.offset_right);
 
-    const d_w = Math.abs((obj.dowel_length / 2) - d2);
+    left_length_element.textContent = `${rfpe(obj.dowel_point)} cm`;
+    right_length_element.textContent = `${rfpe(obj.dowel_length - obj.dowel_point)} cm`;
+
+    const dw = rfpe(obj.massPerCm * obj.dowel_length);
+    const rw = rfpe(Math.abs((obj.dowel_length / 2) - obj.dowel_point));
 
     f1_element.textContent = `${obj.L_grams} g`;
     f2_element.textContent = `${obj.R_grams} g`;
     d1_element.textContent = `${d1} cm`;
     d2_element.textContent = `${d2} cm`;
-    d_w_element.textContent = `${d_w} cm`;
+    d_w_element.textContent = `${dw} cm`;
 
-    const leftTorque = obj.L_grams * d1;
-    const rightTorque = obj.R_grams * d2;
+    const leftTorque = rfpe(obj.L_grams * d1);
+    const rightTorque = rfpe((obj.R_grams * d2) + (dw * rw));
 
     leftTorque_element.textContent = `${leftTorque} g·cm`;
     rightTorque_element.textContent = `${rightTorque} g·cm`;
@@ -203,10 +219,12 @@ function drawMobile(obj) {
     // --- equations ---
     const equations_element = document.getElementById("equations");
     equations_element.innerHTML = `
-        <div class="row"><label class="muted">Total</label><div class="torque">(${obj.L_grams} × ${d1}) = (${obj.R_grams} × ${d2}) + (${dowel_weight} × ${d_w})</div></div>
-        <div class="row"><label class="muted"></label><div class="torque">${obj.L_grams * d1} = ${obj.R_grams * d2} + ${dowel_weight * d_w}</div></div>
-        <div class="row"><label class="muted"></label><div class="torque">${obj.L_grams * d1} = ${(obj.R_grams * d2) + (dowel_weight * d_w)}</div></div>
+        <div class="row"><label class="muted">Total</label><div class="torque">(${obj.L_grams} × ${d1}) = (${obj.R_grams} × ${d2}) + (${dw} × ${rw})</div></div>
+        <div class="row"><label class="muted"></label><div class="torque">${rfpe(obj.L_grams * d1)} = ${rfpe(obj.R_grams * d2)} + ${rfpe(dw * rw)}</div></div>
+        <div class="row"><label class="muted"></label><div class="torque">${leftTorque} = ${rightTorque}</div></div>
     `;
+
+    total_weight_element.textContent = `${(rfpe(obj.L_grams + obj.R_grams + dowel_weight))} g`;
 
 }
 
