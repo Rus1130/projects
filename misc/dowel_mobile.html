@@ -14,6 +14,7 @@
     .status { font-weight:600 }
     .torque { font-family:monospace }
     .muted { color:#666 }
+    .error { color:red; font-weight:600 }
 </style>
 <head>
   <meta charset="utf-8" />
@@ -37,10 +38,7 @@
     <h3 style="margin:6px 0">hang points (cm)</h3>
     <div class="row"><label>Left offset from edge (cm)</label><input id="offset_left" type="number" min="0" value="2"/></div>
     <div class="row"><label>Right offset from edge (cm)</label><input id="offset_right" type="number" min="0" value="2"/></div>
-    <div class="row"><label>Hanging point (cm from left side)</label><input id="dowel_point" type="number" step="0.01" value="31"/></div>
-    <!-- <div class="row"><label>L1 hanger offset (r) — right of L1 center</label><input id="r" type="number" step="0.01" value="1.48"/></div>
-    <div class="row"><label>Hang L2 from L1 at (use end)</label><input id="d1_end" type="checkbox" checked disabled/><small style="margin-left:6px">(hang at left end)</small></div>
-    <div class="row"><label>Hang L3 from L1 at (use end)</label><input id="d2_end" type="checkbox" checked disabled/><small style="margin-left:6px">(hang at right end)</small></div> -->
+    <div class="row"><label>Hanging point (cm from left side)</label><input id="dowel_point" type="number" step="1" value="31"/></div>
 
     <hr/>
     <h3 style="margin:6px 0">Weights</h3>
@@ -136,7 +134,7 @@ function drawMobile(obj) {
     if (!draw) draw = SVG().addTo("#svg").size(760, 420);
     draw.clear(); // completely reset the SVG
 
-    const cx = 380, cy = 200, scale = 5;
+    const cx = 380, cy = 200, scale = 7;
     const L1 = obj.dowel_length;
     const x1 = cx - (L1 / 2) * scale;
     const x2 = cx + (L1 / 2) * scale;
@@ -148,7 +146,7 @@ function drawMobile(obj) {
     const hangerX = cx - (L1 / 2 - obj.dowel_point) * scale;
 
     // --- vertical string ---
-    draw.line(hangerX, y - 60, hangerX, y)
+    draw.line(hangerX, y - 1000, hangerX, y)
         .stroke({ width: 2, color: "#444" });
 
     // --- dowel ---
@@ -168,6 +166,12 @@ function drawMobile(obj) {
     const circle_left = draw.circle(L_radius * 2).center(hangerX_left, hangerY + 70).fill("#1976d2");
     const circle_right = draw.circle(R_radius * 2).center(hangerX_right, hangerY + 70).fill("#d32f2f");
 
+    const dw = rfpe(obj.massPerCm * obj.dowel_length + 0.9 + 0.9);
+    const rw = rfpe(Math.abs((obj.dowel_length / 2) - obj.dowel_point));
+
+    const d1 = Math.abs(obj.dowel_point - obj.offset_left);
+    const d2 = Math.abs((obj.dowel_length - obj.dowel_point) - obj.offset_right);
+
     // --- hang point marker ---
     const pivot_point = draw.circle(8).center(hangerX, y).fill("red");
 
@@ -176,7 +180,62 @@ function drawMobile(obj) {
 
     const dowel_weight = L1 * obj.massPerCm + 0.9 + 0.9;
 
+    const rw_line = draw.line(hangerX, y+20, dowel.cx(), dowel.cy() + 20)
+        .stroke({ width: 1, color: "#555", dasharray: "2,2" });
+    
+    const rw_line_measure_marker = draw.line(hangerX, y+20+5, hangerX, y+20-5)
+        .stroke({ width: 1, color: "#555" });
+
+    const left_from_start_measure_line_1 = draw.line(x1, y - 80, hangerX, y - 80)
+        .stroke({ width: 1, color: "#555", dasharray: "2,5" });
+    const left_from_start_measure_line_2 = draw.line(x1, y - 80, x1, y)
+        .stroke({ width: 1, color: "#555", dasharray: "2,5" });
+
+    const right_from_start_measure_line_1 = draw.line(x2, y - 80, hangerX, y - 80)
+        .stroke({ width: 1, color: "#555", dasharray: "2,5" });
+    const right_from_start_measure_line_2 = draw.line(x2, y - 80, x2, y)
+        .stroke({ width: 1, color: "#555", dasharray: "2,5" });
+
+    const d1_line = draw.line(hangerX_left, y + 20, hangerX, y + 20)
+        .stroke({ width: 1, color: "#555", dasharray: "2,2" });
+
+    const d2_line = draw.line(hangerX_right, y + 20, hangerX, y + 20)
+        .stroke({ width: 1, color: "#555", dasharray: "2,2" });
+
+    const left_offset_line_1 = draw.line(x1, y - 40, hangerX_left, y - 40)
+        .stroke({ width: 1, color: "#555", dasharray: "2,2" });
+    const left_offset_line_2 = draw.line(hangerX_left, y - 40 - 5, hangerX_left , y - 40 + 5)
+        .stroke({ width: 1, color: "#555"});
+
+    const right_offset_line_1 = draw.line(x2, y - 40, hangerX_right, y - 40)
+        .stroke({ width: 1, color: "#555", dasharray: "2,2" });
+    const right_offset_line_2 = draw.line(hangerX_right, y - 40 - 5, hangerX_right , y - 40 + 5)
+        .stroke({ width: 1, color: "#555"});
+
     // --- labels ---
+    const left_offset_label = draw.text(obj.offset_left + " cm").center(left_offset_line_1.attr("x2"), left_offset_line_1.attr("y2")-4)
+        .font({ size: 11, family: "system-ui", fill: "#555" });
+    left_offset_label.move(left_offset_label.x() + left_offset_label.bbox().width - 3, left_offset_label.y()+1);
+
+    const right_offset_label = draw.text(obj.offset_right + " cm").center(right_offset_line_1.attr("x2"), right_offset_line_1.attr("y2")-4)
+        .font({ size: 11, family: "system-ui", fill: "#555" });
+    right_offset_label.move(right_offset_label.x() - (right_offset_label.bbox().width/2) + 1, right_offset_label.y());
+
+    const d2_line_label = draw.text(d2 + " cm").center(d2_line.cx(), d2_line.cy()-10)
+        .font({ size: 11, family: "system-ui", fill: "#555" });
+    
+    const d1_line_label = draw.text(d1 + " cm").center(d1_line.cx(), d1_line.cy()-10)
+        .font({ size: 11, family: "system-ui", fill: "#555" });
+
+    const left_from_start_label = draw.text(obj.dowel_point + " cm").move(left_from_start_measure_line_1.cx() - 10, left_from_start_measure_line_1.cy() - 20)
+        .font({ size: 11, family: "system-ui", fill: "#555" });
+
+    const right_from_start_label = draw.text((obj.dowel_length - obj.dowel_point) + " cm").move(right_from_start_measure_line_1.cx() - 10, right_from_start_measure_line_1.cy() - 20)
+        .font({ size: 11, family: "system-ui", fill: "#555" });
+
+    const rw_label = draw.text(rw+" cm").move(rw_line.cx() - 10, rw_line.cy())
+        .font({ size: 11, family: "system-ui", fill: "#555" });
+
     const label_left = draw.text(`${obj.L_grams} g`)
         .font({ size: 11, family: "system-ui" });
 
@@ -195,14 +254,8 @@ function drawMobile(obj) {
         .move(center_of_mass_arrow.attr("x2") + 2, center_of_mass_arrow.attr("y2") - 10)
         .font({ size: 11, family: "system-ui", fill: "#555" });
 
-    const d1 = Math.abs((obj.dowel_point) - obj.offset_left);
-    const d2 = Math.abs((obj.dowel_length - obj.dowel_point) - obj.offset_right);
-
     left_length_element.textContent = `${rfpe(obj.dowel_point)} cm`;
     right_length_element.textContent = `${rfpe(obj.dowel_length - obj.dowel_point)} cm`;
-
-    const dw = rfpe(obj.massPerCm * obj.dowel_length);
-    const rw = rfpe(Math.abs((obj.dowel_length / 2) - obj.dowel_point));
 
     f1_element.textContent = `${obj.L_grams} g`;
     f2_element.textContent = `${obj.R_grams} g`;
@@ -211,7 +264,22 @@ function drawMobile(obj) {
     d_w_element.textContent = `${dw} cm`;
 
     const leftTorque = rfpe(obj.L_grams * d1);
-    const rightTorque = rfpe((obj.R_grams * d2) + (dw * rw));
+    const rightTorque = rfpe(obj.R_grams * d2);
+
+    const dowelForce = rfpe(dw * rw);
+
+    // decide what side to add the dowel force to
+    let side = "right";
+    if(dowel_point.value > (obj.dowel_length / 2)) side = "left";
+
+    const equations = {
+        torque1Left: `(${obj.L_grams} × ${d1}) + (${dw} × ${rw}) = (${obj.R_grams} × ${d2})`,
+        torque1Right: `(${obj.L_grams} × ${d1}) = (${obj.R_grams} × ${d2}) + (${dw} × ${rw}) `,
+        torque2Left: `${leftTorque} + ${dowelForce} = ${rfpe(obj.R_grams * d2)}`,
+        torque2Right: `${rfpe(obj.L_grams * d1)} = ${rightTorque} + ${dowelForce}`,
+        torque3Left: `${rfpe(leftTorque + dowelForce)} = ${rightTorque}`,
+        torque3Right: `${leftTorque} = ${rfpe(rightTorque  + dowelForce)}`,
+    }
 
     leftTorque_element.textContent = `${leftTorque} g·cm`;
     rightTorque_element.textContent = `${rightTorque} g·cm`;
@@ -219,9 +287,10 @@ function drawMobile(obj) {
     // --- equations ---
     const equations_element = document.getElementById("equations");
     equations_element.innerHTML = `
-        <div class="row"><label class="muted">Total</label><div class="torque">(${obj.L_grams} × ${d1}) = (${obj.R_grams} × ${d2}) + (${dw} × ${rw})</div></div>
-        <div class="row"><label class="muted"></label><div class="torque">${rfpe(obj.L_grams * d1)} = ${rfpe(obj.R_grams * d2)} + ${rfpe(dw * rw)}</div></div>
-        <div class="row"><label class="muted"></label><div class="torque">${leftTorque} = ${rightTorque}</div></div>
+        <div class="row"><label class="muted">Dowel Weight:</label><div class="torque">(${obj.dowel_length} cm * ${obj.massPerCm} g/cm) + 0.9 g + 0.9 g = ${dw} g</div></div>
+        <div class="row"><label class="muted">Torque Equations:</label><div class="torque">${(side == "right") ? equations.torque1Right : equations.torque1Left}</div></div>
+        <div class="row"><label class="muted"></label><div class="torque">${(side == "right") ? equations.torque2Right : equations.torque2Left}</div></div>
+        <div class="row"><label class="muted"></label><div class="torque">${(side == "right") ? equations.torque3Right : equations.torque3Left}</div></div>
     `;
 
     total_weight_element.textContent = `${(rfpe(obj.L_grams + obj.R_grams + dowel_weight))} g`;
