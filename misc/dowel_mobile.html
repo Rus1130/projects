@@ -180,10 +180,10 @@ function drawMobile(obj) {
 
     const dowel_weight = L1 * obj.massPerCm + 0.9 + 0.9;
 
-    const rw_line = draw.line(hangerX, y+20, dowel.cx(), dowel.cy() + 20)
+    const rw_line = draw.line(hangerX, y+40, dowel.cx(), dowel.cy() + 40)
         .stroke({ width: 1, color: "#555", dasharray: "2,2" });
     
-    const rw_line_measure_marker = draw.line(hangerX, y+20+5, hangerX, y+20-5)
+    const rw_line_measure_marker = draw.line(hangerX, y+40+5, hangerX, y+40-5)
         .stroke({ width: 1, color: "#555" });
 
     const left_from_start_measure_line_1 = draw.line(x1, y - 80, hangerX, y - 80)
@@ -202,6 +202,9 @@ function drawMobile(obj) {
     const d2_line = draw.line(hangerX_right, y + 20, hangerX, y + 20)
         .stroke({ width: 1, color: "#555", dasharray: "2,2" });
 
+    const d_line_divider = draw.line(hangerX, y + 20 - 5, hangerX, y + 20 + 5)
+        .stroke({ width: 2, color: "#555" });
+
     const left_offset_line_1 = draw.line(x1, y - 40, hangerX_left, y - 40)
         .stroke({ width: 1, color: "#555", dasharray: "2,2" });
     const left_offset_line_2 = draw.line(hangerX_left, y - 40 - 5, hangerX_left , y - 40 + 5)
@@ -217,15 +220,27 @@ function drawMobile(obj) {
         .font({ size: 11, family: "system-ui", fill: "#555" });
     left_offset_label.move(left_offset_label.x() + left_offset_label.bbox().width - 3, left_offset_label.y()+1);
 
+    const left_offset_background = draw.rect(left_offset_label.bbox().width, left_offset_label.bbox().height - 4).move(left_offset_label.x(), left_offset_label.y()+2).fill("#fafafa");
+    left_offset_label.front();
+
     const right_offset_label = draw.text(obj.offset_right + " cm").center(right_offset_line_1.attr("x2"), right_offset_line_1.attr("y2")-4)
         .font({ size: 11, family: "system-ui", fill: "#555" });
     right_offset_label.move(right_offset_label.x() - (right_offset_label.bbox().width/2) + 1, right_offset_label.y());
 
+    const right_offset_background = draw.rect(right_offset_label.bbox().width, right_offset_label.bbox().height - 4).move(right_offset_label.x(), right_offset_label.y()+2).fill("#fafafa");
+    right_offset_label.front();
+
     const d2_line_label = draw.text(d2 + " cm").center(d2_line.cx(), d2_line.cy()-10)
         .font({ size: 11, family: "system-ui", fill: "#555" });
+
+    const d2_label_background = draw.rect(d2_line_label.bbox().width, d2_line_label.bbox().height - 4).move(d2_line_label.x(), d2_line_label.y()+2).fill("#fafafa");
+    d2_line_label.front();
     
     const d1_line_label = draw.text(d1 + " cm").center(d1_line.cx(), d1_line.cy()-10)
         .font({ size: 11, family: "system-ui", fill: "#555" });
+
+    const d1_label_background = draw.rect(d1_line_label.bbox().width, d1_line_label.bbox().height - 4).move(d1_line_label.x(), d1_line_label.y()+2).fill("#fafafa");
+    d1_line_label.front();
 
     const left_from_start_label = draw.text(obj.dowel_point + " cm").move(left_from_start_measure_line_1.cx() - 10, left_from_start_measure_line_1.cy() - 20)
         .font({ size: 11, family: "system-ui", fill: "#555" });
@@ -233,8 +248,13 @@ function drawMobile(obj) {
     const right_from_start_label = draw.text((obj.dowel_length - obj.dowel_point) + " cm").move(right_from_start_measure_line_1.cx() - 10, right_from_start_measure_line_1.cy() - 20)
         .font({ size: 11, family: "system-ui", fill: "#555" });
 
+
     const rw_label = draw.text(rw+" cm").move(rw_line.cx() - 10, rw_line.cy())
         .font({ size: 11, family: "system-ui", fill: "#555" });
+
+    const rw_background = draw.rect(rw_label.bbox().width, rw_label.bbox().height - 4).move(rw_label.x(), rw_label.y()+2).fill("#fafafa");
+
+    rw_label.front();
 
     const label_left = draw.text(`${obj.L_grams} g`)
         .font({ size: 11, family: "system-ui" });
@@ -253,6 +273,8 @@ function drawMobile(obj) {
     draw.text(`${rfpe(dowel_weight)} g`)
         .move(center_of_mass_arrow.attr("x2") + 2, center_of_mass_arrow.attr("y2") - 10)
         .font({ size: 11, family: "system-ui", fill: "#555" });
+
+    d_line_divider.front();
 
     left_length_element.textContent = `${rfpe(obj.dowel_point)} cm`;
     right_length_element.textContent = `${rfpe(obj.dowel_length - obj.dowel_point)} cm`;
