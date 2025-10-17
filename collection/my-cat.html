@@ -1,0 +1,42 @@
+<!-- written 16 oct, 2025 -->
+<head>
+    <link rel="stylesheet" href="./src/css.css">
+    <script src="../Global/typewriter.js"></script>
+    <meta property="og:title"       content="My Cat"                                                    />
+    <meta property="og:description" content="He is a black cat. With a bit of white."                   />
+    <meta property="og:url"         content="https://rus1130.github.io/projects/collection/my-cat.html" />
+    <title>My Cat</title>
+</head>
+<body>
+    <div id="out"></div>
+    <div class="button" id="return" onclick="location.href = './homepage.html'" style="display: none;">▌< Return</div>
+</body>
+<script>
+    const MACHINE = fetch('./src/my-cat.tw')
+        .then(response => response.text())
+        .then(text => {
+            let tw3 = new Typewriter3(text, document.getElementById("out"), {
+                charDelay: 40,
+                newlineDelay: 500,
+                customDelays: {
+                    ",": 350,
+                    ".": 600
+                },
+                newpageText: "▌Next >",
+                defaultTextColor: "#ffffff",
+                sleepDelay: 700,
+                speed1Delay: 40,
+                onFunctionTag: () => {
+                    document.getElementById('return').style.display = 'block';
+                }
+            });
+
+            document.body.addEventListener('keydown', (event) => {
+                if (event.code === 'Space') tw3.togglePause();
+                if (event.code === 'ArrowRight') tw3.speedOverride(1);
+                if (event.code === 'ArrowLeft') tw3.speedOverride(null);
+            });
+
+            tw3.start();
+        });
+</script>

@@ -51,12 +51,13 @@ const HTML_TEMPLATE =
                 charDelay: 100,
                 newlineDelay: 500,
                 customDelays: {
-
+                    ",": 350,
+                    ".": 600
                 },
                 newpageText: "▌Next >",
                 defaultTextColor: "#ffffff",
                 sleepDelay: 700,
-                onFinish: () => {
+                onFunctionTag: () => {
                     document.getElementById('return').style.display = 'block';
                 }
             });
