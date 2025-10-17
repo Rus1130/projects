@@ -567,12 +567,7 @@ class Typewriter3 {
             onToken: function() {}, // Callback function for when a token is processed
             newpageText: "New Page",
             defaultTextColor: "#000000",
-            // speed1Delay: 1000,
-            // speed2Delay: 500,
-            // speed3Delay: 250,
-            // speed4Delay: 50,
-            // speed5Delay: 10,
-            // sleepDelay: 1000,
+            defaultBackgroundColor: "#FFFFFF",
             completionBar: false,
         };
 
@@ -592,12 +587,7 @@ class Typewriter3 {
             onToken: options?.onToken || defaultOptions.onToken,
             newpageText: options?.newpageText || defaultOptions.newpageText,
             defaultTextColor: options?.defaultTextColor || defaultOptions.defaultTextColor,
-            // speed1Delay: options?.speed1Delay || defaultOptions.speed1Delay,
-            // speed2Delay: options?.speed2Delay || defaultOptions.speed2Delay,
-            // speed3Delay: options?.speed3Delay || defaultOptions.speed3Delay,
-            // speed4Delay: options?.speed4Delay || defaultOptions.speed4Delay,
-            // speed5Delay: options?.speed5Delay || defaultOptions.speed5Delay,
-            // sleepDelay: options?.sleepDelay || 1000,
+            defaultBackgroundColor: options?.defaultBackgroundColor || defaultOptions.defaultBackgroundColor,
             completionBar: options?.completionBar || defaultOptions.completionBar,
         };
 
@@ -613,6 +603,8 @@ class Typewriter3 {
         this.timeoutID = null;
         this.speedTagOverride = null;
         this._speedOverride = null;
+        this.currentTextColor = options.defaultTextColor;
+        this.currentBackgroundColor = options.defaultBackgroundColor;
 
         if(this.options.completionBar) {
             this.completionBarElement = document.createElement("div");
@@ -635,19 +627,6 @@ class Typewriter3 {
                 this.color = options.defaultTextColor;
             }
         }
-
-        // let controlTagReplacements = this.text
-        // .replaceAll("[newline]", "\x00")
-        // .replaceAll("[linebreak]", "\x01")
-        // .replaceAll("[newpage]", "\x02")
-        // .replaceAll("[speeddefault]", "\x03")
-        // .replaceAll("[speed1]", "\x04")
-        // .replaceAll("[speed2]", "\x05")
-        // .replaceAll("[speed3]", "\x06")
-        // .replaceAll("[speed4]", "\x07")
-        // .replaceAll("[speed5]", "\x08")
-        // .replaceAll("[sleep]", "\x09")
-        // .replaceAll("[function]", "\x0A")
 
         let preQueue = [...this.text].map((char, index) => new Token(char, "undecided", options.charDelay, []));
 
@@ -766,14 +745,6 @@ class Typewriter3 {
         });
     }
 
-    setColor(start, end, color){
-        for(let i = start; i <= end; i++) {
-            if(this.queue[i]) {
-                this.queue[i].color = color;
-            }
-        }
-    }
-
     speedOverride(number){
         this._speedOverride = number;
     }
@@ -813,7 +784,8 @@ class Typewriter3 {
             if (token.styles.includes("underline")) content = `<u>${content}</u>`;
             if (token.styles.includes("strikethrough")) content = `<s>${content}</s>`;
             let span = document.createElement("span");
-            span.style.color = token.color;
+            span.style.color = this.currentTextColor;
+            span.style.backgroundColor = this.currentBackgroundColor;
             span.innerHTML = content;
             span.setAttribute("data-index", this.index);
             this.elem.appendChild(span);
@@ -861,7 +833,27 @@ class Typewriter3 {
                     if(this.playing){
                         this.options.onFunctionTag?.();
                     }
-                }
+                } break;
+                case "color": {
+                    if(token.arguments[0].startsWith("#")) {
+                        this.currentTextColor = token.arguments[0];
+                    } else {
+                        this.currentTextColor = `rgb(${token.arguments[0]}, ${token.arguments[1]}, ${token.arguments[2]})`;
+                    }
+                } break;
+                case "resetcolor": {
+                    this.currentTextColor = this.options.defaultTextColor;
+                } break;
+                case "background": {
+                    if(token.arguments[0].startsWith("#")) {
+                        this.currentBackgroundColor = token.arguments[0];
+                    } else {
+                        this.currentBackgroundColor = `rgb(${token.arguments[0]}, ${token.arguments[1]}, ${token.arguments[2]})`;
+                    }
+                } break;
+                case "resetbg": {
+                    this.currentBackgroundColor = this.options.defaultBackgroundColor;
+                } break;
             }
         }
 
