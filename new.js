@@ -44,32 +44,32 @@ const HTML_TEMPLATE =
     <div class="button" id="return" onclick="location.href = 'https://rus1130.github.io/projects/collection/'" style="display: none;">▌< Return</div>
 </body>
 <script>
-    const MACHINE = fetch('./src/${nameNormalized}.tw')
-        .then(response => response.text())
-        .then(text => {
-            let tw3 = new Typewriter3(text, document.getElementById("out"), {
-                charDelay: 100,
-                newlineDelay: 500,
-                customDelays: {
-                    ",": 350,
-                    ".": 600
-                },
-                newpageText: "▌Next >",
-                defaultTextColor: "#ffffff",
-                defaultBackgroundColor: "#000000",
-                onFunctionTag: () => {
-                    document.getElementById('return').style.display = 'block';
-                }
-            });
-
-            document.body.addEventListener('keydown', (event) => {
-                if (event.code === 'Space') tw3.togglePause();
-                if (event.code === 'ArrowRight') tw3.speedOverride(1);
-                if (event.code === 'ArrowLeft') tw3.speedOverride(null);
-            });
-
-            tw3.start();
+    fetch('./src/${nameNormalized}.tw')
+    .then(response => response.text())
+    .then(text => {
+        let tw3 = new Typewriter3(text, document.getElementById("out"), {
+            charDelay: 100,
+            newlineDelay: 500,
+            customDelays: {
+                ",": 350,
+                ".": 600
+            },
+            newpageText: "▌Next >",
+            defaultTextColor: "#ffffff",
+            defaultBackgroundColor: "#000000",
+            onFunctionTag: () => {
+                document.getElementById('return').style.display = 'block';
+            }
         });
+
+        document.body.addEventListener('keydown', (event) => {
+            if (event.code === 'Space') tw3.togglePause();
+            if (event.code === 'ArrowRight') tw3.speedOverride(1);
+            if (event.code === 'ArrowLeft') tw3.speedOverride(null);
+        });
+
+        tw3.start();
+    });
 </script>`
 
 const txt_TEMPLATE = `{{# written ${date} #}}\n`
