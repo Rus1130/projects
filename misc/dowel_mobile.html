@@ -29,28 +29,29 @@
   <div id="controls" class="panel">
     <div class="row"><label>Mass per cm (g/cm)</label><input id="massPerCm" type="number" step="0.01" value="0.41"/></div>
     <div class="row"><label>Washer mass (g)</label><input id="washerMass" type="number" step="0.01" value="5.3"/></div>
+    <div class="row"><label>Scale</label><input id="scale_input" type="number" step="0.1" min="0" value="7"/></div>
 
     <hr/>
     <h3 style="margin:6px 0">Dowel length</h3>
-    <div class="row"><label>length</label><input id="dowel_length" type="number" step="0.01" value="62.00"/></div>
+    <div class="row"><label>length</label><input id="dowel_length" type="number" step="1" value="62"/></div>
 
     <hr/>
     <h3 style="margin:6px 0">hang points (cm)</h3>
-    <div class="row"><label>Left offset from edge (cm)</label><input id="offset_left" type="number" min="0" value="2"/></div>
-    <div class="row"><label>Right offset from edge (cm)</label><input id="offset_right" type="number" min="0" value="2"/></div>
-    <div class="row"><label>Hanging point (cm from left side)</label><input id="dowel_point" type="number" step="1" value="31"/></div>
+    <div class="row"><label>Left offset from edge (cm)</label><input id="offset_left" type="number" min="0" value="7"/></div>
+    <div class="row"><label>Right offset from edge (cm)</label><input id="offset_right" type="number" min="0" value="8"/></div>
+    <div class="row"><label>Hanging point (cm from left side)</label><input id="dowel_point" type="number" step="1" value="27"/></div>
 
     <hr/>
     <h3 style="margin:6px 0">Weights</h3>
     <div class="row">
-        <label>Left Amount</label><input id="L_washers" type="number" step="1" value="1" min="0"/>
+        <label>Left Amount</label><input id="L_washers" type="number" step="1" value="7" min="0"/>
         <label>Input type</label><select id="L_input_type">
             <option value="count" selected># of Washers</option>
             <option value="mass">Mass (g)</option>
         </select>
     </div>
     <div class="row">
-        <label>Right Amount</label><input id="R_washers" type="number" step="1" value="1" min="0"/>
+        <label>Right Amount</label><input id="R_washers" type="number" step="1" value="2" min="0"/>
         <label>Input type</label><select id="R_input_type">
             <option value="count" selected># of Washers</option>
             <option value="mass">Mass (g)</option>
@@ -130,11 +131,13 @@ const total_weight_element = document.getElementById("total-weight");
 const left_length_element = document.getElementById("left_length");
 const right_length_element = document.getElementById("right_length");
 
+const scale_input = document.getElementById("scale_input");
+
 function drawMobile(obj) {
     if (!draw) draw = SVG().addTo("#svg").size(760, 420);
     draw.clear(); // completely reset the SVG
 
-    const cx = 380, cy = 200, scale = 7;
+    const cx = 380, cy = 200, scale = parseFloat(scale_input.value);
     const L1 = obj.dowel_length;
     const x1 = cx - (L1 / 2) * scale;
     const x2 = cx + (L1 / 2) * scale;
@@ -155,10 +158,12 @@ function drawMobile(obj) {
 
     // --- left/right hanging lines ---
     const hangerY = y + 5;
-    draw.line(hangerX_left, hangerY, hangerX_left, hangerY + 50)
+    draw.line(hangerX_left, hangerY - 5, hangerX_left, hangerY + 70)
         .stroke({ width: 2, color: "#666" });
-    draw.line(hangerX_right, hangerY, hangerX_right, hangerY + 50)
+    draw.line(hangerX_right, hangerY - 5, hangerX_right, hangerY + 70)
         .stroke({ width: 2, color: "#666" });
+
+    dowel.front();
 
     // --- weights (circles) ---
     const L_radius = 5 + Math.sqrt(obj.L_grams) * 0.8;
@@ -293,6 +298,17 @@ function drawMobile(obj) {
     // decide what side to add the dowel force to
     let side = "right";
     if(dowel_point.value > (obj.dowel_length / 2)) side = "left";
+
+    let leftTorque_final = leftTorque;
+    let rightTorque_final = rightTorque;
+    if (side === "right") {
+        rightTorque_final = rfpe(rightTorque + dowelForce);
+    } else {
+        leftTorque_final = rfpe(leftTorque + dowelForce);
+    }
+
+    console.log(((Math.abs(leftTorque_final - rightTorque_final)/(leftTorque_final + rightTorque_final))*100).toFixed(3) + "% error");
+    
 
     const equations = {
         torque1Left: `(${obj.L_grams} × ${d1}) + (${dw} × ${rw}) = (${obj.R_grams} × ${d2})`,
