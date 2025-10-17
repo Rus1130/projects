@@ -567,12 +567,12 @@ class Typewriter3 {
             onToken: function() {}, // Callback function for when a token is processed
             newpageText: "New Page",
             defaultTextColor: "#000000",
-            speed1Delay: 1000,
-            speed2Delay: 500,
-            speed3Delay: 250,
-            speed4Delay: 50,
-            speed5Delay: 10,
-            sleepDelay: 1000,
+            // speed1Delay: 1000,
+            // speed2Delay: 500,
+            // speed3Delay: 250,
+            // speed4Delay: 50,
+            // speed5Delay: 10,
+            // sleepDelay: 1000,
             completionBar: false,
         };
 
@@ -592,12 +592,12 @@ class Typewriter3 {
             onToken: options?.onToken || defaultOptions.onToken,
             newpageText: options?.newpageText || defaultOptions.newpageText,
             defaultTextColor: options?.defaultTextColor || defaultOptions.defaultTextColor,
-            speed1Delay: options?.speed1Delay || defaultOptions.speed1Delay,
-            speed2Delay: options?.speed2Delay || defaultOptions.speed2Delay,
-            speed3Delay: options?.speed3Delay || defaultOptions.speed3Delay,
-            speed4Delay: options?.speed4Delay || defaultOptions.speed4Delay,
-            speed5Delay: options?.speed5Delay || defaultOptions.speed5Delay,
-            sleepDelay: options?.sleepDelay || 1000,
+            // speed1Delay: options?.speed1Delay || defaultOptions.speed1Delay,
+            // speed2Delay: options?.speed2Delay || defaultOptions.speed2Delay,
+            // speed3Delay: options?.speed3Delay || defaultOptions.speed3Delay,
+            // speed4Delay: options?.speed4Delay || defaultOptions.speed4Delay,
+            // speed5Delay: options?.speed5Delay || defaultOptions.speed5Delay,
+            // sleepDelay: options?.sleepDelay || 1000,
             completionBar: options?.completionBar || defaultOptions.completionBar,
         };
 
@@ -611,7 +611,7 @@ class Typewriter3 {
         this.pageDone = false;
         this.index = 0;
         this.timeoutID = null;
-        this.speedType = 'default';
+        this.speedTagOverride = null;
         this._speedOverride = null;
 
         if(this.options.completionBar) {
@@ -636,20 +636,20 @@ class Typewriter3 {
             }
         }
 
-        let controlTagReplacements = this.text
-        .replaceAll("[newline]", "\x00")
-        .replaceAll("[linebreak]", "\x01")
-        .replaceAll("[newpage]", "\x02")
-        .replaceAll("[speeddefault]", "\x03")
-        .replaceAll("[speed1]", "\x04")
-        .replaceAll("[speed2]", "\x05")
-        .replaceAll("[speed3]", "\x06")
-        .replaceAll("[speed4]", "\x07")
-        .replaceAll("[speed5]", "\x08")
-        .replaceAll("[sleep]", "\x09")
-        .replaceAll("[function]", "\x0A")
+        // let controlTagReplacements = this.text
+        // .replaceAll("[newline]", "\x00")
+        // .replaceAll("[linebreak]", "\x01")
+        // .replaceAll("[newpage]", "\x02")
+        // .replaceAll("[speeddefault]", "\x03")
+        // .replaceAll("[speed1]", "\x04")
+        // .replaceAll("[speed2]", "\x05")
+        // .replaceAll("[speed3]", "\x06")
+        // .replaceAll("[speed4]", "\x07")
+        // .replaceAll("[speed5]", "\x08")
+        // .replaceAll("[sleep]", "\x09")
+        // .replaceAll("[function]", "\x0A")
 
-        let preQueue = [...controlTagReplacements].map((char, index) => new Token(char, "undecided", options.charDelay, []));
+        let preQueue = [...this.text].map((char, index) => new Token(char, "undecided", options.charDelay, []));
 
         let currentStyles = {
             italic: false,
@@ -658,36 +658,30 @@ class Typewriter3 {
             strikethrough: false,
         };
 
-        let controlCharacters = Object.values(options.styles).filter(x => x !== options.styles.escape);
-        
-        controlCharacters.concat([
-            "\x00", // newline
-            "\x01", // line break
-            "\x02", // new page
-            "\x03", // speed default
-            "\x04", // speed 1
-            "\x05", // speed 2
-            "\x06", // speed 3
-            "\x07", // speed 4
-            "\x08", // speed 5
-            "\x09", // sleep
-            "\x0A"  // function
-        ]);
-
         let escaping = false;
+
+        let insideTag = false;
 
         preQueue.forEach((token, i) => {
             if (escaping) {
-                token.type = "display"; // force next character to display
+                token.type = "display";
                 escaping = false;
                 return;
             }
 
             if (token.content === options.styles.escape) {
-                token.type = "delete"; // this will be removed later
+                token.type = "delete";
                 escaping = true;
-            } else if (controlCharacters.includes(token.content)) {
-                token.type = "control";
+            } else if (token.content === "[") {
+                token.type = "tag";
+                insideTag = true;
+            } else if (token.content === "]") {
+                token.type = "tag";
+                insideTag = false;
+            } else if(insideTag) {
+                token.type = "tag";
+            } else if([options.styles.italic, options.styles.bold, options.styles.underline, options.styles.strikethrough].includes(token.content)) {
+                token.type = "styling";
             } else {
                 token.type = "display";
             }
@@ -696,7 +690,7 @@ class Typewriter3 {
         preQueue = preQueue.filter(token => token.type !== "delete");
 
         preQueue.forEach((token, i) => {
-            if(token.type === "control") {
+            if(token.type === "styling") {
                 if(token.content === options.styles.italic) {
                     currentStyles.italic = !currentStyles.italic;
                 } else if(token.content === options.styles.bold) {
@@ -714,13 +708,58 @@ class Typewriter3 {
             token.styles = Object.keys(currentStyles).filter(key => currentStyles[key]);
         });
 
-        preQueue = preQueue.filter(token => token.type !== "delete");
+        preQueue = preQueue.filter(token => token.type !== "styling");
+
+        const combined = [];
+        let currentTag = null;
+
+        for (const token of preQueue) {
+            if (token.type === "tag") {
+                // Start a new tag sequence
+                if (!currentTag) {
+                    currentTag = new Token(token.content, "tag", token.delay, token.styles);
+                } else {
+                    // Continue building the current tag
+                    currentTag.content += token.content;
+                }
+
+                // If we’ve reached a closing bracket, finalize the tag
+                if (token.content === ']') {
+                    combined.push(currentTag);
+                    currentTag = null;
+                }
+            } else {
+                // If a non-tag appears while building a tag, close it just in case
+                if (currentTag) {
+                    combined.push(currentTag);
+                    currentTag = null;
+                }
+
+                // Push the current display (or other) token as-is
+                combined.push(token);
+            }
+        }
+
+        // Edge case: if a tag was never closed
+        if (currentTag) combined.push(currentTag);
+
+        preQueue = combined;
+
+        preQueue.forEach((token, i) => {
+            if(token.type === "tag") {
+                let tagName = token.content.slice(1, -1).split(" ")[0]
+                let tagArguments = token.content.slice(1, -1).split(" ").slice(1);
+                token.name = tagName;
+                token.arguments = tagArguments;
+            }
+        })
+
+        console.log(preQueue)
+
 
         this.queue = structuredClone(preQueue);
 
         this.queue.forEach((token, i) => {
-            if(token.content === "\n") token.delay = options.newlineDelay;
-
             if(options.customDelays[token.content]) {
                 token.delay = options.customDelays[token.content];
             }
@@ -752,81 +791,137 @@ class Typewriter3 {
             }
 
             let token = this.queue[this.index];
-            this.renderToken(token);
+            let returnedToken = this.renderToken(token);
             this.index++;
 
-            if(this.speedType === 'speed1') token.delay = this.options.speed1Delay;
-            else if(this.speedType === 'speed2') token.delay = this.options.speed2Delay;
-            else if(this.speedType === 'speed3') token.delay = this.options.speed3Delay;
-            else if(this.speedType === 'speed4') token.delay = this.options.speed4Delay;
-            else if(this.speedType === 'speed5') token.delay = this.options.speed5Delay;
-            this.timeoutID = setTimeout(processNext, this._speedOverride ?? token.delay);
+            this.timeoutID = setTimeout(processNext, this._speedOverride ?? returnedToken.delay);
         };
 
         processNext();
     }
 
     renderToken(token) {
-        let content = token.content;
-
         if(this.options.completionBar) this.completionBarElement.style.width = `${(this.index + 1) / this.queue.length * 100}%`;
         this.options.onToken?.(token);
 
-        if (content === "\x00") {
-            this.elem.appendChild(document.createElement("br"));
-            token.delay = this.options.newlineDelay;
-        } else if (content === "\x01") {
-            this.elem.appendChild(document.createElement("br"));
-            this.elem.appendChild(document.createElement("br"));
-            token.delay = this.options.newlineDelay;
-        } else if (content === "\x02") {
-            this.pause();
-            // scroll to the bottom of the page
-            let pageBreak = document.createElement("div");
-            pageBreak.textContent = this.options.newpageText;
-            pageBreak.style.cursor = "pointer";
-            pageBreak.classList.add("typewriter3-newpage");
-            this.pageDone = true;
-            pageBreak.addEventListener("click", () => {
-                this.elem.innerHTML = "";
-                this.pageDone = false;
-                this.resume();
-            });
-            this.elem.appendChild(pageBreak);
+        let slept = false;
+
+        if(token.type === "display"){
+            let content = token.content;
+            if (token.styles.includes("italic")) content = `<i>${content}</i>`;
+            if (token.styles.includes("bold")) content = `<b>${content}</b>`;
+            if (token.styles.includes("underline")) content = `<u>${content}</u>`;
+            if (token.styles.includes("strikethrough")) content = `<s>${content}</s>`;
+            let span = document.createElement("span");
+            span.style.color = token.color;
+            span.innerHTML = content;
+            span.setAttribute("data-index", this.index);
+            this.elem.appendChild(span);
             window.scrollTo(window.scrollX, document.body.scrollHeight);
-
-        } else if (content === "\x03") this.speedType = 'default';
-        else if (content === "\x04") this.speedType = 'speed1';
-        else if( content === "\x05") this.speedType = 'speed2';
-        else if( content === "\x06") this.speedType = 'speed3';
-        else if( content === "\x07") this.speedType = 'speed4';
-        else if( content === "\x08") this.speedType = 'speed5';
-        else if( content === "\x09") token.delay = this.options.sleepDelay;
-        else if( content === "\x0A") {
-            if(this.playing){
-                this.options.onFunctionTag?.();
-            }
-        } else {
-            if(token.type === "display") {
-                let content = token.content;
-                if (token.styles.includes("italic")) content = `<i>${content}</i>`;
-                if (token.styles.includes("bold")) content = `<b>${content}</b>`;
-                if (token.styles.includes("underline")) content = `<u>${content}</u>`;
-                if (token.styles.includes("strikethrough")) content = `<s>${content}</s>`;
-
-                let span = document.createElement("span");
-                span.style.color = token.color;
-                span.innerHTML = content;
-                span.setAttribute("data-index", this.index);
-                this.elem.appendChild(span);
-
-                window.scrollTo(window.scrollX, document.body.scrollHeight);
-
-                this.options.onCharacterDisplayed?.(token);
+            this.options.onCharacterDisplayed?.(token);
+        } else if (token.type === "tag") {
+            switch(token.name) {
+                case "newline": {
+                    this.elem.appendChild(document.createElement("br"));
+                    token.delay = this.options.newlineDelay;
+                } break;
+                case "linebreak": {
+                    this.elem.appendChild(document.createElement("br"));
+                    this.elem.appendChild(document.createElement("br"));
+                    token.delay = this.options.newlineDelay;
+                } break;
+                case "newpage": {
+                    this.pause();
+                    let pageBreak = document.createElement("div");
+                    pageBreak.textContent = this.options.newpageText;
+                    pageBreak.style.cursor = "pointer";
+                    pageBreak.classList.add("typewriter3-newpage");
+                    this.pageDone = true;
+                    pageBreak.addEventListener("click", () => {
+                        this.elem.innerHTML = "";
+                        this.pageDone = false;
+                        this.resume();
+                    });
+                    this.elem.appendChild(pageBreak);
+                    window.scrollTo(window.scrollX, document.body.scrollHeight);
+                } break;
+                case "speeddefault": {
+                    this.speedTagOverride = null;
+                } break;
+                case "speed": {
+                    let speed = parseInt(token.arguments[0]) || this.options.charDelay;
+                    this.speedTagOverride = speed;
+                } break;
+                case "sleep": {
+                    let speed = parseInt(token.arguments[0]) || 1000;
+                    token.delay = speed;
+                    slept = true;
+                } break;
+                case "function": {
+                    if(this.playing){
+                        this.options.onFunctionTag?.();
+                    }
+                }
             }
         }
 
+        if(this.speedTagOverride != null && slept == false) token.delay = this.speedTagOverride;
+
         return token;
+
+        // if (content === "\x00") {
+        //     this.elem.appendChild(document.createElement("br"));
+        //     token.delay = this.options.newlineDelay;
+        // } else if (content === "\x01") {
+        //     this.elem.appendChild(document.createElement("br"));
+        //     this.elem.appendChild(document.createElement("br"));
+        //     token.delay = this.options.newlineDelay;
+        // } else if (content === "\x02") {
+        //     this.pause();
+        //     // scroll to the bottom of the page
+        //     let pageBreak = document.createElement("div");
+        //     pageBreak.textContent = this.options.newpageText;
+        //     pageBreak.style.cursor = "pointer";
+        //     pageBreak.classList.add("typewriter3-newpage");
+        //     this.pageDone = true;
+        //     pageBreak.addEventListener("click", () => {
+        //         this.elem.innerHTML = "";
+        //         this.pageDone = false;
+        //         this.resume();
+        //     });
+        //     this.elem.appendChild(pageBreak);
+        //     window.scrollTo(window.scrollX, document.body.scrollHeight);
+
+        // } else if (content === "\x03") this.speedType = 'default';
+        // else if (content === "\x04") this.speedType = 'speed1';
+        // else if( content === "\x05") this.speedType = 'speed2';
+        // else if( content === "\x06") this.speedType = 'speed3';
+        // else if( content === "\x07") this.speedType = 'speed4';
+        // else if( content === "\x08") this.speedType = 'speed5';
+        // else if( content === "\x09") token.delay = this.options.sleepDelay;
+        // else if( content === "\x0A") {
+        //     if(this.playing){
+        //         this.options.onFunctionTag?.();
+        //     }
+        // } else {
+        //     if(token.type === "display") {
+        //         let content = token.content;
+        //         if (token.styles.includes("italic")) content = `<i>${content}</i>`;
+        //         if (token.styles.includes("bold")) content = `<b>${content}</b>`;
+        //         if (token.styles.includes("underline")) content = `<u>${content}</u>`;
+        //         if (token.styles.includes("strikethrough")) content = `<s>${content}</s>`;
+
+        //         let span = document.createElement("span");
+        //         span.style.color = token.color;
+        //         span.innerHTML = content;
+        //         span.setAttribute("data-index", this.index);
+        //         this.elem.appendChild(span);
+
+        //         window.scrollTo(window.scrollX, document.body.scrollHeight);
+
+        //         this.options.onCharacterDisplayed?.(token);
+        //     }
+        // }
     }
 
     pause(){
