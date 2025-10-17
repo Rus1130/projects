@@ -41,7 +41,7 @@ const HTML_TEMPLATE =
 </head>
 <body>
     <div id="out"></div>
-    <div class="button" id="return" onclick="location.href = './homepage.html'" style="display: none;">▌< Return</div>
+    <div class="button" id="return" onclick="location.href = './index.html'" style="display: none;">▌< Return</div>
 </body>
 <script>
     const MACHINE = fetch('./src/${nameNormalized}.tw')
