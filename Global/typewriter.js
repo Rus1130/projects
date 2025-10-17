@@ -733,9 +733,6 @@ class Typewriter3 {
             }
         })
 
-        console.log(preQueue)
-
-
         this.queue = structuredClone(preQueue);
 
         this.queue.forEach((token, i) => {
