@@ -56,7 +56,7 @@ const HTML_TEMPLATE =
                 },
                 newpageText: "▌Next >",
                 defaultTextColor: "#ffffff",
-                sleepDelay: 700,
+                defaultBackgroundColor: "#000000",
                 onFunctionTag: () => {
                     document.getElementById('return').style.display = 'block';
                 }
