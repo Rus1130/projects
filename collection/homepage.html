@@ -21,6 +21,10 @@
         background-color: white;
         color: black;
     }
+
+    .hidden {
+        display: none;
+    }
 </style>
 <head>
     <title>Hey.</title>
@@ -34,8 +38,8 @@
     <div>press RIGHT ARROW to speed up, and LEFT ARROW to reset the speed back to normal</div>
     <div>Entries are ordered by chronological order, oldest at the top.</div>
     <br>
-    <div class="button" onclick="location.href = './gears.html'">▌Gears</div>
-    <div class="button" onclick="location.href = './time.html'">▌Time</div>
+    <div class="button hidden" onclick="location.href = './gears.html'">▌Gears</div>
+    <div class="button hidden" onclick="location.href = './time.html'">▌Time</div>
     <div class="button" onclick="location.href = './the-machine.html'">▌The Machine</div>
     <div class="button" onclick="location.href = './she.html'">▌She</div>
     <div class="button" onclick="location.href = './flies.html'">▌Flies</div>
@@ -44,6 +48,11 @@
     <div class="button" onclick="location.href = 'https://rus1130.github.io/projects/index.html?bypass=true'">▌< Return to main page</div>
 </body>
 <script>
-    const IN_PROGRESS = true;
+    const IN_PROGRESS = false;
+    let clicks = 0;
+    document.body.addEventListener('click', () => {
+        clicks++;
+        if(clicks >= 50) document.querySelectorAll('.hidden').forEach(e => e.classList.remove('hidden'));
+    });
     if (IN_PROGRESS) document.querySelectorAll('body > div:nth-last-of-type(2)')?.[0]?.remove();
 </script>
