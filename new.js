@@ -74,11 +74,9 @@ const HTML_TEMPLATE =
 
 const txt_TEMPLATE = `{{# written ${date} #}}\n`
 
-// create a new html file with the name of name in the file path ./collection
 fs.writeFileSync(path.join('collection', `${nameNormalized}.html`), HTML_TEMPLATE.replaceAll("\n", "\r\n"));
 fs.writeFileSync(path.join('collection', 'src', `${nameNormalized}.tw`), txt_TEMPLATE.replaceAll("\n", "\r\n"));
 
-// edit collection/homepage.html to add something before <div class="button" onclick="location.href = 'https://rus1130.github.io/projects/index.html?bypass=true'">▌< Return to main page</div>
 let homepage = fs.readFileSync(path.join('collection', 'index.html'), 'utf8');
 let insertIndex = homepage.indexOf('<div class="button" onclick="location.href = \'https://rus1130.github.io/projects/index.html?bypass=true\'">▌< Return to main page</div>') - 4;
 let newLink = `    <div class="button" onclick="location.href = './${nameNormalized}.html'">▌${name}</div>`;
