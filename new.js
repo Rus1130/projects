@@ -72,7 +72,17 @@ const HTML_TEMPLATE =
     });
 </script>`
 
-const txt_TEMPLATE = `{{# written ${date} #}}\n`
+const txt_TEMPLATE = 
+`{{# written ${date} #}}
+{{#timecalc
+    char: 100
+    newline: 500
+    custom: {
+        ",": 350
+        ".": 600
+    }
+#}}
+`
 
 fs.writeFileSync(path.join('collection', `${nameNormalized}.html`), HTML_TEMPLATE.replaceAll("\n", "\r\n"));
 fs.writeFileSync(path.join('collection', 'src', `${nameNormalized}.tw`), txt_TEMPLATE.replaceAll("\n", "\r\n"));

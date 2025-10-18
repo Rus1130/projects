@@ -790,6 +790,13 @@ class Typewriter3 {
             this.options.onCharacterDisplayed?.(token);
         } else if (token.type === "tag") {
             switch(token.name) {
+                case "tab": {
+                    let tabSpace = document.createElement("span");
+                    let spaceCount = parseInt(token.arguments[0]) || 4;
+                    tabSpace.innerHTML = "&nbsp;".repeat(spaceCount);
+                    token.delay = this.options.charDelay;
+                    this.elem.appendChild(tabSpace);
+                } break;
                 case "newline": {
                     this.elem.appendChild(document.createElement("br"));
                     token.delay = this.options.newlineDelay;
