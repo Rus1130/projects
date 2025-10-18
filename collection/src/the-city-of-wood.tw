@@ -1,4 +1,13 @@
 {{# written 17 oct, 2025 #}}
+{{#timecalc
+    char: 50
+    newline: 500
+    custom: {
+        ",": 350
+        ".": 600
+        "—": 800
+    }
+#}}
 Somewhere in the middle of nowhere is a city with no particular destination.[newline]
 The machines—long forgotten, unmaintainable machines, that which are shaped like bulls—slowly dredge across this barren land,[newline]
 dragging the city behind them.[linebreak]
