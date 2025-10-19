@@ -20,7 +20,13 @@ beaten and weathered from dirt,[sleep 220] mud,[sleep 220] water,[sleep 220] blo
 Schools, businesses, bazaars, brothels,[newline]
 all can be found in the moving city made of wood.[linebreak]
 
-At the rear of the city, miles and miles away from the front,[newline]
+The elites of the city make their homes near the front, near the machines,[newline]
+their premium, laquered wood free from defect.[newline]
+The front is filled with busy streets, market stalls and tea shops filling every corner and crevice,[newline]
+people chatting away without worry.[newline]
+The smell of rot is missing from that place.[linebreak][]
+
+{{# At the rear of the city, miles and miles away from the front,[newline]
 the poor make their home.[newline]
-They can hop on and off, freely and without harm, for the city does not move fast enough.[newline]
+They can hop on and off, freely and without harm, for the city does not move fast enough.[newline] #}}
 A little boy sits on the edge and kicks his feet at the passing brush below.[linebreak][sleep 700][function]
