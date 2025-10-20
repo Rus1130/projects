@@ -28,6 +28,10 @@
             defaultBackgroundColor: "#000000",
             onFunctionTag: () => {
                 document.getElementById('return').style.display = 'block';
+            },
+            onFinish: () => {
+                const end = performance.now();
+                console.log(`${(end - start)} ms`);
             }
         });
 

@@ -540,14 +540,10 @@ class Typewriter3 {
      * @param {Function} [options.onCharacterDisplayed] - Callback function that is called after each character is displayed.
      * @param {Function} [options.onToken] - Callback function that is called after each token is processed.
      * @param {Function} [options.onFunctionTag] - Callback function that is triggered when the [function] tag is encountered.
+     * @param {Function} [options.onFinish] - Callback function that is called when typing is finished.
      * @param {String} [options.newpageText="New Page"] - Text to display for new page breaks. can be styled by editing the CSS class "typewriter-newpage"
      * @param {String} [options.defaultTextColor="#000000"] - Default text color.
-     * @param {Number} [options.speed1Delay=1000] - Delay for [speed1] tag.
-     * @param {Number} [options.speed2Delay=500] - Delay for [speed2] tag.
-     * @param {Number} [options.speed3Delay=250] - Delay for [speed3] tag.
-     * @param {Number} [options.speed4Delay=50] - Delay for [speed4] tag.
-     * @param {Number} [options.speed5Delay=10] - Delay for [speed5] tag.
-     * @param {Number} [options.sleepDelay=1000] - Delay for [sleep] tag.
+     * @param {String} [options.defaultBackgroundColor="#FFFFFF"] - Default background color.
      * @param {Boolean} [options.completionBar=false] - Whether to show a completion bar at the bottom of the screen.
      */
     constructor(text, outputElement, options = {}) {
@@ -565,6 +561,7 @@ class Typewriter3 {
             onCharacterDisplayed: function() {}, // Callback function for when a character is displayed
             onFunctionTag: function() {}, // Callback function for when a function tag is encountered
             onToken: function() {}, // Callback function for when a token is processed
+            onFinish: function() {}, // Callback function for when typing is finished
             newpageText: "New Page",
             defaultTextColor: "#000000",
             defaultBackgroundColor: "#FFFFFF",
@@ -585,6 +582,7 @@ class Typewriter3 {
             onCharacterDisplayed: options?.onCharacterDisplayed || defaultOptions.onCharacterDisplayed,
             onFunctionTag: options?.onFunctionTag || defaultOptions.onFunctionTag,
             onToken: options?.onToken || defaultOptions.onToken,
+            onFinish: options?.onFinish || defaultOptions.onFinish,
             newpageText: options?.newpageText || defaultOptions.newpageText,
             defaultTextColor: options?.defaultTextColor || defaultOptions.defaultTextColor,
             defaultBackgroundColor: options?.defaultBackgroundColor || defaultOptions.defaultBackgroundColor,
@@ -762,6 +760,12 @@ class Typewriter3 {
             let returnedToken = this.renderToken(token);
             this.index++;
 
+            if(this.index >= this.queue.length) {
+                this.options?.onFinish();
+                this.playing = false;
+                return;
+            }
+
             this.timeoutID = setTimeout(processNext, this._speedOverride ?? returnedToken.delay);
         };
 
@@ -864,60 +868,6 @@ class Typewriter3 {
         if(this.speedTagOverride != null && slept == false) token.delay = this.speedTagOverride;
 
         return token;
-
-        // if (content === "\x00") {
-        //     this.elem.appendChild(document.createElement("br"));
-        //     token.delay = this.options.newlineDelay;
-        // } else if (content === "\x01") {
-        //     this.elem.appendChild(document.createElement("br"));
-        //     this.elem.appendChild(document.createElement("br"));
-        //     token.delay = this.options.newlineDelay;
-        // } else if (content === "\x02") {
-        //     this.pause();
-        //     // scroll to the bottom of the page
-        //     let pageBreak = document.createElement("div");
-        //     pageBreak.textContent = this.options.newpageText;
-        //     pageBreak.style.cursor = "pointer";
-        //     pageBreak.classList.add("typewriter3-newpage");
-        //     this.pageDone = true;
-        //     pageBreak.addEventListener("click", () => {
-        //         this.elem.innerHTML = "";
-        //         this.pageDone = false;
-        //         this.resume();
-        //     });
-        //     this.elem.appendChild(pageBreak);
-        //     window.scrollTo(window.scrollX, document.body.scrollHeight);
-
-        // } else if (content === "\x03") this.speedType = 'default';
-        // else if (content === "\x04") this.speedType = 'speed1';
-        // else if( content === "\x05") this.speedType = 'speed2';
-        // else if( content === "\x06") this.speedType = 'speed3';
-        // else if( content === "\x07") this.speedType = 'speed4';
-        // else if( content === "\x08") this.speedType = 'speed5';
-        // else if( content === "\x09") token.delay = this.options.sleepDelay;
-        // else if( content === "\x0A") {
-        //     if(this.playing){
-        //         this.options.onFunctionTag?.();
-        //     }
-        // } else {
-        //     if(token.type === "display") {
-        //         let content = token.content;
-        //         if (token.styles.includes("italic")) content = `<i>${content}</i>`;
-        //         if (token.styles.includes("bold")) content = `<b>${content}</b>`;
-        //         if (token.styles.includes("underline")) content = `<u>${content}</u>`;
-        //         if (token.styles.includes("strikethrough")) content = `<s>${content}</s>`;
-
-        //         let span = document.createElement("span");
-        //         span.style.color = token.color;
-        //         span.innerHTML = content;
-        //         span.setAttribute("data-index", this.index);
-        //         this.elem.appendChild(span);
-
-        //         window.scrollTo(window.scrollX, document.body.scrollHeight);
-
-        //         this.options.onCharacterDisplayed?.(token);
-        //     }
-        // }
     }
 
     pause(){
