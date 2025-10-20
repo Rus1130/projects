@@ -15,6 +15,7 @@
     fetch('./src/my-cat.tw')
     .then(response => response.text())
     .then(text => {
+        const start = performance.now();
         let tw3 = new Typewriter3(text, document.getElementById("out"), {
             charDelay: 40,
             newlineDelay: 500,
