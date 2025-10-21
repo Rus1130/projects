@@ -546,6 +546,7 @@ class Typewriter3 {
      * @param {String} [options.defaultBackgroundColor="#FFFFFF"] - Default background color.
      * @param {Boolean} [options.completionBar=false] - Whether to show a completion bar at the bottom of the screen.
      * @param {Boolean} [options.instant=false] - If true, the text will be displayed instantly without typing effect.
+     * @param {Boolean} [options.variableOutput=false] - If true, the output will be as a string instead of directly modifying the DOM.
      */
     constructor(text, outputElement, options = {}) {
         const defaultOptions = {
@@ -590,6 +591,7 @@ class Typewriter3 {
             defaultBackgroundColor: options?.defaultBackgroundColor || defaultOptions.defaultBackgroundColor,
             completionBar: options?.completionBar || defaultOptions.completionBar,
             instant: options?.instant || defaultOptions.instant,
+            variableOutput: options?.variableOutput || defaultOptions.variableOutput,
         };
 
         this.text = text.replaceAll("\n", "").replaceAll("\r", "");
@@ -606,6 +608,7 @@ class Typewriter3 {
         this._speedOverride = null;
         this.currentTextColor = options.defaultTextColor;
         this.currentBackgroundColor = options.defaultBackgroundColor;
+        this.output = "";
 
         if(this.options.completionBar) {
             this.completionBarElement = document.createElement("div");
@@ -788,114 +791,205 @@ class Typewriter3 {
 
         let slept = false;
 
-        if(token.type === "display"){
-            let content = token.content;
-            if (token.styles.includes("italic")) content = `<i>${content}</i>`;
-            if (token.styles.includes("bold")) content = `<b>${content}</b>`;
-            if (token.styles.includes("underline")) content = `<u>${content}</u>`;
-            if (token.styles.includes("strikethrough")) content = `<s>${content}</s>`;
-            let span = document.createElement("span");
-            span.style.color = this.currentTextColor;
-            span.style.backgroundColor = this.currentBackgroundColor;
-            span.innerHTML = content;
-            span.setAttribute("data-index", this.index);
-            this.elem.appendChild(span);
-            window.scrollTo(window.scrollX, document.body.scrollHeight);
-            this.options.onCharacterDisplayed?.(token);
-        } else if (token.type === "tag") {
-            switch(token.name) {
+        if(this.options.variableOutput){
+            // variable output
+            if(token.type === "display"){
+                let content = token.content;
+                if (token.styles.includes("italic")) content = `<i>${content}</i>`;
+                if (token.styles.includes("bold")) content = `<b>${content}</b>`;
+                if (token.styles.includes("underline")) content = `<u>${content}</u>`;
+                if (token.styles.includes("strikethrough")) content = `<s>${content}</s>`;
+                let span = `<span data-index="${this.index}" style="color: ${this.currentTextColor}; background-color: ${this.currentBackgroundColor}">${content}</span>`;
+                this.output += span;
+                this.options.onCharacterDisplayed?.(token);
+            } else if (token.type === "tag") {
+                switch(token.name) {
+                    case "invert": {
+                        let tempTextColor = this.currentTextColor;
+                        this.currentTextColor = this.currentBackgroundColor;
+                        this.currentBackgroundColor = tempTextColor;
+                    } break;
 
-                case "invert": {
-                    let tempTextColor = this.currentTextColor;
-                    this.currentTextColor = this.currentBackgroundColor;
-                    this.currentBackgroundColor = tempTextColor;
-                } break;
+                    case "hr": {
+                        this.output += `<hr>`;
+                        token.delay = this.options.charDelay;
+                    } break;
 
-                case "hr": {
-                    let hr = document.createElement("hr");
-                    this.elem.appendChild(hr);
-                    token.delay = this.options.charDelay;
-                } break;
+                    case "tab": {
+                        this.output += `${"&nbsp;".repeat(parseInt(token.arguments[0]) || 4)}`;
+                        token.delay = this.options.charDelay;
+                    } break;
 
-                case "tab": {
-                    let tabSpace = document.createElement("span");
-                    let spaceCount = parseInt(token.arguments[0]) || 4;
-                    tabSpace.innerHTML = "&nbsp;".repeat(spaceCount);
-                    token.delay = this.options.charDelay;
-                    this.elem.appendChild(tabSpace);
-                } break;
+                    case "newline": {
+                        this.output += `<br>`;
+                        token.delay = this.options.newlineDelay;
+                    } break;
 
-                case "newline": {
-                    this.elem.appendChild(document.createElement("br"));
-                    token.delay = this.options.newlineDelay;
-                } break;
+                    case "linebreak": {
+                        this.output += `<br><br>`;
+                        token.delay = this.options.newlineDelay;
+                    } break;
 
-                case "linebreak": {
-                    this.elem.appendChild(document.createElement("br"));
-                    this.elem.appendChild(document.createElement("br"));
-                    token.delay = this.options.newlineDelay;
-                } break;
+                    case "newpage": {
+                        this.output += `<hr><div>${this.options.newpageText}</div><hr>`;
+                    } break;
 
-                case "newpage": {
-                    this.pause();
-                    let pageBreak = document.createElement("div");
-                    pageBreak.textContent = this.options.newpageText;
-                    pageBreak.style.cursor = "pointer";
-                    pageBreak.classList.add("typewriter3-newpage");
-                    this.pageDone = true;
-                    pageBreak.addEventListener("click", () => {
-                        this.elem.innerHTML = "";
-                        this.pageDone = false;
-                        this.resume();
-                    });
-                    this.elem.appendChild(pageBreak);
-                    window.scrollTo(window.scrollX, document.body.scrollHeight);
-                } break;
+                    case "speeddefault": {
+                        this.speedTagOverride = null;
+                    } break;
 
-                case "speeddefault": {
-                    this.speedTagOverride = null;
-                } break;
+                    case "speed": {
+                        let speed = parseInt(token.arguments[0]) || this.options.charDelay;
+                        this.speedTagOverride = speed;
+                    } break;
 
-                case "speed": {
-                    let speed = parseInt(token.arguments[0]) || this.options.charDelay;
-                    this.speedTagOverride = speed;
-                } break;
+                    case "sleep": {
+                        let speed = parseInt(token.arguments[0]) || 1000;
+                        token.delay = speed;
+                        slept = true;
+                    } break;
 
-                case "sleep": {
-                    let speed = parseInt(token.arguments[0]) || 1000;
-                    token.delay = speed;
-                    slept = true;
-                } break;
+                    case "function": {
+                        if(this.playing){
+                            this.options.onFunctionTag?.();
+                        }
+                    } break;
 
-                case "function": {
-                    if(this.playing){
-                        this.options.onFunctionTag?.();
-                    }
-                } break;
+                    case "color": {
+                        if(token.arguments[0].startsWith("#")) {
+                            this.currentTextColor = token.arguments[0];
+                        } else {
+                            this.currentTextColor = `rgb(${token.arguments[0]}, ${token.arguments[1]}, ${token.arguments[2]})`;
+                        }
+                    } break;
 
-                case "color": {
-                    if(token.arguments[0].startsWith("#")) {
-                        this.currentTextColor = token.arguments[0];
-                    } else {
-                        this.currentTextColor = `rgb(${token.arguments[0]}, ${token.arguments[1]}, ${token.arguments[2]})`;
-                    }
-                } break;
+                    case "resetcolor": {
+                        this.currentTextColor = this.options.defaultTextColor;
+                    } break;
 
-                case "resetcolor": {
-                    this.currentTextColor = this.options.defaultTextColor;
-                } break;
+                    case "background": {
+                        if(token.arguments[0].startsWith("#")) {
+                            this.currentBackgroundColor = token.arguments[0];
+                        } else {
+                            this.currentBackgroundColor = `rgb(${token.arguments[0]}, ${token.arguments[1]}, ${token.arguments[2]})`;
+                        }
+                    } break;
 
-                case "background": {
-                    if(token.arguments[0].startsWith("#")) {
-                        this.currentBackgroundColor = token.arguments[0];
-                    } else {
-                        this.currentBackgroundColor = `rgb(${token.arguments[0]}, ${token.arguments[1]}, ${token.arguments[2]})`;
-                    }
-                } break;
+                    case "resetbg": {
+                        this.currentBackgroundColor = this.options.defaultBackgroundColor;
+                    } break;
+                }
+            }
+        } else {
+            // dom output
+            if(token.type === "display"){
+                let content = token.content;
+                if (token.styles.includes("italic")) content = `<i>${content}</i>`;
+                if (token.styles.includes("bold")) content = `<b>${content}</b>`;
+                if (token.styles.includes("underline")) content = `<u>${content}</u>`;
+                if (token.styles.includes("strikethrough")) content = `<s>${content}</s>`;
+                let span = document.createElement("span");
+                span.style.color = this.currentTextColor;
+                span.style.backgroundColor = this.currentBackgroundColor;
+                span.innerHTML = content;
+                span.setAttribute("data-index", this.index);
+                this.elem.appendChild(span);
+                window.scrollTo(window.scrollX, document.body.scrollHeight);
+                this.options.onCharacterDisplayed?.(token);
+            } else if (token.type === "tag") {
+                switch(token.name) {
+                    case "invert": {
+                        let tempTextColor = this.currentTextColor;
+                        this.currentTextColor = this.currentBackgroundColor;
+                        this.currentBackgroundColor = tempTextColor;
+                    } break;
 
-                case "resetbg": {
-                    this.currentBackgroundColor = this.options.defaultBackgroundColor;
-                } break;
+                    case "hr": {
+                        let hr = document.createElement("hr");
+                        this.elem.appendChild(hr);
+                        token.delay = this.options.charDelay;
+                    } break;
+
+                    case "tab": {
+                        let tabSpace = document.createElement("span");
+                        let spaceCount = parseInt(token.arguments[0]) || 4;
+                        tabSpace.innerHTML = "&nbsp;".repeat(spaceCount);
+                        token.delay = this.options.charDelay;
+                        this.elem.appendChild(tabSpace);
+                    } break;
+
+                    case "newline": {
+                        this.elem.appendChild(document.createElement("br"));
+                        token.delay = this.options.newlineDelay;
+                    } break;
+
+                    case "linebreak": {
+                        this.elem.appendChild(document.createElement("br"));
+                        this.elem.appendChild(document.createElement("br"));
+                        token.delay = this.options.newlineDelay;
+                    } break;
+
+                    case "newpage": {
+                        this.pause();
+                        let pageBreak = document.createElement("div");
+                        pageBreak.textContent = this.options.newpageText;
+                        pageBreak.style.cursor = "pointer";
+                        pageBreak.classList.add("typewriter3-newpage");
+                        this.pageDone = true;
+                        pageBreak.addEventListener("click", () => {
+                            this.elem.innerHTML = "";
+                            this.pageDone = false;
+                            this.resume();
+                        });
+                        this.elem.appendChild(pageBreak);
+                        window.scrollTo(window.scrollX, document.body.scrollHeight);
+                    } break;
+
+                    case "speeddefault": {
+                        this.speedTagOverride = null;
+                    } break;
+
+                    case "speed": {
+                        let speed = parseInt(token.arguments[0]) || this.options.charDelay;
+                        this.speedTagOverride = speed;
+                    } break;
+
+                    case "sleep": {
+                        let speed = parseInt(token.arguments[0]) || 1000;
+                        token.delay = speed;
+                        slept = true;
+                    } break;
+
+                    case "function": {
+                        if(this.playing){
+                            this.options.onFunctionTag?.();
+                        }
+                    } break;
+
+                    case "color": {
+                        if(token.arguments[0].startsWith("#")) {
+                            this.currentTextColor = token.arguments[0];
+                        } else {
+                            this.currentTextColor = `rgb(${token.arguments[0]}, ${token.arguments[1]}, ${token.arguments[2]})`;
+                        }
+                    } break;
+
+                    case "resetcolor": {
+                        this.currentTextColor = this.options.defaultTextColor;
+                    } break;
+
+                    case "background": {
+                        if(token.arguments[0].startsWith("#")) {
+                            this.currentBackgroundColor = token.arguments[0];
+                        } else {
+                            this.currentBackgroundColor = `rgb(${token.arguments[0]}, ${token.arguments[1]}, ${token.arguments[2]})`;
+                        }
+                    } break;
+
+                    case "resetbg": {
+                        this.currentBackgroundColor = this.options.defaultBackgroundColor;
+                    } break;
+                }
             }
         }
 
