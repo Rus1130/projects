@@ -545,6 +545,7 @@ class Typewriter3 {
      * @param {String} [options.defaultTextColor="#000000"] - Default text color.
      * @param {String} [options.defaultBackgroundColor="#FFFFFF"] - Default background color.
      * @param {Boolean} [options.completionBar=false] - Whether to show a completion bar at the bottom of the screen.
+     * @param {Boolean} [options.instant=false] - If true, the text will be displayed instantly without typing effect.
      */
     constructor(text, outputElement, options = {}) {
         const defaultOptions = {
@@ -566,6 +567,7 @@ class Typewriter3 {
             defaultTextColor: "#000000",
             defaultBackgroundColor: "#FFFFFF",
             completionBar: false,
+            instant: false,
         };
 
         options = {
@@ -587,6 +589,7 @@ class Typewriter3 {
             defaultTextColor: options?.defaultTextColor || defaultOptions.defaultTextColor,
             defaultBackgroundColor: options?.defaultBackgroundColor || defaultOptions.defaultBackgroundColor,
             completionBar: options?.completionBar || defaultOptions.completionBar,
+            instant: options?.instant || defaultOptions.instant,
         };
 
         this.text = text.replaceAll("\n", "").replaceAll("\r", "");
@@ -745,31 +748,35 @@ class Typewriter3 {
     }
 
     start() {
-        this.playing = true;
-        if (this.index === 0) this.elem.innerHTML = "";
+        if(this.options.instant){
+            
+        } else {        
+            this.playing = true;
+            if (this.index === 0) this.elem.innerHTML = "";
 
-        if (this.timeoutID) clearTimeout(this.timeoutID);
+            if (this.timeoutID) clearTimeout(this.timeoutID);
 
-        let processNext = () => {
-            if (!this.playing || this.index >= this.queue.length) {
-                this.playing = false;
-                return;
-            }
+            let processNext = () => {
+                if (!this.playing || this.index >= this.queue.length) {
+                    this.playing = false;
+                    return;
+                }
 
-            let token = this.queue[this.index];
-            let returnedToken = this.renderToken(token);
-            this.index++;
+                let token = this.queue[this.index];
+                let returnedToken = this.renderToken(token);
+                this.index++;
 
-            if(this.index >= this.queue.length) {
-                this.options?.onFinish();
-                this.playing = false;
-                return;
-            }
+                if(this.index >= this.queue.length) {
+                    this.options?.onFinish();
+                    this.playing = false;
+                    return;
+                }
 
-            this.timeoutID = setTimeout(processNext, this._speedOverride ?? returnedToken.delay);
-        };
+                this.timeoutID = setTimeout(processNext, this._speedOverride ?? returnedToken.delay);
+            };
 
-        processNext();
+            processNext();
+        }
     }
 
     renderToken(token) {
