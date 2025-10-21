@@ -749,7 +749,10 @@ class Typewriter3 {
 
     start() {
         if(this.options.instant){
-            
+            for(let i = 0; i < this.queue.length; i++){
+                let token = this.queue[i];
+                this.renderToken(token);
+            }
         } else {        
             this.playing = true;
             if (this.index === 0) this.elem.innerHTML = "";
