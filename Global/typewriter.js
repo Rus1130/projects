@@ -795,12 +795,18 @@ class Typewriter3 {
         } else if (token.type === "tag") {
             switch(token.name) {
 
+                case "invert": {
+                    let tempTextColor = this.currentTextColor;
+                    this.currentTextColor = this.currentBackgroundColor;
+                    this.currentBackgroundColor = tempTextColor;
+                } break;
+
                 case "hr": {
                     let hr = document.createElement("hr");
                     this.elem.appendChild(hr);
                     token.delay = this.options.charDelay;
                 } break;
-                
+
                 case "tab": {
                     let tabSpace = document.createElement("span");
                     let spaceCount = parseInt(token.arguments[0]) || 4;
