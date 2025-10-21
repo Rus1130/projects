@@ -15,7 +15,7 @@ One could say, there's a "[invert]void[invert]".[linebreak]
 how /they/ treated me after the fact,[newline]
 saying I caused the fire. I didn't. I swear.
 [linebreak]
-\*\*\*[sleep 1000]
+[speed 1]\*\*\*[speeddefault][sleep 1000]
 [linebreak]
 Or did I? I don't remember.[linebreak]
 I can't remember. I don't remember /how/ to remember.[newline]
