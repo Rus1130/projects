@@ -794,6 +794,13 @@ class Typewriter3 {
             this.options.onCharacterDisplayed?.(token);
         } else if (token.type === "tag") {
             switch(token.name) {
+
+                case "hr": {
+                    let hr = document.createElement("hr");
+                    this.elem.appendChild(hr);
+                    token.delay = this.options.charDelay;
+                } break;
+                
                 case "tab": {
                     let tabSpace = document.createElement("span");
                     let spaceCount = parseInt(token.arguments[0]) || 4;
@@ -801,15 +808,18 @@ class Typewriter3 {
                     token.delay = this.options.charDelay;
                     this.elem.appendChild(tabSpace);
                 } break;
+
                 case "newline": {
                     this.elem.appendChild(document.createElement("br"));
                     token.delay = this.options.newlineDelay;
                 } break;
+
                 case "linebreak": {
                     this.elem.appendChild(document.createElement("br"));
                     this.elem.appendChild(document.createElement("br"));
                     token.delay = this.options.newlineDelay;
                 } break;
+
                 case "newpage": {
                     this.pause();
                     let pageBreak = document.createElement("div");
@@ -825,23 +835,28 @@ class Typewriter3 {
                     this.elem.appendChild(pageBreak);
                     window.scrollTo(window.scrollX, document.body.scrollHeight);
                 } break;
+
                 case "speeddefault": {
                     this.speedTagOverride = null;
                 } break;
+
                 case "speed": {
                     let speed = parseInt(token.arguments[0]) || this.options.charDelay;
                     this.speedTagOverride = speed;
                 } break;
+
                 case "sleep": {
                     let speed = parseInt(token.arguments[0]) || 1000;
                     token.delay = speed;
                     slept = true;
                 } break;
+
                 case "function": {
                     if(this.playing){
                         this.options.onFunctionTag?.();
                     }
                 } break;
+
                 case "color": {
                     if(token.arguments[0].startsWith("#")) {
                         this.currentTextColor = token.arguments[0];
@@ -849,9 +864,11 @@ class Typewriter3 {
                         this.currentTextColor = `rgb(${token.arguments[0]}, ${token.arguments[1]}, ${token.arguments[2]})`;
                     }
                 } break;
+
                 case "resetcolor": {
                     this.currentTextColor = this.options.defaultTextColor;
                 } break;
+
                 case "background": {
                     if(token.arguments[0].startsWith("#")) {
                         this.currentBackgroundColor = token.arguments[0];
@@ -859,6 +876,7 @@ class Typewriter3 {
                         this.currentBackgroundColor = `rgb(${token.arguments[0]}, ${token.arguments[1]}, ${token.arguments[2]})`;
                     }
                 } break;
+
                 case "resetbg": {
                     this.currentBackgroundColor = this.options.defaultBackgroundColor;
                 } break;
