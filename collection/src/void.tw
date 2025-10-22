@@ -5,6 +5,7 @@
     custom: {
         ",": 350
         ".": 600
+        "?": 800
     }
 #}}
 Ever since the [color 255 60 60]/fire/[resetcolor], I've been[newline]
