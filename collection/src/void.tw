@@ -8,32 +8,32 @@
         "?": 800
     }
 #}}
-Ever since the [color 255 60 60]/fire/[resetcolor], I've been[newline]
-missing a part of me. It's[newline]
-like there's a hole inside of me.[newline]
+Ever since the [color 255 60 60]/fire/[resetcolor], I've been[speed 1][newline]
+[speeddefault]missing a part of me. It's[speed 1][newline]
+[speeddefault]like there's a hole inside of me.[newline]
 One could say, there's a "[invert]void[invert]".[linebreak]
-[sleep 800]a void sounds like "avoid", which is[newline]
-how /they/ treated me after the fact,[newline]
+[sleep 800]a void sounds like "avoid", which is[speed 1][newline]
+[speeddefault]how [sleep 200][speed 80]/they/[speeddefault][sleep 200] treated me after the fact,[newline]
 saying I caused the fire. I didn't. I swear.
 [linebreak]
 [speed 1]\*\*\*[speeddefault][sleep 1000]
 [linebreak]
 Or did I? I don't remember.[linebreak]
 I can't remember. I don't remember /how/ to remember.[newline]
-That entire day was a blur to me. A[newline]
-void. It's like the time between falling asleep and[newline]
-waking up. Nothingness. Who am I talking to? What am I talking to? Who are you?
+That entire day was a blur to me. A[speed 1][newline]
+[speeddefault]void. It's like the time between falling asleep and[speed 1][newline]
+[speeddefault]waking up. Nothingness. Who am I talking to? What am I talking to? Who are you?
 [linebreak]
 [speed 1]\*\*\*[speeddefault][sleep 1000]
 [linebreak]
-Oh, right. The fire. The fire that[newline]
-left a [invert]void[invert] inside of me.[newline]
-Burned it inside of me. That[newline]
-was the day the [invert]void[invert] taught[newline]
-me the cruelty of the world.[newline]
+Oh, right. The fire. The fire that[speed 1][newline]
+[speeddefault]left a [invert]void[invert] inside of me.[newline]
+Burned it inside of me. That[speed 1][newline]
+[speeddefault]was the day the [invert]void[invert] taught[speed 1][newline]
+[speeddefault]me the cruelty of the world.[newline]
 The world is a cruel place.[newline]
-It is a crude place, but[newline]
-there is nothing I can do except stand up, and move forward, away from the fire.
+It is a crude place, but[speed 1][newline]
+[speeddefault]there is nothing I can do except stand up, and move forward, away from the fire.
 [linebreak]
 \*[sleep 100]
 [linebreak]
