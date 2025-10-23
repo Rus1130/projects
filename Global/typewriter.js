@@ -840,7 +840,7 @@ class Typewriter3 {
 
                     case "speed": {
                         let speed = parseInt(token.arguments[0]) || this.options.charDelay;
-                        let overrideCustomChars = token.arguments[1] === "1" ? false : true;
+                        let overrideCustomChars = token.arguments[1] === "1" ? true : false;
                         this.speedTagOverride = {
                             speed,
                             overrideCustomChars
@@ -955,7 +955,7 @@ class Typewriter3 {
 
                     case "speed": {
                         let speed = parseInt(token.arguments[0]) || this.options.charDelay;
-                        let overrideCustomChars = token.arguments[1] === "1" ? false : true;
+                        let overrideCustomChars = token.arguments[1] === "1" ? true : false;
                         this.speedTagOverride = {
                             speed,
                             overrideCustomChars
