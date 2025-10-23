@@ -840,7 +840,11 @@ class Typewriter3 {
 
                     case "speed": {
                         let speed = parseInt(token.arguments[0]) || this.options.charDelay;
-                        this.speedTagOverride = speed;
+                        let overrideCustomChars = token.arguments[1] === "1" ? false : true;
+                        this.speedTagOverride = {
+                            speed,
+                            overrideCustomChars
+                        };
                     } break;
 
                     case "sleep": {
@@ -951,7 +955,11 @@ class Typewriter3 {
 
                     case "speed": {
                         let speed = parseInt(token.arguments[0]) || this.options.charDelay;
-                        this.speedTagOverride = speed;
+                        let overrideCustomChars = token.arguments[1] === "1" ? false : true;
+                        this.speedTagOverride = {
+                            speed,
+                            overrideCustomChars
+                        };
                     } break;
 
                     case "sleep": {
@@ -993,7 +1001,15 @@ class Typewriter3 {
             }
         }
 
-        if(this.speedTagOverride != null && slept == false) token.delay = this.speedTagOverride;
+        if(this.speedTagOverride != null && slept == false) {
+            if(this.speedTagOverride.overrideCustomChars) {
+                token.delay = this.speedTagOverride.speed;
+            } else {
+                if(!this.options.customDelays[token.content]) {
+                    token.delay = this.speedTagOverride.speed;
+                }
+            }
+        }
 
         return token;
     }
