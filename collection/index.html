@@ -51,27 +51,27 @@
     <div class="button" onclick="location.href = 'https://rus1130.github.io/projects/index.html?bypass=true'">▌< Return to main page</div>
 </body>
 <script>
-    let clicks = 0;
-    const divs = {};
+    (() => {
+        let clicks = 0;
+        const divs = {};
 
-    Array.from(document.body.children).forEach((div, i) => {
-        if(!div.classList.contains('button')) return;
-        div.setAttribute('data-i', i);
-        if(div.classList.contains("hidden")) {
-            divs[i] = div;
-            div.remove();
-        }
-    });
-
-    console.log(divs)
-
-    document.body.addEventListener('click', () => {
-        clicks++;
-        if(clicks >= 50) {
-            Object.values(divs).forEach(div => {
-                document.body.insertBefore(div, document.body.children[div.getAttribute('data-i')]);
-                div.classList.remove('hidden');
-            });
-        }
-    });
+        Array.from(document.body.children).forEach((div, i) => {
+            if(!div.classList.contains('button')) return;
+            div.setAttribute('data-i', i);
+            if(div.classList.contains("hidden")) {
+                divs[i] = div;
+                div.remove();
+            }
+        });
+        
+        document.body.addEventListener('click', () => {
+            clicks++;
+            if(clicks >= 50) {
+                Object.values(divs).forEach(div => {
+                    document.body.insertBefore(div, document.body.children[div.getAttribute('data-i')]);
+                    div.classList.remove('hidden');
+                });
+            }
+        });
+    })();
 </script>
