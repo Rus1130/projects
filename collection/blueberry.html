@@ -1,0 +1,41 @@
+<!-- written 3 nov, 2025 -->
+<head>
+    <link rel="stylesheet" href="./src/css.css">
+    <script src="../Global/typewriter.js"></script>
+    <meta property="og:title"       content="Blueberry"                                                    />
+    <meta property="og:description" content=""                                                             />
+    <meta property="og:url"         content="https://rus1130.github.io/projects/collection/blueberry.html" />
+    <title>Blueberry</title>
+</head>
+<body>
+    <div id="out"></div>
+    <div class="button" id="return" onclick="location.href = 'https://rus1130.github.io/projects/collection/'" style="display: none;">▌< Return</div>
+</body>
+<script>
+    fetch('./src/blueberry.tw')
+    .then(response => response.text())
+    .then(text => {
+        let tw3 = new Typewriter3(text, document.getElementById("out"), {
+            charDelay: 100,
+            newlineDelay: 500,
+            customDelays: {
+                ",": 350,
+                ".": 600
+            },
+            newpageText: "▌Next >",
+            defaultTextColor: "#ffffff",
+            defaultBackgroundColor: "#000000",
+            onFunctionTag: () => {
+                document.getElementById('return').style.display = 'block';
+            }
+        });
+
+        document.body.addEventListener('keydown', (event) => {
+            if (event.code === 'Space') tw3.togglePause();
+            if (event.code === 'ArrowRight') tw3.speedOverride(1);
+            if (event.code === 'ArrowLeft') tw3.speedOverride(null);
+        });
+
+        tw3.start();
+    });
+</script>

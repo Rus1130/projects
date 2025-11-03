@@ -1,0 +1,16 @@
+{{# written 3 nov, 2025 #}}
+{{#timecalc
+    char: 100
+    newline: 500
+    custom: {
+        ",": 350
+        ".": 600
+    }
+#}}
+"Give a man a blueberry,[newline]
+feed him for a day.[newline]
+Teach a man to fish for blueberries,[newline]
+and you feed him for a lifetime."[linebreak]
+That's what they say, anyway.[newline]
+Here in this little town, estranged from the rest of the world,[newline]
+We fish for blueberries here.
