@@ -1,21 +1,23 @@
 {{# written 3 nov, 2025 #}}
 {{#timecalc
-    char: 100
+    char: 70
     newline: 500
     custom: {
-        ",": 350
-        ".": 600
+        ",": 300
+        ".": 500
     }
 #}}
 "Give a man a blueberry,[newline]
 feed him for a day.[newline]
 Teach a man to fish for blueberries,[newline]
 and you feed him for a lifetime."[linebreak]
+[sleep 1000][speed 50 0]
 That's what they say, anyway.[newline]
 Here in this estranged little town,[newline]
 hours and hours away from anywhere meaningful.[newline]
 We fish for blueberries here.[linebreak]
+[sleep 1000]
 Here in this ruined little town,[newline]
-the hedgehogs pile up at the gates of our gardens,[newline]
-and at the piers of our lakes,[newline]
-waiting for a blueberry.
+the hedgehogs pile up at the piers of our lakes,[newline]
+and at the gates of our gardens,[newline]
+waiting for a blueberry.[linebreak][sleep 700][function]

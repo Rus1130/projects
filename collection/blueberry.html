@@ -3,7 +3,7 @@
     <link rel="stylesheet" href="./src/css.css">
     <script src="../Global/typewriter.js"></script>
     <meta property="og:title"       content="Blueberry"                                                    />
-    <meta property="og:description" content=""                                                             />
+    <meta property="og:description" content="Give a man a blueberry, feed him for a day."                  />
     <meta property="og:url"         content="https://rus1130.github.io/projects/collection/blueberry.html" />
     <title>Blueberry</title>
 </head>
@@ -16,11 +16,11 @@
     .then(response => response.text())
     .then(text => {
         let tw3 = new Typewriter3(text, document.getElementById("out"), {
-            charDelay: 100,
+            charDelay: 70,
             newlineDelay: 500,
             customDelays: {
-                ",": 350,
-                ".": 600
+                ",": 300,
+                ".": 500
             },
             newpageText: "▌Next >",
             defaultTextColor: "#ffffff",
