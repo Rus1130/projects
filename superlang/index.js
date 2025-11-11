@@ -23,8 +23,13 @@ class Method {
 
         for (let i = 0; i < args.length; i++) {
             const spec = this.argSpecs[i];
-            const actualType = typeof args[i];
-            const allowed = spec.types.includes("any") || spec.types.includes(actualType);
+            let actualType;
+            if (Array.isArray(args[i])) actualType = "array";
+            else actualType = typeof args[i];
+
+            const allowed =
+                spec.types.includes("any") || spec.types.includes(actualType);
+            
             if (!allowed) {
                 throw new Error(`Argument ${i + 1} of ${this.fullName()} must be one of [${spec.types.join(", ")}], got ${actualType}`);
             }
@@ -44,10 +49,12 @@ class Method {
 class MethodRegistry {
     static methods = {};
 
-    static register(method) {
-        const parent = method.parentType || "global";
-        if (!this.methods[parent]) this.methods[parent] = {};
-        this.methods[parent][method.name] = method;
+    static register(...method) {
+        for (const m of method) {
+            const parent = m.parentType || "global";
+            if (!this.methods[parent]) this.methods[parent] = {};
+            this.methods[parent][m.name] = m;
+        }
     }
 
     static get(parentType, methodName) {
@@ -69,18 +76,41 @@ class MethodRegistry {
 MethodRegistry.register(new Method(null, "print", [{
     types: ["string", "number"]
 }], (parent, args) => {
-    print(args[0]);
+    outputToTerminal(args[0]);
 }));
 
-MethodRegistry.register(new Method("any", "type", [] , function(parent, args) {
-    return (typeof parent)
-}));
+MethodRegistry.register(
+    new Method("any", "type", [] , function(parent, args) {
+        return Array.isArray(parent) ? "array" : typeof parent;
+    }),
+    new Method("array", "length", [] , function(parent, args) {
+        return parent.length;
+    }),
+    new Method("array", "join", [{ types: ["string"], optional: true }], function(parent, args) {
+        const sep = args[0] !== undefined ? args[0] : ",";
+        return parent.join(sep);
+    }),
+    new Method("array", "index", [{ types: ["number"] }], function(parent, args) {
+
+        const index = args[0] >= 0 ? args[0] : parent.length + args[0];
+
+        if (index < 0 || index >= parent.length) {
+            throw new Error(`Index ${index} out of range for array of length ${parent.length}`);
+        }
+        return parent[index];
+    })
+);
 
 function tokenize(input) {
     const tokens = [];
     const tokenSpec = [
-        ['NUMBER', /^\d+/],
+        ['NUMBER', /^-?\d+(.\d+)?/],
         ['STRING', /^"([^"\\]|\\.)*"|^'([^'\\]|\\.)*'/],
+        ['LBRACKET', /^\[/],
+        ['RBRACKET', /^\]/],
+        ['LBRACE', /^\{/],
+        ['RBRACE', /^\}/],
+        ['AT', /^@/],
         ['IDENTIFIER', /^[a-zA-Z_]\w*/],
         ['ARROW', /^>/],
         ['EQUAL', /^=/],
@@ -161,15 +191,11 @@ function parse(tokens) {
         return node;
     }
 
-    function parseFactor() {
-        const token = peek();
-        if (!token) throw new Error("Unexpected end of input");
-
-        if (token.type === 'IDENTIFIER' && tokens[current + 1]?.type === 'ARROW') {
-            const parent = consume('IDENTIFIER').value;
+    function parseMethodChain(base) {
+        let parent = base;
+        while (peek()?.type === 'ARROW') {
             consume('ARROW');
             const methodName = consume('IDENTIFIER').value;
-
             let args = [];
             if (peek()?.type === 'LPAREN') {
                 consume('LPAREN');
@@ -182,13 +208,21 @@ function parse(tokens) {
                 }
                 consume('RPAREN');
             }
-
-            return { type: "MethodCall", parent, name: methodName, args };
+            parent = { type: "MethodCall", parent, name: methodName, args };
         }
-        if (token.type === 'NUMBER') return { type: "NumberLiteral", value: Number(tokens[current++].value) };
-        if (token.type === 'STRING') {
+        return parent;
+    }
+
+    function parseFactor() {
+        let node;
+        const token = peek();
+        if (!token) throw new Error("Unexpected end of input");
+
+        if (token.type === 'NUMBER') {
+            current++;
+            node = { type: "NumberLiteral", value: Number(token.value) };
+        } else if (token.type === 'STRING') {
             const raw = tokens[current++].value;
-            // Remove surrounding quotes and unescape
             const val = raw.slice(1, -1).replace(/\\(["'\\nrt])/g, (_, c) => {
                 switch (c) {
                     case "n": return "\n";
@@ -197,27 +231,27 @@ function parse(tokens) {
                     default: return c;
                 }
             });
-            return { type: "StringLiteral", value: val };
-        }
-        if (token.type === 'IDENTIFIER') {
-            // Handle function calls like print(expr)
-            if (tokens[current + 1] && tokens[current + 1].type === 'LPAREN') {
-                const name = tokens[current++].value;
-                consume('LPAREN');
-                const arg = parseExpression();
-                consume('RPAREN');
-                return { type: "CallExpression", name, argument: arg };
+            node = { type: "StringLiteral", value: val };
+        } else if (token.type === 'IDENTIFIER') {
+            node = { type: "Identifier", value: consume('IDENTIFIER').value };
+        } else if (token.type === 'LBRACKET') {
+            consume('LBRACKET');
+            const elements = [];
+            if (peek()?.type !== 'RBRACKET') {
+                elements.push(parseExpression());
+                while (peek()?.type === 'COMMA') {
+                    consume('COMMA');
+                    elements.push(parseExpression());
+                }
             }
-            return { type: "Identifier", value: tokens[current++].value };
-        }
-        if (token.type === 'LPAREN') {
-            consume('LPAREN');
-            const expr = parseExpression();
-            consume('RPAREN');
-            return expr;
+            consume('RBRACKET');
+            node = { type: "ArrayLiteral", elements };
+        } else {
+            throw new Error(`Unexpected token: ${token.type}`);
         }
 
-        throw new Error(`Unexpected token: ${token.type}`);
+        // 👇 Handle chained method calls
+        return parseMethodChain(node);
     }
 
     function parseStatement() {
@@ -312,6 +346,9 @@ function evaluate(node, env = {}) {
         case "StringLiteral":
             return node.value;
 
+        case "ArrayLiteral":
+            return node.elements.map(e => evaluate(e, env));
+
         case "Identifier":
             if (node.value in env) return env[node.value];
             throw new Error(`Undefined variable: ${node.value}`);
@@ -331,33 +368,34 @@ function evaluate(node, env = {}) {
             default: throw new Error(`Unknown operator: ${node.operator}`);
         }
 
-    case "CallExpression":
-        if (node.name === "print") {
-            const val = evaluate(node.argument, env);
-            print(val)
-            return val;
-        }
-        throw new Error(`Unknown function: ${node.name}`);
-
     case "MethodCall": {
-        const parentValue = node.parent ? evaluate({ type: "Identifier", value: node.parent }, env) : null;
+        // Evaluate parentValue correctly whether node.parent is:
+        // - an AST node (ArrayLiteral, MethodCall, Identifier, etc.)
+        // - OR a plain string (older parseStatement style)
+        let parentValue = null;
+        if (node.parent) {
+            if (typeof node.parent === "string") {
+                parentValue = evaluate({ type: "Identifier", value: node.parent }, env);
+            } else {
+                parentValue = evaluate(node.parent, env);
+            }
+        }
 
-        // Determine the type name for lookup
+        // runtime parent type for lookup
         let parentType = "global";
         if (parentValue !== null && parentValue !== undefined) {
-            parentType = typeof parentValue;
+            parentType = Array.isArray(parentValue) ? "array" : typeof parentValue;
         }
 
-        // Get the most specific method for that type or fallback to "any"
+        // lookup method by runtime parent type, then fallback to "any"
         let method = MethodRegistry.get(parentType, node.name);
         if (!method) method = MethodRegistry.get("any", node.name);
 
-        if (!method)
-            throw new Error(`Unknown method: ${parentType}>${node.name}`);
+        if (!method) throw new Error(`Unknown method: ${parentType}>${node.name}`);
 
         const evaluatedArgs = node.args.map(arg => evaluate(arg, env));
 
-        return method.fn(parentValue, evaluatedArgs);
+        return method.execute(parentValue, evaluatedArgs);
     }
 
     default:

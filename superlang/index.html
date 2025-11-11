@@ -25,11 +25,14 @@
     <script src="index.js"></script>
 </head>
 <body>
-    <h1>My Custom Language Interpreter</h1>
+    <h1>SuperLang Interpreter</h1>
 
     <textarea id="editor" rows="10" cols="60">
-    x = 5 + 3 * (2 - 1)
-    print(x>type)
+    @greet(name){
+        return 'Hi, ' + name + '!'
+    }
+
+    print(@greet('Alice'))
     </textarea>
     <br>
     <button id="runBtn">Run</button>
@@ -41,7 +44,7 @@
     const editor = document.getElementById("editor");
     const output = document.getElementById("output");
 
-    function print(message) {
+    function outputToTerminal(message) {
         output.innerHTML += message + "\n";
     }
 
