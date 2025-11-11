@@ -31,9 +31,9 @@ class Method {
         }
     }
 
-    execute(args) {
+    execute(parent, args) {
         this.validateArgs(args);
-        return this.fn(...args);
+        return this.fn(parent, args);
     }
 
     fullName() {
@@ -68,12 +68,12 @@ class MethodRegistry {
 
 MethodRegistry.register(new Method(null, "print", [{
     types: ["string", "number"]
-}], msg => {
-    print(msg)
+}], (parent, args) => {
+    print(args[0]);
 }));
 
-MethodRegistry.register(new Method("any", "type", [] , function(args) {
-    return typeof this;
+MethodRegistry.register(new Method("any", "type", [] , function(parent, args) {
+    return (typeof parent)
 }));
 
 function tokenize(input) {
@@ -92,8 +92,12 @@ function tokenize(input) {
         ['RPAREN', /^\)/],
         ['SEMICOLON', /^;/],
         ['NEWLINE', /^\n/],
-        ['WHITESPACE', /^[ \t\r]+/]
+        ['WHITESPACE', /^[ \t\r]+/],
+        ['COMMA', /^,/],
     ];
+
+    let line = 1;
+    let col = 1;
 
     while (input.length > 0) {
         let matched = false;
@@ -101,13 +105,24 @@ function tokenize(input) {
             const match = input.match(regex);
             if (match) {
                 matched = true;
-                input = input.slice(match[0].length);
-                if (type !== 'WHITESPACE' && type !== 'NEWLINE') tokens.push({ type, value: match[0] });
+                const value = match[0];
+                input = input.slice(value.length);
+
+                if (type === "NEWLINE") {
+                    line++;
+                    col = 1;
+                } else {
+                    if (type !== 'WHITESPACE' && type !== 'NEWLINE') {
+                        tokens.push({ type, value, line, col });
+                    }
+                    col += value.length;
+                }
                 break;
             }
         }
-        if (!matched) throw new Error(`Unexpected token: "${input[0]}"`);
+        if (!matched) throw new Error(`Unexpected token '${input[0]}' at ${line}:${col}`);
     }
+
     return tokens;
 }
 
@@ -116,8 +131,16 @@ function parse(tokens) {
 
     function peek() { return tokens[current]; }
     function consume(type) {
-        if (peek() && peek().type === type) return tokens[current++];
-        throw new Error(`Expected ${type}, found ${peek()?.type}`);
+        const token = peek();
+        if (token && token.type === type) {
+            current++;
+            return token;
+        }
+        if (token) {
+            throw new Error(`Expected ${type}, found ${token.type} at line ${token.line}, column ${token.col}`);
+        } else {
+            throw new Error(`Expected ${type}, but reached end of input`);
+        }
     }
 
     function parseExpression() {
@@ -142,6 +165,26 @@ function parse(tokens) {
         const token = peek();
         if (!token) throw new Error("Unexpected end of input");
 
+        if (token.type === 'IDENTIFIER' && tokens[current + 1]?.type === 'ARROW') {
+            const parent = consume('IDENTIFIER').value;
+            consume('ARROW');
+            const methodName = consume('IDENTIFIER').value;
+
+            let args = [];
+            if (peek()?.type === 'LPAREN') {
+                consume('LPAREN');
+                if (peek()?.type !== 'RPAREN') {
+                    args.push(parseExpression());
+                    while (peek()?.type === 'COMMA') {
+                        consume('COMMA');
+                        args.push(parseExpression());
+                    }
+                }
+                consume('RPAREN');
+            }
+
+            return { type: "MethodCall", parent, name: methodName, args };
+        }
         if (token.type === 'NUMBER') return { type: "NumberLiteral", value: Number(tokens[current++].value) };
         if (token.type === 'STRING') {
             const raw = tokens[current++].value;
@@ -297,11 +340,24 @@ function evaluate(node, env = {}) {
         throw new Error(`Unknown function: ${node.name}`);
 
     case "MethodCall": {
-        const method = MethodRegistry.get(node.parent, node.name);
-        if (!method) throw new Error(`Unknown method: ${node.parent ? node.parent + ">" : ""}${node.name}`);
+        const parentValue = node.parent ? evaluate({ type: "Identifier", value: node.parent }, env) : null;
+
+        // Determine the type name for lookup
+        let parentType = "global";
+        if (parentValue !== null && parentValue !== undefined) {
+            parentType = typeof parentValue;
+        }
+
+        // Get the most specific method for that type or fallback to "any"
+        let method = MethodRegistry.get(parentType, node.name);
+        if (!method) method = MethodRegistry.get("any", node.name);
+
+        if (!method)
+            throw new Error(`Unknown method: ${parentType}>${node.name}`);
 
         const evaluatedArgs = node.args.map(arg => evaluate(arg, env));
-        return method.execute(evaluatedArgs);
+
+        return method.fn(parentValue, evaluatedArgs);
     }
 
     default:
