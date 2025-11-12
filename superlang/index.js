@@ -21,6 +21,9 @@ class Method {
             throw new Error(`${this.fullName()} expected ${minArgs}-${maxArgs} arguments, got ${args.length}`);
         }
 
+        const nodeArgs = structuredClone(args);
+        args = args.map(a => a.value);
+
         for (let i = 0; i < args.length; i++) {
             const spec = this.argSpecs[i];
             let actualType = getType(args[i]);
@@ -29,7 +32,7 @@ class Method {
                 spec.types.includes("any") || spec.types.includes(actualType);
             
             if (!allowed) {
-                throw new Error(`Argument ${i + 1} of ${this.fullName()} must be one of [${spec.types.join(", ")}], got ${actualType}`);
+                runtimeError(nodeArgs[i], `Argument ${i + 1} of ${this.fullName()} must be one of [${spec.types.join(", ")}], got ${actualType}`);
             }
         }
     }
@@ -71,11 +74,35 @@ class MethodRegistry {
     }
 }
 
-MethodRegistry.register(new Method(null, "print", [{
-    types: ["string", "number"]
-}], (parent, args) => {
-    outputToTerminal(args[0]);
-}));
+MethodRegistry.register(
+    new Method(null, "print", [{
+        types: ["string", "number"]
+    }], (parent, args) => {
+        outputToTerminal(args[0]);
+    }),
+
+    new Method("math", "random", [
+        {
+            types: ["number"],
+            optional: false
+        },
+        {
+            types: ["number"],
+            optional: true
+        }
+    ], (parent, args) => {
+        // 1 argument, 0 to n, inclusive
+        // 2 arguments, min to max, inclusive
+        if(args.length === 2) {
+            const min = args[0];
+            const max = args[1];
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        } else {
+            const n = args[0];
+            return Math.floor(Math.random() * (n + 1));
+        }
+    }),
+);
 
 function getType(value) {
     if(value.type !== undefined) return value.type;
@@ -101,6 +128,24 @@ MethodRegistry.register(
             throw new Error(`Index ${index} out of range for array of length ${parent.length}`);
         }
         return parent[index];
+    }),
+    new Method("string", "length", [] , function(parent, args) {
+        return parent.length;
+    }),
+    new Method("string", "wrap", [
+        { types: ["string"] },
+        { types: ["string"], optional: true }
+    ] , function(parent, args) {
+        const left = args[0];
+        const right = args[1] !== undefined ? args[1] : left;
+        return left + parent + right;
+    }),
+
+    new Method("number", "toString", [] , function(parent, args) {
+        return parent.toString();
+    }),
+    new Method("boolean", "toString", [] , function(parent, args) {
+        return parent.toString();
     })
 );
 
@@ -108,19 +153,30 @@ function tokenize(input) {
     const tokens = [];
     const tokenSpec = [
         ['AT', /^@/],
-        ['NUMBER', /^-?\d+(.\d+)?/],
+        ['NUMBER', /^-?\d+(\.\d+)?/],
         ['STRING', /^"([^"\\]|\\.)*"|^'([^'\\]|\\.)*'/],
         ['LBRACKET', /^\[/],
         ['RBRACKET', /^\]/],
         ['LBRACE', /^\{/],
         ['RBRACE', /^\}/],
+        ["INDEX", /^:/],
         ['IDENTIFIER', /^[a-zA-Z_]\w*/],
+        ["PLUS_EQ", /^\+=/],
+        ["MINUS_EQ", /^-=/],
+        ["DIV_EQ", /^\/=/],
+        ["MULT_EQ", /^\*=/],
         ['ARROW', /^>/],
         ['EQUAL', /^=/],
         ['PLUS', /^\+/],
         ['MINUS', /^-/],
-        ['STAR', /^\*/],
-        ['SLASH', /^\//],
+        ['MULT', /^\*/],
+        ['DIV', /^\//],
+        ["GT", /^ > /],
+        ["LT", /^ < /],
+        ["EQ", /^==/],
+        ["NEQ", /^!=/],
+        ["GTE", /^>=/],
+        ["LTE", /^<=/],
         ['LPAREN', /^\(/],
         ['RPAREN', /^\)/],
         ['SEMICOLON', /^;/],
@@ -220,16 +276,35 @@ function parse(tokens) {
         let node = parseTerm();
         while (peek() && (peek().type === 'PLUS' || peek().type === 'MINUS')) {
             const op = tokens[current++].value;
-            node = { type: "BinaryExpression", operator: op, left: node, right: parseTerm() };
+            node = { type: "BinaryExpression", operator: op, left: node, right: parseTerm(), line: node.line, col: node.col};
         }
         return node;
     }
 
     function parseTerm() {
         let node = parseFactor();
-        while (peek() && (peek().type === 'STAR' || peek().type === 'SLASH')) {
+        while (peek() && (peek().type === 'MULT' || peek().type === 'DIV')) {
             const op = tokens[current++].value;
             node = { type: "BinaryExpression", operator: op, left: node, right: parseFactor(), line: node.line, col: node.col};
+        }
+        return node;
+    }
+
+    function parseComparison() {
+        let node = parseExpression();
+        while (peek() && ['LT', 'GT', 'LTE', 'GTE', 'EQ', 'NEQ'].includes(peek().type)) {
+            const opToken = tokens[current++];
+            const opMap = {
+                LT: ' < ', GT: ' > ', LTE: '<=', GTE: '>=', EQ: '==', NEQ: '!='
+            };
+            node = { 
+                type: "BinaryExpression",
+                operator: opMap[opToken.type],
+                left: node,
+                right: parseExpression(), // right-hand side is another +/-
+                line: node.line,
+                col: node.col
+            };
         }
         return node;
     }
@@ -277,7 +352,14 @@ function parse(tokens) {
             node = { type: "StringLiteral", value: val, line: token.line, col: token.col };
         } else if (token.type === 'IDENTIFIER') {
             node = { type: "Identifier", value: consume('IDENTIFIER').value, line: token.line, col: token.col };
-        }  else if (token.type === 'AT') {
+        } else if (token.type === 'LPAREN') {
+            consume('LPAREN');
+            node = parseComparison();  // parse the inner expression fully
+            consume('RPAREN');
+            // Keep the line/col from the '(' for better errors
+            node.line = token.line;
+            node.col = token.col;
+        } else if (token.type === 'AT') {
             consume('AT');
             const name = consume('IDENTIFIER').value;
             let args = [];
@@ -313,8 +395,6 @@ function parse(tokens) {
         return parseMethodChain(node);
     }
 
-    // :{1<2}
-
     function parseStatement() {
         // --- Function Declaration Lookahead ---
         if (peek()?.type === 'IDENTIFIER' && peek().value === 'def' && tokens[current + 1]?.type === 'IDENTIFIER') {
@@ -322,10 +402,24 @@ function parse(tokens) {
             return parseFunctionDeclaration();
         }
 
+        if(peek()?.type === 'IDENTIFIER' && peek().value === 'if') {
+            consume('IDENTIFIER');
+            const condition = parseComparison();
+            consume('LBRACE');
+            const body = [];
+            while (peek() && peek().type !== 'RBRACE') {
+                body.push(parseStatement());
+                if (peek()?.type === 'SEMICOLON') consume('SEMICOLON');
+            }
+            consume('RBRACE');
+            return { type: "IfStatement", condition, body };
+        }
+
         if(peek()?.type === 'IDENTIFIER' && peek().value === 'loop') {
             consume('IDENTIFIER');
-            if(peek()?.type === 'NUMBER') {
-                const count = parseExpression();
+            const next = peek();
+            if(next?.type === 'LPAREN') {
+                const condition = parseComparison();
                 consume('LBRACE');
                 const body = [];
                 while (peek() && peek().type !== 'RBRACE') {
@@ -333,22 +427,56 @@ function parse(tokens) {
                     if (peek()?.type === 'SEMICOLON') consume('SEMICOLON');
                 }
                 consume('RBRACE');
-                return { type: "LoopStatement", count, body };
+                return { type: "ConditionalLoopStatement", condition, body };
+            } else if (next?.type === 'NUMBER' || next?.type === 'IDENTIFIER') {
+                let count = consume(['NUMBER', 'IDENTIFIER']);
+
+                consume('LBRACE');
+                const body = [];
+                while (peek() && peek().type !== 'RBRACE') {
+                    body.push(parseStatement());
+                    if (peek()?.type === 'SEMICOLON') consume('SEMICOLON');
+                }
+                consume('RBRACE');
+                return { 
+                    type: "CountLoopStatement", 
+                    count: {
+                        type: count.type === 'NUMBER' ? "NumberLiteral" : "Identifier",
+                        value: count.value,
+                        line: next.line,
+                        col: next.col 
+                    }, 
+                    body 
+                };
+
+            } else {
+                runtimeError(next, `Expected loop count or condition, got: ${next?.type}`);
             }
         }
 
+        // --- Index assignment: identifier:index = expression
+        if (peek()?.type === 'IDENTIFIER' && tokens[current + 1]?.type === 'INDEX' && tokens[current + 2]?.type === 'EQUAL') {
+            const id = consume('IDENTIFIER').value;
+            consume('INDEX');
+            const indexExpr = parseComparison();
+            consume('EQUAL');
+            const value = parseComparison();
+            return { type: "IndexAssignment", identifier: id, index: indexExpr, value };
+        }
+
+
         if (peek()?.type === 'IDENTIFIER' && peek().value === 'return') {
             consume('IDENTIFIER');
-            const value = parseExpression();
+            const value = parseComparison();
             return { type: "ReturnStatement", value };
         }
 
         // --- Assignment: identifier = expression
-        if (peek()?.type === 'IDENTIFIER' && tokens[current + 1]?.type === 'EQUAL') {
+        if (peek()?.type === 'IDENTIFIER' && ['EQUAL', 'PLUS_EQ', 'MINUS_EQ', 'DIV_EQ', "MULT_EQ"].includes(tokens[current + 1]?.type)) {
             const id = consume('IDENTIFIER').value;
-            consume('EQUAL');
-            const value = parseExpression();
-            return { type: "Assignment", identifier: id, value };
+            const op = tokens[current++].type; // consume =, +=, or -=
+            const value = parseComparison();
+            return { type: "Assignment", operator: op, identifier: id, value };
         }
 
         // --- Method call: parent > method (parent is an identifier, older style)
@@ -362,16 +490,16 @@ function parse(tokens) {
             if (peek()?.type === 'LPAREN') {
                 consume('LPAREN');
                 if (peek()?.type !== 'RPAREN') {
-                    args.push(parseExpression());
+                    args.push(parseComparison());
                     while (peek()?.type === 'COMMA') {
                         consume('COMMA');
-                        args.push(parseExpression());
+                        args.push(parseComparison());
                     }
                 }
                 consume('RPAREN');
             } else if (peek() && peek().type !== 'SEMICOLON' && peek().type !== 'NEWLINE') {
                 // single arg without parentheses
-                args.push(parseExpression());
+                args.push(parseComparison());
             }
 
             return { type: "MethodCall", parent, name: methodName, args };
@@ -384,15 +512,15 @@ function parse(tokens) {
             if (peek()?.type === 'LPAREN') {
                 consume('LPAREN');
                 if (peek()?.type !== 'RPAREN') {
-                    args.push(parseExpression());
+                    args.push(parseComparison());
                     while (peek()?.type === 'COMMA') {
                         consume('COMMA');
-                        args.push(parseExpression());
+                        args.push(parseComparison());
                     }
                 }
                 consume('RPAREN');
             } else if (peek() && peek().type !== 'SEMICOLON' && peek().type !== 'NEWLINE') {
-                args.push(parseExpression());
+                args.push(parseComparison());
             }
 
             return { type: "MethodCall", parent: null, name, args };
@@ -406,10 +534,10 @@ function parse(tokens) {
             if (peek()?.type === 'LPAREN') {
                 consume('LPAREN');
                 if (peek()?.type !== 'RPAREN') {
-                    args.push(parseExpression());
+                    args.push(parseComparison());
                     while (peek()?.type === 'COMMA') {
                         consume('COMMA');
-                        args.push(parseExpression());
+                        args.push(parseComparison());
                     }
                 }
                 consume('RPAREN');
@@ -420,7 +548,7 @@ function parse(tokens) {
         // --- Return statement: return expr
         if (peek()?.type === 'IDENTIFIER' && peek().value === 'return') {
             consume('IDENTIFIER');
-            const value = parseExpression();
+            const value = parseComparison();
             return { type: "ReturnStatement", value };
         }
 
@@ -443,6 +571,11 @@ function parse(tokens) {
 
 // Interpreter
 function evaluateProgram(ast, env = {}) {
+    env = {
+        Math: {
+            type: "math",
+        }
+    }
     for (const node of ast.body) {
         evaluate(node, env);
     }
@@ -450,6 +583,30 @@ function evaluateProgram(ast, env = {}) {
 
 function evaluate(node, env = {}) {
     switch (node.type) {
+        case "Assignment": {
+            const right = evaluate(node.value, env);
+            switch(node.operator) {
+                case "EQUAL":
+                    env[node.identifier] = right;
+                    break;
+                case "PLUS_EQ":
+                    env[node.identifier] += right;
+                    break;
+                case "MINUS_EQ":
+                    env[node.identifier] -= right;
+                    break;
+                case "MULT_EQ":
+                    env[node.identifier] *= right;
+                    break;
+                case "DIV_EQ":
+                    env[node.identifier] /= right;
+                    break;
+                default:
+                    runtimeError(node, `Unknown assignment operator: ${node.operator}`);
+            }
+            return env[node.identifier];
+        }
+
         case "Program":
             return evaluateProgram(node, env);
 
@@ -491,13 +648,17 @@ function evaluate(node, env = {}) {
                 case "-": return left - right;
                 case "*": return left * right;
                 case "/": return left / right;
+                case " > ": return left > right;
+                case " < ": return left < right;
+                case ">=": return left >= right;
+                case "<=": return left <= right;
+                case "==": return left == right;
+                case "!=": return left != right;
                 default: runtimeError(node, `Unknown operator: ${node.operator}`);
             }
 
         case "MethodCall": {
             // Evaluate parentValue correctly whether node.parent is:
-            // - an AST node (ArrayLiteral, MethodCall, Identifier, etc.)
-            // - OR a plain string (older parseStatement style)
             let parentValue = null;
             if (node.parent) {
                 if (getType(node.parent) === "string") {
@@ -521,7 +682,18 @@ function evaluate(node, env = {}) {
 
             const evaluatedArgs = node.args.map(arg => evaluate(arg, env));
 
-            return method.execute(parentValue, evaluatedArgs);
+            let args = [];
+
+            node.args.forEach((argNode, index) => {
+                args.push({
+                    value: evaluatedArgs[index],
+                    line: argNode.line,
+                    col: argNode.col
+                })
+            });
+
+
+            return method.execute(parentValue, args);
         }
 
         case "FunctionCall": {
@@ -531,7 +703,7 @@ function evaluate(node, env = {}) {
             }
 
             // Evaluate args
-            const argValues = node.args.map(a => evaluate(a, env));
+            const argValues = node.args.map(a => evaluate(a.value, env));
 
             // Create new scope
             const localEnv = Object.create(env);
@@ -559,12 +731,47 @@ function evaluate(node, env = {}) {
         case "ReturnStatement":
             return { __return: evaluate(node.value, env) };
 
-        case "LoopStatement": 
-            const loopCount = evaluate(node.count, env);
-            if (typeof loopCount !== "number" || loopCount < 0 || !Number.isInteger(loopCount)) {
+        case "CountLoopStatement": 
+            let loopCount = evaluate(node.count, env);
+
+            if (typeof loopCount !== "number" || !Number.isInteger(loopCount) || loopCount < 0) {
                 runtimeError(node, `Loop count must be a non-negative integer, got: ${loopCount}`);
             }
             for (let i = 0; i < loopCount; i++) {
+                env["__iter__"] = i;
+                for (const stmt of node.body) {
+                    const value = evaluate(stmt, env);
+                    if (value && value.__return !== undefined) {
+                        return value.__return;
+                    }
+                }
+                delete env["__iter__"];
+            }
+            return null;
+
+        case "ConditionalLoopStatement":
+            while (true) {
+                const cond = evaluate(node.condition, env);
+                if (typeof cond !== "boolean") {
+                    runtimeError(node, `Loop condition must evaluate to a boolean, got: ${cond}`);
+                }
+                if (!cond) break;
+
+                for (const stmt of node.body) {
+                    const value = evaluate(stmt, env);
+                    if (value && value.__return !== undefined) {
+                        return value.__return;
+                    }
+                }
+            }
+            return null;
+
+        case "IfStatement":
+            const condition = evaluate(node.condition, env);
+            if (typeof condition !== "boolean") {
+                runtimeError(node, `If condition must evaluate to a boolean, got: ${condition}`);
+            }
+            if (condition) {
                 for (const stmt of node.body) {
                     const value = evaluate(stmt, env);
                     if (value && value.__return !== undefined) {
