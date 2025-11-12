@@ -1,3 +1,121 @@
+function parseTimeFormat(text, timestamp){
+    const now = timestamp != null ? new Date(Number(timestamp)) : new Date();
+
+    let dowListShort = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+    let dowListLong = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    let monthListShort = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+    let monthListLong = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+
+    const dayOfWeekShort = dowListShort[now.getDay()];
+    const dayOfWeekLong = dowListLong[now.getDay()];
+
+    const year = now.getFullYear();
+    const yearShort = String(now.getFullYear()).slice(-2);
+
+    const monthNumber = String(now.getMonth() + 1).padStart(2, '0');
+    const monthNumberUnpadded = String(now.getMonth() + 1);
+    const monthShort = monthListShort[now.getMonth()];
+    const monthLong = monthListLong[now.getMonth()]; 
+
+    const day = String(now.getDate()).padStart(2, '0');
+    const dayUnpadded = String(now.getDate());
+    const ordinalDay = String(now.getDate()) + getOrdinalSuffix(+day);
+
+    const hour24 = String(now.getHours()).padStart(2, '0');
+    const hour12 = String((now.getHours() + 11) % 12 + 1).padStart(2, '0');
+    const hour24Unpadded = String(now.getHours());
+    const hour12Unpadded = String((now.getHours() + 11) % 12 + 1);
+
+    const minute = String(now.getMinutes()).padStart(2, '0');
+    const minuteUnpadded = String(now.getMinutes());
+
+    const second = String(now.getSeconds()).padStart(2, '0');
+    const secondUnpadded = String(now.getSeconds());
+
+    const millisecond = String(now.getMilliseconds()).padStart(3, '0');
+    const millisecondUnpadded = String(now.getMilliseconds());
+
+    const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+
+    const timezone = new Date().toLocaleString(["en-US"], {timeZoneName: "short"}).split(" ").pop();
+
+    function getOrdinalSuffix(num) {
+        if (typeof num !== "number" || isNaN(num)) return "";
+    
+        let lastDigit = num % 10;
+        let lastTwoDigits = num % 100;
+    
+        if (lastTwoDigits >= 11 && lastTwoDigits <= 13) return "th";
+    
+        switch (lastDigit) {
+            case 1: return "st";
+            case 2: return "nd";
+            case 3: return "rd";
+            default: return "th";
+        }
+    }
+
+    // totally not ai
+    const replacements = [
+        { char: 'w', value: dayOfWeekShort },
+        { char: 'W', value: dayOfWeekLong },
+
+        { char: 'Y', value: year },
+        { char: 'y', value: yearShort },
+
+        { char: 'mn', value: monthNumber },
+        { char: 'mnu', value: monthNumberUnpadded },
+        { char: "ms", value: monthShort },
+        { char: "M", value: monthLong },
+
+        { char: 'd', value: day },
+        { char: 'du', value: dayUnpadded },
+        { char: "D", value: ordinalDay },
+
+        { char: 'h', value: hour24 },
+        { char: 'hu', value: hour24Unpadded },
+        { char: 'H', value: hour12 },
+        { char: 'Hu', value: hour12Unpadded },
+
+        { char: 'm', value: minute },
+        { char: 'mu', value: minuteUnpadded },
+
+        { char: 's', value: second },
+        { char: 'su', value: secondUnpadded },
+
+        { char: 'l', value: millisecond },
+        { char: 'lu', value: millisecondUnpadded },
+
+        { char: 'a', value: ampm },
+
+        { char: 'z', value: timezone },
+    ];
+
+    let replacementMap = Object.fromEntries(replacements.map(({ char, value }) => [char, value]));
+
+    let dateString = text.replace(/!([a-zA-Z]+)/g, "!$1") // Preserve escaped characters
+        .replace(/\b([a-zA-Z]+)\b/g, (match) => replacementMap[match] ?? match); // Replace only whole words
+
+    return dateString;
+}
+
+class SuperLangError extends Error {
+    constructor(message, node) {
+        super(message);
+        this.name = "SuperLangError";
+        if (node && node.line !== undefined) {
+            this.line = node.line;
+            this.col = node.col;
+        }
+    }
+
+    toString() {
+        if (this.line !== undefined) {
+            return `${this.message}\n    at line ${this.line}, column ${this.col}`;
+        }
+        return `${this.message}`;
+    }
+}
 class Method {
     /**
      * @param {string|null} parentType - e.g. "frog" or null for global
@@ -6,44 +124,41 @@ class Method {
      * @param {Function} fn - implementation
      */
     constructor(parentType, name, argSpecs, fn) {
-        if(parentType === null) parentType = "global";
         this.parentType = parentType;
         this.name = name;
         this.argSpecs = argSpecs;
         this.fn = fn;
     }
 
-    validateArgs(args) {
+    fullName() {
+        return this.parentType ? `${this.parentType}>${this.name}` : this.name;
+    }
+
+    validateArgs(args, callNode) {
         const minArgs = this.argSpecs.filter(a => !a.optional).length;
         const maxArgs = this.argSpecs.length;
 
-        if (args.length < minArgs || args.length > maxArgs) {
-            throw new Error(`${this.fullName()} expected ${minArgs}-${maxArgs} arguments, got ${args.length}`);
-        }
-
-        const nodeArgs = structuredClone(args);
-        args = args.map(a => a.value);
-
         for (let i = 0; i < args.length; i++) {
             const spec = this.argSpecs[i];
-            let actualType = getType(args[i]);
-
+            if (!spec) break;
+            const actualType = getType(args[i].value);
             const allowed =
                 spec.types.includes("any") || spec.types.includes(actualType);
-            
             if (!allowed) {
-                runtimeError(nodeArgs[i], `Argument ${i + 1} of ${this.fullName()} must be one of [${spec.types.join(", ")}], got ${actualType}`);
+                runtimeError(args[i],
+                    `Argument ${i + 1} of ${this.fullName()} must be one of [${spec.types.join(", ")}], got ${actualType}\n(arg "${spec.name}")`);
             }
+        }
+
+        if (args.length < minArgs || args.length > maxArgs) {
+            runtimeError(callNode,
+                `${this.fullName()} expected ${minArgs}-${maxArgs} arguments, got ${args.length}\n(arg "${this.argSpecs[0].name}")`);
         }
     }
 
-    execute(parent, args) {
-        this.validateArgs(args);
-        return this.fn(parent, args);
-    }
-
-    fullName() {
-        return this.parentType ? `${this.parentType}>${this.name}` : this.name;
+    execute(parentValue, args, callNode = null) {
+        this.validateArgs(args, callNode);
+        return this.fn(parentValue, args);
     }
 }
 
@@ -76,32 +191,47 @@ class MethodRegistry {
 
 MethodRegistry.register(
     new Method(null, "print", [{
-        types: ["string", "number"]
+        types: ["string", "number"],
+        name: "value"
+
     }], (parent, args) => {
-        outputToTerminal(args[0]);
+        outputToTerminal(args[0].value);
     }),
 
     new Method("math", "random", [
         {
             types: ["number"],
-            optional: false
+            optional: false,
+            name: "max 1 arg / min 0 arg"
         },
         {
             types: ["number"],
-            optional: true
+            optional: true,
+            name: "max"
         }
     ], (parent, args) => {
-        // 1 argument, 0 to n, inclusive
-        // 2 arguments, min to max, inclusive
         if(args.length === 2) {
-            const min = args[0];
-            const max = args[1];
+            const min = args[0].value;
+            const max = args[1].value;
             return Math.floor(Math.random() * (max - min + 1)) + min;
         } else {
-            const n = args[0];
+            const n = args[0].value;
             return Math.floor(Math.random() * (n + 1));
         }
     }),
+
+    new Method("date", "now", [] , (parent, args) => {
+        return Date.now();
+    }),
+
+    new Method("date", "format", [{
+        types: ["string"],
+        name: "date format string"
+    }], (parent, args) => {
+        const date = new Date();
+        const formatStr = args[0].value;
+        return parseTimeFormat(formatStr, date.getTime());
+    })
 );
 
 function getType(value) {
@@ -116,16 +246,21 @@ MethodRegistry.register(
     new Method("array", "length", [] , function(parent, args) {
         return parent.length;
     }),
-    new Method("array", "join", [{ types: ["string"], optional: true }], function(parent, args) {
-        const sep = args[0] !== undefined ? args[0] : ",";
-        return parent.join(sep);
+    new Method("array", "join", [
+        { types: ["string"], optional: true, name: "separator" }
+    ], function(parent, args) {
+        const separator = args[0] !== undefined ? args[0].value : ",";
+        return (parent.join(separator));
     }),
-    new Method("array", "index", [{ types: ["number"] }], function(parent, args) {
+    new Method("array", "index", [{ 
+        types: ["number"],
+        name: "index"
+    }], function(parent, args) {
 
-        const index = args[0] >= 0 ? args[0] : parent.length + args[0];
+        const index = args[0].value >= 0 ? args[0].value : parent.length + args[0].value;
 
         if (index < 0 || index >= parent.length) {
-            throw new Error(`Index ${index} out of range for array of length ${parent.length}`);
+            runtimeError(args[0], `Index ${args[0].value} out of range for array of length ${parent.length}`);
         }
         return parent[index];
     }),
@@ -133,11 +268,11 @@ MethodRegistry.register(
         return parent.length;
     }),
     new Method("string", "wrap", [
-        { types: ["string"] },
-        { types: ["string"], optional: true }
+        { types: ["string"], name: "left and right 1 arg / left 2 arg" },
+        { types: ["string"], optional: true, name: "right" }
     ] , function(parent, args) {
         const left = args[0];
-        const right = args[1] !== undefined ? args[1] : left;
+        const right = args[1] !== undefined ? args[1].value : left;
         return left + parent + right;
     }),
 
@@ -217,8 +352,8 @@ function tokenize(input) {
 
 function runtimeError(node, message) {
     const loc = node && node.line ? `\n    at  line  ${node.line}\n    at column ${node.col}\n` : "";
-    if(node == null) throw new Error(message);
-    else throw new Error(`${message}${loc}`);
+    if(node == null) throw new SuperLangError(message);
+    else throw new SuperLangError(`${message}${loc}`);
 }
 
 function parse(tokens) {
@@ -454,14 +589,17 @@ function parse(tokens) {
             }
         }
 
-        // --- Index assignment: identifier:index = expression
-        if (peek()?.type === 'IDENTIFIER' && tokens[current + 1]?.type === 'INDEX' && tokens[current + 2]?.type === 'EQUAL') {
-            const id = consume('IDENTIFIER').value;
+        if(peek()?.type === 'IDENTIFIER' && tokens[current + 1]?.type === 'INDEX') {
+            const arrayName = consume('IDENTIFIER').value;
             consume('INDEX');
             const indexExpr = parseComparison();
-            consume('EQUAL');
-            const value = parseComparison();
-            return { type: "IndexAssignment", identifier: id, index: indexExpr, value };
+
+            if(["EQUAL", "PLUS_EQ", "MINUS_EQ", "DIV_EQ", "MULT_EQ"].includes(peek()?.type)) {
+                const op = tokens[current++].type;
+                const value = parseComparison();
+
+                return { type: "ArrayAssignment", arrayName, indexExpr, operator: op, value };
+            }
         }
 
 
@@ -571,18 +709,62 @@ function parse(tokens) {
 
 // Interpreter
 function evaluateProgram(ast, env = {}) {
-    env = {
-        Math: {
-            type: "math",
+    try {
+        env = 
+        { 
+            Math: { type: "math" },
+            Date: { type: "date" }
+        };
+        for (const node of ast.body) {
+            evaluate(node, env);
         }
-    }
-    for (const node of ast.body) {
-        evaluate(node, env);
+    } catch (e) {
+        if (e instanceof SuperLangError) {
+            outputToTerminal(e.toString());
+        } else {
+            console.error("[INTERNAL JS ERROR]", e);
+            outputToTerminal("Internal interpreter error — see console.");
+        }
     }
 }
 
 function evaluate(node, env = {}) {
     switch (node.type) {
+        case "ArrayAssignment": {
+            const array = env[node.arrayName];
+            if(getType(array) !== "array") {
+                runtimeError(node, `Variable ${node.arrayName} is not an array`);
+            }
+            const index = evaluate(node.indexExpr, env);
+            if(typeof index !== "number" || !Number.isInteger(index)) {
+                runtimeError(node, `Array index must be an integer, got: ${index}`);
+            }
+            const value = evaluate(node.value, env);
+            const realIndex = index >= 0 ? index : array.length + index;
+            if (realIndex < 0 || realIndex >= array.length) {
+                runtimeError(node.indexExpr, `Index ${index} out of range for array of length ${array.length}`);
+            }
+            switch(node.operator) {
+                case "EQUAL":
+                    array[realIndex] = value;
+                    break;
+                case "PLUS_EQ":
+                    array[realIndex] += value;
+                    break;
+                case "MINUS_EQ":
+                    array[realIndex] -= value;
+                    break;
+                case "MULT_EQ":
+                    array[realIndex] *= value;
+                    break;
+                case "DIV_EQ":
+                    array[realIndex] /= value;
+                    break;
+                default:
+                    runtimeError(node, `Unknown assignment operator: ${node.operator}`);
+            }
+            return array[realIndex];
+        };
         case "Assignment": {
             const right = evaluate(node.value, env);
             switch(node.operator) {
@@ -693,7 +875,7 @@ function evaluate(node, env = {}) {
             });
 
 
-            return method.execute(parentValue, args);
+            return method.execute(parentValue, args, node);
         }
 
         case "FunctionCall": {
