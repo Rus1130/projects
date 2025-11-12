@@ -281,6 +281,22 @@ MethodRegistry.register(
     }),
     new Method("boolean", "toString", [] , function(parent, args) {
         return parent.toString();
+    }),
+    new Method("array", "concat", [
+        { types: ["array"], name: "array to concatenate" }
+    ] , function(parent, args) {
+        return parent.concat(args[0].value);
+    }),
+    new Method("array", "map", [
+        { types: ["Function"], name: "function to map over array" }
+    ] , function(parent, args) {
+        const func = args[0].value;
+        const result = [];
+        for (let i = 0; i < parent.length; i++) {
+            const mappedValue = funcExecuteWithArg(func, parent[i], i);
+            result.push(mappedValue);
+        }
+        return result;
     })
 );
 
