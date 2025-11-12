@@ -27,9 +27,17 @@
 <body>
     <h1>SuperLang Interpreter</h1>
 
+    <!--
+    print(Date>format("W, M D, at Hu:m a z"))
+            static x = 10
+        print(x)    
+    -->
     <textarea id="editor" rows="10" cols="60">
-        print(Date>format("W, M D, at Hu:m a z"))
-    
+        def greet(name) {
+            return "Hello, " + name + "!"
+        }
+        x='hi!'
+        print(greet)
     </textarea>
     <br>
     <button id="runBtn">Run</button>

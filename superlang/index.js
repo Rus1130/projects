@@ -389,7 +389,7 @@ function parse(tokens) {
                 params.push(consume('IDENTIFIER').value);
                 while (peek()?.type === 'COMMA') {
                     consume('COMMA');
-                    params.push(consume('IDENTIFIER').value);
+                    params.push(consume('IDENTIFIER'));
                 }
             }
             consume('RPAREN');
@@ -884,8 +884,7 @@ function evaluate(node, env = {}) {
                 runtimeError(node, `Undefined function: @${node.name}`);
             }
 
-            // Evaluate args
-            const argValues = node.args.map(a => evaluate(a.value, env));
+            const argValues = node.args.map(a => evaluate(a, env));
 
             // Create new scope
             const localEnv = Object.create(env);
