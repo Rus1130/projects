@@ -1,15 +1,42 @@
 <style>
+    :root {
+        --output-string-color: #000000;
+        --output-number-color: #5151fd;
+        --output-boolean-color: #5151fd;
+    }
     body {
         font-family: monospace;
         padding: 20px;
         background: #f6f8fa;
     }
 
-    textarea {
+    div#editor {
         width: 100%;
-        height: 150px;
+        min-height: 150px;
         font-family: monospace;
         font-size: 14px;
+        overflow: hidden;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+        padding: 10px;
+    }
+
+    #lineNumbers {
+        user-select: none;
+        text-align: right;
+        padding: 10px 5px 10px 10px;
+        color: #888;
+        background-color: #f0f0f0;
+    }
+
+    div#editor:focus {
+        outline: none;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
     }
 
     #output {
@@ -20,6 +47,22 @@
         border-radius: 4px;
         min-height: 40px;
     }
+
+    #editorWrapper {
+        display: flex;
+        width: 100%;
+        min-height: 150px;
+        font-family: monospace;
+        font-size: 14px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .output-line {
+        white-space: pre;
+    }
 </style>
 <head>
     <script src="index.js"></script>
@@ -28,40 +71,98 @@
     <h1>SuperLang Interpreter</h1>
 
     <!--
-    print(Date>format("W, M D, at Hu:m a z"))
-            static x = 10
-        print(x)    
+    
+    array = array>map(double)
+
+    same as
+
+    array = array -> double
+
     -->
-    <textarea id="editor" rows="10" cols="60">
-        array1 = [1,2,3,4,5]
-        def func(x) {
+
+    <!--
+        array = [1, 2, 3, 4, 5]
+
+        array>map(@(x){
             return x * 2
-        }
-        array1>map(func)
-    </textarea>
+        })
+
+        print(array>join)
+    -->
+    <div id="editorWrapper">
+        <div id="lineNumbers"></div>
+        <div id="editor" contenteditable="plaintext-only">
+array = [1, 2, 3, 4, 5]
+
+array = array>map(@(x){
+    return x * 2
+})
+
+print(array>join(' '))
+        </div>
+    </div>
     <br>
     <button id="runBtn">Run</button>
 
     <h2>Output:</h2>
-    <pre id="output"></pre>
+    <div id="output"></div>
 </body>
 <script>
     const editor = document.getElementById("editor");
     const output = document.getElementById("output");
+    const lineNumbers = document.getElementById("lineNumbers");
 
-    function outputToTerminal(message) {
-        output.innerHTML += message + "\n";
+    function outputToTerminal(value) {
+        const line = document.createElement("div");
+        const type = getType(value);
+        
+        let text;
+
+        if (type === "string") {
+            line.style.color = "var(--output-string-color)";
+        } else if (type === "number") {
+            line.style.color = "var(--output-number-color)";
+        } else if (type === "boolean") {
+            line.style.color = "var(--output-boolean-color)";
+        } else if (type === "error") {
+            line.style.color = "red";
+            text = value.value;
+        }
+
+        if(text === undefined) text = value;
+
+        line.innerHTML = text;
+        line.className = "output-line";
+        output.appendChild(line);
     }
 
-    document.getElementById("runBtn").addEventListener("click", () => {
-        output.textContent = "";
-        const code = editor.value;
+    function updateLineNumbers() {
+        const lines = editor.innerText.split("\n").length;
+        lineNumbers.innerHTML = Array.from({length: lines}, (_, i) => i+1).join("<br>");
+    }
+
+    // Initial update
+    updateLineNumbers();
+
+    // Update on input
+    editor.addEventListener("input", updateLineNumbers);
+
+    // Keep line numbers scroll in sync
+    editor.addEventListener("scroll", () => {
+        lineNumbers.scrollTop = editor.scrollTop;
+    });
+
+    function runButton(){
+        const code = editor.innerText;
         try {
-            const tokens = tokenize(code);
-            const ast = parse(tokens);
-            const result = evaluate(ast);
+            output.innerHTML = "";
+            evaluateProgram(code);
         } catch (err) {
             output.textContent = "Error: " + err.message;
         }
-    });
+    }
+
+    document.getElementById("runBtn").addEventListener("click", runButton);
+
+    runButton();
 </script>

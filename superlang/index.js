@@ -121,7 +121,7 @@ class Method {
      * @param {string|null} parentType - e.g. "frog" or null for global
      * @param {string} name - method name
      * @param {Array<{types: string[], optional?: boolean}>} argSpecs
-     * @param {Function} fn - implementation
+     * @param {Function()} fn - implementation
      */
     constructor(parentType, name, argSpecs, fn) {
         this.parentType = parentType;
@@ -156,9 +156,13 @@ class Method {
         }
     }
 
-    execute(parentValue, args, callNode = null) {
+    execute(parentValue, args, callNode = null, env = {}) {
         this.validateArgs(args, callNode);
-        return this.fn(parentValue, args);
+        return this.fn(parentValue, args, env);
+    }
+
+    register() {
+        MethodRegistry.register(this);
     }
 }
 
@@ -189,120 +193,220 @@ class MethodRegistry {
     }
 }
 
-MethodRegistry.register(
-    new Method(null, "print", [{
-        types: ["string", "number"],
-        name: "value"
-
-    }], (parent, args) => {
-        outputToTerminal(args[0].value);
-    }),
-
-    new Method("math", "random", [
-        {
-            types: ["number"],
-            optional: false,
-            name: "max 1 arg / min 0 arg"
-        },
-        {
-            types: ["number"],
-            optional: true,
-            name: "max"
-        }
-    ], (parent, args) => {
-        if(args.length === 2) {
-            const min = args[0].value;
-            const max = args[1].value;
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        } else {
-            const n = args[0].value;
-            return Math.floor(Math.random() * (n + 1));
-        }
-    }),
-
-    new Method("date", "now", [] , (parent, args) => {
-        return Date.now();
-    }),
-
-    new Method("date", "format", [{
-        types: ["string"],
-        name: "date format string"
-    }], (parent, args) => {
-        const date = new Date();
-        const formatStr = args[0].value;
-        return parseTimeFormat(formatStr, date.getTime());
-    })
-);
-
 function getType(value) {
     if(value.type !== undefined) return value.type;
     else return Array.isArray(value) ? "array" : typeof value;
 }
 
-MethodRegistry.register(
-    new Method("any", "type", [] , function(parent, args) {
-        return getType(parent);
-    }),
-    new Method("array", "length", [] , function(parent, args) {
-        return parent.length;
-    }),
-    new Method("array", "join", [
-        { types: ["string"], optional: true, name: "separator" }
-    ], function(parent, args) {
-        const separator = args[0] !== undefined ? args[0].value : ",";
-        return (parent.join(separator));
-    }),
-    new Method("array", "index", [{ 
+new Method(null, "print", [
+    {
+        types: ["string", "number", "boolean"],
+        name: "value"
+
+    }
+], (parent, args) => {
+    outputToTerminal(args[0].value);
+}).register()
+
+new Method(null, "debugprint", [
+    {
+        types: ["any"],
+        name: "value"
+    }
+], (parent, args) => {
+    console.log(args);
+}).register()
+
+
+new Method("math", "random", [
+    {
+        types: ["number"],
+        optional: false,
+        name: "max 1 arg / min 0 arg"
+    },
+    {
+        types: ["number"],
+        optional: true,
+        name: "max"
+    }
+], (parent, args) => {
+    if(args.length === 2) {
+        const min = args[0].value;
+        const max = args[1].value;
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    } else {
+        const n = args[0].value;
+        return Math.floor(Math.random() * (n + 1));
+    }
+}).register()
+
+new Method("date", "now", [] , (parent, args) => {
+    return Date.now();
+}).register()
+
+new Method("date", "format", [
+    {
+        types: ["string"],
+        name: "date format string"
+    }
+], (parent, args) => {
+    const date = new Date();
+    const formatStr = args[0].value;
+    return parseTimeFormat(formatStr, date.getTime());
+}).register()
+
+new Method("any", "type", [] , function(parent, args) {
+    return getType(parent);
+}).register()
+
+new Method("array", "length", [] , function(parent, args) {
+    return parent.length;
+}).register()
+
+new Method("array", "join", [
+    { 
+        types: ["string"], 
+        optional: true, 
+        name: "separator"
+    }
+], function(parent, args) {
+    const separator = args[0] !== undefined ? args[0].value : ",";
+    return (parent.join(separator));
+}).register()
+
+new Method("array", "index", [
+    { 
         types: ["number"],
         name: "index"
-    }], function(parent, args) {
+    }
+], function(parent, args) {
 
-        const index = args[0].value >= 0 ? args[0].value : parent.length + args[0].value;
+    const index = args[0].value >= 0 ? args[0].value : parent.length + args[0].value;
 
-        if (index < 0 || index >= parent.length) {
-            runtimeError(args[0], `Index ${args[0].value} out of range for array of length ${parent.length}`);
-        }
-        return parent[index];
-    }),
-    new Method("string", "length", [] , function(parent, args) {
-        return parent.length;
-    }),
-    new Method("string", "wrap", [
-        { types: ["string"], name: "left and right 1 arg / left 2 arg" },
-        { types: ["string"], optional: true, name: "right" }
-    ] , function(parent, args) {
-        const left = args[0];
-        const right = args[1] !== undefined ? args[1].value : left;
-        return left + parent + right;
-    }),
+    if (index < 0 || index >= parent.length) {
+        runtimeError(args[0], `Index ${args[0].value} out of range for array of length ${parent.length}`);
+    }
+    return parent[index];
+}).register()
 
-    new Method("number", "toString", [] , function(parent, args) {
-        return parent.toString();
-    }),
-    new Method("boolean", "toString", [] , function(parent, args) {
-        return parent.toString();
-    }),
-    new Method("array", "concat", [
-        { types: ["array"], name: "array to concatenate" }
-    ] , function(parent, args) {
-        return parent.concat(args[0].value);
-    }),
-    new Method("array", "map", [
-        { types: ["Function"], name: "function to map over array" }
-    ] , function(parent, args) {
-        const func = args[0].value;
+new Method("string", "length", [] , function(parent, args) {
+    return parent.length;
+}).register()
+
+new Method("string", "wrap", [
+    { 
+        types: ["string"], 
+        name: "left and right 1 arg / left 2 arg" 
+    },
+    { 
+        types: ["string"],
+        optional: true,
+        name: "right"
+    }
+] , function(parent, args) {
+    const left = args[0];
+    const right = args[1] !== undefined ? args[1].value : left;
+    return left + parent + right;
+}).register()
+
+new Method("number", "toString", [] , function(parent, args) {
+    return parent.toString();
+}).register()
+
+new Method("boolean", "toString", [] , function(parent, args) {
+    return parent.toString();
+}).register()
+
+new Method("array", "concat", [
+    { 
+        types: ["array"], 
+        name: "array to concatenate" 
+    }
+] , function(parent, args) {
+    return parent.concat(args[0].value);
+}).register()
+
+new Method("array", "map", [
+    { 
+        types: ["Function"], 
+        name: "function to map over array" 
+    }
+] , function(parent, args, env) {
+    const func = args[0].value;
+    const arr = parent;
+
+    if(func.name.startsWith("<anonymous>")) {
         const result = [];
-        for (let i = 0; i < parent.length; i++) {
-            const mappedValue = funcExecuteWithArg(func, parent[i], i);
-            result.push(mappedValue);
+
+        const params = func.params;
+        const body = func.body;
+
+        for (let i = 0; i < arr.length; i++) {
+            // create a fresh local environment for this iteration
+            const localEnv = Object.create(env);
+            localEnv["__iter__"] = i;
+
+            // bind first parameter (or more, if multiple)
+            if (params.length > 0) localEnv[params[0]] = arr[i];
+
+            // execute the function body
+            let returnValue = null;
+            for (const stmt of body) {
+                const val = evaluate(stmt, localEnv);
+                if (val && val.__return !== undefined) {
+                    returnValue = val.__return;
+                    break;
+                }
+            }
+
+            if(returnValue == null) runtimeError(args[0], `Anonymous Function did not return a value`);
+
+            result.push(returnValue);
         }
+
         return result;
-    })
-);
+
+    } else {
+        if(env[func.name].type !== "Function") runtimeError(args[0], `${func.name} is not a function`);
+
+        const result = [];
+
+        for (let i = 0; i < arr.length; i++) {
+            // Create a temporary local environment
+            const localEnv = Object.create(func.body);
+
+            localEnv["__iter__"] = i;
+
+
+            // Bind first parameter
+            if (func.params.length > 0) {
+                localEnv[func.params[0]] = arr[i];
+            }
+
+            // Execute the function body
+            let returnValue = null;
+            for (const stmt of func.body) {
+                const val = evaluate(stmt, localEnv);
+                if (val && val.__return !== undefined) {
+                    returnValue = val.__return;
+                    break;
+                }
+            }
+
+            if(returnValue == null) runtimeError(args[0], `Function "${func.name}" did not return a value`);
+
+            result.push(returnValue);
+        }
+
+        return result;
+    }
+}).register()
 
 function tokenize(input) {
     const tokens = [];
     const tokenSpec = [
+        ['COMMENT', /^#.*/],
+        ['COMMENT', /^##\*[\s\S]\*##/],
         ['AT', /^@/],
         ['NUMBER', /^-?\d+(\.\d+)?/],
         ['STRING', /^"([^"\\]|\\.)*"|^'([^'\\]|\\.)*'/],
@@ -316,7 +420,7 @@ function tokenize(input) {
         ["MINUS_EQ", /^-=/],
         ["DIV_EQ", /^\/=/],
         ["MULT_EQ", /^\*=/],
-        ['ARROW', /^>/],
+        ['METHOD_CALL', /^>/],
         ['EQUAL', /^=/],
         ['PLUS', /^\+/],
         ['MINUS', /^-/],
@@ -352,7 +456,7 @@ function tokenize(input) {
                     line++;
                     col = 1;
                 } else {
-                    if (type !== 'WHITESPACE' && type !== 'NEWLINE') {
+                    if (type !== 'WHITESPACE' && type !== 'NEWLINE' && type !== 'COMMENT') {
                         tokens.push({ type, value, line, col });
                     }
                     col += value.length;
@@ -389,8 +493,8 @@ function parse(tokens) {
                 return token;
             }
         }
-        if (token) runtimeError(token, `Expected ${type}, but got ${token.type}`);
-        else runtimeError(null, `Expected ${type}, but got end of input`);
+        if (token) runtimeError(token, `Expected token "${type}", but got "${token.type}"`);
+        else runtimeError(null, `Expected token "${type}", but got end of input`);
     }
 
     function parseFunctionDeclaration() {
@@ -400,26 +504,11 @@ function parse(tokens) {
 
         // Optional parameters
         if (peek()?.type === 'LPAREN') {
-            consume('LPAREN');
-            if (peek()?.type !== 'RPAREN') {
-                params.push(consume('IDENTIFIER').value);
-                while (peek()?.type === 'COMMA') {
-                    consume('COMMA');
-                    params.push(consume('IDENTIFIER'));
-                }
-            }
-            consume('RPAREN');
+            params = collectParameters();
         }
 
-        consume('LBRACE');
+        const body = collectMultiline('LBRACE', 'RBRACE');
 
-        const body = [];
-        while (peek() && peek().type !== 'RBRACE') {
-            body.push(parseStatement());
-            if (peek()?.type === 'SEMICOLON') consume('SEMICOLON');
-        }
-
-        consume('RBRACE');
         return { type: "FunctionDeclaration", name, params, body };
     }
 
@@ -462,20 +551,12 @@ function parse(tokens) {
 
     function parseMethodChain(base) {
         let parent = base;
-        while (peek()?.type === 'ARROW') {
-            consume('ARROW');
+        while (peek()?.type === 'METHOD_CALL') {
+            consume('METHOD_CALL');
             const methodName = consume('IDENTIFIER').value;
             let args = [];
             if (peek()?.type === 'LPAREN') {
-                consume('LPAREN');
-                if (peek()?.type !== 'RPAREN') {
-                    args.push(parseExpression());
-                    while (peek()?.type === 'COMMA') {
-                        consume('COMMA');
-                        args.push(parseExpression());
-                    }
-                }
-                consume('RPAREN');
+                args = collectArguments();
             }
             parent = { type: "MethodCall", parent, name: methodName, args, line: parent.line, col: parent.col };
         }
@@ -512,20 +593,23 @@ function parse(tokens) {
             node.col = token.col;
         } else if (token.type === 'AT') {
             consume('AT');
-            const name = consume('IDENTIFIER').value;
-            let args = [];
-            if (peek()?.type === 'LPAREN') {
-                consume('LPAREN');
-                if (peek()?.type !== 'RPAREN') {
-                    args.push(parseExpression());
-                    while (peek()?.type === 'COMMA') {
-                        consume('COMMA');
-                        args.push(parseExpression());
-                    }
+
+            if(peek()?.type === 'IDENTIFIER') {
+                const name = consume('IDENTIFIER').value;
+                let args = [];
+                if (peek()?.type === 'LPAREN') {
+                    args = collectArguments();
                 }
-                consume('RPAREN');
+                node = { type: "FunctionCall", name, args, line: token.line, col: token.col };
+            } else if (peek()?.type === 'LPAREN') {
+                let params = [];
+                params = collectParameters();
+                const body = collectMultiline('LBRACE', 'RBRACE');
+                node = { type: "AnonymousFunction", params, body, line: token.line, col: token.col };
+            } else if (peek()?.type === 'LBRACE') {
+                const body = collectMultiline('LBRACE', 'RBRACE');
+                node = { type: "AnonymousFunction", params: [], body, line: token.line, col: token.col };
             }
-            node = { type: "FunctionCall", name, args, line: token.line, col: token.col };
         }   else if (token.type === 'LBRACKET') {
             consume('LBRACKET');
             const elements = [];
@@ -546,6 +630,50 @@ function parse(tokens) {
         return parseMethodChain(node);
     }
 
+    /**
+     * 
+     * @param {String} leftPeek - the type of the left delimiter
+     * @param {String} rightPeek - the type of the right delimiter
+     */
+    function collectMultiline(leftPeek, rightPeek){
+        const body = [];
+        consume(leftPeek);
+        while(peek() && peek().type !== rightPeek) {
+            body.push(parseStatement());
+            if (peek()?.type === 'SEMICOLON') consume('SEMICOLON');
+        }
+        consume(rightPeek);
+        return body;
+    }
+
+    function collectArguments() {
+        const args = [];
+        consume('LPAREN');
+        if (peek()?.type !== 'RPAREN') {
+            args.push(parseComparison());
+            while (peek()?.type === 'COMMA') {
+                consume('COMMA');
+                args.push(parseComparison());
+            }
+        }
+        consume('RPAREN');
+        return args;
+    }
+
+    function collectParameters() {
+        const params = [];
+        consume('LPAREN');
+        if (peek()?.type !== 'RPAREN') {
+            params.push(consume('IDENTIFIER').value);
+            while (peek()?.type === 'COMMA') {
+                consume('COMMA');
+                params.push(consume('IDENTIFIER').value);
+            }
+        }
+        consume('RPAREN');
+        return params;
+    }
+
     function parseStatement() {
         // --- Function Declaration Lookahead ---
         if (peek()?.type === 'IDENTIFIER' && peek().value === 'def' && tokens[current + 1]?.type === 'IDENTIFIER') {
@@ -556,13 +684,7 @@ function parse(tokens) {
         if(peek()?.type === 'IDENTIFIER' && peek().value === 'if') {
             consume('IDENTIFIER');
             const condition = parseComparison();
-            consume('LBRACE');
-            const body = [];
-            while (peek() && peek().type !== 'RBRACE') {
-                body.push(parseStatement());
-                if (peek()?.type === 'SEMICOLON') consume('SEMICOLON');
-            }
-            consume('RBRACE');
+            const body = collectMultiline('LBRACE', 'RBRACE');
             return { type: "IfStatement", condition, body };
         }
 
@@ -571,29 +693,17 @@ function parse(tokens) {
             const next = peek();
             if(next?.type === 'LPAREN') {
                 const condition = parseComparison();
-                consume('LBRACE');
-                const body = [];
-                while (peek() && peek().type !== 'RBRACE') {
-                    body.push(parseStatement());
-                    if (peek()?.type === 'SEMICOLON') consume('SEMICOLON');
-                }
-                consume('RBRACE');
+                const body = collectMultiline('LBRACE', 'RBRACE');
                 return { type: "ConditionalLoopStatement", condition, body };
+
             } else if (next?.type === 'NUMBER' || next?.type === 'IDENTIFIER') {
                 let count = consume(['NUMBER', 'IDENTIFIER']);
-
-                consume('LBRACE');
-                const body = [];
-                while (peek() && peek().type !== 'RBRACE') {
-                    body.push(parseStatement());
-                    if (peek()?.type === 'SEMICOLON') consume('SEMICOLON');
-                }
-                consume('RBRACE');
+                const body = collectMultiline('LBRACE', 'RBRACE');
                 return { 
                     type: "CountLoopStatement", 
                     count: {
                         type: count.type === 'NUMBER' ? "NumberLiteral" : "Identifier",
-                        value: count.value,
+                        value: count.type === 'NUMBER' ? Number(count.value) : count.value,
                         line: next.line,
                         col: next.col 
                     }, 
@@ -634,23 +744,15 @@ function parse(tokens) {
         }
 
         // --- Method call: parent > method (parent is an identifier, older style)
-        if (peek()?.type === 'IDENTIFIER' && tokens[current + 1]?.type === 'ARROW') {
+        if (peek()?.type === 'IDENTIFIER' && tokens[current + 1]?.type === 'METHOD_CALL') {
             const parent = consume('IDENTIFIER').value;
-            consume('ARROW');
+            consume('METHOD_CALL');
             const methodName = consume('IDENTIFIER').value;
 
             // optional parentheses or single arg without parentheses
             let args = [];
             if (peek()?.type === 'LPAREN') {
-                consume('LPAREN');
-                if (peek()?.type !== 'RPAREN') {
-                    args.push(parseComparison());
-                    while (peek()?.type === 'COMMA') {
-                        consume('COMMA');
-                        args.push(parseComparison());
-                    }
-                }
-                consume('RPAREN');
+                args = collectArguments();
             } else if (peek() && peek().type !== 'SEMICOLON' && peek().type !== 'NEWLINE') {
                 // single arg without parentheses
                 args.push(parseComparison());
@@ -664,15 +766,7 @@ function parse(tokens) {
             const name = consume('IDENTIFIER').value;
             let args = [];
             if (peek()?.type === 'LPAREN') {
-                consume('LPAREN');
-                if (peek()?.type !== 'RPAREN') {
-                    args.push(parseComparison());
-                    while (peek()?.type === 'COMMA') {
-                        consume('COMMA');
-                        args.push(parseComparison());
-                    }
-                }
-                consume('RPAREN');
+                args = collectArguments();
             } else if (peek() && peek().type !== 'SEMICOLON' && peek().type !== 'NEWLINE') {
                 args.push(parseComparison());
             }
@@ -686,15 +780,7 @@ function parse(tokens) {
             const name = consume('IDENTIFIER').value;
             let args = [];
             if (peek()?.type === 'LPAREN') {
-                consume('LPAREN');
-                if (peek()?.type !== 'RPAREN') {
-                    args.push(parseComparison());
-                    while (peek()?.type === 'COMMA') {
-                        consume('COMMA');
-                        args.push(parseComparison());
-                    }
-                }
-                consume('RPAREN');
+                args = collectArguments();
             }
             return { type: "FunctionCall", name, args };
         }
@@ -724,23 +810,41 @@ function parse(tokens) {
 }
 
 // Interpreter
-function evaluateProgram(ast, env = {}) {
+function evaluateProgram(input) {
+    const env = { 
+        Math: { type: "math" },
+        Date: { type: "date" },
+        true: true,
+        false: false,
+    };
+
     try {
-        env = 
-        { 
-            Math: { type: "math" },
-            Date: { type: "date" }
-        };
+        // Tokenize
+        const tokens = tokenize(input);
+
+        // Parse
+        const ast = parse(tokens);
+
+        // Evaluate
         for (const node of ast.body) {
             evaluate(node, env);
         }
+
     } catch (e) {
-        if (e instanceof SuperLangError) {
-            outputToTerminal(e.toString());
-        } else {
-            console.error("[INTERNAL JS ERROR]", e);
-            outputToTerminal("Internal interpreter error — see console.");
-        }
+        handleError(e);
+    }
+}
+
+function handleError(e) {
+    if (e instanceof SuperLangError) {
+        outputToTerminal({ type: 'error', value: "Error: " + e.toString() });
+    } else if (e instanceof Error) {
+        console.error("[INTERNAL JS ERROR]", e);
+        outputToTerminal("Internal interpreter error — see console.");
+    } else {
+        // Non-standard thrown objects
+        console.error("[UNKNOWN ERROR]", e);
+        outputToTerminal("Unknown error — see console.");
     }
 }
 
@@ -828,6 +932,7 @@ function evaluate(node, env = {}) {
         case "FunctionDeclaration":
             env[node.name] = {
                 type: "Function",
+                name: node.name,
                 params: node.params,
                 body: node.body,
             };
@@ -856,7 +961,6 @@ function evaluate(node, env = {}) {
             }
 
         case "MethodCall": {
-            // Evaluate parentValue correctly whether node.parent is:
             let parentValue = null;
             if (node.parent) {
                 if (getType(node.parent) === "string") {
@@ -891,7 +995,7 @@ function evaluate(node, env = {}) {
             });
 
 
-            return method.execute(parentValue, args, node);
+            return method.execute(parentValue, args, node, env);
         }
 
         case "FunctionCall": {
@@ -964,7 +1068,9 @@ function evaluate(node, env = {}) {
             return null;
 
         case "IfStatement":
-            const condition = evaluate(node.condition, env);
+            let condition = evaluate(node.condition, env);
+            if(condition === 0) condition = false;
+            if(condition === 1) condition = true;
             if (typeof condition !== "boolean") {
                 runtimeError(node, `If condition must evaluate to a boolean, got: ${condition}`);
             }
@@ -977,6 +1083,14 @@ function evaluate(node, env = {}) {
                 }
             }
             return null;
+
+        case "AnonymousFunction":
+            return {
+                type: "Function",
+                name: "<anonymous>" + Math.random().toString(36).substring(2),
+                params: node.params,
+                body: node.body,
+            };
 
         default:
             runtimeError(node, `Unknown node type: ${node.type}`);
