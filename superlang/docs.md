@@ -5,6 +5,15 @@ string = "hello!"
 number = 42
 boolean = true
 array = [1, 2, 3, 4, 5]
+object = #{
+    'name' = 'Alice'
+    'age' = 30
+    'nested' = #{
+        'key' = 'value'
+    }
+}
+
+!x = 'constant'
 ```
 
 ## operators:
@@ -58,6 +67,41 @@ if (number > 10) {
 } else {
     print("number is not greater than 10")
 }
+```
+
+## functions
+```
+// parameters
+func double(a) {
+    return a * 2
+}
+
+// call it
+result = @double(5)
+
+
+
+// no parameters
+func doSomething {
+    print("Doing something!")
+}
+
+// call it
+@doSomething // doSomething (with no @) is a function reference, can be used to pass to functions or something
+```
+
+```
+// you could do something like this, but unfortunately it only works with no parameter functions
+func wrapper(function) {
+    print('some wrapper stuff')
+    @function
+}
+
+func innerFunc {
+    print('Hello from innerFunc!')
+}
+
+@wrapper(innerFunc)
 ```
 
 ## loop:

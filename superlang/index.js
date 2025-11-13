@@ -111,7 +111,7 @@ class SuperLangError extends Error {
 
     toString() {
         if (this.line !== undefined) {
-            return `${this.message}\n    at line ${this.line}, column ${this.col}`;
+            return `${this.message}\n    at line   ${this.line}\n    at column ${this.col}`;
         }
         return `${this.message}`;
     }
@@ -402,13 +402,14 @@ new Method("array", "map", [
         return result;
     }
 }).register()
-
 function tokenize(input) {
     const tokens = [];
     const tokenSpec = [
-        ['COMMENT', /^#.*/],
-        ['COMMENT', /^##\*[\s\S]\*##/],
+        ['COMMENT', /^\/\/.*/],
+        ['COMMENT', /^\/\/\*[\s\S]\*\/\//],
         ['AT', /^@/],
+        ["BANG", /^!/],
+        ["HASH", /^#/],
         ['NUMBER', /^-?\d+(\.\d+)?/],
         ['STRING', /^"([^"\\]|\\.)*"|^'([^'\\]|\\.)*'/],
         ['LBRACKET', /^\[/],
@@ -422,6 +423,7 @@ function tokenize(input) {
         ["DIV_EQ", /^\/=/],
         ["MULT_EQ", /^\*=/],
         ['METHOD_CALL', /^>/],
+        ['ARROW', /^->/],
         ["EQ", /^==/],
         ['EQUAL', /^=/],
         ['PLUS', /^\+/],
@@ -480,6 +482,8 @@ function runtimeError(node, message) {
 function parse(tokens) {
     let current = 0;
 
+    const constants = [];
+
     function peek() { return tokens[current]; }
     function consume(type) {
         const token = peek();
@@ -494,6 +498,7 @@ function parse(tokens) {
                 return token;
             }
         }
+        console.log(new Error().stack)
         if (token) runtimeError(token, `Expected token "${type}", but got "${token.type}"`);
         else runtimeError(null, `Expected token "${type}", but got end of input`);
     }
@@ -569,7 +574,42 @@ function parse(tokens) {
         const token = peek();
         if (!token) runtimeError(null, "Unexpected end of input");
 
-        if (token.type === 'NUMBER') {
+        if (peek()?.type === "HASH" && tokens[current + 1]?.type === "LBRACE") {
+            consume("HASH");
+            consume("LBRACE");
+            const fields = {};
+
+            while (peek() && peek().type !== "RBRACE") {
+                // Allow skipping newlines or commas
+
+                if (peek()?.type === "RBRACE") break;
+
+                const keyToken = consume(["IDENTIFIER", "STRING"]);
+                consume("EQUAL");
+
+                let valueNode = parseComparison();
+
+                const keyName =
+                    keyToken.type === "STRING"
+                        ? keyToken.value.slice(1, -1)
+                        : keyToken.value;
+
+                if(keyName == 'type'){
+                    runtimeError(keyToken, `Field name "type" is reserved and cannot be used in object literals.`);
+                }
+
+                fields[keyName] = valueNode;
+            }
+
+            consume("RBRACE");
+
+            node = {
+                type: "ObjectLiteral",
+                fields,
+                line: token.line,
+                col: token.col
+            };
+        } else if (token.type === 'NUMBER') {
             current++;
             node = { type: "NumberLiteral", value: Number(token.value), line: token.line, col: token.col };
         } else if (token.type === 'STRING') {
@@ -746,10 +786,20 @@ function parse(tokens) {
             return { type: "ReturnStatement", value };
         }
 
+        if(peek()?.type === 'BANG') {
+            consume('BANG');
+            const id = consume('IDENTIFIER').value;
+            const op = consume('EQUAL');
+            const value = parseComparison();
+            constants.push(id);
+            return { type: "Assignment", operator: op.type, identifier: id, value };
+        }
+
         // --- Assignment: identifier = expression
         if (peek()?.type === 'IDENTIFIER' && ['EQUAL', 'PLUS_EQ', 'MINUS_EQ', 'DIV_EQ', "MULT_EQ"].includes(tokens[current + 1]?.type)) {
             const id = consume('IDENTIFIER').value;
-            const op = tokens[current++].type; // consume =, +=, or -=
+            if(constants.includes(id)) runtimeError(peek(), `Cannot reassign constant "${id}"`);
+            const op = tokens[current++].type;
             const value = parseComparison();
             return { type: "Assignment", operator: op, identifier: id, value };
         }
@@ -835,6 +885,8 @@ function evaluateProgram(input) {
 
         // Parse
         const ast = parse(tokens);
+
+        console.log(ast)
 
         // Evaluate
         for (const node of ast.body) {
@@ -945,6 +997,15 @@ function evaluate(node, env = {}) {
 
         case "ArrayLiteral":
             return node.elements.map(e => evaluate(e, env));
+
+        case "ObjectLiteral": {
+            const result = {};
+            for (const key in node.fields) {
+                result[key] = evaluate(node.fields[key], env);
+            }
+
+            return result;
+        }
 
         case "Identifier":
             if (node.value in env) return env[node.value];

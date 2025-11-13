@@ -70,25 +70,28 @@
 <body>
     <h1>SuperLang Interpreter</h1>
 
-    <!--
-            "var a = 0",
-            "var b = 1",
-            "var temp = 0",
-            "var times = ''",
-            "",
-            "ask $times 'How many Fibonacci numbers would you like to generate?'",
-            "",
-            "loop times>toNumber {",
-            "   out a",
-            "   set $b = a>add(b)",
-            "   set $a = temp",
-            "   set $temp = b",
-            "}"
-    -->
     <div id="editorWrapper">
         <div id="lineNumbers"></div>
         <div id="editor" contenteditable="plaintext-only">
 
+<!-- func wrapper(function) {
+    print('some wrapper stuff')
+    @function
+}
+
+func ababa {
+    print('Hello from ababa!')
+}
+
+@wrapper(ababa) -->
+
+array = [1, 2, 3, 4, 5]
+
+array = array>map(@(x){
+    return x * 2
+})
+
+print(array>join(' '))
 <!-- func fibonacci(n) {
     a = 0
     b = 1
@@ -98,21 +101,24 @@
         b = a + b
         a = temp
         temp = b
-        print($"|__iter__|: |a|")
+        print(a)
     }
 }
 
 @fibonacci(10) -->
-
-num = 5
-
-if (num > 2) {
-    print("num is greater than 2")
-} else {
-    print("num is not greater than 2")
+            <!-- print(match 0 {
+                0 -> "zero"
+                1 -> "one"
+                _ -> "many"
+            }) -->
+<!-- x = #{
+    'name' = 'Alice'
+    'age' = 30
+    'nested' = #{
+        'key' = 'value'
+    }
 }
-
-
+// print(x) -->
         </div>
     </div>
     <br>
