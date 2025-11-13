@@ -686,6 +686,11 @@ function parse(tokens) {
             consume('IDENTIFIER');
             const condition = parseComparison();
             const body = collectMultiline('LBRACE', 'RBRACE');
+            if(peek()?.type === 'IDENTIFIER' && peek().value === 'else') {
+                consume('IDENTIFIER');
+                const elseBody = collectMultiline('LBRACE', 'RBRACE');
+                return { type: "IfElseStatement", condition, body, elseBody };
+            }
             return { type: "IfStatement", condition, body };
         }
 
@@ -1096,6 +1101,30 @@ function evaluate(node, env = {}) {
             }
             if (condition) {
                 for (const stmt of node.body) {
+                    const value = evaluate(stmt, env);
+                    if (value && value.__return !== undefined) {
+                        return value.__return;
+                    }
+                }
+            }
+            return null;
+
+        case "IfElseStatement":
+            let cond = evaluate(node.condition, env);
+            if(cond === 0) cond = false;
+            if(cond === 1) cond = true;
+            if (typeof cond !== "boolean") {
+                runtimeError(node, `If condition must evaluate to a boolean, got: ${cond}`);
+            }
+            if (cond) {
+                for (const stmt of node.body) {
+                    const value = evaluate(stmt, env);
+                    if (value && value.__return !== undefined) {
+                        return value.__return;
+                    }
+                }
+            } else {
+                for (const stmt of node.elseBody) {
                     const value = evaluate(stmt, env);
                     if (value && value.__return !== undefined) {
                         return value.__return;

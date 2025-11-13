@@ -50,6 +50,16 @@ if (number > 10) {
 }
 ```
 
+## if-else:
+```
+number = 5
+if (number > 10) {
+    print("number is greater than 10")
+} else {
+    print("number is not greater than 10")
+}
+```
+
 ## loop:
 Can be done with a count or with a condition. Conditions must be in parenthesis. Loops have access to `__iter__`
 ```
