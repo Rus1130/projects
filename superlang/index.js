@@ -271,6 +271,7 @@ new Method("array", "join", [
     }
 ], function(parent, args) {
     const separator = args[0] !== undefined ? args[0].value : ",";
+    if(parent.some(x => getType(x) === "array")) runtimeError(args[0], `Cannot join array with nested arrays`);
     return (parent.join(separator));
 }).register()
 
@@ -421,6 +422,7 @@ function tokenize(input) {
         ["DIV_EQ", /^\/=/],
         ["MULT_EQ", /^\*=/],
         ['METHOD_CALL', /^>/],
+        ["EQ", /^==/],
         ['EQUAL', /^=/],
         ['PLUS', /^\+/],
         ['MINUS', /^-/],
@@ -428,7 +430,6 @@ function tokenize(input) {
         ['DIV', /^\//],
         ["GT", /^ > /],
         ["LT", /^ < /],
-        ["EQ", /^==/],
         ["NEQ", /^!=/],
         ["GTE", /^>=/],
         ["LTE", /^<=/],
@@ -676,8 +677,8 @@ function parse(tokens) {
 
     function parseStatement() {
         // --- Function Declaration Lookahead ---
-        if (peek()?.type === 'IDENTIFIER' && peek().value === 'def' && tokens[current + 1]?.type === 'IDENTIFIER') {
-            consume('IDENTIFIER'); // consume 'def'
+        if (peek()?.type === 'IDENTIFIER' && peek().value === 'func' && tokens[current + 1]?.type === 'IDENTIFIER') {
+            consume('IDENTIFIER');
             return parseFunctionDeclaration();
         }
 
@@ -717,14 +718,19 @@ function parse(tokens) {
 
         if(peek()?.type === 'IDENTIFIER' && tokens[current + 1]?.type === 'INDEX') {
             const arrayName = consume('IDENTIFIER').value;
-            consume('INDEX');
-            const indexExpr = parseComparison();
+            const indexes = [];
+
+            // collect one or more indexes
+            while (peek()?.type === 'INDEX') {
+                consume('INDEX');
+                indexes.push(parseComparison());
+            }
 
             if(["EQUAL", "PLUS_EQ", "MINUS_EQ", "DIV_EQ", "MULT_EQ"].includes(peek()?.type)) {
                 const op = tokens[current++].type;
                 const value = parseComparison();
 
-                return { type: "ArrayAssignment", arrayName, indexExpr, operator: op, value };
+                return { type: "ArrayAssignment", arrayName, indexes, operator: op, value };
             }
         }
 
@@ -851,40 +857,54 @@ function handleError(e) {
 function evaluate(node, env = {}) {
     switch (node.type) {
         case "ArrayAssignment": {
-            const array = env[node.arrayName];
+            let array = env[node.arrayName];
             if(getType(array) !== "array") {
                 runtimeError(node, `Variable ${node.arrayName} is not an array`);
             }
-            const index = evaluate(node.indexExpr, env);
-            if(typeof index !== "number" || !Number.isInteger(index)) {
-                runtimeError(node, `Array index must be an integer, got: ${index}`);
+
+            // evaluate all indexes
+            const idxValues = node.indexes.map(idx => evaluate(idx, env));
+
+            let lastIndex = idxValues.pop(); // the last index is where we assign
+            let target = array;
+
+            // navigate through nested arrays
+            for (const idx of idxValues) {
+                if (typeof idx !== "number" || !Number.isInteger(idx)) {
+                    runtimeError(node, `Array index must be an integer, got: ${idx}`);
+                }
+                const realIdx = idx >= 0 ? idx : target.length + idx;
+                if (realIdx < 0 || realIdx >= target.length) {
+                    runtimeError(node, `Index ${idx} out of range for array of length ${target.length}`);
+                }
+                target = target[realIdx];
+                if (!Array.isArray(target)) {
+                    runtimeError(node, `Expected array at index ${idx}, got ${getType(target)}`);
+                }
             }
-            const value = evaluate(node.value, env);
-            const realIndex = index >= 0 ? index : array.length + index;
-            if (realIndex < 0 || realIndex >= array.length) {
-                runtimeError(node.indexExpr, `Index ${index} out of range for array of length ${array.length}`);
+
+            // assign to last index
+            if (typeof lastIndex !== "number" || !Number.isInteger(lastIndex)) {
+                runtimeError(node, `Array index must be an integer, got: ${lastIndex}`);
             }
+            const realLast = lastIndex >= 0 ? lastIndex : target.length + lastIndex;
+            if (realLast < 0 || realLast >= target.length) {
+                runtimeError(node, `Index ${lastIndex} out of range for array of length ${target.length}`);
+            }
+
+            const val = evaluate(node.value, env);
+
             switch(node.operator) {
-                case "EQUAL":
-                    array[realIndex] = value;
-                    break;
-                case "PLUS_EQ":
-                    array[realIndex] += value;
-                    break;
-                case "MINUS_EQ":
-                    array[realIndex] -= value;
-                    break;
-                case "MULT_EQ":
-                    array[realIndex] *= value;
-                    break;
-                case "DIV_EQ":
-                    array[realIndex] /= value;
-                    break;
-                default:
-                    runtimeError(node, `Unknown assignment operator: ${node.operator}`);
+                case "EQUAL": target[realLast] = val; break;
+                case "PLUS_EQ": target[realLast] += val; break;
+                case "MINUS_EQ": target[realLast] -= val; break;
+                case "MULT_EQ": target[realLast] *= val; break;
+                case "DIV_EQ": target[realLast] /= val; break;
+                default: runtimeError(node, `Unknown assignment operator: ${node.operator}`);
             }
-            return array[realIndex];
-        };
+
+            return target[realLast];
+        }
         case "Assignment": {
             const right = evaluate(node.value, env);
             switch(node.operator) {

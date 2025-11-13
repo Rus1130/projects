@@ -71,34 +71,40 @@
     <h1>SuperLang Interpreter</h1>
 
     <!--
-    
-    array = array>map(double)
-
-    same as
-
-    array = array -> double
-
-    -->
-
-    <!--
-        array = [1, 2, 3, 4, 5]
-
-        array>map(@(x){
-            return x * 2
-        })
-
-        print(array>join)
+            "var a = 0",
+            "var b = 1",
+            "var temp = 0",
+            "var times = ''",
+            "",
+            "ask $times 'How many Fibonacci numbers would you like to generate?'",
+            "",
+            "loop times>toNumber {",
+            "   out a",
+            "   set $b = a>add(b)",
+            "   set $a = temp",
+            "   set $temp = b",
+            "}"
     -->
     <div id="editorWrapper">
         <div id="lineNumbers"></div>
         <div id="editor" contenteditable="plaintext-only">
-array = [1, 2, 3, 4, 5]
 
-array = array>map(@(x){
-    return x * 2
-})
+func fibonacci(n) {
+    a = 0
+    b = 1
+    temp = 0
 
-print(array>join(' '))
+    loop n {
+        b = a + b
+        a = temp
+        temp = b
+        print($"|__iter__|: |a|")
+    }
+}
+
+@fibonacci(10)
+
+
         </div>
     </div>
     <br>
