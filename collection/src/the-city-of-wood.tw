@@ -1,4 +1,4 @@
-{{# written 17-19 oct, 8 nov, 2025 #}}
+{{# written 17-19 oct, 8, 14 nov, 2025 #}}
 {{#timecalc
     char: 50
     newline: 500
@@ -22,13 +22,13 @@ all can be found in the moving city made of wood.[linebreak]
 
 The elites of the city live near the front, near the machines,[newline]
 their premium, laquered wood free from defect.[newline]
-The busy streets at the front nearly spill over the sides of the city,[newline]
+The busy streets nearly spill over the sides,[newline]
 market stalls and tea shops fill every corner,[newline]
 people chatting away without worry.[newline]
 The smell of rot is absent here.[linebreak]
 
 At the rear of the city, the poor make their home.[newline]
 They live in sheds, the wood ripped from unecessary parts of the city.[newline]
-Fires burn to cremate the dead, the smoke mixing with the stench of rot and decay.[linebreak]
+Fires burn to cremate the dead, the smoke mixing with the smell of rot and decay.[linebreak]
 
 A little boy sits on the edge, kicking his feet at the passing brush below.[linebreak][sleep 700][function]
