@@ -104,8 +104,8 @@ class SuperLangError extends Error {
         super(message);
         this.name = "SuperLangError";
         if (node && node.line !== undefined) {
-            this.line = node.line;
-            this.col = node.col;
+            this.line = node.value.line;
+            this.col = node.value.col;
         }
     }
 
@@ -345,7 +345,10 @@ new Method("array", "map", [
         for (let i = 0; i < arr.length; i++) {
             // create a fresh local environment for this iteration
             const localEnv = Object.create(env);
-            localEnv["__iter__"] = i;
+            localEnv["__iter__"] = {
+                type: "number",
+                value: i
+            }
 
             // bind first parameter (or more, if multiple)
             if (params.length > 0) localEnv[params[0]] = arr[i];
@@ -376,7 +379,10 @@ new Method("array", "map", [
             // Create a temporary local environment
             const localEnv = Object.create(func.body);
 
-            localEnv["__iter__"] = i;
+            localEnv["__iter__"] = {
+                type: "number",
+                value: i
+            }
 
 
             // Bind first parameter
@@ -402,6 +408,7 @@ new Method("array", "map", [
         return result;
     }
 }).register()
+
 function tokenize(input) {
     const tokens = [];
     const tokenSpec = [
@@ -498,7 +505,6 @@ function parse(tokens) {
                 return token;
             }
         }
-        console.log(new Error().stack)
         if (token) runtimeError(token, `Expected token "${type}", but got "${token.type}"`);
         else runtimeError(null, `Expected token "${type}", but got end of input`);
     }
@@ -722,6 +728,13 @@ function parse(tokens) {
             return parseFunctionDeclaration();
         }
 
+        if(peek()?.type === 'IDENTIFIER' && peek().value === 'watch') {
+            consume('IDENTIFIER');
+            const variable = consume('IDENTIFIER');
+            const body = collectMultiline('LBRACE', 'RBRACE');
+            return { type: "WatchDeclaration", variable: variable.value, body };
+        }
+
         if(peek()?.type === 'IDENTIFIER' && peek().value === 'if') {
             consume('IDENTIFIER');
             const condition = parseComparison();
@@ -808,7 +821,7 @@ function parse(tokens) {
         if (peek()?.type === 'IDENTIFIER' && tokens[current + 1]?.type === 'METHOD_CALL') {
             const parent = consume('IDENTIFIER').value;
             consume('METHOD_CALL');
-            const methodName = consume('IDENTIFIER').value;
+            const method = consume('IDENTIFIER');
 
             // optional parentheses or single arg without parentheses
             let args = [];
@@ -819,12 +832,12 @@ function parse(tokens) {
                 args.push(parseComparison());
             }
 
-            return { type: "MethodCall", parent, name: methodName, args };
+            return { type: "MethodCall", parent, name: method.value, args, line: method.line, col: method.col };
         }
 
         // --- Global call: foo(...)  OR foo single-arg-without-parens
         if (peek()?.type === 'IDENTIFIER') {
-            const name = consume('IDENTIFIER').value;
+            const global = consume('IDENTIFIER');
             let args = [];
             if (peek()?.type === 'LPAREN') {
                 args = collectArguments();
@@ -832,18 +845,18 @@ function parse(tokens) {
                 args.push(parseComparison());
             }
 
-            return { type: "MethodCall", parent: null, name, args };
+            return { type: "MethodCall", parent: null, name: global.value, args, line: global.line, col: global.col };
         }
 
         // --- Function call with @ : @name(...)  (calls, not declarations)
         if (peek()?.type === 'AT') {
             consume('AT');
-            const name = consume('IDENTIFIER').value;
+            const func = consume('IDENTIFIER');
             let args = [];
             if (peek()?.type === 'LPAREN') {
                 args = collectArguments();
             }
-            return { type: "FunctionCall", name, args };
+            return { type: "FunctionCall", name: func.value, args, line: func.line, col: func.col };
         }
 
         // --- Return statement: return expr
@@ -875,9 +888,17 @@ function evaluateProgram(input) {
     const env = { 
         Math: { type: "math" },
         Date: { type: "date" },
-        true: true,
-        false: false,
+        true: {
+            type: "boolean",
+            value: true
+        },
+        false: {
+            type: "boolean",
+            value: false
+        }
     };
+
+    watchedVariables = {};
 
     try {
         // Tokenize
@@ -886,8 +907,6 @@ function evaluateProgram(input) {
         // Parse
         const ast = parse(tokens);
 
-        console.log(ast)
-
         // Evaluate
         for (const node of ast.body) {
             evaluate(node, env);
@@ -895,6 +914,31 @@ function evaluateProgram(input) {
 
     } catch (e) {
         handleError(e);
+    }
+}
+
+/**
+ * 
+ * @param {*} body 
+ * @param {*} env 
+ * @param {Array<{ name: string, type: string, value: any }>} vars 
+ * @returns 
+ */
+function runBody(body, env, vars){
+    for(const v of vars){
+        env[v.name] = {
+            type: v.type,
+            value: v.value
+        };
+    }
+    for (const stmt of body) {
+        const value = evaluate(stmt, env);
+        if (value && value.__return !== undefined) {
+            return value.__return;
+        }
+    }
+    for(const v of vars){
+        delete env[v.name];
     }
 }
 
@@ -911,7 +955,35 @@ function handleError(e) {
     }
 }
 
+let watchedVariables = {};
+
 function evaluate(node, env = {}) {
+    function runWatch(oldValue, newValue) {
+        try {
+            if(node.identifier in watchedVariables) {
+                if(!env[node.identifier]){
+                    runtimeError(node.value, `Cannot assign to watched variable "${node.identifier}" before it has been initialized.`);
+                }
+                const watchBody = watchedVariables[node.identifier];
+
+                // run watch body if value changed
+                runBody(watchBody, env, [
+                    {
+                        name: "__old__",
+                        type: getType(oldValue),
+                        value: oldValue
+                    },
+                    {
+                        name: "__new__",
+                        type: getType(newValue),
+                        value: newValue
+                    }
+                ]);
+            }
+        } catch (e) {
+            runtimeError(node.value, `Variable "${node.identifier}" cannot be modified by its own watch handler.`);
+        }
+    }
     switch (node.type) {
         case "ArrayAssignment": {
             let array = env[node.arrayName];
@@ -957,28 +1029,46 @@ function evaluate(node, env = {}) {
                 case "MINUS_EQ": target[realLast] -= val; break;
                 case "MULT_EQ": target[realLast] *= val; break;
                 case "DIV_EQ": target[realLast] /= val; break;
-                default: runtimeError(node, `Unknown assignment operator: ${node.operator}`);
+                default: runtimeError(node.value, `Unknown assignment operator: ${node.operator}`);
             }
 
             return target[realLast];
         }
+
         case "Assignment": {
+            const oldValue = env[node.identifier] ? env[node.identifier].value : undefined;
             const right = evaluate(node.value, env);
+            runWatch(oldValue, right);
             switch(node.operator) {
                 case "EQUAL":
-                    env[node.identifier] = right;
+                    env[node.identifier] = {
+                        type: getType(right),
+                        value: right
+                    }
                     break;
                 case "PLUS_EQ":
-                    env[node.identifier] += right;
+                    env[node.identifier] = {
+                        type: getType(env[node.identifier].value),
+                        value: env[node.identifier].value + right
+                    }
                     break;
                 case "MINUS_EQ":
-                    env[node.identifier] -= right;
+                    env[node.identifier] = {
+                        type: getType(env[node.identifier].value),
+                        value: env[node.identifier].value - right
+                    }
                     break;
                 case "MULT_EQ":
-                    env[node.identifier] *= right;
+                    env[node.identifier] = {
+                        type: getType(env[node.identifier].value),
+                        value: env[node.identifier].value * right
+                    }
                     break;
                 case "DIV_EQ":
-                    env[node.identifier] /= right;
+                    env[node.identifier] = {
+                        type: getType(env[node.identifier].value),
+                        value: env[node.identifier].value / right
+                    }
                     break;
                 default:
                     runtimeError(node, `Unknown assignment operator: ${node.operator}`);
@@ -1008,12 +1098,13 @@ function evaluate(node, env = {}) {
         }
 
         case "Identifier":
-            if (node.value in env) return env[node.value];
-            runtimeError(node, `Undefined variable: ${node.value}`);
-
-        case "Assignment":
-            env[node.identifier] = evaluate(node.value, env);
-            return env[node.identifier];
+            if (node.value in env) {
+                const v = env[node.value];
+                if (v && typeof v === "object" && v.type !== undefined)
+                    return v.value;
+                return v;
+            }
+            runtimeError(node.value, `Undefined variable: ${node.value}`);
 
         case "FunctionDeclaration":
             env[node.name] = {
@@ -1028,21 +1119,56 @@ function evaluate(node, env = {}) {
             const left = evaluate(node.left, env);
             const right = evaluate(node.right, env);
 
-            if (getType(left) !== getType(right)) {
-                runtimeError(node, `Type mismatch in binary expression: ${getType(left)} ${node.operator} ${getType(right)}`);
+
+
+            function guard(){
+                if (getType(left) !== getType(right)) {
+                    runtimeError(node, `Type mismatch in binary expression: ${getType(left)} ${node.operator} ${getType(right)}`);
+                }
             }
 
             switch (node.operator) {
-                case "+": return left + right;
-                case "-": return left - right;
-                case "*": return left * right;
-                case "/": return left / right;
-                case " > ": return left > right;
-                case " < ": return left < right;
-                case ">=": return left >= right;
-                case "<=": return left <= right;
-                case "==": return left == right;
-                case "!=": return left != right;
+                case "+": {
+                    if(getType(left) === "string" && getType(right) === "string") return left + right;
+                    else if(getType(left) === "string" && getType(right) === "number") return left + right.toString();
+                    else guard()
+                }
+                case "-": {
+                    guard()
+                    return left - right;
+                }
+                case "*": {
+                    guard()
+                    return left * right;
+                }
+                case "/": {
+                    guard()
+                    return left / right;
+                }
+                case " > ": {
+                    guard()
+                    return left > right;
+                }
+                case " < ": {
+                    guard()
+                    return left < right;
+                }
+                case ">=": {
+                    guard()
+                    return left >= right;
+                }
+                case "<=": {
+                    guard()
+                    return left <= right;
+                }
+                case "==": {
+                    guard()
+                    return left == right;
+                }
+                case "!=": {
+                    guard()
+                    return left != right;
+                }
                 default: runtimeError(node, `Unknown operator: ${node.operator}`);
             }
 
@@ -1104,15 +1230,7 @@ function evaluate(node, env = {}) {
             }
 
             // Execute body
-            let result = null;
-            for (const stmt of func.body) {
-                const value = evaluate(stmt, localEnv);
-                if (value && value.__return !== undefined) {
-                    result = value.__return;
-                    break;
-                }
-            }
-            return result;
+            return runBody(func.body, localEnv, []);
         }
 
         case "ReturnStatement":
@@ -1125,18 +1243,17 @@ function evaluate(node, env = {}) {
                 runtimeError(node, `Loop count must be a non-negative integer, got: ${loopCount}`);
             }
             for (let i = 0; i < loopCount; i++) {
-                env["__iter__"] = i;
-                for (const stmt of node.body) {
-                    const value = evaluate(stmt, env);
-                    if (value && value.__return !== undefined) {
-                        return value.__return;
+                runBody(node.body, env, [
+                    { name: "__iter__",
+                      type: "number",
+                      value: i
                     }
-                }
-                delete env["__iter__"];
+                ]);
             }
             return null;
 
         case "ConditionalLoopStatement":
+            let i = 0;
             while (true) {
                 const cond = evaluate(node.condition, env);
                 if (typeof cond !== "boolean") {
@@ -1144,12 +1261,14 @@ function evaluate(node, env = {}) {
                 }
                 if (!cond) break;
 
-                for (const stmt of node.body) {
-                    const value = evaluate(stmt, env);
-                    if (value && value.__return !== undefined) {
-                        return value.__return;
+                runBody(node.body, env, [
+                    { 
+                        name: "__iter__",
+                        type: "number",
+                        value: i
                     }
-                }
+                ]);
+                i++;
             }
             return null;
 
@@ -1161,12 +1280,7 @@ function evaluate(node, env = {}) {
                 runtimeError(node, `If condition must evaluate to a boolean, got: ${condition}`);
             }
             if (condition) {
-                for (const stmt of node.body) {
-                    const value = evaluate(stmt, env);
-                    if (value && value.__return !== undefined) {
-                        return value.__return;
-                    }
-                }
+                runBody(node.body, env, []);
             }
             return null;
 
@@ -1178,19 +1292,9 @@ function evaluate(node, env = {}) {
                 runtimeError(node, `If condition must evaluate to a boolean, got: ${cond}`);
             }
             if (cond) {
-                for (const stmt of node.body) {
-                    const value = evaluate(stmt, env);
-                    if (value && value.__return !== undefined) {
-                        return value.__return;
-                    }
-                }
+                runBody(node.body, env, []);
             } else {
-                for (const stmt of node.elseBody) {
-                    const value = evaluate(stmt, env);
-                    if (value && value.__return !== undefined) {
-                        return value.__return;
-                    }
-                }
+                runBody(node.elseBody, env, []);
             }
             return null;
 
@@ -1201,6 +1305,10 @@ function evaluate(node, env = {}) {
                 params: node.params,
                 body: node.body,
             };
+
+        case "WatchDeclaration":
+            watchedVariables[node.variable] = node.body;
+            return null;
 
         default:
             runtimeError(node, `Unknown node type: ${node.type}`);
