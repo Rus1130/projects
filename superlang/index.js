@@ -137,7 +137,6 @@ class Method {
     validateArgs(args, callNode) {
         const minArgs = this.argSpecs.filter(a => !a.optional).length;
         const maxArgs = this.argSpecs.length;
-
         for (let i = 0; i < args.length; i++) {
             const spec = this.argSpecs[i];
             if (!spec) break;
@@ -200,7 +199,7 @@ function getType(value) {
 
 new Method(null, "print", [
     {
-        types: ["string", "number", "boolean"],
+        types: ["string", "number", "boolean", "array"],
         name: "value"
 
     }
@@ -275,6 +274,10 @@ new Method("array", "join", [
     return (parent.join(separator));
 }).register()
 
+new Method("Function", "call", [], function(parent, args, env) {
+    return callFunction(parent, [], env);
+}).register()
+
 new Method("array", "index", [
     { 
         types: ["number"],
@@ -328,86 +331,17 @@ new Method("array", "concat", [
 }).register()
 
 new Method("array", "map", [
-    { 
-        types: ["Function"], 
-        name: "function to map over array" 
-    }
-] , function(parent, args, env) {
+    { types: ["Function"], name: "function to map over array" }
+], (parent, args, env) => {
     const func = args[0].value;
     const arr = parent;
-
-    if(func.name.startsWith("<anonymous>")) {
-        const result = [];
-
-        const params = func.params;
-        const body = func.body;
-
-        for (let i = 0; i < arr.length; i++) {
-            // create a fresh local environment for this iteration
-            const localEnv = Object.create(env);
-            localEnv["__iter__"] = {
-                type: "number",
-                value: i
-            }
-
-            // bind first parameter (or more, if multiple)
-            if (params.length > 0) localEnv[params[0]] = arr[i];
-
-            // execute the function body
-            let returnValue = null;
-            for (const stmt of body) {
-                const val = evaluate(stmt, localEnv);
-                if (val && val.__return !== undefined) {
-                    returnValue = val.__return;
-                    break;
-                }
-            }
-
-            if(returnValue == null) runtimeError(args[0], `Anonymous Function did not return a value`);
-
-            result.push(returnValue);
-        }
-
-        return result;
-
-    } else {
-        if(env[func.name].type !== "Function") runtimeError(args[0], `${func.name} is not a function`);
-
-        const result = [];
-
-        for (let i = 0; i < arr.length; i++) {
-            // Create a temporary local environment
-            const localEnv = Object.create(func.body);
-
-            localEnv["__iter__"] = {
-                type: "number",
-                value: i
-            }
-
-
-            // Bind first parameter
-            if (func.params.length > 0) {
-                localEnv[func.params[0]] = arr[i];
-            }
-
-            // Execute the function body
-            let returnValue = null;
-            for (const stmt of func.body) {
-                const val = evaluate(stmt, localEnv);
-                if (val && val.__return !== undefined) {
-                    returnValue = val.__return;
-                    break;
-                }
-            }
-
-            if(returnValue == null) runtimeError(args[0], `Function "${func.name}" did not return a value`);
-
-            result.push(returnValue);
-        }
-
-        return result;
-    }
-}).register()
+    return arr.map((elem, i) => {
+        const localArgs = [];
+        if (func.params.length > 0) localArgs.push(elem);
+        env["__iter__"] = { type: "number", value: i };
+        return callFunction(func, localArgs, env);
+    });
+}).register();
 
 function tokenize(input) {
     const tokens = [];
@@ -481,7 +415,7 @@ function tokenize(input) {
 }
 
 function runtimeError(node, message) {
-    const loc = node && node.line ? `\n    at  line  ${node.line}\n    at column ${node.col}\n` : "";
+    const loc = node && node.line ? `<br>    at  line  ${node.line}\n    at column ${node.col}\n` : "";
     if(node == null) throw new SuperLangError(message);
     else throw new SuperLangError(`${message}${loc}`);
 }
@@ -693,6 +627,10 @@ function parse(tokens) {
         return body;
     }
 
+    /**
+     * Gets passed functions arguments
+     * @returns
+     */
     function collectArguments() {
         const args = [];
         consume('LPAREN');
@@ -706,7 +644,11 @@ function parse(tokens) {
         consume('RPAREN');
         return args;
     }
-
+    
+    /**
+     * Gets function parameters (names)
+     * @returns 
+     */
     function collectParameters() {
         const params = [];
         consume('LPAREN');
@@ -942,6 +884,21 @@ function runBody(body, env, vars){
     }
 }
 
+function callFunction(func, args, env, callerNode = null) {
+    if (func.type !== "Function") {
+        runtimeError(callerNode, `Expected a Function, got ${getType(func)}`);
+    }
+
+    const localEnv = Object.create(env);
+
+    for (let i = 0; i < func.params.length; i++) {
+        if (args[i] === undefined) runtimeError(callerNode, `Missing argument for parameter "${func.params[i]}"`);
+        localEnv[func.params[i]] = args[i];
+    }
+
+    return runBody(func.body, localEnv, []);
+}
+
 function handleError(e) {
     if (e instanceof SuperLangError) {
         outputToTerminal({ type: 'error', value: "Error: " + e.toString() });
@@ -966,7 +923,6 @@ function evaluate(node, env = {}) {
                 }
                 const watchBody = watchedVariables[node.identifier];
 
-                // run watch body if value changed
                 runBody(watchBody, env, [
                     {
                         name: "__old__",
@@ -1104,7 +1060,7 @@ function evaluate(node, env = {}) {
                     return v.value;
                 return v;
             }
-            runtimeError(node.value, `Undefined variable: ${node.value}`);
+            runtimeError(node, `Undefined variable: ${node.value}`);
 
         case "FunctionDeclaration":
             env[node.name] = {
@@ -1129,19 +1085,27 @@ function evaluate(node, env = {}) {
 
             switch (node.operator) {
                 case "+": {
-                    if(getType(left) === "string" && getType(right) === "string") return left + right;
-                    else if(getType(left) === "string" && getType(right) === "number") return left + right.toString();
-                    else guard()
+                    if(getType(left) === "string" && getType(right) === "number") return left + right.toString();
+
+                    guard()
+                    return left + right;
+
                 }
                 case "-": {
+                    if(getType(left) === "string" && getType(right) === "string") return left.replace(right, '');
+
                     guard()
                     return left - right;
                 }
                 case "*": {
+                    if(getType(left) === "string" && getType(right) === "number") return left.repeat(right);
+
                     guard()
                     return left * right;
                 }
                 case "/": {
+                    if(getType(left) === "string" && getType(right) === "string") return left.replaceAll(right, '');
+                    if(getType(left) === "string" && getType(right) === "number") return left.match(new RegExp(`.{1,${right}}`, 'g'));
                     guard()
                     return left / right;
                 }
@@ -1175,11 +1139,7 @@ function evaluate(node, env = {}) {
         case "MethodCall": {
             let parentValue = null;
             if (node.parent) {
-                if (getType(node.parent) === "string") {
-                    parentValue = evaluate({ type: "Identifier", value: node.parent }, env);
-                } else {
-                    parentValue = evaluate(node.parent, env);
-                }
+                parentValue = evaluate(node.parent, env);
             }
 
             // runtime parent type for lookup
@@ -1206,32 +1166,19 @@ function evaluate(node, env = {}) {
                 })
             });
 
+            console.log("-----")
+            console.log("parent: ", parentValue);
+            console.log("args: ", args);
+            console.log("node: ", node);
+            console.log("env: ", env);
 
             return method.execute(parentValue, args, node, env);
         }
 
-        case "FunctionCall": {
-            const func = env[node.name];
-            if (!func || func.type !== "Function") {
-                runtimeError(node, `Undefined function: @${node.name}`);
-            }
-
-            const argValues = node.args.map(a => evaluate(a, env));
-
-            // Create new scope
-            const localEnv = Object.create(env);
-
-            // Bind params
-            for (let i = 0; i < func.params.length; i++) {
-                if (argValues[i] === undefined) {
-                    runtimeError(node, `Missing argument for parameter "${func.params[i]}" in function @${node.name}`);
-                }
-                localEnv[func.params[i]] = argValues[i];
-            }
-
-            // Execute body
-            return runBody(func.body, localEnv, []);
-        }
+    case "FunctionCall":
+        const func = evaluate({ type: "Identifier", value: node.name }, env);
+        const argValues = node.args.map(a => evaluate(a, env));
+        return callFunction(func, argValues, env, node);
 
         case "ReturnStatement":
             return { __return: evaluate(node.value, env) };
@@ -1301,7 +1248,7 @@ function evaluate(node, env = {}) {
         case "AnonymousFunction":
             return {
                 type: "Function",
-                name: "<anonymous>" + Math.random().toString(36).substring(2),
+                name: "<anonymous>" + (Math.random().toString(36).substring(2)) + (Math.random().toString(36).substring(2)),
                 params: node.params,
                 body: node.body,
             };

@@ -3,6 +3,7 @@
         --output-string-color: #000000;
         --output-number-color: #5151fd;
         --output-boolean-color: #5151fd;
+        --output-array-color: #ff569a;
     }
     body {
         font-family: monospace;
@@ -46,6 +47,7 @@
         padding: 10px;
         border-radius: 4px;
         min-height: 40px;
+        white-space: pre-wrap !important;
     }
 
     #editorWrapper {
@@ -93,14 +95,7 @@ array = array>map(@(x){
 
 print(array>join(' ')) -->
 
-x = 10
-y = 12
-watch x {
-    y = x * 2
-}
-print(y)
-x = 100
-print(y)
+
 <!-- func fibonacci(n) {
     a = 0
     b = 1
@@ -115,6 +110,14 @@ print(y)
 }
 
 @fibonacci(10) -->
+num = 20
+print(@(){
+    if(num > 20){
+        return "big"
+    } else {
+        return "small"
+    }
+}>call)
             <!-- print(match 0 {
                 0 -> "zero"
                 1 -> "one"
@@ -143,25 +146,51 @@ print(y)
 
     function outputToTerminal(value) {
         const line = document.createElement("div");
-        const type = getType(value);
-        
-        let text;
 
-        if (type === "string") {
-            line.style.color = "var(--output-string-color)";
-        } else if (type === "number") {
-            line.style.color = "var(--output-number-color)";
-        } else if (type === "boolean") {
-            line.style.color = "var(--output-boolean-color)";
-        } else if (type === "error") {
+        if(value?.type === "error"){
             line.style.color = "red";
-            text = value.value;
+            line.innerHTML = value.value;
+            output.appendChild(line);
+            return;
         }
 
-        if(text === undefined) text = value;
+        function color(val) {
+            const span = document.createElement("span");
+            const type = getType(val); // calculate type per item
 
-        line.innerHTML = text;
+            if (type === "string") {
+                span.style.color = "var(--output-string-color)";
+                span.innerHTML = val;
+            } else if (type === "number") {
+                span.style.color = "var(--output-number-color)";
+                span.innerHTML = val;
+            } else if (type === "boolean") {
+                span.style.color = "var(--output-boolean-color)";
+                span.innerHTML = val;
+            } else if (type === "array") {
+                const parentSpan = document.createElement("span");
+                parentSpan.style.color = "var(--output-array-color)";
+                parentSpan.innerHTML = "["; // opening bracket
+                val.forEach((item, index) => {
+                    parentSpan.appendChild(color(item));
+                    if (index < val.length - 1) {
+                        const comma = document.createElement("span");
+                        comma.style.color = "#000000";
+                        comma.innerHTML = ", ";
+                        parentSpan.appendChild(comma);
+                    }
+                });
+                parentSpan.appendChild(document.createTextNode("]")); // closing bracket
+                return parentSpan;
+            } else {
+                span.innerHTML = val; // fallback
+            }
+
+            return span;
+        }
+
         line.className = "output-line";
+        line.appendChild(color(value));
         output.appendChild(line);
     }
 

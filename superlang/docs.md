@@ -1,5 +1,5 @@
 # SuperLang
-## primitives:
+## primitives
 ```
 string = "hello!"
 number = 42
@@ -16,52 +16,69 @@ object = #{
 !x = 'constant'
 ```
 
-## operators:
+## operators
+
+## assignments
 ```
-# assignments
 number = 10
-number += 5  # number is now 15
-number -= 3  # number is now 12
-number *= 2  # number is now 24
-number /= 4  # number is now 6
-
-# arithmetic
-addition = 2 + 3
-subtraction = 5 - 2
+number += 5  # 15
+number -= 3  # 12
+number *= 2  # 24
+number /= 4  # 6
+```
+## arithmetic
+```
+addition       = 2 + 3
+subtraction    = 5 - 2
 multiplication = 4 * 3
-division = 10 / 2
-
-# comparison
-isEqual = (5 == 5)
-isNotEqual = (5 != 3)
-isGreater = (7 > 4)
-isLess = (2 < 6)
-isGreaterOrEqual = (5 >= 5)
-isLessOrEqual = (3 <= 4)
+division       = 10 / 2
 ```
 
-## setting the array of an index:
+## comparison
+```
+isEqual          = (5 == 5)  // true
+isNotEqual       = (5 != 3)  // true 
+isGreater        = (7 > 4)   // true
+isLess           = (2 > 6)   // false
+isGreaterOrEqual = (5 >= 5)  // true
+isLessOrEqual    = (3 >= 4)  // false
+```
+
+## other uses of operators
+```
+greeting = "Hello, " + "world!"      // "Hello, world!"
+repeated = "ha" * 3                  // "hahaha"
+removeFirstInstance = "banana" - "a" // "bnana"
+removeAllInstances = "banana" / "a"  // "bnn"
+split = "reallylongthing" / 3        // ["rea", "lly", "lon", "gth", "ing"]
+```
+
+## Arrays
+### Set value at index
 ```
 array = [1, 2, 3]
 array:0 = 42
 ```
 
-## getting the array of an index:
+### Get value at index
 ```
 array = [1, 2, 3]
 print(array>index(0))
 ```
-
-## if:
+## Control Flow
+### if
 ```
+number = 5
+
 if (number > 10) {
     print("number is greater than 10")
 }
 ```
 
-## if-else:
+### if-else:
 ```
 number = 5
+
 if (number > 10) {
     print("number is greater than 10")
 } else {
@@ -109,12 +126,12 @@ Can be done with a count or with a condition. Conditions must be in parenthesis.
 ```
 array = [1, 2, 3, 4, 5]
 
-# count
+// count
 loop 5 {
     print(__iter__)
 }
 
-# condition
+// condition
 number = 0
 loop (number < 5) {
     print(number + 1)
@@ -129,7 +146,7 @@ loop (number < 5) {
 ```
 array > map (function)
 
-# map:
+// map:
 array = [1, 2, 3, 4, 5]
 
 def double(x){
@@ -138,15 +155,15 @@ def double(x){
 
 array = array>map(double)
 
-# or 
+// or 
 array = array>map(@(x){
     return x * 2
 })
 
-# or
+// or
 array = array>map(@{
     return 7
 })
 
-# has access to __iter__
+// has access to __iter__
 ```
