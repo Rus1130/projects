@@ -885,6 +885,7 @@ function runBody(body, env, vars){
 }
 
 function callFunction(func, args, env, callerNode = null) {
+    console.log(func, args, env, callerNode)
     if (func.type !== "Function") {
         runtimeError(callerNode, `Expected a Function, got ${getType(func)}`);
     }
