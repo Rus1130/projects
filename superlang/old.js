@@ -166,29 +166,6 @@ class Method {
     }
 }
 
-class EnvVariable {
-    constructor(name, type, value) {
-        this.name = name;
-        this.type = type;
-        this.value = value;
-    }
-}
-
-class Environment {
-    constructor(parent = null) {
-        this.parent = parent;
-        this.variables = {};
-    }
-    setVariable(name, type, value) {
-        this.variables[name] = new EnvVariable(name, type, value);
-    }
-}
-
-function getType(value) {
-    if(value.type !== undefined) return value.type;
-    else return Array.isArray(value) ? "array" : typeof value;
-}
-
 class MethodRegistry {
     static methods = {};
 
@@ -216,297 +193,221 @@ class MethodRegistry {
     }
 }
 
-function registerMethods(){
-    new Method(null, "print", [
-        {
-            types: ["string", "number", "boolean"],
-            name: "value"
+function getType(value) {
+    if(value.type !== undefined) return value.type;
+    else return Array.isArray(value) ? "array" : typeof value;
+}
 
-        }
-    ], (parent, args) => {
-        outputToTerminal(args[0].value);
-    }).register()
+new Method(null, "print", [
+    {
+        types: ["string", "number", "boolean"],
+        name: "value"
 
-    new Method(null, "debugprint", [
-        {
-            types: ["any"],
-            name: "value"
-        }
-    ], (parent, args) => {
-        console.log(args);
-    }).register()
+    }
+], (parent, args) => {
+    outputToTerminal(args[0].value);
+}).register()
+
+new Method(null, "debugprint", [
+    {
+        types: ["any"],
+        name: "value"
+    }
+], (parent, args) => {
+    console.log(args);
+}).register()
 
 
-    new Method("math", "random", [
-        {
-            types: ["number"],
-            optional: false,
-            name: "max 1 arg / min 0 arg"
-        },
-        {
-            types: ["number"],
-            optional: true,
-            name: "max"
-        }
-    ], (parent, args) => {
-        if(args.length === 2) {
-            const min = args[0].value;
-            const max = args[1].value;
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        } else {
-            const n = args[0].value;
-            return Math.floor(Math.random() * (n + 1));
-        }
-    }).register()
+new Method("math", "random", [
+    {
+        types: ["number"],
+        optional: false,
+        name: "max 1 arg / min 0 arg"
+    },
+    {
+        types: ["number"],
+        optional: true,
+        name: "max"
+    }
+], (parent, args) => {
+    if(args.length === 2) {
+        const min = args[0].value;
+        const max = args[1].value;
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    } else {
+        const n = args[0].value;
+        return Math.floor(Math.random() * (n + 1));
+    }
+}).register()
 
-    new Method("date", "now", [] , (parent, args) => {
-        return Date.now();
-    }).register()
+new Method("date", "now", [] , (parent, args) => {
+    return Date.now();
+}).register()
 
-    new Method("date", "format", [
-        {
-            types: ["string"],
-            name: "date format string"
-        }
-    ], (parent, args) => {
-        const date = new Date();
-        const formatStr = args[0].value;
-        return parseTimeFormat(formatStr, date.getTime());
-    }).register()
+new Method("date", "format", [
+    {
+        types: ["string"],
+        name: "date format string"
+    }
+], (parent, args) => {
+    const date = new Date();
+    const formatStr = args[0].value;
+    return parseTimeFormat(formatStr, date.getTime());
+}).register()
 
-    new Method("any", "type", [] , function(parent, args) {
-        return getType(parent);
-    }).register()
+new Method("any", "type", [] , function(parent, args) {
+    return getType(parent);
+}).register()
 
-    new Method("array", "length", [] , function(parent, args) {
-        return parent.length;
-    }).register()
+new Method("array", "length", [] , function(parent, args) {
+    return parent.length;
+}).register()
 
-    new Method("array", "join", [
-        { 
-            types: ["string"], 
-            optional: true, 
-            name: "separator"
-        }
-    ], function(parent, args) {
-        const separator = args[0] !== undefined ? args[0].value : ",";
-        if(parent.some(x => getType(x) === "array")) runtimeError(args[0], `Cannot join array with nested arrays`);
-        return (parent.join(separator));
-    }).register()
+new Method("array", "join", [
+    { 
+        types: ["string"], 
+        optional: true, 
+        name: "separator"
+    }
+], function(parent, args) {
+    const separator = args[0] !== undefined ? args[0].value : ",";
+    if(parent.some(x => getType(x) === "array")) runtimeError(args[0], `Cannot join array with nested arrays`);
+    return (parent.join(separator));
+}).register()
 
-    new Method("array", "index", [
-        { 
-            types: ["number"],
-            name: "index"
-        }
-    ], function(parent, args) {
+new Method("array", "index", [
+    { 
+        types: ["number"],
+        name: "index"
+    }
+], function(parent, args) {
 
-        const index = args[0].value >= 0 ? args[0].value : parent.length + args[0].value;
+    const index = args[0].value >= 0 ? args[0].value : parent.length + args[0].value;
 
-        if (index < 0 || index >= parent.length) {
-            runtimeError(args[0], `Index ${args[0].value} out of range for array of length ${parent.length}`);
-        }
-        return parent[index];
-    }).register()
+    if (index < 0 || index >= parent.length) {
+        runtimeError(args[0], `Index ${args[0].value} out of range for array of length ${parent.length}`);
+    }
+    return parent[index];
+}).register()
 
-    new Method("string", "length", [] , function(parent, args) {
-        return parent.length;
-    }).register()
+new Method("string", "length", [] , function(parent, args) {
+    return parent.length;
+}).register()
 
-    new Method("string", "wrap", [
-        { 
-            types: ["string"], 
-            name: "left and right 1 arg / left 2 arg" 
-        },
-        { 
-            types: ["string"],
-            optional: true,
-            name: "right"
-        }
-    ] , function(parent, args) {
-        const left = args[0];
-        const right = args[1] !== undefined ? args[1].value : left;
-        return left + parent + right;
-    }).register()
+new Method("string", "wrap", [
+    { 
+        types: ["string"], 
+        name: "left and right 1 arg / left 2 arg" 
+    },
+    { 
+        types: ["string"],
+        optional: true,
+        name: "right"
+    }
+] , function(parent, args) {
+    const left = args[0];
+    const right = args[1] !== undefined ? args[1].value : left;
+    return left + parent + right;
+}).register()
 
-    new Method("number", "toString", [] , function(parent, args) {
-        return parent.toString();
-    }).register()
+new Method("number", "toString", [] , function(parent, args) {
+    return parent.toString();
+}).register()
 
-    new Method("boolean", "toString", [] , function(parent, args) {
-        return parent.toString();
-    }).register()
+new Method("boolean", "toString", [] , function(parent, args) {
+    return parent.toString();
+}).register()
 
-    new Method("array", "concat", [
-        { 
-            types: ["array"], 
-            name: "array to concatenate" 
-        }
-    ] , function(parent, args) {
-        return parent.concat(args[0].value);
-    }).register()
+new Method("array", "concat", [
+    { 
+        types: ["array"], 
+        name: "array to concatenate" 
+    }
+] , function(parent, args) {
+    return parent.concat(args[0].value);
+}).register()
 
-    new Method("array", "map", [
-        { 
-            types: ["Function"], 
-            name: "function to map over array" 
-        }
-    ] , function(parent, args, env) {
-        const func = args[0].value;
-        const arr = parent;
+new Method("array", "map", [
+    { 
+        types: ["Function"], 
+        name: "function to map over array" 
+    }
+] , function(parent, args, env) {
+    const func = args[0].value;
+    const arr = parent;
 
-        if(func.name.startsWith("<anonymous>")) {
-            const result = [];
+    if(func.name.startsWith("<anonymous>")) {
+        const result = [];
 
-            const params = func.params;
-            const body = func.body;
+        const params = func.params;
+        const body = func.body;
 
-            for (let i = 0; i < arr.length; i++) {
-                // create a fresh local environment for this iteration
-                const localEnv = Object.create(env);
-                localEnv["__iter__"] = {
-                    type: "number",
-                    value: i
-                }
-
-                // bind first parameter (or more, if multiple)
-                if (params.length > 0) localEnv[params[0]] = arr[i];
-
-                // execute the function body
-                let returnValue = null;
-                for (const stmt of body) {
-                    const val = evaluate(stmt, localEnv);
-                    if (val && val.__return !== undefined) {
-                        returnValue = val.__return;
-                        break;
-                    }
-                }
-
-                if(returnValue == null) runtimeError(args[0], `Anonymous Function did not return a value`);
-
-                result.push(returnValue);
+        for (let i = 0; i < arr.length; i++) {
+            // create a fresh local environment for this iteration
+            const localEnv = Object.create(env);
+            localEnv["__iter__"] = {
+                type: "number",
+                value: i
             }
 
-            return result;
+            // bind first parameter (or more, if multiple)
+            if (params.length > 0) localEnv[params[0]] = arr[i];
 
-        } else {
-            if(env[func.name].type !== "Function") runtimeError(args[0], `${func.name} is not a function`);
-
-            const result = [];
-
-            for (let i = 0; i < arr.length; i++) {
-                // Create a temporary local environment
-                const localEnv = Object.create(func.body);
-
-                localEnv["__iter__"] = {
-                    type: "number",
-                    value: i
-                }
-
-
-                // Bind first parameter
-                if (func.params.length > 0) {
-                    localEnv[func.params[0]] = arr[i];
-                }
-
-                // Execute the function body
-                let returnValue = null;
-                for (const stmt of func.body) {
-                    const val = evaluate(stmt, localEnv);
-                    if (val && val.__return !== undefined) {
-                        returnValue = val.__return;
-                        break;
-                    }
-                }
-
-                if(returnValue == null) runtimeError(args[0], `Function "${func.name}" did not return a value`);
-
-                result.push(returnValue);
-            }
-
-            return result;
-        }
-    }).register()
-
-    function tokenize(input) {
-        const tokens = [];
-        const tokenSpec = [
-            ['COMMENT', /^\/\/.*/],
-            ['COMMENT', /^\/\/\*[\s\S]\*\/\//],
-            ['AT', /^@/],
-            ["BANG", /^!/],
-            ["HASH", /^#/],
-            ['NUMBER', /^-?\d+(\.\d+)?/],
-            ['STRING', /^"([^"\\]|\\.)*"|^'([^'\\]|\\.)*'/],
-            ['LBRACKET', /^\[/],
-            ['RBRACKET', /^\]/],
-            ['LBRACE', /^\{/],
-            ['RBRACE', /^\}/],
-            ["INDEX", /^:/],
-            ['IDENTIFIER', /^[a-zA-Z_]\w*/],
-            ["PLUS_EQ", /^\+=/],
-            ["MINUS_EQ", /^-=/],
-            ["DIV_EQ", /^\/=/],
-            ["MULT_EQ", /^\*=/],
-            ['METHOD_CALL', /^>/],
-            ['ARROW', /^->/],
-            ["EQ", /^==/],
-            ['EQUAL', /^=/],
-            ['PLUS', /^\+/],
-            ['MINUS', /^-/],
-            ['MULT', /^\*/],
-            ['DIV', /^\//],
-            ["GT", /^ > /],
-            ["LT", /^ < /],
-            ["NEQ", /^!=/],
-            ["GTE", /^>=/],
-            ["LTE", /^<=/],
-            ['LPAREN', /^\(/],
-            ['RPAREN', /^\)/],
-            ['SEMICOLON', /^;/],
-            ['NEWLINE', /^\n/],
-            ['WHITESPACE', /^[ \t\r]+/],
-            ['COMMA', /^,/],
-        ];
-
-        let line = 1;
-        let col = 1;
-
-        while (input.length > 0) {
-            let matched = false;
-            for (const [type, regex] of tokenSpec) {
-                const match = input.match(regex);
-                if (match) {
-                    matched = true;
-                    const value = match[0];
-                    input = input.slice(value.length);
-
-                    if (type === "NEWLINE") {
-                        line++;
-                        col = 1;
-                    } else {
-                        if (type !== 'WHITESPACE' && type !== 'NEWLINE' && type !== 'COMMENT') {
-                            tokens.push({ type, value, line, col });
-                        }
-                        col += value.length;
-                    }
+            // execute the function body
+            let returnValue = null;
+            for (const stmt of body) {
+                const val = evaluate(stmt, localEnv);
+                if (val && val.__return !== undefined) {
+                    returnValue = val.__return;
                     break;
                 }
             }
-            if (!matched) runtimeError({line: line, col: col}, `Unexpected token: ${input[0]}`);
+
+            if(returnValue == null) runtimeError(args[0], `Anonymous Function did not return a value`);
+
+            result.push(returnValue);
         }
 
-        return tokens;
+        return result;
+
+    } else {
+        if(env[func.name].type !== "Function") runtimeError(args[0], `${func.name} is not a function`);
+
+        const result = [];
+
+        for (let i = 0; i < arr.length; i++) {
+            // Create a temporary local environment
+            const localEnv = Object.create(func.body);
+
+            localEnv["__iter__"] = {
+                type: "number",
+                value: i
+            }
+
+
+            // Bind first parameter
+            if (func.params.length > 0) {
+                localEnv[func.params[0]] = arr[i];
+            }
+
+            // Execute the function body
+            let returnValue = null;
+            for (const stmt of func.body) {
+                const val = evaluate(stmt, localEnv);
+                if (val && val.__return !== undefined) {
+                    returnValue = val.__return;
+                    break;
+                }
+            }
+
+            if(returnValue == null) runtimeError(args[0], `Function "${func.name}" did not return a value`);
+
+            result.push(returnValue);
+        }
+
+        return result;
     }
-}
-
-registerMethods();
-
-function runtimeError(node, message) {
-    const loc = node && node.line ? `\n    at  line  ${node.line}\n    at column ${node.col}\n` : "";
-    if(node == null) throw new SuperLangError(message);
-    else throw new SuperLangError(`${message}${loc}`);
-}
+}).register()
 
 function tokenize(input) {
     const tokens = [];
@@ -577,6 +478,12 @@ function tokenize(input) {
     }
 
     return tokens;
+}
+
+function runtimeError(node, message) {
+    const loc = node && node.line ? `\n    at  line  ${node.line}\n    at column ${node.col}\n` : "";
+    if(node == null) throw new SuperLangError(message);
+    else throw new SuperLangError(`${message}${loc}`);
 }
 
 function parse(tokens) {
@@ -679,6 +586,7 @@ function parse(tokens) {
             const fields = {};
 
             while (peek() && peek().type !== "RBRACE") {
+                // Allow skipping newlines or commas
 
                 if (peek()?.type === "RBRACE") break;
 
@@ -691,6 +599,10 @@ function parse(tokens) {
                     keyToken.type === "STRING"
                         ? keyToken.value.slice(1, -1)
                         : keyToken.value;
+
+                if(keyName == 'type'){
+                    runtimeError(keyToken, `Field name "type" is reserved and cannot be used in object literals.`);
+                }
 
                 fields[keyName] = valueNode;
             }
@@ -723,7 +635,6 @@ function parse(tokens) {
             consume('LPAREN');
             node = parseComparison();  // parse the inner expression fully
             consume('RPAREN');
-
             // Keep the line/col from the '(' for better errors
             node.line = token.line;
             node.col = token.col;
