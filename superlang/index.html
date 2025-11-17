@@ -67,7 +67,7 @@
     }
 </style>
 <head>
-    <script src="index.js"></script>
+    <script src="old.js"></script>
 </head>
 <body>
     <h1>SuperLang Interpreter</h1>
@@ -79,13 +79,51 @@
 <!-- array = [1, 2, 3, 4, 5]
 
 array = array>map(@(x){
-    return x * 2
+    return x * 3
 })
 
-print(array>join(' ')) -->
+x = @(out){
+    return out
+}
 
-x = 5
+print(@x('meow')) -->
 
+<!-- func wrapper(func){
+    print("Starting wrapper")
+    @func
+    print("Ending wrapper")
+}
+
+x = 21
+
+@wrapper(@(){
+    if(x > 20){
+        print("big")
+    } else {
+        print("small")
+    }
+}) -->
+
+!x = 'hello!'
+func x (hi){
+    print(hi + ' world!')
+}
+
+print(x)
+
+<!-- pee = #{
+    'name' = 'Whiskers'
+    'age' = 3
+    'colors' = ['black', 'white']
+}
+
+func meow(hi){
+    print(hi + " meow")
+}
+
+@meow("hello")
+
+debug>env -->
 
 <!-- func fibonacci(n) {
     a = 0
@@ -205,8 +243,7 @@ print(@(){
         const code = editor.innerText;
         try {
             output.innerHTML = "";
-            const interp = new Interpreter(code);
-            console.log(interp)
+            evaluateProgram(code);
         } catch (err) {
             output.textContent = "Error: " + err.message;
         }

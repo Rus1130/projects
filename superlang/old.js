@@ -199,6 +199,10 @@ class MethodRegistry {
 }
 
 function registerMethods(){
+    new Method("debug", "env", [] , (parent, args, env) => {
+        console.log(env);
+    }).register()
+
     new Method(null, "print", [
         {
             types: ["string", "number", "boolean"],
@@ -514,7 +518,8 @@ function parse(tokens) {
     }
 
     function parseFunctionDeclaration() {
-        const name = consume('IDENTIFIER').value;
+        const nameToken = consume('IDENTIFIER');
+        const name = nameToken.value;
         let params = [];
 
 
@@ -525,7 +530,7 @@ function parse(tokens) {
 
         const body = collectMultiline('LBRACE', 'RBRACE');
 
-        return { type: "FunctionDeclaration", name, params, body };
+        return { type: "FunctionDeclaration", name, params, body, line: nameToken.line, col: nameToken.col };
     }
 
     function parseExpression() {
@@ -888,6 +893,10 @@ function evaluateProgram(input) {
     const env = { 
         Math: { type: "math" },
         Date: { type: "date" },
+        debug: {
+            type: "debug",
+            value: "{}"
+        },
         true: {
             type: "boolean",
             value: true
@@ -987,7 +996,7 @@ function evaluate(node, env = {}) {
     switch (node.type) {
         case "ArrayAssignment": {
             let array = env[node.arrayName];
-            if(getType(array) !== "array") {
+            if(array.type != "array") {
                 runtimeError(node, `Variable ${node.arrayName} is not an array`);
             }
 
@@ -1107,11 +1116,20 @@ function evaluate(node, env = {}) {
             runtimeError(node.value, `Undefined variable: ${node.value}`);
 
         case "FunctionDeclaration":
+
+            if(env[node.name] !== undefined) {
+                runtimeError(node, `Identifier "${node.name}" is already defined in the current scope.`);
+            }
+
             env[node.name] = {
                 type: "Function",
-                name: node.name,
-                params: node.params,
-                body: node.body,
+                value: {
+                    type: "Function",
+                    name: node.name,
+                    params: node.params,
+                    body: node.body,
+                }
+
             };
             return null;
 
@@ -1173,17 +1191,22 @@ function evaluate(node, env = {}) {
 
         case "MethodCall": {
             let parentValue = null;
-            if (node.parent) {
-                if (getType(node.parent) === "string") {
-                    parentValue = evaluate({ type: "Identifier", value: node.parent }, env);
-                } else {
-                    parentValue = evaluate(node.parent, env);
-                }
-            }
-
-            // runtime parent type for lookup
             let parentType = "global";
-            if (parentValue !== null && parentValue !== undefined) {
+
+            // If node.parent is an identifier (old-style `name > method`), look up the env entry
+            if (node.parent && typeof node.parent === "string") {
+                const envEntry = env[node.parent];
+                if (envEntry && typeof envEntry === "object" && envEntry.type !== undefined) {
+                    parentType = envEntry.type;        // preserve the declared runtime type
+                    parentValue = envEntry.value;     // unwrap value for method execution
+                } else {
+                    // not a typed env entry — evaluate to get the runtime value & type
+                    parentValue = evaluate({ type: "Identifier", value: node.parent }, env);
+                    parentType = getType(parentValue);
+                }
+            } else if (node.parent) {
+                // parent is an expression/AST node — evaluate it normally
+                parentValue = evaluate(node.parent, env);
                 parentType = getType(parentValue);
             }
 
@@ -1205,12 +1228,11 @@ function evaluate(node, env = {}) {
                 })
             });
 
-
             return method.execute(parentValue, args, node, env);
         }
 
         case "FunctionCall": {
-            const func = env[node.name];
+            const func = env[node.name].value;
             if (!func || func.type !== "Function") {
                 runtimeError(node, `Undefined function: @${node.name}`);
             }
@@ -1220,12 +1242,14 @@ function evaluate(node, env = {}) {
             // Create new scope
             const localEnv = Object.create(env);
 
-            // Bind params
             for (let i = 0; i < func.params.length; i++) {
                 if (argValues[i] === undefined) {
                     runtimeError(node, `Missing argument for parameter "${func.params[i]}" in function @${node.name}`);
                 }
-                localEnv[func.params[i]] = argValues[i];
+                localEnv[func.params[i]] = {
+                    type: getType(argValues[i]),
+                    value: argValues[i]
+                }
             }
 
             // Execute body
