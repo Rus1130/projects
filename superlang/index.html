@@ -76,13 +76,15 @@
         <div id="lineNumbers"></div>
         <div id="editor" contenteditable="plaintext-only">
 
-array = [1, 2, 3, 4, 5]
+<!-- array = [1, 2, 3, 4, 5]
 
 array = array>map(@(x){
     return x * 2
 })
 
-print(array>join(' '))
+print(array>join(' ')) -->
+
+x = 5
 
 
 <!-- func fibonacci(n) {
@@ -203,7 +205,8 @@ print(@(){
         const code = editor.innerText;
         try {
             output.innerHTML = "";
-            evaluateProgram(code);
+            const interp = new Interpreter(code);
+            console.log(interp)
         } catch (err) {
             output.textContent = "Error: " + err.message;
         }
