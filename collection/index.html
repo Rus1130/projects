@@ -76,12 +76,10 @@
             }
         });
 
-        (() => {
-            const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_COMMENT, null, false);
-            const nodes = [];
-            while (walker.nextNode()) nodes.push(walker.currentNode);
-            nodes.forEach(n => n.remove());
-        })();
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_COMMENT, null, false);
+        const nodes = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+        nodes.forEach(n => n.remove());
 
         document.getElementById('script').remove();
     })();
