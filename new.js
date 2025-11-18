@@ -91,5 +91,5 @@ let homepage = fs.readFileSync(path.join('collection', 'index.html'), 'utf8');
 let insertIndex = homepage.indexOf('<div class="button" onclick="location.href = \'https://rus1130.github.io/projects/index.html?bypass=true\'">▌< Return to main page</div>') - 4;
 let newLink = `    <!-- <div class="button" onclick="location.href = './${nameNormalized}.html'">▌${name}</div> -->`;
 
-homepage = homepage.slice(0, insertIndex) + newLink + '\n' + homepage.slice(insertIndex);
+homepage = homepage.slice(0, insertIndex) + newLink + '\r\n' + homepage.slice(insertIndex);
 fs.writeFileSync(path.join('collection', 'index.html'), homepage);

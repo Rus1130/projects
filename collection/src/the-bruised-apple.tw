@@ -1,0 +1,21 @@
+{{# written 16 nov, 2025 #}}
+{{#timecalc
+    char: 100
+    newline: 500
+    custom: {
+        ",": 350
+        ".": 600
+    }
+#}}
+I am not gay.[newline]
+I am not like the writer who was confident in himself,[newline]
+who had no care for how others thought of him.[linebreak]
+
+Everyday I wear the blazer, the polo[newline]
+of my brothers, pretending to be one of them.[linebreak]
+
+Every day I wish I could bear fruit.[linebreak]
+
+But no matter how much I wish, how much I cry, the world will not bow down to me this way.[linebreak]
+
+So I must make do.[linebreak][sleep 700][function]
