@@ -76,18 +76,30 @@
         <div id="lineNumbers"></div>
         <div id="editor" contenteditable="plaintext-only">
 
+<!-- x = 10
+
+watch x {
+    print('x was ' + __old__ + ', now it is ' + __new__)
+}
+x = 15 -->
+
 <!-- array = [1, 2, 3, 4, 5]
 
-array = array>map(@(x){
-    return x * 3
-})
-
-x = @(out){
-    return out
+func double(x){
+    return x * 2
 }
 
-print(@x('meow')) -->
+array = array>map(double)
 
+print(array)
+
+x = @(whaat){
+    return whaat * 3
+}
+
+print(@x('hi')) -->
+
+print(math>PI)
 <!-- func wrapper(func){
     print("Starting wrapper")
     @func
@@ -104,14 +116,14 @@ x = 21
     }
 }) -->
 
-!x = 'hello!'
+<!-- !x = 'hello!'
 func x (hi){
     print(hi + ' world!')
 }
 
 print(x)
 
-<!-- pee = #{
+pee = #{
     'name' = 'Whiskers'
     'age' = 3
     'colors' = ['black', 'white']
@@ -140,18 +152,6 @@ debug>env -->
 
 @fibonacci(10) -->
 <!-- num = 20
-print(@(){
-    if(num > 20){
-        return "big"
-    } else {
-        return "small"
-    }
-}>call) -->
-            <!-- print(match 0 {
-                0 -> "zero"
-                1 -> "one"
-                _ -> "many"
-            }) -->
 <!-- x = #{
     'name' = 'Alice'
     'age' = 30

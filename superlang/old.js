@@ -142,6 +142,7 @@ class Method {
             const spec = this.argSpecs[i];
             if (!spec) break;
             const actualType = getType(args[i].value);
+            console.log(args)
             const allowed =
                 spec.types.includes("any") || spec.types.includes(actualType);
             if (!allowed) {
@@ -203,9 +204,13 @@ function registerMethods(){
         console.log(env);
     }).register()
 
+    new Method("debug", "ast", [] , (parent, args, env) => { 
+        console.log(AST.ast);
+    }).register()
+
     new Method(null, "print", [
         {
-            types: ["string", "number", "boolean"],
+            types: ["string", "number", "boolean", "array"],
             name: "value"
 
         }
@@ -243,6 +248,10 @@ function registerMethods(){
             const n = args[0].value;
             return Math.floor(Math.random() * (n + 1));
         }
+    }).register()
+
+    new Method("math", "pi", [] , (parent, args) => {
+        return Math.PI;
     }).register()
 
     new Method("date", "now", [] , (parent, args) => {
@@ -361,7 +370,7 @@ function registerMethods(){
                 // execute the function body
                 let returnValue = null;
                 for (const stmt of body) {
-                    const val = evaluate(stmt, localEnv);
+                    const val = evaluate(stmt, localEnv).value;
                     if (val && val.__return !== undefined) {
                         returnValue = val.__return;
                         break;
@@ -398,7 +407,7 @@ function registerMethods(){
                 // Execute the function body
                 let returnValue = null;
                 for (const stmt of func.body) {
-                    const val = evaluate(stmt, localEnv);
+                    const val = evaluate(stmt, localEnv).value;
                     if (val && val.__return !== undefined) {
                         returnValue = val.__return;
                         break;
@@ -828,7 +837,6 @@ function parse(tokens) {
             consume('METHOD_CALL');
             const method = consume('IDENTIFIER');
 
-            // optional parentheses or single arg without parentheses
             let args = [];
             if (peek()?.type === 'LPAREN') {
                 args = collectArguments();
@@ -861,6 +869,7 @@ function parse(tokens) {
             if (peek()?.type === 'LPAREN') {
                 args = collectArguments();
             }
+
             return { type: "FunctionCall", name: func.value, args, line: func.line, col: func.col };
         }
 
@@ -891,8 +900,14 @@ function parse(tokens) {
 // Interpreter
 function evaluateProgram(input) {
     const env = { 
-        Math: { type: "math" },
-        Date: { type: "date" },
+        math: { 
+            type: "math", 
+            value: "{}"
+        },
+        date: { 
+            type: "date",
+            value: "{}"
+        },
         debug: {
             type: "debug",
             value: "{}"
@@ -916,6 +931,8 @@ function evaluateProgram(input) {
         // Parse
         const ast = parse(tokens);
 
+        new AST(ast);
+
         // Evaluate
         for (const node of ast.body) {
             evaluate(node, env);
@@ -924,6 +941,10 @@ function evaluateProgram(input) {
     } catch (e) {
         handleError(e);
     }
+}
+
+class AST {
+    constructor(ast){AST.ast = ast;}
 }
 
 /**
@@ -1108,10 +1129,7 @@ function evaluate(node, env = {}) {
 
         case "Identifier":
             if (node.value in env) {
-                const v = env[node.value];
-                if (v && typeof v === "object" && v.type !== undefined)
-                    return v.value;
-                return v;
+                return env[node.value];
             }
             runtimeError(node.value, `Undefined variable: ${node.value}`);
 
@@ -1137,6 +1155,13 @@ function evaluate(node, env = {}) {
             const left = evaluate(node.left, env);
             const right = evaluate(node.right, env);
 
+            function wrap(val){
+                return {
+                    type: getType(val),
+                    value: val
+                }
+            }
+
 
             function guard(){
                 if (getType(left) !== getType(right)) {
@@ -1155,8 +1180,9 @@ function evaluate(node, env = {}) {
                     return left - right;
                 }
                 case "*": {
-                    guard()
-                    return left * right;
+                    if(getType(left) === "string" && getType(right) === "number") return left.repeat(right);
+                    else if(getType(left) === "number" && getType(right) === "number") return left * right;
+                    else guard()
                 }
                 case "/": {
                     guard()
@@ -1201,12 +1227,12 @@ function evaluate(node, env = {}) {
                     parentValue = envEntry.value;     // unwrap value for method execution
                 } else {
                     // not a typed env entry — evaluate to get the runtime value & type
-                    parentValue = evaluate({ type: "Identifier", value: node.parent }, env);
+                    parentValue = evaluate({ type: "Identifier", value: node.parent }, env).value;
                     parentType = getType(parentValue);
                 }
             } else if (node.parent) {
                 // parent is an expression/AST node — evaluate it normally
-                parentValue = evaluate(node.parent, env);
+                parentValue = evaluate(node.parent, env).value;
                 parentType = getType(parentValue);
             }
 
@@ -1216,9 +1242,16 @@ function evaluate(node, env = {}) {
 
             if (!method) runtimeError(node, `Unknown method: ${parentType}>${node.name}`);
 
+
+            if(node.args[0] == undefined){
+                runtimeError(node, `Method ${parentType}>${node.name} has improper syntax inside.`);
+            }
+
             const evaluatedArgs = node.args.map(arg => evaluate(arg, env));
 
             let args = [];
+
+            console.log(node.args, evaluatedArgs)
 
             node.args.forEach((argNode, index) => {
                 args.push({
