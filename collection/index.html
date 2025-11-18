@@ -52,7 +52,7 @@
     <!-- <div class="button" onclick="location.href = './the-bruised-apple.html'">▌The Bruised Apple</div> -->
     <div class="button" onclick="location.href = 'https://rus1130.github.io/projects/index.html?bypass=true'">▌< Return to main page</div>
 </body>
-<script>
+<script id="script">
     (() => {
         let clicks = 0;
         const divs = {};
@@ -75,5 +75,14 @@
                 });
             }
         });
+
+        (() => {
+            const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_COMMENT, null, false);
+            const nodes = [];
+            while (walker.nextNode()) nodes.push(walker.currentNode);
+            nodes.forEach(n => n.remove());
+        })();
+
+        document.getElementById('script').remove();
     })();
 </script>
