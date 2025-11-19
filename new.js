@@ -13,7 +13,7 @@ const nameNormalized = name.replaceAll(" ", "-").toLowerCase();
 let day = new Date().getDate();
 let month = new Date().getMonth() + 1;
 
-const months = ["jan", "feb", "march", "april", "may", "june", "july", "aug", "sept", "oct", "nov", "dec"];
+const months = ["jan", "feb", "mar", "apr", "may", "june", "july", "aug", "sept", "oct", "nov", "dec"];
 
 let year = new Date().getFullYear();
 const date = `${day} ${months[month-1]}, ${year}`;
