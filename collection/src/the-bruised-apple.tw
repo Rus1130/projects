@@ -1,23 +1,28 @@
 {{# written 16 nov, 2025 #}}
 {{#timecalc
-    char: 100
+    char: 60
     newline: 500
     custom: {
         ",": 350
-        ".": 600
+        ".": 800
     }
 #}}
 I am not gay.[newline]
 I am not like the writer who was confident in himself,[newline]
-who had no care for how others thought of him.[linebreak]
+who had no care for how others thought of him.[newline][newline]
 
-Everyday I wear the blazer, the polo[newline]
-of my brothers, pretending to be one of them.[linebreak]
+Everyday I wear the blazer, the polo[speed 1][newline]
+[speeddefault]of my brothers, pretending to be one of them.[linebreak]
 
-Every day I wish I could bear fruit.[linebreak]
+[sleep 800]Every day I wish I could bear fruit.[linebreak]
 
 But no matter how much I wish,[newline]
 how much I cry,[newline]
 the world will not bow down to me this way.[linebreak]
+
+[sleep 800]Every day I wish I produced within my flesh[speed 1][newline] 
+[speeddefault]the ichor of ones who birthed us[speed 1][newline]
+[speeddefault]instead of the brutish drug of man,[newline]
+but the world will not even extend the smallest amount of sympathies to me.[linebreak]
 
 So I must make do.[linebreak][sleep 700][function]

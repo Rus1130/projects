@@ -16,11 +16,11 @@
     .then(response => response.text())
     .then(text => {
         let tw3 = new Typewriter3(text, document.getElementById("out"), {
-            charDelay: 100,
+            charDelay: 60,
             newlineDelay: 500,
             customDelays: {
                 ",": 350,
-                ".": 600
+                ".": 800
             },
             newpageText: "▌Next >",
             defaultTextColor: "#ffffff",
