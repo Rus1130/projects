@@ -1,4 +1,13 @@
 {{# written 8 oct. 2025 #}}
+{{#timecalc
+    char: 48
+    newline: 400
+    custom: {
+        ",": 350
+        ".": 700
+        " ": 49
+    }
+#}}
 [sleep 1400]Every day she gets up[newline]
 and goes to work in the helium mine.[newline]
 She does not wish to fly away.[newline]
