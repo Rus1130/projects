@@ -8,7 +8,7 @@ if(!name) {
     process.exit(1);
 }
 
-const nameNormalized = name.replaceAll(" ", "-").toLowerCase();
+const nameNormalized = name.replaceAll(" ", "-").replaceAll("---", "-").toLowerCase();
 
 let day = new Date().getDate();
 let month = new Date().getMonth() + 1;
