@@ -11,7 +11,7 @@ Ever since the [color 255 60 60]/fire/[resetcolor], I've been[speed 1][newline]
 [speeddefault]missing a part of me. It's[speed 1][newline]
 [speeddefault]like there's a hole inside of me.[newline]
 One could say, there's a "[invert]void[invert]".[linebreak]
-[sleep 800]a void, "avoid", it's how [speed 1][newline]
+[sleep 800]a void, "avoid," it's how [speed 1][newline]
 [sleep 200][speed 80]/they/[speeddefault][sleep 200] treated me after the fact,[newline]
 saying I caused the fire. I didn't. I swear.
 [linebreak]
@@ -37,3 +37,14 @@ It is a crude place, but[speed 1][newline]
 \*[sleep 100]
 [linebreak]
 [sleep 1000][speed 70 0]And so he stood up,[sleep 450] gasoline can in hand,[sleep 450] and walked away.[linebreak][sleep 700][function]
+
+
+{{#revision history:
+
+12/18/25:
+    line 14:
+        old: [sleep 800]a void sounds like "avoid", which is[speed 1][newline]
+        new: [sleep 800]a void, "avoid", it's how [speed 1][newline]
+        I did not like having "sounds like" in there, following Yari's suggestion. I removed it and made it more concise.
+
+#}}
