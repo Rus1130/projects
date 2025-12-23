@@ -1,0 +1,354 @@
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Time Converter</title>
+</head>
+<style>
+    body {
+        font-family: sans-serif;
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .row {
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .time-wrapper {
+        position: relative;
+    }
+
+    .dropdown {
+        position: absolute;
+        top: calc(100% - 7px);
+        left: 0;
+        right: 0;
+
+        padding: 5px;
+
+        background: white;
+        border: 1px solid #ccc;
+
+        max-height: 200px;
+        overflow-y: auto;
+
+        z-index: 1000;
+    }
+
+    .dropdown-item {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+
+    .dropdown-item:hover {
+        background: #eee;
+        cursor: pointer;
+    }
+
+    input, button {
+        padding: 10px;
+        font-size: 16px;
+        margin-top: 6px;
+        width: 100%;
+    }
+
+    #result {
+        padding: 10px;
+        background: #f3f3f3;
+        border-radius: 4px;
+        min-height: 30px;
+    }
+
+    input:focus {
+        outline: none;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    #inputTime {
+        font-family: monospace;
+    }
+
+    .sub {
+        font-size: 12px;
+        color: #666;
+    }
+
+</style>
+<body>
+    <h1>Time Converter</h1>
+
+    <div class="row">
+        <label>Input Time (HH:MM):</label>
+        <input type="time" id="inputTime" value="04:00">
+    </div>
+
+    <div class="row">
+        <label>From Timezone (UTC offset, abbreviation, or "current").</label>
+        <div class="time-wrapper">
+            <input type="text" id="fromTz" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="click me">
+            <div class="dropdown hidden" id="from-dropdown"></div>
+        </div>
+        <div class="sub">Examples: +05:30, IST, current. You can also just type the offset if it isn't listed.</div>
+    </div>
+
+    <div class="row">
+        <label>To Timezone (UTC offset, abbreviation, or "current"):</label>
+        <div class="time-wrapper">
+            <input type="text" id="toTz" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="click me">
+            <div class="dropdown hidden" id="to-dropdown"></div>
+        </div>
+        <div class="sub">Examples: +05:30, IST, current. You can also just type the offset if it isn't listed.</div>
+    </div>
+
+    <button onclick="convertTime()">Convert</button>
+
+    <h3>Result</h3>
+    <div id="result"></div>
+
+</body>
+<script>
+    const inputDropdownElement = document.getElementById('from-dropdown');
+    const inputTextElement = document.getElementById('fromTz');
+
+    const inputDropdownElementTo = document.getElementById('to-dropdown');
+    const inputTextElementTo = document.getElementById('toTz');
+
+    const tzAbbr = {
+        // --- Global ---
+        UTC:  { offset: "+00:00", desc: "Coordinated Universal Time" },
+
+        // --- Africa ---
+        WAT:  { offset: "+01:00", desc: "West Africa Time" },
+        CAT:  { offset: "+02:00", desc: "Central Africa Time" },
+        EAT:  { offset: "+03:00", desc: "East Africa Time" },
+
+        // --- Europe ---
+        CET:  { offset: "+01:00", desc: "Central European Time" },
+        EET:  { offset: "+02:00", desc: "Eastern European Time" },
+
+        // --- Middle East ---
+        AST:  { offset: "+03:00", desc: "Arabian Standard Time" },
+        IRST: { offset: "+03:30", desc: "Iran Standard Time" },
+
+        // --- South Asia ---
+        PKT:  { offset: "+05:00", desc: "Pakistan Standard Time" },
+        IST:  { offset: "+05:30", desc: "India Standard Time" },
+        NPT:  { offset: "+05:45", desc: "Nepal Time" },
+
+        // --- Southeast / East Asia ---
+        ICT:  { offset: "+07:00", desc: "Indochina Time (Thailand, Vietnam)" },
+        CHST:  { offset: "+08:00", desc: "China Standard Time" },
+        JST:  { offset: "+09:00", desc: "Japan Standard Time" },
+
+        // --- Australia / Oceania ---
+        AWST: { offset: "+08:00", desc: "Australian Western Standard Time" },
+        ACST: { offset: "+09:30", desc: "Australian Central Standard Time" },
+        AEST: { offset: "+10:00", desc: "Australian Eastern Standard Time" },
+        NZST: { offset: "+12:00", desc: "New Zealand Standard Time" },
+
+        // --- Pacific ---
+        TOT:  { offset: "+13:00", desc: "Tonga Time" },
+        LINT: { offset: "+14:00", desc: "Line Islands Time" },
+
+        // --- Americas ---
+        NST:  { offset: "-03:30", desc: "Newfoundland Standard Time" },
+        ART:  { offset: "-03:00", desc: "Argentina Time" },
+        CLT:  { offset: "-04:00", desc: "Chile Time" },
+        EST:  { offset: "-05:00", desc: "Eastern Time (US/Canada)" },
+        CST:  { offset: "-06:00", desc: "Central Time (US/Canada)" },
+        MST:  { offset: "-07:00", desc: "Mountain Time (US/Canada)" },
+        PST:  { offset: "-08:00", desc: "Pacific Time (US/Canada)" },
+        AKT:  { offset: "-09:00", desc: "Alaska Time" },
+        HST:  { offset: "-10:00", desc: "Hawaii Time" },
+
+        // --- Extreme west ---
+        SST:  { offset: "-11:00", desc: "Samoa Standard Time" },
+
+        // --- Dynamic ---
+        CURRENT: {
+            offset: new Date().toString().split(" ")[5]
+                .slice(3)
+                .replace(/(\+|-)(\d{2})(\d{2})/, "$1$2:$3"),
+            desc: "Current Local Timezone"
+        }
+    };
+
+    function setDropdown(input, elem) {
+        elem.innerHTML = '';
+
+        // Helper: "+HH:MM" → minutes
+        const offsetToMinutes = (offset) => {
+            const [, sign, h, m] = offset.match(/^([+-])(\d{2}):(\d{2})$/);
+            return (sign === '+' ? 1 : -1) * (Number(h) * 60 + Number(m));
+        };
+
+        const keys = Object.keys(tzAbbr);
+
+        // Separate CURRENT
+        const others = keys.filter(k => k !== 'CURRENT');
+
+        // Sort by numeric offset
+        others.sort((a, b) => {
+            return offsetToMinutes(tzAbbr[a].offset)
+                - offsetToMinutes(tzAbbr[b].offset);
+        });
+
+        // CURRENT always first
+        const ordered = ['CURRENT', ...others];
+
+        // if starts with + or -, filter to only matching offsets
+        const val = input.value.trim().toUpperCase();
+        if (val.startsWith('+') || val.startsWith('-')) {
+            const filtered = ordered.filter(abbr => tzAbbr[abbr].offset.startsWith(val));
+            if (filtered.length > 0) {
+                ordered.length = 0;
+                Array.prototype.push.apply(ordered, filtered);
+            }
+        } else if (val.length > 0) {
+            // else filter by abbreviation prefix
+            const filtered = ordered.filter(abbr => abbr.startsWith(val));
+            if (filtered.length > 0) {
+                ordered.length = 0;
+                Array.prototype.push.apply(ordered, filtered);
+            }
+        }
+
+        ordered.forEach(abbr => {
+            const item = document.createElement('div');
+            item.textContent = `${abbr} - ${tzAbbr[abbr].desc} (${tzAbbr[abbr].offset})`;
+            item.className = 'dropdown-item';
+            item.dataset.value = tzAbbr[abbr].offset;
+
+            item.addEventListener('mousedown', () => {
+                input.value = abbr;
+                elem.classList.add('hidden');
+            });
+
+            elem.appendChild(item);
+        });
+    }
+
+    inputTextElement.addEventListener('focus', () => {
+        if(inputTextElement.value.length != 0) inputTextElement.value = ""
+        setDropdown(inputTextElement, inputDropdownElement);
+        inputDropdownElement.classList.remove('hidden');
+    });
+
+    inputTextElement.addEventListener('blur', () => {
+        setTimeout(() => {
+            inputDropdownElement.classList.add('hidden');
+        }, 100);
+    });
+
+    inputTextElement.addEventListener('input', () => {
+        setDropdown(inputTextElement, inputDropdownElement);
+        inputDropdownElement.classList.remove('hidden');
+    });
+
+    inputTextElementTo.addEventListener('focus', () => {
+        if(inputTextElementTo.value.length != 0) inputTextElementTo.value = ""
+        setDropdown(inputTextElementTo, inputDropdownElementTo);
+        inputDropdownElementTo.classList.remove('hidden');
+    });
+
+    inputTextElementTo.addEventListener('blur', () => {
+        setTimeout(() => {
+            inputDropdownElementTo.classList.add('hidden');
+        }, 100);
+    });
+
+    inputTextElementTo.addEventListener('input', () => {
+        setDropdown(inputTextElementTo, inputDropdownElementTo);
+        inputDropdownElementTo.classList.remove('hidden');
+    });
+
+    setDropdown(inputTextElement, inputDropdownElement);
+    setDropdown(inputTextElementTo, inputDropdownElementTo);
+
+
+function getCurrentOffsetString() {
+    const minutes = -new Date().getTimezoneOffset(); // JS offset is reversed
+    const sign = minutes >= 0 ? "+" : "-";
+    const abs = Math.abs(minutes);
+    const hh = String(Math.floor(abs / 60)).padStart(2, "0");
+    const mm = String(abs % 60).padStart(2, "0");
+    return `${sign}${hh}:${mm}`;
+}
+
+// Convert input to +HH:MM string
+function normalizeTZ(input) {
+    input = input.trim().toUpperCase();
+    if (input === "CURRENT") return getCurrentOffsetString();
+    if (tzAbbr[input]) return tzAbbr[input].offset;
+    return input; // manual +HH:MM
+}
+
+// Converts "+HH:MM" / "-HH:MM" → {sign: 1|-1, hours, minutes}
+function parseOffset(str) {
+    const match = str.match(/^([+-])(\d{2}):(\d{2})$/);
+    if (!match) return null;
+    return {
+        sign: match[1] === "+" ? 1 : -1,
+        hours: Number(match[2]),
+        minutes: Number(match[3])
+    };
+}
+
+function convertTime() {
+    const timeValue = document.getElementById('inputTime').value;
+    const fromRaw = document.getElementById('fromTz').value;
+    const toRaw = document.getElementById('toTz').value;
+    const resultElem = document.getElementById('result');
+
+    if (!timeValue || !fromRaw || !toRaw) {
+        resultElem.textContent = "Please fill all fields.";
+        return;
+    }
+
+    const fromOffsetStr = normalizeTZ(fromRaw);
+    const toOffsetStr = normalizeTZ(toRaw);
+
+    const from = parseOffset(fromOffsetStr);
+    const to = parseOffset(toOffsetStr);
+
+    if (!from || !to) {
+        resultElem.textContent = "Invalid timezone or offset format.";
+        return;
+    }
+
+    const [hour, minute] = timeValue.split(":").map(Number);
+    if (isNaN(hour) || isNaN(minute)) {
+        resultElem.textContent = "Invalid time format.";
+        return;
+    }
+
+    const totalMinutesInput = hour * 60 + minute;
+    const totalMinutesFromOffset = from.sign * (from.hours * 60 + from.minutes);
+    const utcMinutes = totalMinutesInput - totalMinutesFromOffset;
+
+    const totalMinutesToOffset = to.sign * (to.hours * 60 + to.minutes);
+    let converted = utcMinutes + totalMinutesToOffset;
+
+    converted = (converted % 1440 + 1440) % 1440;
+
+    const outHour = String(Math.floor(converted / 60)).padStart(2, "0");
+    const outMin = String(converted % 60).padStart(2, "0");
+
+    const hrs12 = ((Math.floor(converted / 60) + 11) % 12) + 1;
+    const ampm = Math.floor(converted / 60) >= 12 ? "PM" : "AM";
+
+    resultElem.innerHTML = `<strong>${hrs12}:${String(converted % 60).padStart(2, "0")} ${ampm}</strong><br>${outHour}:${outMin}`;
+
+    //resultElem.textContent = `${timeValue} (${fromOffsetStr}) → ${outHour}:${outMin} (${toOffsetStr})`;
+}
+    document.getElementById('inputTime').value = "04:00";
+    document.getElementById('fromTz').value = "CHST";
+    document.getElementById('toTz').value = "CURRENT";
+</script>
