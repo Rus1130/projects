@@ -206,7 +206,8 @@
         // if starts with + or -, filter to only matching offsets
         const val = input.value.trim().toUpperCase();
         if (val.startsWith('+') || val.startsWith('-')) {
-            const filtered = ordered.filter(abbr => tzAbbr[abbr].offset.startsWith(val));
+            const term = normalizeTZ(val);
+            const filtered = ordered.filter(abbr => tzAbbr[abbr].offset === term);
             if (filtered.length > 0) {
                 ordered.length = 0;
                 Array.prototype.push.apply(ordered, filtered);
@@ -273,81 +274,101 @@
     setDropdown(inputTextElementTo, inputDropdownElementTo);
 
 
-function getCurrentOffsetString() {
-    const minutes = -new Date().getTimezoneOffset(); // JS offset is reversed
-    const sign = minutes >= 0 ? "+" : "-";
-    const abs = Math.abs(minutes);
-    const hh = String(Math.floor(abs / 60)).padStart(2, "0");
-    const mm = String(abs % 60).padStart(2, "0");
-    return `${sign}${hh}:${mm}`;
-}
-
-// Convert input to +HH:MM string
-function normalizeTZ(input) {
-    input = input.trim().toUpperCase();
-    if (input === "CURRENT") return getCurrentOffsetString();
-    if (tzAbbr[input]) return tzAbbr[input].offset;
-    return input; // manual +HH:MM
-}
-
-// Converts "+HH:MM" / "-HH:MM" → {sign: 1|-1, hours, minutes}
-function parseOffset(str) {
-    const match = str.match(/^([+-])(\d{2}):(\d{2})$/);
-    if (!match) return null;
-    return {
-        sign: match[1] === "+" ? 1 : -1,
-        hours: Number(match[2]),
-        minutes: Number(match[3])
-    };
-}
-
-function convertTime() {
-    const timeValue = document.getElementById('inputTime').value;
-    const fromRaw = document.getElementById('fromTz').value;
-    const toRaw = document.getElementById('toTz').value;
-    const resultElem = document.getElementById('result');
-
-    if (!timeValue || !fromRaw || !toRaw) {
-        resultElem.textContent = "Please fill all fields.";
-        return;
+    function getCurrentOffsetString() {
+        const minutes = -new Date().getTimezoneOffset(); // JS offset is reversed
+        const sign = minutes >= 0 ? "+" : "-";
+        const abs = Math.abs(minutes);
+        const hh = String(Math.floor(abs / 60)).padStart(2, "0");
+        const mm = String(abs % 60).padStart(2, "0");
+        return `${sign}${hh}:${mm}`;
     }
 
-    const fromOffsetStr = normalizeTZ(fromRaw);
-    const toOffsetStr = normalizeTZ(toRaw);
+    // Convert input to +HH:MM string
+    function normalizeTZ(input) {
+        input = input.trim().toUpperCase();
+        if (input === "CURRENT") return getCurrentOffsetString();
+        // if its +-0H or +-HH, convert to +-HH:00
+        const simpleMatch = input.trim().toUpperCase().match(/^([+-])(\d{1,2})$/);
+        if (simpleMatch) {
+            const sign = simpleMatch[1];
+            const hours = String(Number(simpleMatch[2])).padStart(2, "0");
+            input = `${sign}${hours}:00`;
+        }
 
-    const from = parseOffset(fromOffsetStr);
-    const to = parseOffset(toOffsetStr);
-
-    if (!from || !to) {
-        resultElem.textContent = "Invalid timezone or offset format.";
-        return;
+        if (tzAbbr[input]) return tzAbbr[input].offset;
+        return input; // manual +HH:MM
     }
 
-    const [hour, minute] = timeValue.split(":").map(Number);
-    if (isNaN(hour) || isNaN(minute)) {
-        resultElem.textContent = "Invalid time format.";
-        return;
+    // Converts "+HH:MM" / "-HH:MM" → {sign: 1|-1, hours, minutes}
+    function parseOffset(str) {
+        const match = str.match(/^([+-])(\d{2}):(\d{2})$/);
+        if (!match) return null;
+        return {
+            sign: match[1] === "+" ? 1 : -1,
+            hours: Number(match[2]),
+            minutes: Number(match[3])
+        };
     }
 
-    const totalMinutesInput = hour * 60 + minute;
-    const totalMinutesFromOffset = from.sign * (from.hours * 60 + from.minutes);
-    const utcMinutes = totalMinutesInput - totalMinutesFromOffset;
+    function convertTime() {
+        const timeValue = document.getElementById('inputTime').value;
+        const fromRaw = document.getElementById('fromTz').value;
+        const toRaw = document.getElementById('toTz').value;
+        const resultElem = document.getElementById('result');
 
-    const totalMinutesToOffset = to.sign * (to.hours * 60 + to.minutes);
-    let converted = utcMinutes + totalMinutesToOffset;
+        if (!timeValue || !fromRaw || !toRaw) {
+            resultElem.textContent = "Please fill all fields.";
+            return;
+        }
 
-    converted = (converted % 1440 + 1440) % 1440;
+        const fromOffsetStr = normalizeTZ(fromRaw);
+        const toOffsetStr = normalizeTZ(toRaw);
 
-    const outHour = String(Math.floor(converted / 60)).padStart(2, "0");
-    const outMin = String(converted % 60).padStart(2, "0");
+        const from = parseOffset(fromOffsetStr);
+        const to = parseOffset(toOffsetStr);
 
-    const hrs12 = ((Math.floor(converted / 60) + 11) % 12) + 1;
-    const ampm = Math.floor(converted / 60) >= 12 ? "PM" : "AM";
+        if (!from || !to) {
+            resultElem.textContent = "Invalid timezone or offset format.";
+            return;
+        }
 
-    resultElem.innerHTML = `<strong>${hrs12}:${String(converted % 60).padStart(2, "0")} ${ampm}</strong><br>${outHour}:${outMin}`;
+        const [hour, minute] = timeValue.split(":").map(Number);
+        if (isNaN(hour) || isNaN(minute)) {
+            resultElem.textContent = "Invalid time format.";
+            return;
+        }
 
-    //resultElem.textContent = `${timeValue} (${fromOffsetStr}) → ${outHour}:${outMin} (${toOffsetStr})`;
-}
+        const totalMinutesInput = hour * 60 + minute;
+        const totalMinutesFromOffset = from.sign * (from.hours * 60 + from.minutes);
+        const utcMinutes = totalMinutesInput - totalMinutesFromOffset;
+
+        const totalMinutesToOffset = to.sign * (to.hours * 60 + to.minutes);
+        let converted = utcMinutes + totalMinutesToOffset;
+
+        // Calculate day overflow
+        let dayChange = 0;
+        if (converted >= 1440) {
+            dayChange = Math.floor(converted / 1440);
+            converted = converted % 1440;
+        } else if (converted < 0) {
+            dayChange = Math.floor(converted / 1440);
+            converted = (converted % 1440 + 1440) % 1440;
+        }
+
+        const outHour = String(Math.floor(converted / 60)).padStart(2, "0");
+        const outMin = String(converted % 60).padStart(2, "0");
+
+        const hrs12 = ((Math.floor(converted / 60) + 11) % 12) + 1;
+        const ampm = Math.floor(converted / 60) >= 12 ? "PM" : "AM";
+
+        const dayPrefix = dayChange > 0 ? `+${dayChange} ` : dayChange < 0 ? `${dayChange} ` : "";
+
+        resultElem.innerHTML = `
+            ${dayPrefix}<strong>${hrs12}:${String(converted % 60).padStart(2, "0")} ${ampm}</strong><br>
+            ${outHour}:${outMin}
+        `;
+    }
+
     document.getElementById('inputTime').value = "04:00";
     document.getElementById('fromTz').value = "CHST";
     document.getElementById('toTz').value = "CURRENT";
