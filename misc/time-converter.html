@@ -85,8 +85,8 @@
     <h1>Time Converter</h1>
 
     <div class="row">
-        <label>Input Time (HH:MM):</label>
-        <input type="time" id="inputTime" value="04:00">
+        <label>Input Time:</label>
+        <input type="time" id="inputTime">
     </div>
 
     <div class="row">
@@ -95,7 +95,7 @@
             <input type="text" id="fromTz" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="click me">
             <div class="dropdown hidden" id="from-dropdown"></div>
         </div>
-        <div class="sub">Examples: +05:30, IST, current. You can also just type the offset if it isn't listed.</div>
+        
     </div>
 
     <div class="row">
@@ -104,9 +104,8 @@
             <input type="text" id="toTz" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="click me">
             <div class="dropdown hidden" id="to-dropdown"></div>
         </div>
-        <div class="sub">Examples: +05:30, IST, current. You can also just type the offset if it isn't listed.</div>
     </div>
-
+    <div class="sub">Examples for To/From: +05:30, IST, current. You can also just type the offset if it isn't listed (+3, -7:00, etc).</div>
     <button onclick="convertTime()">Convert</button>
 
     <h3>Result</h3>
@@ -166,7 +165,7 @@
         MST:  { offset: "-07:00", desc: "Mountain Time (US/Canada)" },
         PST:  { offset: "-08:00", desc: "Pacific Time (US/Canada)" },
         AKT:  { offset: "-09:00", desc: "Alaska Time" },
-        HST:  { offset: "-10:00", desc: "Hawaii Time" },
+        HAST:  { offset: "-10:00", desc: "Hawaii-Aleutian Standard Time" },
 
         // --- Extreme west ---
         SST:  { offset: "-11:00", desc: "Samoa Standard Time" },
@@ -368,8 +367,5 @@
             ${outHour}:${outMin}
         `;
     }
-
-    document.getElementById('inputTime').value = "04:00";
-    document.getElementById('fromTz').value = "CHST";
     document.getElementById('toTz').value = "CURRENT";
 </script>
