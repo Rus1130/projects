@@ -384,27 +384,32 @@
         let converted = utcMinutes + totalMinutesToOffset;
 
         // Calculate day overflow
-        let dayChange = 0;
-        if (converted >= 1440) {
-            dayChange = Math.floor(converted / 1440);
-            converted = converted % 1440;
-        } else if (converted < 0) {
-            dayChange = Math.floor(converted / 1440);
-            converted = (converted % 1440 + 1440) % 1440;
-        }
+        let dayChange = Math.trunc(converted / 1440);
 
-        const outHour = String(Math.floor(converted / 60)).padStart(2, "0");
-        const outMin = String(converted % 60).padStart(2, "0");
+        // Normalize time into 0–1439 range
+        converted = ((converted % 1440) + 1440) % 1440;
 
-        const hrs12 = ((Math.floor(converted / 60) + 11) % 12) + 1;
-        const ampm = Math.floor(converted / 60) >= 12 ? "PM" : "AM";
+        const hour24 = Math.floor(converted / 60);
+        const minuteOut = converted % 60;
 
-        const dayPrefix = dayChange > 0 ? `+${dayChange}d ` : dayChange < 0 ? `${dayChange}d ` : "";
+        // 12-hour conversion
+        const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
+        const ampm = hour24 >= 12 ? "PM" : "AM";
+
+        const outHour = String(hour24).padStart(2, "0");
+        const outMin = String(minuteOut).padStart(2, "0");
+
+        const dayPrefix = dayChange > 0 ? `+${dayChange}d ` : (dayChange < 0 ? `${dayChange}d ` : "");
 
         resultElem.innerHTML = `
-            <strong>${dayPrefix}${hrs12}:${String(converted % 60).padStart(2, "0")} ${ampm}</strong><br>
+            <strong>${dayPrefix}${hour12}:${String(minuteOut).padStart(2, "0")} ${ampm}</strong><br>
             ${dayPrefix}${outHour}:${outMin}
         `;
+
+        // resultElem.innerHTML = `
+        //     <strong>${dayPrefix}${hrs12}:${String(converted % 60).padStart(2, "0")} ${ampm}</strong><br>
+        //     ${dayPrefix}${outHour}:${outMin}
+        // `;
     }
     document.getElementById('toTz').value = "CURRENT";
 </script>
