@@ -105,7 +105,7 @@
             <div class="dropdown hidden" id="to-dropdown"></div>
         </div>
     </div>
-    <div class="sub">Examples for To/From: +05:30, IST, current. You can also just type the offset if it isn't listed (+3, -7:45, etc).</div>
+    <div class="sub">Examples for To/From: +05:30, IST, current. You can also just type the offset if it isn't listed (-1, -7:45, etc).</div>
     <div class="sub">*abbreviation changed to be compatible with this website</div>
     <div class="sub">**non-standard/unofficial timezone</div>
     <button onclick="convertTime()">Convert</button>
@@ -170,9 +170,11 @@
         IST:  { offset: "+05:30", desc: "India Standard Time" },
         NPT:  { offset: "+05:45", desc: "Nepal Standard Time" },
 
+
         OMST: { offset: "+06:00", desc: "Omsk Standard Time" },
         BST:  { offset: "+06:00", desc: "Bangladesh Standard Time" },
         MYST: { offset: "+06:30", desc: "*Myanmar Standard Time" },
+
 
         ICT:  { offset: "+07:00", desc: "Indochina Standard Time (Thailand, Vietnam)" },
         KRAT: { offset: "+07:00", desc: "Krasnoyarsk Standard Time" },
@@ -401,9 +403,41 @@
 
         const dayPrefix = dayChange > 0 ? `+${dayChange}d ` : (dayChange < 0 ? `${dayChange}d ` : "");
 
+        let fromTzName = fromRaw;
+        if (tzAbbr[fromRaw]) {
+            fromTzName = tzAbbr[fromRaw].desc;
+        }
+
+        let toTzName = toRaw;
+        if (tzAbbr[toRaw]) {
+            toTzName = tzAbbr[toRaw].desc;
+        }
+
+        const diffMinutes = totalMinutesToOffset - totalMinutesFromOffset;
+
+        const direction = diffMinutes === 0
+            ? "the same as"
+            : diffMinutes > 0
+                ? "ahead of"
+                : "behind";
+
+        const absMinutes = Math.abs(diffMinutes);
+        const diffHours = Math.floor(absMinutes / 60);
+        const diffMins = absMinutes % 60;
+
+        let explanation = '';
+
+        explanation += `${fromTzName} is `;
+
+        if (diffMinutes === 0) {
+            explanation += `the same as ${toTzName}.`;
+        } else {
+            explanation += `${diffHours} hour(s) and ${diffMins} minute(s) ${direction} ${toTzName}.`;
+        }
+
         resultElem.innerHTML = `
             <strong>${dayPrefix}${hour12}:${String(minuteOut).padStart(2, "0")} ${ampm}</strong><br>
-            ${dayPrefix}${outHour}:${outMin}
+            ${dayPrefix}${outHour}:${outMin}<br><br>
         `;
 
         // resultElem.innerHTML = `
