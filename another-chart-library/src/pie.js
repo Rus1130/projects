@@ -156,9 +156,14 @@ export class PieChart_ {
                 text.animate(100)
                 .dx(circle.attr('cx') - Math.cos((angle + 90) * Math.PI / 180) * popAmount - circle.attr('r') * 2)
                 .dy(circle.attr('cy') - Math.sin((angle + 90) * Math.PI / 180) * popAmount - circle.attr('r') * 2)
+
+                for(let j = 0; j < labelElements.length; j++){
+                    if(j === i) continue;
+                    labelElements[j].animate(100).opacity(0.1);
+                }
             })
 
-            arcList[i].on('mouseleave', function() {
+            arcList[i].on('mouseleave', function(e) {
                 arcList[i].animate(100)
                 .x(arcList[i].remember('originalX'))
                 .y(arcList[i].remember('originalY'))
@@ -172,21 +177,26 @@ export class PieChart_ {
                 text.animate(100)
                 .x(text.remember('originalX'))
                 .y(text.remember('originalY'))
+
+                // restore opacity of other labels
+                for(let j = 0; j < labelElements.length; j++){
+                    if(j === i) continue;
+                    labelElements[j].animate(100).opacity(1);
+                }
             })
 
             labelElements.push(text)
 
-            // if text is overlapping any other text element
-            if(removeOverlappingLabels) {
-                for(let j = 0; j < labelElements.length; j++){
-                    if(j === i) continue;
-                    let labelElement = labelElements[j];
-                    console.log(labelElement, text)
-                    if(text.x() < labelElement.x() + labelElement.width() && text.x() + text.width() > labelElement.x() && text.y() < labelElement.y() + labelElement.height() && text.y() + text.height() > labelElement.y()) {
-                        text.hide();
-                    }
-                }
-            }
+            // // if text is overlapping any other text element
+            // if(removeOverlappingLabels) {
+            //     for(let j = 0; j < labelElements.length; j++){
+            //         if(j === i) continue;
+            //         let labelElement = labelElements[j];
+            //         if(text.x() < labelElement.x() + labelElement.width() && text.x() + text.width() > labelElement.x() && text.y() < labelElement.y() + labelElement.height() && text.y() + text.height() > labelElement.y()) {
+            //             text.hide();
+            //         }
+            //     }
+            // }
         }
 
         // title
