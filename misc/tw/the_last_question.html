@@ -24,14 +24,14 @@
     }
 </style>
 <head>
-    <script src="../Global/typewriter.js"></script>
+    <script src="../../Global/typewriter.js"></script>
 </head>
 <body>
 <div id="out"></div>
 </body>
 <script>
     let tw3;
-    const THE_LAST_QUESTION = fetch('./tlq.txt')
+    const THE_LAST_QUESTION = fetch('./tlq.tw')
         .then(response => response.text())
         .then(text => {
             tw3 = new Typewriter3(text, document.getElementById("out"), {

@@ -1,0 +1,73 @@
+<style>
+    body {
+        overflow-y: hidden;
+        scrollbar-width: none;
+        background-color: black;
+        color: white;
+    }
+
+    * {
+        font-family: monospace;
+    }
+    .typewriter3-newpage:hover {
+        background-color: white;
+        color: black;
+    }
+
+    @keyframes background-change {
+        0% {
+            background-color: black;
+        }
+        100% {
+            background-color: white;
+        }
+    }
+</style>
+<head>
+    <script src="../../Global/typewriter.js"></script>
+</head>
+<body>
+<div id="out"></div>
+</body>
+<script>
+    let tw3;
+    const THE_LAST_QUESTION = fetch('./bullet_in_the_brain.tw')
+        .then(response => response.text())
+        .then(text => {
+            tw3 = new Typewriter3(text, document.getElementById("out"), {
+                loop: false,
+                charDelay: 40,
+                newlineDelay: 700,
+                customDelays: {
+                    ",": 280,
+                    ".": 370,
+                    "?": 370,
+                    "!": 370,
+                    "—": 750,
+                    ";": 200,
+                    ":": 350
+                },
+                newpageText: "▌Next >",
+                defaultTextColor: "#ffffff",
+                defaultBackgroundColor: "#000000",
+                completionBar: true,
+                onFunctionTag: () => {
+                    document.body.style.animation = "background-change 6s forwards ease-out";
+                    setTimeout(() => {
+                        window.location.href = "https://rus1130.github.io/projects/index.html?bypass=true";
+                    }, 8000);
+                },
+                onToken: (token) => {
+                    document.getElementById('completion').style.width = `${(tw3.index+1) / tw3.queue.length * 100}%`;
+                }
+            });
+
+            document.body.addEventListener('keydown', (event) => {
+                if (event.code === 'Space') tw3.togglePause();
+                if (event.code === 'ArrowRight') tw3.speedOverride(1);
+                if (event.code === 'ArrowLeft') tw3.speedOverride(null);
+            });
+
+            tw3.start();
+        });
+</script>
