@@ -1,0 +1,58 @@
+<style>
+    .dropdown {
+        position: relative;
+        display: inline-block;
+        font-size: 12px;
+        font-family: "Arial";
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        padding: 6px 8px;
+        user-select: none;
+        cursor: pointer;
+    }
+
+    .dropdown-hover {
+        background-color: #e0e0e0;
+    }
+
+    .dropdown-options-container {
+        font-family: "Arial";
+        user-select: none;
+        padding: 4px 8px;
+        background-color: white;
+        border: 1px solid #ccc;
+        position: relative;
+        width: max-content;
+        white-space: nowrap;
+    }
+
+    .dropdown-options-container.hide {
+        display: none;
+    }
+
+    .dropdown-option {
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+    }
+
+    .dropdown-checkbox {
+        cursor: pointer;
+    }
+
+</style>
+<head>
+    <script src="./dropdowns.js"></script>
+</head>
+<body>
+    <div id="dropdown"></div>
+</body>
+<script>
+    const dropdown = new Dropdown(document.getElementById('dropdown'), [
+        {label: 'Option 1', value: 1},
+        {label: 'Option 2', value: 2},
+        {label: 'Option 3', value: 3}
+    ], {
+        defaultText: 'Select an option',
+    })
+</script>
