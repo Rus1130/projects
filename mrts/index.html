@@ -2,6 +2,15 @@
     button:focus, input:focus, select:focus, textarea:focus, [contenteditable]:focus {
         outline:none;
     }
+
+    button {
+        margin: 0 2px;
+        background: #eee;
+        border: 1px solid #ccc;
+        border-radius: 2px;
+        padding: 2px 6px;
+        cursor: pointer;
+    }
 </style>
 <head>
     <meta property="og:title" content="mrts">
@@ -10,10 +19,150 @@
     <script src="data.js"></script>
 </head>
 <body>
-    
-    
+    <h3>Select units</h3>
+
+    <div id="units"></div>
+
+    <div>
+        Buildings required:
+        <ul id="buildings"></ul>
+    </div>
+
+    <hr>
+
+    <div>
+        Total cost: <strong id="total">0</strong>
+    </div>
 </body>
 <script>
-    console.log(data)
+    const unitsContainer = document.getElementById("units");
+    const totalEl = document.getElementById("total");
+
+    let counts = Object.create(null);
+
+    for (let name of Object.keys(data.units)) {
+        counts[name] = 0;
+    }
+
+    const unitToBuilding = Object.create(null);
+
+    for (let [bName, b] of Object.entries(data.buildings)) {
+        for (let u of b.units) {
+            unitToBuilding[u] = bName;
+        }
+    }
+
+    const buildingsEl = document.getElementById("buildings");
     
+    for (let [unit, cost] of Object.entries(data.units)) {
+
+        let row = document.createElement("div");
+        row.style.marginBottom = "4px";
+
+        let label = document.createElement("span");
+        label.textContent = `${unit} (${cost}) `;
+        label.style.display = "inline-block";
+        label.style.width = "180px";
+
+        let countEl = document.createElement("span");
+        countEl.textContent = "0";
+        countEl.style.display = "inline-block";
+        countEl.style.width = "30px";
+        countEl.style.textAlign = "right";
+
+        function add(n) {
+
+            let cap = (unit === "medic") ? 4 : 20;
+
+            let next = counts[unit] + n;
+
+            if (next > cap) next = cap;
+            if (next < 0) next = 0; 
+
+            counts[unit] = next;
+            countEl.textContent = counts[unit];
+            updateTotal();
+        }
+
+        let p1 = document.createElement("button");
+        p1.textContent = "+1";
+        p1.onclick = () => add(1);
+
+        let p5 = document.createElement("button");
+        p5.textContent = "+5";
+        p5.onclick = () => add(5);
+
+        let p15 = document.createElement("button");
+        p15.textContent = "+15";
+        p15.onclick = () => add(15);
+
+        let m1 = document.createElement("button");
+        m1.textContent = "-1";
+        m1.onclick = () => add(-1);
+
+        let m5 = document.createElement("button");
+        m5.textContent = "-5";
+        m5.onclick = () => add(-5);
+
+        let m15 = document.createElement("button");
+        m15.textContent = "-15";
+        m15.onclick = () => add(-15);
+
+        let reset = document.createElement("button");
+        reset.textContent = "reset";
+        reset.onclick = () => {
+            counts[unit] = 0;
+            countEl.textContent = 0;
+            updateTotal();
+        };
+
+        row.append(
+            label,
+            p1, p5, p15,
+            m1, m5, m15,
+            reset,
+            document.createTextNode(" x "),
+            countEl
+        );
+
+
+        unitsContainer.appendChild(row);
+    }
+
+    function updateTotal() {
+
+        let total = 0;
+
+        // unit cost
+        for (let unit in counts) {
+            total += counts[unit] * data.units[unit];
+        }
+
+        // which buildings are needed
+        let neededBuildings = new Set();
+
+        for (let unit in counts) {
+            if (counts[unit] > 0) {
+                let b = unitToBuilding[unit];
+                if (b) neededBuildings.add(b);
+            }
+        }
+
+        // building cost (only once per building)
+        for (let b of neededBuildings) {
+            total += data.buildings[b].price;
+        }
+
+        // update UI
+        totalEl.textContent = total;
+
+        buildingsEl.innerHTML = "";
+
+        for (let b of neededBuildings) {
+            let li = document.createElement("li");
+            li.textContent = `${b} (${data.buildings[b].price})`;
+            buildingsEl.appendChild(li);
+        }
+    }
+        
 </script>
