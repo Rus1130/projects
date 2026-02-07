@@ -1,0 +1,13 @@
+{{# written 6 feb, 2026 #}}
+{{#timecalc
+    char: 115
+    newline: 600
+    custom: {
+        ",": 480
+        ".": 700
+    }
+#}}
+The war is over,[newline]
+night has come.[linebreak]
+Lighthouse over the water,[newline]
+Thank you for having us.
