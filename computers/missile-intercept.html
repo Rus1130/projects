@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+    <style>
+        body { 
+            background: #f8f8f6;
+            margin: 0;
+            padding: 20px;
+            font-family: "Times New Roman", Times, serif;
+            color: #333;
+        }
+        #wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        /* Simulation Styling */
+        #root {
+            width: 100%;
+            height: 500px;
+            position: relative;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        #c { width: 100%; height: 100%; display: block; }
+        .hud { position: absolute; top: 12px; left: 12px; font-size: 12px; color: #666; line-height: 1.6; pointer-events: none; }
+        #status { position: absolute; top: 12px; right: 12px; font-size: 12px; font-weight: bold; color: #aaa; }
+        .controls { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; }
+        button { font-family: "Times New Roman", serif; font-size: 13px; background: #fff; border: 1px solid #ccc; padding: 6px 18px; border-radius: 2px; cursor: pointer; }
+        button:hover { background: #f0f0f0; }
+        /* Documentation Styling */
+        .docs { margin-top: 40px; line-height: 1.6; border-top: 1px solid #eee; padding-top: 20px; }
+        h1 { font-size: 24px; margin-bottom: 10px; text-align: center; font-weight: normal; }
+        h2 { font-size: 18px; border-bottom: 1px solid #eee; margin-top: 30px; font-weight: bold; }
+        p { font-size: 16px; margin: 15px 0; text-align: justify; }
+        .math { font-style: italic; font-family: "Times New Roman", serif; background: #f0f0f0; padding: 2px 5px; border-radius: 3px; }
+        .formula-block { text-align: center; margin: 20px 0; font-size: 18px; font-style: italic; }
+        li { margin-bottom: 10px; }
+    </style>
+<html>
+<head>
+    <title>Air Defense Simulation & Technical Analysis</title>
+</head>
+<body>
+<div id="wrapper">
+    <h1>Surface-to-Air Missile Intercept Simulation</h1>
+    <div id="root">
+        <canvas id="c"></canvas>
+        <div class="hud">
+            <span id="t-spd">Target: ---</span><br>
+            <span id="m-spd">Interceptor: ---</span><br>
+            <span id="miss-d">Range: ---</span><br>
+            <span id="g-load" style="color:#cc5555">Structural Load: ---</span>
+        </div>
+        <div id="status">
+        </div>
+        <div class="controls">
+            <button onclick="launchSim()">Launch Battery</button>
+            <button onclick="resetSim()">System Reset</button>
+        </div>
+    </div>
+    <div class="docs">
+        <h2>1. The Guidance Law: Augmented Proportional Navigation (APN)</h2>
+        <p>
+            The interceptor utilizes <b>Augmented Proportional Navigation</b> to calculate its flight path. Unlike direct pursuit, which chases the target's current position, APN commands acceleration based on the rotation of the <i>Line-of-Sight (LOS)</i> between the missile and the target.
+        </p>
+        
+        <div class="formula-block">
+            n<sub>c</sub> = N &middot; V<sub>c</sub> &middot; &lambda;&prime; + (0.5 &middot; N &middot; g<sub>target</sub>)
+        </div>
+        <p>
+            Where <span class="math">N</span> is the navigation constant (set to 4.5–6.5), <span class="math">V<sub>c</sub></span> is the closing velocity, and <span class="math">&lambda;&prime;</span> is the Line-of-Sight rate. The "Augmented" term accounts for the ballistic missile's downward acceleration due to gravity, allowing the SAM to "lead" the target into its future position more accurately.
+        </p>
+        <h2>2. Ballistic Trajectory Dynamics</h2>
+        <p>
+            The incoming threat mimics a Short-Range Ballistic Missile (SRBM) in its terminal re-entry phase. The physics engine accounts for:
+        </p>
+        <ul>
+            <li><b>Gravitational Acceleration:</b> Constant <span class="math">-9.81 m/s<sup>2</sup></span> pull, causing a parabolic arc toward the designated ground target.</li>
+            <li><b>Atmospheric Drag:</b> Drag is calculated using the square of the velocity (<span class="math">F<sub>d</sub> = 0.5 &rho; v<sup>2</sup> C<sub>d</sub> A</span>), causing the missile to lose velocity as it enters denser air at lower altitudes.</li>
+        </ul>
+        
+        <h2>3. Kinematic Constraints and G-Loading</h2>
+        <p>
+            To maintain physical realism, the SAM is governed by <b>structural G-limits</b>. A real-world airframe would disintegrate under infinite lateral force. In this simulation, the SAM is capped at 42Gs of lateral acceleration. 
+        </p>
+        <p>
+            This constraint creates a <i>Minimum Turning Radius</i>. If the SAM is traveling at high Mach numbers, it cannot make sharp course corrections, necessitating a high-energy "Vertical Launch" to gain altitude where the air is thinner before initiating the terminal intercept maneuver.
+        </p>
+        
+        <h2>4. Intercept Logic (Proximity Fuzing)</h2>
+        <p>
+            Because closing speeds often exceed Mach 6 (combined), a "skin-to-skin" collision is mathematically difficult to calculate at standard frame rates. The simulation utilizes a <b>Proximity Fuze</b> logic. When the distance falls below 50 meters, the missile detonates its blast-fragmentation warhead, resulting in a confirmed intercept.
+        </p>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+</body>
+<script>
+    // --- THREE.JS SETUP ---
+    const canvas = document.getElementById('c');
+    const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+    renderer.setClearColor(0xffffff, 1);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 5000);
+
+    function resize(){
+        const el = document.getElementById('root');
+        renderer.setSize(el.clientWidth, el.clientHeight, false);
+        camera.aspect = el.clientWidth / el.clientHeight;
+        camera.updateProjectionMatrix();
+    }
+    resize();
+    window.addEventListener('resize', resize);
+    scene.add(new THREE.AmbientLight(0xffffff, 1));
+
+    const W=400, H=350, D=250; 
+    const boxLines = new THREE.LineSegments(
+        new THREE.EdgesGeometry(new THREE.BoxGeometry(W, H, D)),
+        new THREE.LineBasicMaterial({color:0xdddddd})
+    );
+
+    boxLines.position.set(0, H/2, 0);
+    scene.add(boxLines);
+    const grid = new THREE.GridHelper(W, 14, 0xeeeeee, 0xeeeeee);
+    grid.scale.set(1, 1, D/W);
+    scene.add(grid);
+    function makeGroundTarget(x, z){
+        const s=12, mat=new THREE.LineBasicMaterial({color:0x3366cc, transparent:true, opacity:0.4});
+        const g1=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-s,0.3,-s),new THREE.Vector3(s,0.3,s)]);
+        const g2=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(s,0.3,-s),new THREE.Vector3(-s,0.3,s)]);
+        const grp=new THREE.Group();
+        grp.add(new THREE.Line(g1,mat),new THREE.Line(g2,mat));
+        grp.position.set(x,0,z);
+        scene.add(grp);
+        return grp;
+    }
+
+    function makeMarker(pos, color=0xcc2222){
+        const s=8;
+        const mat=new THREE.LineBasicMaterial({color});
+        const g1=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-s,-s,0),new THREE.Vector3(s,s,0)]);
+        const g2=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(s,-s,0),new THREE.Vector3(-s,s,0)]);
+        const grp=new THREE.Group();
+        grp.add(new THREE.Line(g1,mat),new THREE.Line(g2,mat));
+        grp.position.copy(pos);
+        scene.add(grp);
+        return grp;
+    }
+
+    let isDown=false
+    let ox=0
+    let oy=0
+    let theta=0.7
+    let phi=0.35
+    let radius=750
+    function updateCam(){
+        camera.position.set(radius*Math.sin(theta)*Math.cos(phi),radius*Math.sin(phi)+120,radius*Math.cos(theta)*Math.cos(phi));
+        camera.lookAt(0,120,0);
+    }
+    updateCam();
+    canvas.addEventListener('mousedown',e=>{
+        isDown=true;
+        ox=e.clientX;
+        oy=e.clientY;
+    });
+    window.addEventListener('mouseup',()=> isDown = false);
+    window.addEventListener('mousemove',e=>{
+        if(!isDown)return;
+        theta-=(e.clientX-ox)*0.005;
+        phi=Math.max(0.1,Math.min(1.4,phi-(e.clientY-oy)*0.004));
+        ox=e.clientX;oy=e.clientY;updateCam();
+    });
+
+    canvas.addEventListener('wheel',e => {
+        e.preventDefault();
+        radius = Math.max(300,radius+e.deltaY*0.5);
+        updateCam();
+    },{passive:true});
+
+    class Trail {
+        constructor(maxLen,color){
+            this.pts=[];this.maxLen=maxLen;
+            this.geo=new THREE.BufferGeometry();
+            this.line=new THREE.Line(this.geo, new THREE.LineBasicMaterial({color,transparent:true,opacity:0.4}));
+            scene.add(this.line);
+        }
+        add(v){
+            this.pts.push(v.clone());
+            if(this.pts.length > this.maxLen) this.pts.shift();
+            this.geo.setFromPoints(this.pts);
+        }
+        clear(){
+            this.pts=[];
+            this.geo.setFromPoints([]);
+        }
+    }
+
+    // --- SIMULATION PHYSICS ---
+
+    const statusDiv = document.getElementById('status');
+
+    function createSpanInStatus(id) {
+        const span = document.createElement('span');
+        span.id = id;
+        span.textContent = `---`;
+        statusDiv.appendChild(span);
+        statusDiv.appendChild(document.createElement('br'));
+        return span;
+    }
+
+    function updateSpanInStatus(id, text, color = null) {
+        const span = document.getElementById(id);
+        if (span) {
+            span.textContent = text;
+            if (color) {
+                span.style.color = color;
+            }
+        }
+    }
+
+    const GRAVITY = new THREE.Vector3(0, -9.81, 0);
+
+    const BM_SPEED = 145;
+    const BM_DRAG = 0.002;
+
+    const SAM_THRUST = 410;
+    const SAM_BURN_TIME = 4.8;
+    const SAM_MAX_SPEED = 190;
+    const SAM_DRAG = 0.01;
+
+    const MAX_G = 42;
+
+    let state = 'idle';
+
+    let target = null;
+    let interceptor = null;
+
+    let prevLosN = null;
+    let simTime = 0;
+
+    let gtPos = new THREE.Vector3();
+
+    let groundTargetObj = null;
+    let xMarkerObj = null;
+    
+    const totalNumber = 50;
+
+    const targets = [];
+    const interceptors = [];
+    const groundTargetObjects = [];
+    const xMarkerObjects = [];
+    const previousLineOfSightVectors = [];
+
+    const states = new Array(totalNumber).fill('idle');
+    const groundTargetPositions = new Array(totalNumber).fill(0).map(() => new THREE.Vector3());
+
+
+    class Missile {
+        constructor({
+            position,
+            velocity,
+            radius = 2,
+            color = 0xffffff,
+            trailColor = color,
+            trailLength = 600
+        }) {
+            this.pos = position.clone();
+            this.vel = velocity.clone();
+
+            this.mesh = new THREE.Mesh(
+                new THREE.SphereGeometry(radius),
+                new THREE.MeshBasicMaterial({ color })
+            );
+
+            this.mesh.position.copy(this.pos);
+            this.trail = new Trail(trailLength, trailColor);
+            scene.add(this.mesh);
+        }
+
+        applyGravity(dt) {
+            this.vel.addScaledVector(GRAVITY, dt);
+        }
+
+        applyDrag(drag, dt) {
+            if (this.vel.lengthSq() === 0) return;
+
+            this.vel.addScaledVector(
+                this.vel.clone().normalize(),
+                -drag * this.vel.lengthSq() * dt
+            );
+        }
+
+        applyAcceleration(accel, dt) {
+            this.vel.addScaledVector(accel, dt);
+        }
+
+        applyThrust(thrust, direction, dt) {
+            this.vel.addScaledVector(
+                direction.clone().normalize(),
+                thrust * dt
+            );
+        }
+
+        clampSpeed(maxSpeed) {
+            if (this.vel.length() > maxSpeed) {
+                this.vel.setLength(maxSpeed);
+            }
+        }
+
+        update(dt) {
+            this.pos.addScaledVector(this.vel, dt);
+            this.mesh.position.copy(this.pos);
+            this.trail.add(this.pos);
+        }
+
+        remove() {
+            scene.remove(this.mesh);
+            if (this.trail) {
+                this.trail.clear();
+            }
+        }
+    }
+    function launchSim() {
+        if (state === 'flight') return;
+
+        resetSim();
+
+        for (let i = 0; i < totalNumber; i++) {
+
+            const gtx = (Math.random() - 0.5) * 280;
+            const gtz = (Math.random() - 0.5) * 180;
+
+            groundTargetPositions[i].set(gtx, 0, gtz);
+
+            groundTargetObjects.push(
+                makeGroundTarget(gtx, gtz)
+            );
+
+            const startSide =
+                Math.random() < 0.5 ? 1 : -1;
+
+            const tPos = new THREE.Vector3(
+                startSide * 195,
+                320,
+                (Math.random() - 0.5) * 130
+            );
+
+            const tVel = new THREE.Vector3()
+                .subVectors(
+                    groundTargetPositions[i],
+                    tPos
+                )
+                .normalize()
+                .multiplyScalar(BM_SPEED);
+
+            const mPos = new THREE.Vector3(
+                (Math.random() - 0.5) * 40,
+                1,
+                (Math.random() - 0.5) * 40
+            );
+
+            const mVel = new THREE.Vector3(0, 60, 0);
+
+            targets.push(new Missile({
+                position: tPos,
+                velocity: tVel,
+                radius: 3.5,
+                color: 0x3366cc,
+                trailColor: 0x6699ff
+            }));
+
+            interceptors.push(new Missile({
+                position: mPos,
+                velocity: mVel,
+                radius: 2.5,
+                color: 0xdd3333,
+                trailColor: 0xff6666
+            }));
+
+            states[i] = 'flight';
+
+            createSpanInStatus(`status-${i}`);
+
+            updateSpanInStatus(
+                `status-${i}`,
+                `${i + 1}: INTERCEPT IN PROGRESS`,
+                '#cc5555'
+            );
+        }
+
+        state = 'flight';
+    }
+    
+    function resetSim() {
+
+        statusDiv.innerHTML = '';
+
+        targets.forEach(t => t.remove());
+        interceptors.forEach(m => m.remove());
+
+        groundTargetObjects.forEach(obj => {
+            scene.remove(obj);
+        });
+
+        xMarkerObjects.forEach(obj => {
+            scene.remove(obj);
+        });
+
+        targets.length = 0;
+        interceptors.length = 0;
+        groundTargetObjects.length = 0;
+        xMarkerObjects.length = 0;
+        previousLineOfSightVectors.length = 0;
+
+        states.fill('idle');
+
+        state = 'idle';
+
+        simTime = 0;
+    }
+    
+    // --- MAIN LOOP ---
+
+    let lastT = null;
+
+    function tick(now) {
+
+        requestAnimationFrame(tick);
+
+        const dt = Math.min(
+            (now - (lastT || now)) / 1000,
+            0.016
+        );
+
+        lastT = now;
+
+        if (state !== 'flight') {
+            renderer.render(scene, camera);
+            return;
+        }
+
+        simTime += dt;
+
+        for (let i = 0; i < totalNumber; i++) {
+
+            if (states[i] !== 'flight') continue;
+
+            const target = targets[i];
+            const interceptor = interceptors[i];
+
+
+            // --- TARGET UPDATE ---
+
+            target.applyGravity(dt);
+            target.applyDrag(BM_DRAG, dt);
+            target.update(dt);
+
+
+            // --- LOS ---
+
+            const los = new THREE.Vector3()
+                .subVectors(target.pos, interceptor.pos);
+
+            const dist = los.length();
+
+            const losN = los.clone().normalize();
+
+
+            // --- GUIDANCE ---
+
+            if (simTime > 0.6) {
+
+                if (previousLineOfSightVectors[i]) {
+
+                    const losRate = new THREE.Vector3()
+                        .subVectors(
+                            losN,
+                            previousLineOfSightVectors[i]
+                        )
+                        .divideScalar(dt);
+
+                    const vc = Math.max(
+                        -new THREE.Vector3()
+                            .subVectors(target.vel, interceptor.vel)
+                            .dot(losN),
+                        1
+                    );
+
+                    const N = dist < 70 ? 6.5 : 4.5;
+
+                    const lateral = new THREE.Vector3()
+                        .crossVectors(losN, losRate)
+                        .cross(losN)
+                        .multiplyScalar(N * vc);
+
+                    const maxAccel = MAX_G * 9.81;
+
+                    if (lateral.length() > maxAccel) {
+                        lateral.setLength(maxAccel);
+                    }
+
+                    interceptor.applyAcceleration(
+                        lateral.clone().add(
+                            new THREE.Vector3(0, 9.81, 0)
+                        ),
+                        dt
+                    );
+                }
+            }
+
+            previousLineOfSightVectors[i] =
+                losN.clone();
+
+
+            // --- INTERCEPTOR UPDATE ---
+
+            interceptor.applyGravity(dt);
+
+            interceptor.applyDrag(SAM_DRAG, dt);
+
+            if (simTime < SAM_BURN_TIME) {
+
+                const thrustDir =
+                    simTime < 0.6
+                        ? new THREE.Vector3(0, 1, 0)
+                        : interceptor.vel.clone().normalize();
+
+                interceptor.applyThrust(
+                    SAM_THRUST,
+                    thrustDir,
+                    dt
+                );
+            }
+
+            interceptor.clampSpeed(SAM_MAX_SPEED);
+
+            interceptor.update(dt);
+
+
+            // --- TERMINATION ---
+
+            const newDist = target.pos.distanceTo(
+                interceptor.pos
+            );
+
+            if (newDist < 5.0) {
+
+                states[i] = 'done';
+
+                updateSpanInStatus(
+                    `status-${i}`,
+                    `${i + 1}: INTERCEPT CONFIRMED`,
+                    '#44aa66'
+                );
+
+                xMarkerObjects.push(
+                    makeMarker(target.pos, 0x44aa66)
+                );
+
+                target.remove();
+                interceptor.remove();
+
+            } else if (target.pos.y <= 0.5) {
+
+                states[i] = 'done';
+
+                updateSpanInStatus(
+                    `status-${i}`,
+                    `${i + 1}: TARGET IMPACT - DEFENSE FAILURE`,
+                    '#cc5555'
+                );
+
+                xMarkerObjects.push(
+                    makeMarker(target.pos, 0xcc5555)
+                );
+
+                target.remove();
+                interceptor.remove();
+            }
+        }
+
+        if (states.every(s => s !== 'flight')) {
+            state = 'done';
+        }
+
+        renderer.render(scene, camera);
+    }
+
+    //     const dt = Math.min(
+    //         (now - (lastT || now)) / 1000,
+    //         0.016
+    //     );
+
+    //     lastT = now;
+
+    //     if (state !== 'flight') {
+
+    //         renderer.render(scene, camera);
+
+    //         return;
+    //     }
+
+    //     simTime += dt;
+
+
+    //     // --- TARGET UPDATE ---
+    //     target.applyGravity(dt);
+    //     target.applyDrag(BM_DRAG, dt);
+    //     target.update(dt);
+
+
+    //     // --- GUIDANCE ---
+
+    //     const los = new THREE.Vector3()
+    //         .subVectors(target.pos, interceptor.pos);
+
+    //     const dist = los.length();
+    //     const losN = los.clone().normalize();
+
+    //     if (simTime > 0.6) {
+    //         if (prevLosN) {
+    //             const losRate = new THREE.Vector3()
+    //                 .subVectors(losN, prevLosN)
+    //                 .divideScalar(dt);
+
+    //             const vc = Math.max(
+    //                 -new THREE.Vector3()
+    //                     .subVectors(target.vel, interceptor.vel)
+    //                     .dot(losN),
+    //                 1
+    //             );
+
+    //             const N = dist < 70 ? 6.5 : 4.5;
+
+    //             const lateral = new THREE.Vector3()
+    //                 .crossVectors(losN, losRate)
+    //                 .cross(losN)
+    //                 .multiplyScalar(N * vc);
+
+    //             const maxAccel = MAX_G * 9.81;
+
+    //             if (lateral.length() > maxAccel) {
+    //                 lateral.setLength(maxAccel);
+    //             }
+
+    //             document.getElementById('g-load').textContent =
+    //                 `Structural Load: ${(lateral.length() / 9.81).toFixed(1)} G`;
+
+    //             interceptor.applyAcceleration(
+    //                 lateral.clone().add(new THREE.Vector3(0, 9.81, 0)),
+    //                 dt
+    //             );
+    //         }
+    //     }
+
+    //     prevLosN = losN.clone();
+
+
+    //     // --- INTERCEPTOR UPDATE ---
+
+    //     interceptor.applyGravity(dt);
+
+    //     interceptor.applyDrag(SAM_DRAG, dt);
+
+    //     if (simTime < SAM_BURN_TIME) {
+
+    //         const thrustDir =
+    //             simTime < 0.6
+    //                 ? new THREE.Vector3(0, 1, 0)
+    //                 : interceptor.vel.clone().normalize();
+
+    //         interceptor.applyThrust(
+    //             SAM_THRUST,
+    //             thrustDir,
+    //             dt
+    //         );
+    //     }
+
+    //     interceptor.clampSpeed(SAM_MAX_SPEED);
+
+    //     interceptor.update(dt);
+
+
+    //     // --- UI ---
+
+    //     // document.getElementById('t-spd').textContent =
+    //     //     `Target: Mach ${(target.vel.length() / 34).toFixed(1)}`;
+
+    //     // document.getElementById('m-spd').textContent =
+    //     //     `Interceptor: Mach ${(interceptor.vel.length() / 34).toFixed(1)}`;
+
+    //     // document.getElementById('miss-d').textContent =
+    //     //     `Range: ${(dist * 10).toFixed(0)} m`;
+
+
+    //     // --- TERMINATION CONDITIONS ---
+
+    //     if (dist < 5.0) {
+
+    //         state = 'done';
+
+    //         document.getElementById('status').textContent =
+    //             'INTERCEPT CONFIRMED';
+
+    //         document.getElementById('status').style.color =
+    //             '#44aa66';
+
+    //         xMarkerObj = makeMarker(target.pos, 0x44aa66);
+
+    //         target.remove();
+    //         interceptor.remove();
+
+    //     } else if (target.pos.y <= 0.5) {
+
+    //         state = 'done';
+
+    //         document.getElementById('status').textContent =
+    //             'TARGET IMPACT - DEFENSE FAILURE';
+
+    //         document.getElementById('status').style.color =
+    //             '#cc5555';
+
+    //         xMarkerObj = makeMarker(target.pos, 0xcc5555);
+
+    //         target.remove();
+    //         interceptor.remove();
+    //     }
+
+    //     renderer.render(scene, camera);
+    // }
+
+    requestAnimationFrame(tick);
+</script>
+</html>
