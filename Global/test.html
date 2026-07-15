@@ -17,12 +17,13 @@
 </body>
 <script>
 
-    let tw = new Typewriter3(`twenty letter www www`, document.getElementById("out-tw"), {
+    let tw = new Typewriter3(`Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer gravida diam id consectetur egestas. Phasellus ornare nec tortor pharetra posuere. Nam non fringilla erat, nec varius odio. Nunc massa arcu, eleifend nec aliquet quis, volutpat imperdiet est. Cras porta eleifend ex id malesuada. Praesent vulputate sagittis ligula, eget faucibus sapien dapibus eu. Proin pulvinar vestibulum scelerisque. Praesent fermentum ultricies pulvinar. Integer at pulvinar lectus. Fusce sit amet nunc condimentum, fermentum urna vitae, imperdiet mi. Nulla eu finibus lectus.`, document.getElementById("out-tw"), {
         charDelay: 35,
         customDelays: {
             ".": 500,
         },
-        wordWrap: 20,
+        newlineDelay: 1000,
+        wordWrap: 40,
     });
 
     tw.start()
