@@ -824,9 +824,14 @@ class Typewriter3 {
 
     start() {
         if(this.options.instant){
-            for(let i = 0; i < this.queue.length; i++){
-                let token = this.queue[i];
+            for(; this.index < this.queue.length; this.index++){
+                let token = this.queue[this.index];
+
+                if(token.type === "tag" && token.name === "sleep") continue;
+
                 this.renderToken(token);
+
+                if(token.type === "tag" && token.name === "newpage") return;
             }
         } else {        
             this.playing = true;
@@ -952,7 +957,7 @@ class Typewriter3 {
                     if (this.options.variableOutput) {
                         this.output += `<hr><div>${this.options.newpageText}</div><hr>`;
                     } else {
-                        this.pause();
+                        if(this.options.instant !== true) this.pause();
 
                         let pageBreak = document.createElement("div");
                         pageBreak.textContent = this.options.newpageText;
@@ -964,7 +969,21 @@ class Typewriter3 {
                         pageBreak.addEventListener("click", () => {
                             this.elem.innerHTML = "";
                             this.pageDone = false;
-                            this.resume();
+
+                            if(this.options.instant !== true) this.resume();
+                            else {
+                                // find all the tokens until the next newpage tag
+
+                                let nextNewpageIndex = this.queue.findIndex((t, i) => (i+1) > this.index && t.type === "tag" && t.name === "newpage");
+
+                                let arrayToRender = this.queue.slice(this.index, nextNewpageIndex === -1 ? this.queue.length : nextNewpageIndex);
+
+                                for(; this.index < this.queue.length && (nextNewpageIndex === -1 || this.index <= nextNewpageIndex); this.index++){
+                                    let token = this.queue[this.index];
+                                    this.renderToken(token);
+                                }
+
+                            }
                         });
 
                         this.elem.appendChild(pageBreak);
@@ -1029,6 +1048,8 @@ class Typewriter3 {
                 }
             }
         }
+
+        if(this.instant) token.delay = 0;
 
         return token;
     }
