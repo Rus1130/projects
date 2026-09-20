@@ -9,7 +9,6 @@
         color: white;
         cursor: default;
         font-size: 13px;
-        user-select: none;
     }
 
     div {
@@ -27,6 +26,11 @@
     a {
         text-decoration: none;
         color: inherit;
+    }
+
+    ::selection {
+        background: white;
+        color: black;
     }
 </style>
 <head>
@@ -46,7 +50,23 @@
         div.appendChild(a);
         document.body.appendChild(div);
     }
+
+    const tab = "\u200A\u200A\u200A\u200A";
+
+    function s(text){
+        const span = document.createElement("span");
+        span.textContent = text;
+        document.body.appendChild(span);
+        document.body.appendChild(document.createElement("br"));
+    }
+
+    function listitem(text){
+        s(tab + "-" + text);
+    }
+
     n("Glossary of Linguistic Terms", "https://glossary.sil.org/");
+    listitem("Because smallcaps are very annoying, it is acceptable to use regular capital letters")
+    listitem("For circumfixes, do PTCP>see<PTCP or PTCP>see<CIRC, not the recommended hyphens")
     n("Leipzig Glossing Rules", "https://www.eva.mpg.de/lingua/pdf/Glossing-Rules.pdf");
     n("List of Glossing Abbreviations", "https://en.wikipedia.org/wiki/List_of_glossing_abbreviations");
     n("IPA TypeIt", "https://ipa.typeit.org/full/");
