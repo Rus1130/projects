@@ -1,0 +1,60 @@
+<style>
+    button:focus, input:focus, select:focus, textarea:focus, [contenteditable]:focus {
+        outline:none;
+    }
+
+    body {
+        font-family: monospace;
+        background-color: black;
+        color: white;
+        cursor: default;
+        font-size: 13px;
+        user-select: none;
+    }
+
+    div {
+        background-color: black;
+        color: white;
+        cursor: pointer;
+        margin-top: 1px;
+    }
+
+    div:hover {
+        background-color: white;
+        color: black;
+    }
+
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+</style>
+<head>
+    <meta property="og:title" content="Useful Links">
+    <meta property="og:description" content="yes">
+    <meta property="og:url" content="https://rus1130.github.io/projects/conlang/stuff/useful-links.html">
+</head>
+<body>
+    Things
+</body>
+<script>
+    function n(name, link){
+        const div = document.createElement("div");
+        const a = document.createElement("a");
+        a.textContent = "▌" + name + " >";
+        a.href = link;
+        div.appendChild(a);
+        document.body.appendChild(div);
+    }
+    n("Glossary of Linguistic Terms", "https://glossary.sil.org/");
+    n("Leipzig Glossing Rules", "https://www.eva.mpg.de/lingua/pdf/Glossing-Rules.pdf");
+    n("List of Glossing Abbreviations", "https://en.wikipedia.org/wiki/List_of_glossing_abbreviations");
+    n("IPA TypeIt", "https://ipa.typeit.org/full/");
+    n("IPA Chart", "https://jbdowse.com/ipa/");
+    n("List of Grammatical Cases", "https://en.wikipedia.org/wiki/List_of_grammatical_cases");
+    n("List of Grammatical Tenses", "https://en.wikipedia.org/wiki/Category:Grammatical_tenses");
+    n("List of Grammatical Aspects", "https://en.wikipedia.org/wiki/Category:Grammatical_aspects");
+    n("List of Grammatical Moods", "https://en.wikipedia.org/wiki/Category:Grammatical_moods");
+    n("MIT Free Conlanging Course", "https://ocw.mit.edu/courses/24-917-conlangs-how-to-construct-a-language-fall-2018/")
+    
+</script>
