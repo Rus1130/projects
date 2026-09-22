@@ -62,11 +62,25 @@
         const imageHeight = 80;
         const textHeight = 30;
 
-        canvas.width = digits.length * 75 + (digits.length - 1) * gap + 2;
+        const widths = [];
+        for (let i = 0; i < digits.length; i++) {
+            const digitIndex = base13Digits.indexOf(digits[i]);
+            if (digitIndex === -1) {
+                widths.push(0);
+                continue;
+            }
+            const bounds = numberBounds[digitIndex];
+            widths.push(bounds[2] - bounds[0]);
+        }
+
+        const totalWidth = widths.reduce((sum, w) => sum + w, 0) + gap * (digits.length - 1) + 2;
+
+        canvas.width = totalWidth;
         canvas.height = imageHeight + textHeight;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
+
+        let destinationX = 0;
 
         for (let i = 0; i < digits.length; i++) {
             const digit = digits[i];
@@ -86,7 +100,6 @@
             const width = x2 - x;
             const height = y2 - y;
 
-            const destinationX = i * (75 + gap);
             const destinationY = 0;
 
             ctx.drawImage(
@@ -107,6 +120,8 @@
             ctx.fillStyle = "black";
             ctx.textAlign = "center";
             ctx.fillText(digit, destinationX + width / 2, imageHeight + 22);
+
+            destinationX += width + gap;
         }
     }
 
@@ -146,8 +161,6 @@
                     drawNiveanNumber(tob13(number));
                 } else {
                     ctx.clearRect(0, 0, 1000, 1000);
-                    // draw text that said BAD INPUT
-
                     canvas.width = 280;
                     canvas.height = 250;
 
