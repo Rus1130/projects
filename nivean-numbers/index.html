@@ -15,7 +15,9 @@
     <meta property="og:url" content="https://rus1130.github.io/projects/nivean-numbers/">
     type base 10 here / здесь пишите в десятичной системе счисления
     <div contenteditable="true" id="input"></div>
+    nivean numbers are REVERSED compared to our numbers<br>
     <canvas id="canvas"></canvas>
+    
 </head>
 <body>
     
@@ -30,7 +32,7 @@
 
     const numberToTranslate = 100;
 
-    const tob13 = (n) => n.toString(13).toUpperCase();
+    const tob13 = (n) => n.toString(13).toUpperCase().split("").reverse().join("");
 
     const base13Digits = "0123456789ABC";
 
