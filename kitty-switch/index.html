@@ -1,0 +1,42 @@
+<style>
+    button:focus, input:focus, select:focus, textarea:focus, [contenteditable]:focus {
+        outline:none;
+    }
+
+    img {
+        max-width: 100vw;
+        max-height: 100vh;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+    }
+
+    body {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+    }
+</style>
+<head>
+    <meta property="og:title" content="kitty switch">
+    <meta property="og:description" content="yay wow :)">
+    <meta property="og:url" content="">
+</head>
+<body>
+    <img src="1.png">
+    
+</body>
+<script>
+
+    const img = document.querySelector("img");
+    let toggle = false;
+
+    document.addEventListener("click", function(event) {
+        if(toggle == false) img.src = "2.png"
+        else img.src = "1.png"
+
+        toggle = !toggle;
+    });
+    
+    
+</script>
