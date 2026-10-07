@@ -22,6 +22,7 @@
         top: 0;
         left: 2px;
         background-color: white;
+        user-select: none;
     }
 </style>
 <head>
@@ -30,12 +31,14 @@
     <meta property="og:url" content="">
 </head>
 <body>
-    <div>left click to dance<br>right click for next<br>:3</div>
+    <div>left click to dance<br>right click for next<br>:3<br>if you're on mobile just<br>tap this text</div>
     <img>
 </body>
 <script>
 
     const img = document.querySelector("img");
+    const div = document.querySelector("div");
+
     let toggle = false;
 
     const list = ["a", "b"]
@@ -52,11 +55,15 @@
         toggle = !toggle;
     });
 
-    document.addEventListener("contextmenu", function(event) {
-        event.preventDefault();
+    function next(e){
+        e.preventDefault();
+        e.stopPropagation();
         current = (current + 1) % list.length;
         let k = list[current];
         toggle = false;
         img.src = `${k}1.png`
-    });
+    }
+
+    div.addEventListener("click", next);
+    document.addEventListener("contextmenu", next);
 </script>
