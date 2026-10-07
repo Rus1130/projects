@@ -16,6 +16,13 @@
         display: flex;
         justify-content: center;
     }
+
+    div {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: white;
+    }
 </style>
 <head>
     <meta property="og:title" content="kitty switch">
@@ -23,19 +30,17 @@
     <meta property="og:url" content="">
 </head>
 <body>
+    <div>left click to dance<br>right click for next<br>:3</div>
+    <img>
 </body>
 <script>
 
-    const img = document.createElement("img");
+    const img = document.querySelector("img");
     let toggle = false;
 
     const list = ["a", "b"]
     let current = 0;
 
-
-    document.body.appendChild(img);
-
-    img.title = "left click to dance\nright click for next\n:3";
     img.src = `${list[current]}1.png`;
 
 
@@ -54,6 +59,4 @@
         toggle = false;
         img.src = `${k}1.png`
     });
-    
-    
 </script>
