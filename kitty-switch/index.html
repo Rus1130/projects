@@ -23,19 +23,36 @@
     <meta property="og:url" content="">
 </head>
 <body>
-    <img src="1.png" title="click to dance!">
-    
 </body>
 <script>
 
-    const img = document.querySelector("img");
+    const img = document.createElement("img");
     let toggle = false;
 
+    const list = ["a", "b"]
+    let current = 0;
+
+
+    document.body.appendChild(img);
+
+    img.title = "left click to dance\nright click for next\n:3";
+    img.src = `${list[current]}1.png`;
+
+
     document.addEventListener("click", function(event) {
-        if(toggle == false) img.src = "2.png"
-        else img.src = "1.png"
+        let k = list[current];
+        if(toggle == false) img.src = `${k}2.png`
+        else img.src = `${k}1.png`
 
         toggle = !toggle;
+    });
+
+    document.addEventListener("contextmenu", function(event) {
+        event.preventDefault();
+        current = (current + 1) % list.length;
+        let k = list[current];
+        toggle = false;
+        img.src = `${k}1.png`
     });
     
     
