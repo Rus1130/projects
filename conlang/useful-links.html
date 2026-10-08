@@ -14,11 +14,15 @@
     div {
         background-color: black;
         color: white;
-        cursor: pointer;
         margin-top: 1px;
+        user-select: none;
     }
 
-    div:hover {
+    div.clickable {
+        cursor: pointer;
+    }
+
+    div.clickable:hover {
         background-color: white;
         color: black;
     }
@@ -39,20 +43,21 @@
     <meta property="og:url" content="https://rus1130.github.io/projects/conlang/stuff/useful-links.html">
 </head>
 <body>
-    Things
+    Rus' Conlanging Resources<br>
 </body>
 <script>
-    function n(name, link, lists=undefined){
+    function n(name, link, notes=undefined){
         const div = document.createElement("div");
         const a = document.createElement("a");
-        a.textContent = "▌" + name + " >";
+        a.textContent = "▌" + name;
         a.href = link;
         div.appendChild(a);
+        div.classList.add("clickable");
         document.body.appendChild(div);
 
-        if(Array.isArray(lists)){
-            for(const list of lists){
-                listitem(list);
+        if(Array.isArray(notes)){
+            for(const note of notes){
+                listitem(note);
             }
         }
     }
@@ -66,23 +71,41 @@
         document.body.appendChild(document.createElement("br"));
     }
 
+    function category(name){
+        const div = document.createElement("div");
+        div.textContent = name;
+        document.body.appendChild(document.createElement("br"));
+        document.body.appendChild(div);
+    }
+
     function listitem(text){
         s(tab + "-" + text);
     }
 
+    category("IPA");
+    n("IPA Chart", "https://jbdowse.com/ipa/");
+    n("IPA TypeIt", "https://ipa.typeit.org/full/");
+
+    category("Lists");
+    n("Glossing Abbreviations", "https://en.wikipedia.org/wiki/List_of_glossing_abbreviations");
+    n("Grammatical Cases", "https://en.wikipedia.org/wiki/List_of_grammatical_cases");
+    n("Grammatical Tenses", "https://en.wikipedia.org/wiki/Category:Grammatical_tenses");
+    n("Grammatical Aspects", "https://en.wikipedia.org/wiki/Category:Grammatical_aspects");
+    n("Grammatical Moods", "https://en.wikipedia.org/wiki/Category:Grammatical_moods");
+
+    category("References");
     n("Glossary of Linguistic Terms", "https://glossary.sil.org/");
     n("Leipzig Glossing Rules", "https://www.eva.mpg.de/lingua/pdf/Glossing-Rules.pdf", [
         "Because smallcaps are very annoying, it is acceptable to use regular capital letters",
         "For circumfixes, do PTCP>see<PTCP or PTCP>see<CIRC, not the recommended hyphens"
     ]);
-    n("IPA Chart", "https://jbdowse.com/ipa/");
-    n("IPA TypeIt", "https://ipa.typeit.org/full/");
-    n("List of Glossing Abbreviations", "https://en.wikipedia.org/wiki/List_of_glossing_abbreviations");
-    n("List of Grammatical Cases", "https://en.wikipedia.org/wiki/List_of_grammatical_cases");
-    n("List of Grammatical Tenses", "https://en.wikipedia.org/wiki/Category:Grammatical_tenses");
-    n("List of Grammatical Aspects", "https://en.wikipedia.org/wiki/Category:Grammatical_aspects");
-    n("List of Grammatical Moods", "https://en.wikipedia.org/wiki/Category:Grammatical_moods");
+
+    category("Learning");
     n("MIT Free Conlanging Course", "https://ocw.mit.edu/courses/24-917-conlangs-how-to-construct-a-language-fall-2018/")
+    n("Biblaridion 'How to Make a Language' Playlist", "https://www.youtube.com/watch?v=FHK1gO2Mh68&list=PL6xPxnYMQpqsooCDYtQQSiD2O3YO0b2nN")
+    n("Some useful nguh videos", "https://www.youtube.com/watch?v=vSkfcr7xm0U&list=PLZI8zCShyGT-X3hK5kqO8I_TuXsALSLT7")
+    n("useful videos", "https://www.youtube.com/watch?v=1IesS7ipJIE&list=PLNezRABpPm_8")
+
+    category("Templates");
     n("GoogleSheets Templates", "https://docs.google.com/spreadsheets/d/1UPJf2tpc6Vp19lxpjq2fwc0uu_aRGCCyFNXwKoy1nKE/edit?usp=sharing");
-    
 </script>
