@@ -46,14 +46,16 @@
     Rus' Conlanging Resources<br>
 </body>
 <script>
-    function n(name, link, notes=undefined){
+    function n(name, link, notes=undefined, indent=false){
         const div = document.createElement("div");
         const a = document.createElement("a");
         a.textContent = "▌" + name;
         a.href = link;
         div.appendChild(a);
-        div.classList.add("clickable");
+        div.classList.add("clickable");     
         document.body.appendChild(div);
+
+        if(indent == true) div.style.marginLeft = "4ch";
 
         if(Array.isArray(notes)){
             for(const note of notes){
@@ -82,9 +84,11 @@
         s(tab + "-" + text);
     }
 
-    category("IPA");
+    category("Tools");
     n("IPA Chart", "https://jbdowse.com/ipa/");
     n("IPA TypeIt", "https://ipa.typeit.org/full/");
+    n("Sound Change Applier", "https://asca.girv.dev/");
+        n("ASCA Documentation", "https://github.com/Girv98/asca-rust/blob/master/doc/doc.md", undefined, true);
 
     category("Lists");
     n("Glossing Abbreviations", "https://en.wikipedia.org/wiki/List_of_glossing_abbreviations");
