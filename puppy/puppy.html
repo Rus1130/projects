@@ -1,0 +1,68 @@
+<style>
+    button:focus, input:focus, select:focus, textarea:focus, [contenteditable]:focus {
+        outline:none;
+    }
+</style>
+<head>
+    <meta property="og:title" content="">
+    <meta property="og:description" content="">
+    <meta property="og:url" content="">
+    <meta name="theme-color" content="">
+    <meta property="og:image" content="">
+</head>
+<body>
+    
+    
+</body>
+<script>
+    class Puppy { 
+        constructor(maxTiredness){
+            this.tiredness = 0;
+            this.maxTiredness = Math.round(maxTiredness);
+            this.napping = false;
+        }
+
+        isTired(){
+            return this.tiredness >= this.maxTiredness;
+        }
+        
+        isNapping(){
+            return this.napping;
+        }
+
+        bark(times = 1){
+            if(this.isTired()) return console.log("Puppy too tired!")
+            if(times < 0) return console.log("Puppy can only bark in positive numbers!")
+            
+            if(this.isNapping()) {
+                let random = Math.random();
+                if(random > 0.05) console.log("Puppy can't bark while asleep!")
+                else console.log("Wow... puppy barked while napping... dreaming...")
+                return;
+            }
+
+            times = Math.round(times);
+            
+            for(let i = 0; i < times; i++){
+                if(this.isTired()){
+                    console.log("Puppy too tired to bark!")
+                    return;
+                }
+                console.log("Bark!");
+                this.tiredness += 1;
+            }
+        }
+
+        rest(){
+            let half = Math.round(this.tiredness / 2)
+            this.tiredness -= half;
+            console.log("Puppy laid down. Recharge")
+        }
+
+        nap(){
+            if(this.isNapping()) return console.log("Puppy can't nap twice at once!");
+            this.napping = true;
+            console.log("Puppy fell asleep!")
+        }
+    }
+</script>
