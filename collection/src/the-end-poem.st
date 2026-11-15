@@ -1,4 +1,3 @@
-{{# written 14 nov, 2026 #}}
 typewriter: {
     charDelay: 60
     newlineDelay: 1450
