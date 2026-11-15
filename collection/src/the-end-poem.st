@@ -44,8 +44,6 @@ typewriter: {
     [color reset][glitch <Number>][color #00AA00]
 [mixin end]
 
-[$page "main"]
-
 [function "input" "What is your name? "][sleep 800][linebreak]
 [gopage "main" "Enter >"]
 
@@ -109,7 +107,6 @@ typewriter: {
     [@use "green" "Sometimes it believed it was in a universe that was made of energy that was made of offs and ons; zeros and ones; lines of code. Sometimes it believed it was playing a game. Sometimes it believed it was reading words on a screen."]
     [@use "cyan" "You are the player, reading words..."]
     [@use "green" "Shush... Sometimes the player read lines of code on a screen. Decoded them into words; decoded words into meaning; decoded meaning into feelings, emotions, theories, ideas, and the player started to breathe faster and deeper and realised it was alive, it was alive, those thousand deaths had not been real, the player was alive"]
-        [$start]
     [@use "cyan" "You. You. You are alive."]
     [@use "greeni" "and sometimes the player believed the universe had spoken to it through the sunlight that came through the shuffling leaves of the summer trees"]
     [@use "cyani" "and sometimes the player believed the universe had spoken to it through the light that fell from the crisp night sky of winter, where a fleck of light in the corner of the player's eye might be a star a million times as massive as the sun, boiling its planets to plasma in order to be visible for a moment to the player, walking home at the far side of the universe, suddenly smelling food, almost at the familiar door, about to dream again"]
