@@ -8,15 +8,15 @@ if(!name) {
     process.exit(1);
 }
 
-const nameNormalized = name.replaceAll(" ", "-").replaceAll("---", "-").toLowerCase();
+const nameNormalized = name.replaceAll(/\W/g, "-").replaceAll(/-+/g, "-").toLowerCase();
 
 let day = new Date().getDate();
-let month = new Date().getMonth() + 1;
+let month = new Date().getMonth();
+let year = new Date().getFullYear();
 
 const months = ["jan", "feb", "mar", "apr", "may", "june", "july", "aug", "sept", "oct", "nov", "dec"];
 
-let year = new Date().getFullYear();
-const date = `${day} ${months[month-1]}, ${year}`;
+const date = `${day} ${months[month]}, ${year}`;
 
 let metaTitle = `<meta property="og:title"       content="${name}"`
 let metaDesc  = `<meta property="og:description" content=""`
@@ -33,59 +33,60 @@ const HTML_TEMPLATE =
 `<!-- written ${date} -->
 <head>
     <link rel="stylesheet" href="./src/css.css">
-    <script src="../Global/typewriter.js"></script>
+    <link rel="icon" type="image/png" href="images/favicon.png">
     ${metaTitle}
     ${metaDesc}
     ${metaURL}
+    <meta name="theme-color" content="#fe0275" />
     <title>${name}</title>
 </head>
 <body>
-    <div id="out"></div>
-    <div class="button" id="return" onclick="location.href = 'https://rus1130.github.io/projects/collection/'" style="display: none;">▌< Return</div>
 </body>
-<script>
-    fetch('./src/${nameNormalized}.tw')
-    .then(response => response.text())
-    .then(text => {
-        let tw3 = new Typewriter3(text, document.getElementById("out"), {
-            charDelay: 100,
-            newlineDelay: 500,
-            customDelays: {
-                ",": 350,
-                ".": 600
-            },
-            newpageText: "▌Next >",
-            defaultTextColor: "#ffffff",
-            defaultBackgroundColor: "#000000",
-            onFunctionTag: () => {
-                document.getElementById('return').style.display = 'block';
-            }
-        });
+<script type="module">
+    import { SuperType, SuperTypeError, TagArgument } from 'https://rus1130.github.io/supertype/index.js';
 
-        document.body.addEventListener('keydown', (event) => {
-            if (event.code === 'Space') tw3.togglePause();
-            if (event.code === 'ArrowRight') tw3.speedOverride(1);
-            if (event.code === 'ArrowLeft') tw3.speedOverride(null);
-        });
+    const tw = new SuperType(document.body, {
+        "end": function() {
+            const returnButton = document.createElement("div");
+            returnButton.classList.add("button");
+            returnButton.id = "return";
+            returnButton.textContent = "▌< Return";
+            returnButton.onclick = () => {
+                location.href = 'https://rus1130.github.io/projects/collection/';
+            };
+            tw.appendToTarget(returnButton);
+            tw.target.style.overflowY = 'scroll';
+            tw.target.classList.add('hide-scrollbar');
+        }
+    })
 
-        tw3.start();
-    });
+    await tw.load("./src/${nameNormalized}.st").then(() => {
+        tw.allowControls("all");
+        tw.start();
+    })
 </script>`
 
 const txt_TEMPLATE = 
 `{{# written ${date} #}}
-{{#timecalc
-    char: 100
-    newline: 500
-    custom: {
+typewriter: {
+    charDelay: 50
+    newlineDelay: 500
+    textColor: #ffffff
+    backgroundColor: #000000
+    customDelays: {
         ",": 350
         ".": 600
     }
-#}}
+}
+
+
+
+[sleep 1700][linebreak]
+[function "end"]
 `
 
 fs.writeFileSync(path.join('collection', `${nameNormalized}.html`), HTML_TEMPLATE.replaceAll("\n", "\r\n"));
-fs.writeFileSync(path.join('collection', 'src', `${nameNormalized}.tw`), txt_TEMPLATE.replaceAll("\n", "\r\n"));
+fs.writeFileSync(path.join('collection', 'src', `${nameNormalized}.st`), txt_TEMPLATE.replaceAll("\n", "\r\n"));
 
 let homepage = fs.readFileSync(path.join('collection', 'index.html'), 'utf8');
 let insertIndex = homepage.indexOf('<div class="button" onclick="location.href = \'https://rus1130.github.io/projects/index.html?bypass=true\'">▌< Return to main page</div>') - 4;
