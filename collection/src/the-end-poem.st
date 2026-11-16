@@ -122,7 +122,7 @@ typewriter: {
     [@use "cyani" "and the universe said you are not alone"]
     [@use "greeni" "and the universe said you are not separate from every other thing"]
     [@use "cyani" "and the universe said you are the universe tasting itself, talking to itself, reading its own code"]
-    [@use "greeni" "and the universe said I love you because you are love."][sleep 2000]
+    [color #00AA00]and the universe said I love you because you are love.[sleep 2000][linebreak sticky]
     [@use "cyan" "And the game was over and the player woke up from the dream. And the player began a new dream. And the player dreamed again, dreamed better. And the player was the universe. And the player was love."]
     [@use "cyan" "You are the player."]
     [color #00AA00]Wake up.[color reset]
